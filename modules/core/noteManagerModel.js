@@ -1,13 +1,5 @@
 var NoteManagerModel = function() {
-	//this.notes = notes ? notes : []; 
 	this.notes = [];
-	//this.cursorChord = cursorChord? cursorChord: [0,0]; // array that represent which chords are selected [startIndex, endIndex]
-	// this.classSelectedName = 'editableChords';
-	// this.canvasId = 'canvas_container';
-	// this.isEditing = false;
-	// /*this.showSelection = true;*/
-	// this.scoreEditor = scoreEditor;
-	// this.buffer = []; // use for copy paste
 };
 
 //Interface functions (this functions are also in ChordManagerModel  )
@@ -16,7 +8,7 @@ var NoteManagerModel = function() {
  * @interface
  * @return {integer}
  */
-NoteManagerModel.prototype.getTotal = function() {
+NoteManagerModel.prototype.getTotalNotes = function() {
 	return this.notes.length;
 };
 
@@ -26,6 +18,7 @@ NoteManagerModel.prototype.getTotal = function() {
  * @param  {integer} end
  * @return {Array}
  */
+
 NoteManagerModel.prototype.getBeatIntervalByIndexes = function(start, end) {
 	var startBeat = this.getNoteBeat(start);
 	var endBeat = this.getNoteBeat(end) + this.getNote(end).getDuration();
@@ -38,13 +31,13 @@ NoteManagerModel.prototype.getBeatIntervalByIndexes = function(start, end) {
  * @param  {integer} to   index of last note to get
  * @return {Array}      array of NoteModel
  */
-NoteManagerModel.prototype.getElemsToMusicCSLJSON = function(from, to) {
+/*NoteManagerModel.prototype.getElemsToMusicCSLJSON = function(from, to) {
 	var notes = [];
 	this.getNotes(from, to + 1).forEach(function(note) {
 		notes.push(note.exportToMusicCSLJSON());
 	});
 	return notes;
-};
+};*/
 
 /**
  * @interface
@@ -55,7 +48,7 @@ NoteManagerModel.prototype.getElemsToMusicCSLJSON = function(from, to) {
  * @param  {String} type : if "model" returns notes as copies of NoteMode Prototype, if "struct" it returns it in 'struct' fromat
  * @return {[type]}      [description]
  */
-NoteManagerModel.prototype.cloneElems = function(pos1, pos2, type) {
+/*NoteManagerModel.prototype.clone = function(pos1, pos2, type) {
 	type = type || "model";
 	var newNotes = [];
 	var note;
@@ -72,14 +65,19 @@ NoteManagerModel.prototype.cloneElems = function(pos1, pos2, type) {
 	});
 
 	return newNotes;
-};
+};*/
 
 
-NoteManagerModel.prototype.addNote = function(note) {
+
+NoteManagerModel.prototype.insertNote = function(note, pos) {
 	if (!note instanceof NoteModel) throw "note is not an instance of Note";
-	this.notes.push(note);
+	pos = pos || 0;
+	this.notes.splice(pos + 1, 0, note);
 };
 
+NoteManagerModel.prototype.getNote = function(pos) {
+	return this.notes[pos];
+};
 
 /**
  * gets notes (by reference. To clone use cloneElems)
@@ -91,21 +89,12 @@ NoteManagerModel.prototype.getNotes = function(from, to) {
 	return this.notes.slice(from, to);
 };
 
-NoteManagerModel.prototype.getNote = function(pos) {
-	return this.notes[pos];
-};
-
 NoteManagerModel.prototype.setNotes = function(notes) {
 	if (typeof notes !== "undefined") {
 		this.notes = notes;
 		return true;
 	}
 	return false;
-};
-
-NoteManagerModel.prototype.insertNote = function(pos, note) {
-	this.notes.splice(pos + 1, 0, note);
-
 };
 
 NoteManagerModel.prototype.incrOffset = function(offset, dur) {
@@ -124,7 +113,7 @@ NoteManagerModel.prototype.getNoteIndex = function( note ) {
 		}
 	}
 	return undefined;
-}
+};
 
 NoteManagerModel.prototype.setNotesBarNum = function(songModel, pos) {
 	function isSameMeasure(offset, offsetAnt, nMeasureBeats, beatsPerBar, timeSig, songModel) {
