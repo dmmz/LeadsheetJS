@@ -22,6 +22,37 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 			this.populateFromStruct(param);
 		}
 	}
+	/**
+	 * @param {Number} dots
+	 */
+	NoteModel.prototype.setDot = function(dots) {
+		if (!dots) throw "dots not defined";
+
+		var nDots = Number(dots);
+		if (isNaN(nDots) || nDots < 0 || nDots > 2) throw "not valid number of dots";
+		this.dot = nDots;
+	};
+
+	NoteModel.prototype.getDot = function() {
+		return this.dot;
+	};
+
+	/**
+	 * @param {String} tieType "start","stop" or "stop_start"
+	 */
+	NoteModel.prototype.setTie = function(tieType) {
+		if (!tieType) throw "tieType not defined";
+
+		var arr = ["start", "stop", "stop_start"];
+		if (arr.indexOf(tieType) == -1) throw "not valid tie type " + tieType;
+
+		if (!this.tie) this.tie = tieType;
+		else if (tieType != this.tie) this.tie = "stop_start";
+	};
+
+	NoteModel.prototype.getTie = function() {
+		return this.tie;
+	};
 
 	/**
 	 * [populateFromStruct description]
