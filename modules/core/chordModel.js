@@ -102,6 +102,71 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		return chord;
 	};
 
+	ChordModel.prototype.setChordFromString = function(stringChord) {
+		// Looking for base chord
+		stringChord = stringChord.split('/');
+		var note, chordType;
+
+		var stringChordRoot = stringChord[0];
+
+		if (stringChord.length >= 2) {
+
+			var stringChordBase = stringChord[1];
+
+			if (this.base instanceof ChordModel === false) {
+				this.base = new ChordModel();
+			}
+			this.base.setChordFromString(stringChordBase);
+		}
+		// Set current chord note and chordtype
+		stringChordRoot = stringChordRoot.replace(/\s/g, '');
+
+		//var r = validateSimpleChord(stringChordRoot);
+		var pos;
+		if (stringChordRoot.charAt(1) == "b" || stringChordRoot.charAt(1) == "#" || stringChordRoot.charAt(1) == "%")
+			pos = 2;
+		else if (stringChordRoot == "NC")
+			pos = stringChordRoot.length;
+		else
+			pos = 1;
+
+		var pitchClass = stringChordRoot.substring(0, pos);
+		var chordType = stringChordRoot.substring(pos, stringChordRoot.length);
+		this.setNote(pitchClass);
+		this.setChordType(chordType);
+	};
+
+
+		/*
+		function validateSimpleChord(cChord) {
+			var pitchClasses = ["C", "C#", "Cb", "D", "D#", "Db", "E", "E#", "Eb", "F", "F#", "Fb", "G", "G#", "Gb", "A", "A#", "Ab", "B", "B#", "Bb", "%", "%%", "NC"];
+
+			var chordTypes = NoteTools.getCollection('chordtype');
+			var nChord = jQuery.trim(cChord);
+			var pos;
+			if (nChord.charAt(1) == "b" || nChord.charAt(1) == "#" || nChord.charAt(1) == "%")
+				pos = 2;
+			else if (nChord == "NC")
+				pos = nChord.length;
+			else
+				pos = 1;
+
+			var pitchClass = nChord.substring(0, pos);
+			var chordType = nChord.substring(pos, nChord.length);
+
+			if ((pitchClasses.indexOf(pitchClass) == -1 || chordTypes.indexOf(chordType) == -1) && cChord.length != 0) {
+				//error            
+				return {
+					err: true,
+					msg: "incorrect chord " + pitchClass + " " + chordType
+				}
+			} else return {
+				note: pitchClass,
+				chordType: chordType
+			}
+		};
+		*/
+
 	/**
 	 *
 	 * @param  {string}  delimiter  It's the separator between note and chordtype, by default it's a space : C M7
@@ -140,70 +205,6 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		}
 
 		return string;
-	};
-
-	ChordModel.prototype.setChordFromString = function(stringChord) {
-		// Looking for base chord
-		stringChord = stringChord.split('/');
-		var note, chordType;
-
-		var stringChordRoot = stringChord[0];
-
-		if (stringChord.length >= 2) {
-
-			var stringChordBase = stringChord[1];
-
-			if (this.base instanceof ChordModel === false) {
-				this.base = new ChordModel();
-			}
-			this.base.setChordFromString(stringChordBase);
-		}
-		// Set current chord note and chordtype
-		stringChordRoot = stringChordRoot.replace(/\s/g, '');
-
-		//var r = validateSimpleChord(stringChordRoot);
-		var pos;
-		if (stringChordRoot.charAt(1) == "b" || stringChordRoot.charAt(1) == "#" || stringChordRoot.charAt(1) == "%")
-			pos = 2;
-		else if (stringChordRoot == "NC")
-			pos = stringChordRoot.length;
-		else
-			pos = 1;
-
-		var pitchClass = stringChordRoot.substring(0, pos);
-		var chordType = stringChordRoot.substring(pos, stringChordRoot.length);
-		this.setNote(pitchClass);
-		this.setChordType(chordType);
-
-		/*
-		function validateSimpleChord(cChord) {
-			var pitchClasses = ["C", "C#", "Cb", "D", "D#", "Db", "E", "E#", "Eb", "F", "F#", "Fb", "G", "G#", "Gb", "A", "A#", "Ab", "B", "B#", "Bb", "%", "%%", "NC"];
-
-			var chordTypes = NoteTools.getCollection('chordtype');
-			var nChord = jQuery.trim(cChord);
-			var pos;
-			if (nChord.charAt(1) == "b" || nChord.charAt(1) == "#" || nChord.charAt(1) == "%")
-				pos = 2;
-			else if (nChord == "NC")
-				pos = nChord.length;
-			else
-				pos = 1;
-
-			var pitchClass = nChord.substring(0, pos);
-			var chordType = nChord.substring(pos, nChord.length);
-
-			if ((pitchClasses.indexOf(pitchClass) == -1 || chordTypes.indexOf(chordType) == -1) && cChord.length != 0) {
-				//error            
-				return {
-					err: true,
-					msg: "incorrect chord " + pitchClass + " " + chordType
-				}
-			} else return {
-				note: pitchClass,
-				chordType: chordType
-			}
-		};
-*/
 	};
 
 
