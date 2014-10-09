@@ -1,26 +1,26 @@
-define(['modules/core/NoteManager','modules/core/NoteModel'], function(NoteManager, NoteModel) {
+define(['modules/core/NoteManager', 'modules/core/NoteModel'], function(NoteManager, NoteModel) {
 	return {
 		run: function() {
 			test("NoteManager", function(assert) {
-				
+
 				/**
 				 * funciton to test a list of pitches
-				 * @param  {NoteManagerModel} noteManager 
-				 * @param  {Assert} assert      
+				 * @param  {NoteManagerModel} noteManager
+				 * @param  {Assert} assert
 				 * @param  {Array} pitchList   e.g ["E/4","F#/4"]
 				 * @param  {Integer} posStart    index in noteManager.getNotes(), starting from 0
 				 * @param  {Integer} posEnd      First index not wanted, e.g: posEnd 3, will return notes from 0 to 2
 				 */
-				function testPitchList(noteManager, assert, pitchList, posStart, posEnd){
+				function testPitchList(noteManager, assert, pitchList, posStart, posEnd) {
 					var i = 0;
-					noteManager.getNotes(posStart,posEnd).forEach(function(note){
-						assert.equal(note.getPitch(),pitchList[i]);
+					noteManager.getNotes(posStart, posEnd).forEach(function(note) {
+						assert.equal(note.getPitch(), pitchList[i]);
 						i++;
 					});
 				}
 
 				var noteManager = new NoteManager();
-				
+
 				// insert notes in order
 				noteManager.insertNote(new NoteModel({
 					keys: ["E/4"],
@@ -44,30 +44,30 @@ define(['modules/core/NoteManager','modules/core/NoteModel'], function(NoteManag
 					keys: ["B/4"],
 					duration: "16"
 				}));
-				assert.equal(noteManager.getTotal(),5);
-				assert.equal(noteManager.getTotalDuration(),3);
-				
+				assert.equal(noteManager.getTotal(), 5);
+				assert.equal(noteManager.getTotalDuration(), 3);
+
 				// "E/4","F/4","G/4","A/4","B/4"
-				testPitchList(noteManager,assert,["E/4","F/4","G/4","A/4","B/4"]);
-				
+				testPitchList(noteManager, assert, ["E/4", "F/4", "G/4", "A/4", "B/4"]);
+
 				// insert in pos 0
 				noteManager.insertNote(new NoteModel({
 					keys: ["C/5"],
 					duration: "8"
-				}),0);
+				}), 0);
 				// "C/5","E/4","F/4","G/4","A/4","B/4"
-				testPitchList(noteManager,assert,["C/5","E/4","F/4","G/4","A/4","B/4"]);
-				
+				testPitchList(noteManager, assert, ["C/5", "E/4", "F/4", "G/4", "A/4", "B/4"]);
+
 				// insert in pos 1  
 				noteManager.insertNote(new NoteModel({
 					keys: ["D/5"],
 					duration: "8"
-				}),1);
+				}), 1);
 				// "C/5","D/5","E/4","F/4","G/4","A/4","B/4"
-				testPitchList(noteManager,assert,["C/5","D/5","E/4"],0,3);
-				
+				testPitchList(noteManager, assert, ["C/5", "D/5", "E/4"], 0, 3);
 
-				assert.throws(function(){
+
+				assert.throws(function() {
 					noteManager.deleteNote();
 				});
 
@@ -76,8 +76,8 @@ define(['modules/core/NoteManager','modules/core/NoteModel'], function(NoteManag
 				noteManager.deleteNote(0);
 
 				// "E/4","F/4","G/4","A/4","B/4"
-				testPitchList(noteManager,assert,["E/4","F/4","G/4"],0,3);
-				testPitchList(noteManager,assert,["F/4","G/4","A/4"],1,4);
+				testPitchList(noteManager, assert, ["E/4", "F/4", "G/4"], 0, 3);
+				testPitchList(noteManager, assert, ["F/4", "G/4", "A/4"], 1, 4);
 
 				var notesToPaste = [];
 				notesToPaste.push(new NoteModel({
@@ -89,10 +89,10 @@ define(['modules/core/NoteManager','modules/core/NoteModel'], function(NoteManag
 					duration: "q"
 				}));
 				// notesToPaste: "E/5","F/5" will replace note in pos 1 i.e. 2nd note ("F/4")
-				noteManager.notesSplice([1,1],notesToPaste);
-				
+				noteManager.notesSplice([1, 1], notesToPaste);
+
 				// "E/4","E/5","F/5","G/4","A/4","B/4"
-				testPitchList(noteManager,assert,["E/4","E/5","F/5","G/4","A/4","B/4"]);
+				testPitchList(noteManager, assert, ["E/4", "E/5", "F/5", "G/4", "A/4", "B/4"]);
 
 				// change notes from 3 to 6 (6 not included) with notesToPaste (note Gb/5)
 				notesToPaste = [];
@@ -100,10 +100,10 @@ define(['modules/core/NoteManager','modules/core/NoteModel'], function(NoteManag
 					keys: ["Gb/5"],
 					duration: "q"
 				}));
-				noteManager.notesSplice([3,6],notesToPaste);
+				noteManager.notesSplice([3, 6], notesToPaste);
 
 				// "E/4","E/5","F/5","Gb/5"
-				testPitchList(noteManager,assert,["E/4","E/5","F/5","Gb/5"]);
+				testPitchList(noteManager, assert, ["E/4", "E/5", "F/5", "Gb/5"]);
 
 				// To test setNotes and functions related to beat we'll use a new melody
 				var rhythmicMelody = [];
@@ -120,7 +120,7 @@ define(['modules/core/NoteManager','modules/core/NoteModel'], function(NoteManag
 					keys: ["F#/5"],
 					duration: "16"
 				}));
-				
+
 				rhythmicMelody.push(new NoteModel({
 					keys: ["F#/5"],
 					duration: "q",
@@ -181,7 +181,7 @@ define(['modules/core/NoteManager','modules/core/NoteModel'], function(NoteManag
 				});
 				assert.equal(noteManager.getPrevIndexNoteByBeat(6),6);
 				
-				assert.deepEqual(noteManager.getIndexesByBeatInterval(1,3.1),[0,3]);
+				assert.deepEqual(noteManager.getIndexesStartingBetweenBeatInterval(1,3.1),[0,3]);
 
 				var newNote = new NoteModel({
 					keys: ["A/5"],
@@ -191,6 +191,21 @@ define(['modules/core/NoteManager','modules/core/NoteModel'], function(NoteManag
 				});
 				
 				assert.equal(noteManager.getNoteIndex(newNote),5);
+
+				// rhythm  q,8,16,16, triplet(q,q,q)
+				noteManager.setNotes(rhythmicMelody);
+
+				assert.equal(noteManager.getNoteBeat(0), 1);
+				assert.equal(noteManager.getNoteBeat(1), 2);
+				assert.equal(noteManager.getNoteBeat(2), 2.75);
+				assert.equal(noteManager.getNoteBeat(3), 3);
+				assert.equal(noteManager.getNoteBeat(4).toFixed(3), 3.667);
+				assert.equal(noteManager.getNoteBeat(6), 5);
+
+
+
+
+
 
 			});
 

@@ -161,12 +161,14 @@ define(['modules/core/NoteModel'], function(NoteModel) {
 		}
 		return i - 1;
 	};
+
 	/**
 	 * @param  {Integer} startBeat 
 	 * @param  {Integer} endBeat   
 	 * @return {Array}           indexes e.g. [1,2]
 	 */
-	NoteManager.prototype.getIndexesByBeatInterval = function(startBeat, endBeat) {
+
+	NoteManager.prototype.getIndexesStartingBetweenBeatInterval = function(startBeat, endBeat) {
 		var index1 = this.getNextIndexNoteByBeat(startBeat);
 		var index2 = this.getPrevIndexNoteByBeat(endBeat);
 		return [index1, index2];

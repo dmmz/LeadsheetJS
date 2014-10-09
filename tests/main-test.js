@@ -18,16 +18,18 @@ require.config({
 });
 
 
-require(
-  ['tests/testNoteModel','tests/testChordModel','tests/testNoteManager','tests/testSongModel','qunit'],
-  function(testNoteModel, testChordModel, testNoteManager, testSongModel, Qunit) {
+require(['tests/testNoteModel', 'tests/testChordModel', 'tests/testNoteManager',  'tests/testSongModel','tests/testChordManager', 'qunit'],
+  function(testNoteModel, testChordModel, testNoteManager, testSongModel, testChordManager, Qunit) {
 
-  //Test qui ne marche pas: TypeError: undefined is not a function at NoteModel.populateFromStruct...
-  testNoteModel.run();
-  testChordModel.run();
-  testNoteManager.run();
-  testSongModel.run();
+    //Test qui ne marche pas: TypeError: undefined is not a function at NoteModel.populateFromStruct...
+    testNoteModel.run();
+    testChordModel.run();
+    testNoteManager.run();
+    testSongModel.run();
+    testChordManager.run();
 
-  QUnit.load();
-  QUnit.start();
-});
+
+
+    QUnit.load();
+    QUnit.start();
+  });

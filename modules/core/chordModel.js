@@ -19,7 +19,6 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		this.beat = (typeof param !== "undefined" && typeof param.beat !== "undefined") ? param.beat : 1;
 		this.barNumber = (typeof param !== "undefined" && typeof param.barNumber !== "undefined") ? param.barNumber : 0;
 		this.chordSymbolList = getChordSymbolList();
-		
 
 		function getChordSymbolList(){
 			function htmlDecode(value) {
