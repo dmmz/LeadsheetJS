@@ -13,13 +13,11 @@ define(['modules/core/NoteModel'], function(NoteModel) {
 				note.setDot(1);
 				assert.equal(note.getDot(), 1);
 				
-				
 				assert.throws(function() {
-					note.setDot("ajajaj"); 
+					note.setDot("wrongDot"); 
 				});
 
 				//setTie
-				
 				note.setTie();
 				assert.equal(note.getTie(),undefined); 
 				
@@ -42,14 +40,22 @@ define(['modules/core/NoteModel'], function(NoteModel) {
 				note.setTuplet("start");
 				assert.equal(note.getTuplet(),"start");
 				assert.equal(note.getTimeModif(),"3/2");
+				assert.ok(note.isTuplet());
 
 				note.removeTuplet();
 				assert.equal(note.getTuplet(),null);
 				assert.equal(note.getTimeModif(),null);				
-
-				note.setTuplet("middle","5/4");
+				assert.ok(!note.isTuplet());
+				
+				note.setTuplet(null,"5/4");
 				assert.equal(note.getTuplet(),"middle");
 				assert.equal(note.getTimeModif(),"5/4");
+				assert.ok(note.isTuplet());
+
+				note.setTuplet("middle","3/4");
+				assert.equal(note.getTuplet(),"middle");
+				assert.equal(note.getTimeModif(),"3/4");
+				assert.ok(note.isTuplet());
 
 				//measure
 				assert.throws(function() {
@@ -69,7 +75,7 @@ define(['modules/core/NoteModel'], function(NoteModel) {
 				assert.equal(note.getAccidental(),"");
 				
 
-				 var noteMinuscule = new NoteModel({
+				var noteMinuscule = new NoteModel({
 					keys: ["e/4"],
 					duration: "q"
 				});

@@ -25,19 +25,21 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		}
 	}
 	/**
-	 * @param  {Number} i
+	 * @param  {Number} index
 	 * @return {String} pitch. e.g.: "A#/5", "Bb/4"
 	 */
-	NoteModel.prototype.getPitch = function(i) {
-		i = i || 0;
-		return this.pitchClass[i] + this.accidental[i] + "/" + this.octave[i];
+	NoteModel.prototype.getPitch = function(index) {
+		// check if number, check if  < numPitches
+		index = index || 0;
+		return this.pitchClass[index] + this.accidental[index] + "/" + this.octave[index];
 	};
 	/**
 	 * @param {Number} dots
 	 */
 	NoteModel.prototype.setDot = function(dots) {
-		if (!dots) return;
-
+		if (typeof dots === "undefined") {
+			return;
+		}
 		var nDots = Number(dots);
 		if (isNaN(nDots) || nDots < 0 || nDots > 2) throw "not valid number of dots";
 		this.dot = nDots;
@@ -100,6 +102,16 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		this.timeModification = null;
 		this.tuplet = null;
 	};
+	/**
+	 * if "type" is undefined, just checkes that is tuplet,
+	 * if type is 'start' or 'stop' returns checks that tuplet is type
+	 * @param  {String}  type  "start" , "stop" or undefined
+	 * @return {Boolean}
+	 */
+	NoteModel.prototype.isTuplet = function(type) {
+		return (!type) ? this.timeModification != null :
+			this.timeModification != null && this.tuplet && this.tuplet.indexOf(type) != -1;
+	};
 
 	NoteModel.prototype.setMeasure = function(numMeasure) {
 		if (!numMeasure || isNaN(numMeasure)) throw "invalid numMeasure";
@@ -143,9 +155,9 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 	};
 	/**
 	 * returns duration in number of beats. where 1.0 is a quarter note, regardless of the time signature (6/8, 4/4...)
-	 * @param  {Number} numBeats optional: useful for whole rests, their duration depends on number of beats of the bar, 
+	 * @param  {Number} numBeats optional: useful for whole rests, their duration depends on number of beats of the bar,
 	 * in that case it's sent as parameter
-	 * @return {Float}          
+	 * @return {Float}
 	 */
 	NoteModel.prototype.getDuration = function(numBeats) {
 		switch (this.duration) {
@@ -251,7 +263,35 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		this.setRest();
 	};
 
+	NoteModel.prototype.toNoteStruct = function(complete, withNumMeasure) {
+		if (complete === undefined) complete = true;
+		if (withNumMeasure === undefined) withNumMeasure = false;
 
-	
+		var noteObj = {};
+
+		noteObj.keys = [];
+		for (var i = 0; i < this.numPitches; i++) {
+			noteObj.keys.push(this.getPitch(i));
+		}
+		noteObj.duration = this.duration;
+		//important only set property if not null, 
+		if (this.dot != null) noteObj.dot = this.dot;
+		if (this.tie != null && complete) noteObj.tie = this.tie;
+		if (this.tuplet != null && complete) noteObj.tuplet = this.tuplet;
+		if (this.timeModification != null && complete) noteObj.timeModification = this.time_modification;
+		if (this.isRest) noteObj.duration += "r";
+
+		if (this.measure != null && withNumMeasure) noteObj.num_measure = this.measure;
+		return noteObj;
+	};
+	/**
+	 * @param  {boolean} complete: if true, clones completely (case of copy/paste), if false,
+	 *                             ommits ties and tuplets (case of addNote). If not defined, it's true
+	 * @return {NoteModel}
+	 */
+	NoteModel.prototype.clone = function(complete) {
+		return new NoteModel(this.toNoteStruct(complete, true));
+	};
+
 	return NoteModel;
 });
