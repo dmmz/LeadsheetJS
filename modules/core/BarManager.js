@@ -1,31 +1,38 @@
-define(function(){
-	function BarManagerModel(){
+define(['modules/core/BarModel'], function(BarModel) {
+	function BarManager() {
 		this.bars = [];
 	}
 
-	BarManagerModel.prototype.getTotal = function() {
+	BarManager.prototype.getTotal = function() {
 		return this.bars.length;
 	};
 
-	BarManagerModel.prototype.getBars = function() {
+	BarManager.prototype.getBars = function() {
 		return this.bars;
 	};
 
-	BarManagerModel.prototype.getBar = function(index) 
-	{
-		if (typeof index === "undefined" || isNaN(index)){
-			throw "invalid index "+index;
+	BarManager.prototype.getBar = function(index) {
+		if (typeof index === "undefined" || isNaN(index) || index < 0) {
+			throw "BarManager - getBar - invalid index " + index;;
 		}
 		return this.bars[index];
 	};
+
 	/**
-	 * @param {BarModel} bar 
+	 * @param {BarModel} bar
 	 */
-	BarManagerModel.prototype.addBar = function(bar) {
+	BarManager.prototype.addBar = function(bar) {
+		if (typeof bar === "undefined" || !(bar instanceof BarModel)) {
+			throw "BarManager - removeBar - bar must be a BarModel ";
+		}
 		this.bars.push(bar);
 	};
 
-	BarManagerModel.prototype.removeBar = function(index) {
-		this.bars.splice(index,1);
+	BarManager.prototype.removeBar = function(index) {
+		if (typeof index === "undefined" || isNaN(index) || index < 0) {
+			throw "BarManager - removeBar - invalid index " + index;;
+		}
+		this.bars.splice(index, 1);
 	};
+	return BarManager;
 });
