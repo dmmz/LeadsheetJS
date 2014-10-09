@@ -3,12 +3,12 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 	 * Chord Model is a core model representing a leadsheet chord
 	 * @param {} param is an object of parameters
 	 * param accept : {
-	 * 		note: "C",				// note is a string indicating the root pitch of chord, it also can be % or %% (for repeat) or NC for No Chords
-	 * 		chordType: "7",			// chordtype is a string indicating a chordtype
-	 * 		base: {ChordModel},		// base is a chordModel which represent a base note
-	 * 		parenthesis: false,		// booalean indicating if there are parenthesis or not
-	 * 		beat: 1, 				// startbeat in the current measure (start at 1)
-	 * 		barNumber: 0 			// start bar number (start at 0)
+	 *		note: "C",				// note is a string indicating the root pitch of chord, it also can be % or %% (for repeat) or NC for No Chords
+	 *		chordType: "7",			// chordtype is a string indicating a chordtype
+	 *		base: {ChordModel},		// base is a chordModel which represent a base note
+	 *		parenthesis: false,		// booalean indicating if there are parenthesis or not
+	 *		beat: 1, 				// startbeat in the current measure (start at 1)
+	 *		barNumber: 0 			// start bar number (start at 0)
 	 * }
 	 */
 	function ChordModel(param) {
@@ -18,7 +18,25 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		this.parenthesis = (typeof param !== "undefined" && typeof param.parenthesis !== "undefined") ? param.parenthesis : false;
 		this.beat = (typeof param !== "undefined" && typeof param.beat !== "undefined") ? param.beat : 1;
 		this.barNumber = (typeof param !== "undefined" && typeof param.barNumber !== "undefined") ? param.barNumber : 0;
-		this.chordSymbolList = this.getChordSymbolList();
+		this.chordSymbolList = getChordSymbolList();
+
+		function getChordSymbolList(){
+			function htmlDecode(value) {
+				var div = document.createElement('div');
+				div.innerHTML = value;
+				return div.firstChild.nodeValue;
+			}
+			var maps = {
+				"halfdim": "&#248;", //ø   //216 -> Ø
+				//"M7":"&#916;",//Δ
+				"dim": "&#959;"
+			};
+			for (var prop in maps) {
+				maps[prop] = htmlDecode(maps[prop]);
+			}
+			return maps;
+		}
+
 	};
 
 	/* Basic getter setter */
@@ -78,7 +96,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 
 	ChordModel.prototype.getBarNumber = function() {
 		return this.barNumber;
-	}
+	};
 
 	ChordModel.prototype.setBarNumber = function(barNumber) {
 		if (typeof barNumber !== "undefined" && !isNaN(barNumber)) {
@@ -91,15 +109,55 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 
 
 	ChordModel.prototype.isEmpty = function() {
-		if (typeof this.note === "undefined" || this.note == "") {
+		if (typeof this.note === "undefined" || this.note === "") {
 			return true;
 		}
 		return false;
-	}
+	};
 
 	ChordModel.prototype.clone = function() {
 		var chord = JSON.parse(JSON.stringify(this));
 		return chord;
+	};
+
+	/**
+	 *
+	 * @param  {string}  delimiter  It's the separator between note and chordtype, by default it's a space : C M7
+	 * @param  {Boolean} isFormated If true some chordsd are formatted with symbiols like Δ or ø
+	 * @return {string}             [description]
+	 */
+	ChordModel.prototype.toString = function(delimiter, isFormated) {
+		if (typeof delimiter === "undefined") {
+			delimiter = "";
+		}
+		if (typeof isFormated === "undefined") {
+			isFormated = true;
+		}
+
+		var chordType = this.getChordType();
+		if (isFormated) {
+			chordType = this.formatChordType(chordType);
+		}
+
+		var string = "";
+		if (!this.isEmpty()) {
+			string = this.getNote() + delimiter + chordType;
+		}
+
+		var base = this.getBase();
+		if (base instanceof ChordModel && base.getNote() !== "") {
+			var baseChordType = base.getChordType();
+			if (isFormated) {
+				baseChordType = this.formatChordType(baseChordType);
+			}
+			string += "/" + base.getNote() + delimiter + baseChordType;
+		}
+
+		if (this.getParenthesis()) {
+			string = '(' + string + ')';
+		}
+
+		return string;
 	};
 
 	ChordModel.prototype.setChordFromString = function(stringChord) {
@@ -134,8 +192,6 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		var chordType = stringChordRoot.substring(pos, stringChordRoot.length);
 		this.setNote(pitchClass);
 		this.setChordType(chordType);
-	};
-
 
 		/*
 		function validateSimpleChord(cChord) {
@@ -165,66 +221,11 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 				chordType: chordType
 			}
 		};
-		*/
-
-	/**
-	 *
-	 * @param  {string}  delimiter  It's the separator between note and chordtype, by default it's a space : C M7
-	 * @param  {Boolean} isFormated If true some chordsd are formatted with symbiols like Δ or ø
-	 * @return {string}             [description]
-	 */
-	ChordModel.prototype.toString = function(delimiter, isFormated) {
-		if (typeof delimiter === "undefined") {
-			delimiter = "";
-		}
-		if (typeof isFormated === "undefined") {
-			isFormated = true;
-		}
-
-		var chordType = this.getChordType();
-		if (isFormated) {
-			chordType = this.formatChordType(chordType);
-		}
-
-		var string = "";
-		if (!this.isEmpty()) {
-			string = this.getNote() + delimiter + chordType;
-		}
-
-		var base = this.getBase();
-		if (base instanceof ChordModel && base.getNote() != "") {
-			var baseChordType = base.getChordType();
-			if (isFormated) {
-				baseChordType = this.formatChordType(baseChordType);
-			}
-			string += "/" + base.getNote() + delimiter + baseChordType;
-		}
-
-		if (this.getParenthesis()) {
-			string = '(' + string + ')';
-		}
-
-		return string;
+*/
 	};
 
 
-	ChordModel.prototype.getChordSymbolList = function() {
-		function htmlDecode(value) {
-			var div = document.createElement('div');
-			div.innerHTML = value;
-			return div.firstChild.nodeValue;
-		}
-		var maps = {
-			"halfdim": "&#248;", //ø   //216 -> Ø
-			//"M7":"&#916;",//Δ
-			"dim": "&#959;"
-		}
-		for (var prop in maps) {
-			maps[prop] = htmlDecode(maps[prop]);
-		}
-		return maps;
-	};
-
+	
 	/*
 	 * The function transform a chordType String to symbols according chordSymbolList maps
 	 * Example: halfdim become ø
