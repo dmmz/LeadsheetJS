@@ -83,30 +83,43 @@ define(['modules/core/NoteModel'], function(NoteModel) {
 	};
 
 	/**
-	 * @param  {integer} start
-	 * @param  {integer} end
-	 * @return {Array}
-	 */
-	NoteManager.prototype.getBeatIntervalByIndexes = function(start, end) {
-		var startBeat = this.getNoteBeat(start);
-		var endBeat = this.getNoteBeat(end) + this.getNote(end).getDuration();
-		return [startBeat, endBeat];
-	};
-
-	/**
 	 * returns the global beat of a note specified by its index (starting at 1)
 	 * @param  {Integer} index of the note
 	 * @return {Float}   beat
 	 */
 	NoteManager.prototype.getNoteBeat = function(index) {
-		if (typeof index === "undefined" || isNaN(index)) return -1;
-		var noteBeat = 0;
-		for (var i = 0; i < index; i++) {
+		if (typeof index === "undefined" || isNaN(index) ||
+			index >= this.notes.length || index < 0) {
+			throw "problem with index " + index;
+		}
+		var noteBeat = 1, // because beats are based on 1
+			i;
+		for (i = 0; i < index; i++) {
 			noteBeat += this.notes[i].getDuration();
 		}
-		return Math.round(noteBeat * 1000000) / 1000000 + 1; // +1 because beats are based on 1
+		return roundBeat(noteBeat);
 	};
 
+	/**
+	 * @param  {integer} start
+	 * @param  {integer} end
+	 * @return {Array}
+	 */
+	NoteManager.prototype.getBeatIntervalByIndexes = function(start, end) {
+		if (typeof start === "undefined" || isNaN(start) ||
+			start >= this.notes.length || start < 0) {
+			throw "problem with start " + start;
+		}
+		if (typeof end === "undefined" || isNaN(end) ||
+			end >= this.notes.length || end < 0) {
+			throw "problem with end " + end;
+		}
+
+		var startBeat = this.getNoteBeat(start);
+		var endBeat = this.getNoteBeat(end) + this.getNote(end).getDuration();
+		endBeat = roundBeat(endBeat);
+		return [startBeat, endBeat];
+	};
 
 	/**
 	 * Returns the index found at the exact beat, and if not, at the
@@ -114,12 +127,14 @@ define(['modules/core/NoteModel'], function(NoteModel) {
 	 * @param  {float} beat global beat (first beat starts at 1, not 0)
 	 * @return {Integer} index of the note
 	 */
-	NoteManager.prototype.getNextIndexNote = function(beat) {
+	NoteManager.prototype.getNextIndexNoteByBeat = function(beat) {
+		if (!beat || isNaN(beat) || beat < 1) {
+			throw "beat not valid: " + beat;
+		}
 		var curBeat = 1;
 		var i = 0;
-		//we round to avoid problems with triplet as 12.9999999 is less than 13 and that would not work
 		//we round in the comparison in order to not carry the rounding in curBeat (which is cumulative inside the iteration)
-		while (Math.round(curBeat * 100000) / 100000 < beat) { //to avoid problems with tuplet 
+		while (roundBeat(curBeat) < beat) { //to avoid problems with tuplet 
 			curBeat += this.getNote(i).getDuration();
 			i++;
 		}
@@ -133,39 +148,59 @@ define(['modules/core/NoteModel'], function(NoteModel) {
 	 * @param  {float} beat global beat (first beat starts at 1, not 0)
 	 * @return {Integer} index of the note
 	 */
-	NoteManager.prototype.getPrevIndexNote = function(beat) {
+	NoteManager.prototype.getPrevIndexNoteByBeat = function(beat) {
+		if (typeof beat === "undefined" || isNaN(beat) || beat > this.getTotalDuration() + 1) { // +1 because we start at beat 1
+			throw "beat not valid: " + beat;
+		}
 		var curBeat = 1;
 		var i = 0;
 		//round just like in getNtextIndexNote
-		while (Math.round(curBeat * 1000000) / 1000000 < beat) {
-
+		while (roundBeat(curBeat) < beat) {
 			curBeat += this.getNote(i).getDuration();
 			i++;
 		}
 		return i - 1;
 	};
-
+	/**
+	 * @param  {Integer} startBeat 
+	 * @param  {Integer} endBeat   
+	 * @return {Array}           indexes e.g. [1,2]
+	 */
 	NoteManager.prototype.getIndexesByBeatInterval = function(startBeat, endBeat) {
-		var index1 = this.getNextIndexNote(startBeat);
-		var index2 = this.getPrevIndexNote(endBeat);
+		var index1 = this.getNextIndexNoteByBeat(startBeat);
+		var index2 = this.getPrevIndexNoteByBeat(endBeat);
 		return [index1, index2];
 	};
-	// NoteManager.prototype.getNoteIndex = function( note ) {
-	// 	if(typeof note !== "undefined" && note instanceof NoteModel){
-	// 		for (var i = 0; i < this.notes.length; i++) {
-	// 			if(JSON.stringify(this.notes[i].toNoteStruct(true, true)) === JSON.stringify(note.toNoteStruct(true, true))) {
-	// 				return i;
-	// 			}
-	// 		}
-	// 	}
-	// 	return undefined;
-	// };
 
-	// NoteManager.prototype.toString = function() {
-	// 	this.getNotes().forEach(function(note) {
-	// 		console.log(note.toString());
-	// 	});
-	// };
+	/**
+	 * @param  {NoteModel} note 
+	 * @return {Integer}      
+	 */
+	NoteManager.prototype.getNoteIndex = function( note ) {
+		if(typeof note !== "undefined" && note instanceof NoteModel){
+			for (var i = 0; i < this.notes.length; i++) {
+				if(JSON.stringify(this.notes[i].toNoteStruct(true, true)) === JSON.stringify(note.toNoteStruct(true, true))) {
+					return i;
+				}
+			}
+		}
+		return undefined;
+	};
+
+	/**
+	 * private function for rounding beats
+	 * we round to avoid problems with triplet as 12.9999999 is less than 13 and that would not work
+	 * @return {[type]} [description]
+	 */
+	function roundBeat(beat) {
+		return Math.round(beat * 1000000) / 1000000;
+	}
+
+	//NoteManager.prototype.toString = function() {
+	//	this.getNotes().forEach(function(note) {
+	//		console.log(note.toString());
+	//	});
+	//};
 
 	return NoteManager;
 });

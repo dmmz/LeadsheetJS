@@ -138,10 +138,16 @@ define(['modules/core/NoteManager','modules/core/NoteModel'], function(NoteManag
 					tuplet: "stop",
 					time_modification: "3/2"
 				}));
+				rhythmicMelody.push(new NoteModel({
+					keys: ["Bb/5"],
+					duration: "q"
+				}));
 				
 				// rhythm  q,8,16,16, triplet(q,q,q)
 				noteManager.setNotes(rhythmicMelody);
-				
+				assert.throws(function(){
+					noteManager.getNoteBeat(7)
+				});
 				assert.equal(noteManager.getNoteBeat(0),1);
 				assert.equal(noteManager.getNoteBeat(1),2);
 				assert.equal(noteManager.getNoteBeat(2),2.75);
@@ -149,10 +155,43 @@ define(['modules/core/NoteManager','modules/core/NoteModel'], function(NoteManag
 				assert.equal(noteManager.getNoteBeat(4).toFixed(3),3.667);
 				assert.equal(noteManager.getNoteBeat(6),5);
 				
+				assert.deepEqual(noteManager.getBeatIntervalByIndexes(0,2),[1,3]);
+				assert.deepEqual(noteManager.getBeatIntervalByIndexes(1,5),[2,5]);
 				
+				assert.throws(function(){
+					noteManager.getNextIndexNoteByBeat();
+				});
+				assert.throws(function(){
+					noteManager.getNextIndexNoteByBeat(0);
+				});
+				assert.throws(function(){
+					noteManager.getNextIndexNoteByBeat(0.5);
+				});
+				assert.equal(noteManager.getNextIndexNoteByBeat(1.8),1);
+				assert.equal(noteManager.getNextIndexNoteByBeat(3),3);
+				assert.equal(noteManager.getNextIndexNoteByBeat(3.1),4);
+				assert.equal(noteManager.getNextIndexNoteByBeat(4.9),6);
 
-
+				assert.equal(noteManager.getPrevIndexNoteByBeat(1.1),0);
+				assert.throws(function(){
+					noteManager.getNextIndexNoteByBeat(10);	//exceeds last beat
+				});
+				assert.throws(function(){
+					noteManager.getNextIndexNoteByBeat(6.1);	//exceeds last beat
+				});
+				assert.equal(noteManager.getPrevIndexNoteByBeat(6),6);
 				
+				assert.deepEqual(noteManager.getIndexesByBeatInterval(1,3.1),[0,3]);
+
+				var newNote = new NoteModel({
+					keys: ["A/5"],
+					duration: "q",
+					tuplet: "stop",
+					time_modification: "3/2"
+				});
+				
+				assert.equal(noteManager.getNoteIndex(newNote),5);
+
 			});
 
 		}
