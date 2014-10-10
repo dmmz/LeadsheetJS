@@ -18,8 +18,8 @@ require.config({
 });
 
 
-require(['tests/testNoteModel', 'tests/testChordModel', 'tests/testNoteManager',  'tests/testSongModel','tests/testChordManager', 'qunit'],
-  function(testNoteModel, testChordModel, testNoteManager, testSongModel, testChordManager, Qunit) {
+require(['tests/testNoteModel', 'tests/testChordModel', 'tests/testNoteManager', 'tests/testSongModel', 'tests/testChordManager', 'tests/converters/MusicCSLJson/testSongModel_CSLJson', 'qunit'],
+  function(testNoteModel, testChordModel, testNoteManager, testSongModel, testChordManager, testSongModel_CSLJson, Qunit) {
 
     //Test qui ne marche pas: TypeError: undefined is not a function at NoteModel.populateFromStruct...
     testNoteModel.run();
@@ -27,6 +27,7 @@ require(['tests/testNoteModel', 'tests/testChordModel', 'tests/testNoteManager',
     testNoteManager.run();
     testSongModel.run();
     testChordManager.run();
+    testSongModel_CSLJson.run();
 
 
 

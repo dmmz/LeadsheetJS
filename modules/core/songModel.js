@@ -1,4 +1,4 @@
-define(['modules/core/NoteManager','modules/core/BarManager'],function(){
+define(['modules/core/NoteManager', 'modules/core/BarManager'], function(NoteManager, BarManager) {
 	function SongModel(MusicCSLJSON) {
 		this.composers = [];
 		this.sections = [];
@@ -93,15 +93,15 @@ define(['modules/core/NoteManager','modules/core/BarManager'],function(){
 	 * @return {string} eg. C, Bb etc
 	 */
 	SongModel.prototype.getTonalityAt = function(barNumber) {
-		if (typeof barNumber === "undefined" || !isNaN(barNumber)){
-			throw "invalid barNumber "+barNumber;
+		if (typeof barNumber === "undefined" || !isNaN(barNumber)) {
+			throw "invalid barNumber " + barNumber;
 		}
-		var currentTonality = this.tonality;	
+		var currentTonality = this.tonality;
 		var tonality;
 		while (barNumber >= 0) {
-			if( this.getBar(barNumber) != null){
+			if (this.getBar(barNumber) != null) {
 				tonality = this.getBar(barNumber).getTonality();
-				if(typeof tonality !== "undefined" && tonality !== '') {
+				if (typeof tonality !== "undefined" && tonality !== '') {
 					return tonality;
 				}
 			}
@@ -115,7 +115,7 @@ define(['modules/core/NoteManager','modules/core/BarManager'],function(){
 	};
 
 	SongModel.prototype.setTimeSignature = function(timeSignature) {
-		if (!timeSignature){
+		if (!timeSignature) {
 			throw "invalid timeSignature "
 		}
 		if (typeof timeSignature !== "undefined") {
@@ -142,7 +142,7 @@ define(['modules/core/NoteManager','modules/core/BarManager'],function(){
 			// loop in all previous bar in the current section
 			while (barNumber >= startBarSection) {
 				// INFO If typeof was commented, it's usefull in case barNumber does not exist
-				if(typeof this.getBar(barNumber) !== "undefined"){
+				if (typeof this.getBar(barNumber) !== "undefined") {
 					timeSig = this.getBar(barNumber).getTimeSignature();
 					if (typeof timeSig !== "undefined") {
 						return timeSig;
@@ -192,9 +192,9 @@ define(['modules/core/NoteManager','modules/core/BarManager'],function(){
 	 * @return {int} beat unit in a measure
 	 */
 	SongModel.prototype.getBeatUnitFromTimeSignature = function(timeSig) {
-		if (timeSig==null)	timeSig=this.timeSignature;
-		var u=parseInt(timeSig.split("/")[1],null);
-		return 4/u;
+		if (timeSig == null) timeSig = this.timeSignature;
+		var u = parseInt(timeSig.split("/")[1], null);
+		return 4 / u;
 	};
 
 	SongModel.prototype.getSections = function() {
@@ -206,8 +206,8 @@ define(['modules/core/NoteManager','modules/core/BarManager'],function(){
 	};
 
 	/**
-	 * 
-	 * @param  {Integer} 	beat 
+	 *
+	 * @param  {Integer} 	beat
 	 * @return {Object}      @param  {Object} pos {	numBar: valNumBar,
 	 *                      	        	  		numBeat: valNumBeatInBar}
 	 */
@@ -217,16 +217,18 @@ define(['modules/core/NoteManager','modules/core/BarManager'],function(){
 		var barStartBeat = 1;
 		var numBeats = 0;
 		var rBeat;
-		while (numBar <= this.getTotalNumberOfBars())
-		{
+		while (numBar <= this.getTotalNumberOfBars()) {
 			numBar++;
 			numBeats = this.getBeatsFromTimeSignature(this.getTimeSignatureAt(numBar));
 			rBeat = barStartBeat;
-		
+
 			barStartBeat += numBeats;
-			if (barStartBeat>beat) break;
+			if (barStartBeat > beat) break;
 		}
-		return {numBar: numBar, numBeat: beat - rBeat + 1}
+		return {
+			numBar: numBar,
+			numBeat: beat - rBeat + 1
+		}
 	};
 	/**
 	 
@@ -237,7 +239,7 @@ define(['modules/core/NoteManager','modules/core/BarManager'],function(){
 	SongModel.prototype.getBeatFromPosition = function(pos) {
 		var numBar = 0;
 		var numBeats = 0;
-		while (numBar < pos.numBar){
+		while (numBar < pos.numBar) {
 			numBeats += this.getBeatsFromTimeSignature(this.getTimeSignatureAt(numBar));
 			numBar++;
 		}
@@ -270,23 +272,23 @@ define(['modules/core/NoteManager','modules/core/BarManager'],function(){
 
 	SongModel.prototype.getBar = function(index) {
 		var barMn = this.getComponent("bars");
-		if (!barMn)	return null;
+		if (!barMn) return null;
 		else return barMn.getBar(index);
 	};
 	/**
 	 *
-	 * 
-	 * adds bar, and if number of bars exceeds the actual count, 
+	 *
+	 * adds bar, and if number of bars exceeds the actual count,
 	 * it increments the numberOfBars of last section
-	 * This happens if bars are added to inital loaded structure, 
+	 * This happens if bars are added to inital loaded structure,
 	 * for the moment is not possible
-	 * 
-	 * @param {BarModel} barsItem 
+	 *
+	 * @param {BarModel} barsItem
 	 */
 	// SongModel.prototype.addBar = function(barsItem) {
 	// 	var barManager=this.getComponent("bars");
 	// 	barManager.addBar(barsItem);
-		
+
 
 	// 	if (barManager.getTotal() > this.getTotalNumberOfBars()) {
 	// 		var lastSection = this.getSection(this.sections.length - 1);
@@ -306,7 +308,7 @@ define(['modules/core/NoteManager','modules/core/BarManager'],function(){
 	 * @return {NoteManagerModel or ChordManagerModel}
 	 */
 	SongModel.prototype.getComponent = function(componentTitle) {
-		
+
 		if (this.components.hasOwnProperty(componentTitle))
 			return this.components[componentTitle];
 		else
@@ -314,10 +316,8 @@ define(['modules/core/NoteManager','modules/core/BarManager'],function(){
 	};
 
 	SongModel.prototype.addComponent = function(componentTitle, componentItem) {
-
-		if (!componentItem)	return false;
-
-		this.components[componentTitle]=componentItem;
+		if (!componentItem) return false;
+		this.components[componentTitle] = componentItem;
 		return true;
 
 	};
@@ -334,11 +334,15 @@ define(['modules/core/NoteManager','modules/core/BarManager'],function(){
 	/////////////////////////
 
 	SongModel.prototype.exportToMusicCSLJSON = function() {
-		
+
 		var MusicCSLJSON = {};
 		MusicCSLJSON._id = this._id;
 		MusicCSLJSON.title = this.getTitle();
-		MusicCSLJSON.composer = this.getComposer().toString();
+		var composer = this.getComposer();
+		if (typeof composer !== "undefined") {
+			composer = composer.toString();
+		}
+		MusicCSLJSON.composer = composer;
 		MusicCSLJSON.time = this.getTimeSignature();
 		MusicCSLJSON.keySignature = this.getTonality();
 		MusicCSLJSON.tempo = this.getTempo();
@@ -358,28 +362,28 @@ define(['modules/core/NoteManager','modules/core/BarManager'],function(){
 			startBar = this.getStartBarNumberFromSectionNumber(i);
 			lastBarSection = startBar + this.getSection(i).getNumberOfBars() - 1;
 
-			var bars=[];
-			var bar,chords,melody;
+			var bars = [];
+			var bar, chords, melody;
 
 			for (var j = startBar; j <= lastBarSection; j++) {
-				
+
 				bar = this.getBar(j).exportToMusicCSLJSON();
-				
-				
+
+
 				chords = [];
-				barChords=this.getComponentsAtBarNumber(j,'chords');
+				barChords = this.getComponentsAtBarNumber(j, 'chords');
 				//jsLint complains but nevermind
-				barChords.forEach(function(chord){
+				barChords.forEach(function(chord) {
 					chords.push(chord.exportToMusicCSLJSON());
 				});
 
 				if (chords.length != 0)
 					bar.chords = chords;
 
-				barNotes=this.getComponentsAtBarNumber(j,'notes');
-				
-				melody=[];
-				barNotes.forEach(function(note){
+				barNotes = this.getComponentsAtBarNumber(j, 'notes');
+
+				melody = [];
+				barNotes.forEach(function(note) {
 					melody.push(note.exportToMusicCSLJSON());
 				});
 
@@ -389,7 +393,7 @@ define(['modules/core/NoteManager','modules/core/BarManager'],function(){
 				bars.push(bar);
 
 			}
-			
+
 			section.bars = bars;
 			MusicCSLJSON.changes[i] = section;
 		}
@@ -405,14 +409,14 @@ define(['modules/core/NoteManager','modules/core/BarManager'],function(){
 		var barManager = new BarManagerModel();
 
 		//if (!MusicCSLJSON._id && !id)	throw "SongModel: importing from MusicCSL no id specified";
-		
+
 		//there are 3 cases: id by param, _id is 'MongoId' or _id is string
-		this._id=(MusicCSLJSON._id) ? MusicCSLJSON._id['$id'] : id;
+		this._id = (MusicCSLJSON._id) ? MusicCSLJSON._id['$id'] : id;
 		if (!this._id)
 			this._id = MusicCSLJSON._id;
 
 		if (typeof MusicCSLJSON !== "undefined") {
-			
+
 			this.setTitle(MusicCSLJSON.title);
 			this.setTimeSignature(MusicCSLJSON.time);
 			this.setTonality(MusicCSLJSON.keySignature);
@@ -422,7 +426,7 @@ define(['modules/core/NoteManager','modules/core/BarManager'],function(){
 			this.setTempo(MusicCSLJSON.tempo);
 
 			var section, chord, note, bar;
-			var existsMelody=false;
+			var existsMelody = false;
 			var barNumber = 0;
 			if (MusicCSLJSON.changes != null) {
 				MusicCSLJSON.changes.forEach(function(JSONSection) {
@@ -431,7 +435,7 @@ define(['modules/core/NoteManager','modules/core/BarManager'],function(){
 					section.importFromMusicCSLJSON(JSONSection);
 					self.addSection(section);
 
-					if (JSONSection.bars!=null){
+					if (JSONSection.bars != null) {
 						JSONSection.bars.forEach(function(JSONBar) {
 							bar = new BarModel();
 							bar.importFromMusicCSLJSON(JSONBar);
@@ -445,24 +449,24 @@ define(['modules/core/NoteManager','modules/core/BarManager'],function(){
 								});
 							}
 							if (JSONBar.melody != null) {
-								existsMelody=true;
+								existsMelody = true;
 								JSONBar.melody.forEach(function(JSONNote) {
 									noteManager.addNote(new NoteModel(JSONNote));
 								});
 							}
 							barNumber++;
-						});					
-					}else{
+						});
+					} else {
 						console.log(JSONSection.bars);
 					}
-					
+
 
 				});
 				this.addComponent('bars', barManager);
-				noteManager.setNotesBarNum(self); 
+				noteManager.setNotesBarNum(self);
 				this.addComponent('chords', chordManager);
 				this.addComponent('notes', noteManager);
-				
+
 
 
 			}
@@ -566,14 +570,14 @@ define(['modules/core/NoteManager','modules/core/BarManager'],function(){
 						//  Case bars got a 2 repetition (it happen only to the first repeated bar)
 						if (typeof endingBar !== "undefined" && endingBar == 2) {
 							// case it's the first time we arrive on 2
-							if(currentRepeatedPart==1) {
+							if (currentRepeatedPart == 1) {
 								pointerbarNumberStructure.pop();
 								alreadyAddedbars.pop();
 								barNumber = startBar - 1;
 								currentRepeatedPart++;
 							}
 						}
-							
+
 					}
 				}
 				repeat--;
@@ -641,13 +645,12 @@ define(['modules/core/NoteManager','modules/core/BarManager'],function(){
 	 */
 	SongModel.prototype.getComponentsAtBarNumber = function(barNumber, componentTitle) {
 		var components = [];
-		
-		if (typeof componentTitle === "undefined" || !this.components.hasOwnProperty(componentTitle)) 
-		{
+
+		if (typeof componentTitle === "undefined" || !this.components.hasOwnProperty(componentTitle)) {
 			console.error('the item is matching no known type in getComponentsAtBarNumber');
 			return;
 		}
-		
+
 		var modelManager = this.components[componentTitle];
 		if (typeof ChordManagerModel !== "undefined" && modelManager instanceof ChordManagerModel) {
 			var chords = modelManager.getChordsByBarNumber(barNumber);
@@ -664,11 +667,11 @@ define(['modules/core/NoteManager','modules/core/BarManager'],function(){
 	};
 
 	/**
-	 * Function returns the number of beats before a bar number. 
+	 * Function returns the number of beats before a bar number.
 	 * Example: in a 4/4 timesignature, for barNumber 0 will return 0, for barNumber 1 will return 4
-	 * IT'S NOT the first beat of the bar. First beat is the returned numberOfBeats + 1 (e.g: for barNum 0 is 1, for barNumber 1 is 5), 
+	 * IT'S NOT the first beat of the bar. First beat is the returned numberOfBeats + 1 (e.g: for barNum 0 is 1, for barNumber 1 is 5),
 	 * we return instead the numberOfBeats 'before'
-	 * 
+	 *
 	 * @param  {int} barNumber
 	 * @return {int} number of beats to reach barNumber
 	 */

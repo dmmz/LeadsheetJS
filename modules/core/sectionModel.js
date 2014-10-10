@@ -71,33 +71,5 @@ define(function() {
 	};
 
 
-	/////////////////////////
-	//  Advanced function  //
-	/////////////////////////
-
-	SectionModel.prototype.exportToMusicCSLJSON = function() {
-		var sectionMusicCSLJSON = {};
-		sectionMusicCSLJSON.name = this.getName();
-
-		if (this.getTimeSignature())
-			sectionMusicCSLJSON.timeSig = this.getTimeSignature();
-
-		if (this.getRepeatTimes())
-			sectionMusicCSLJSON.repeat = this.getRepeatTimes();
-
-		if (this.getStyle())
-			sectionMusicCSLJSON.style = this.getStyle();
-
-		return sectionMusicCSLJSON;
-	};
-
-	SectionModel.prototype.importFromMusicCSLJSON = function(section) {
-		//console.log(section);
-		this.setName(section.name);
-		this.setNumberOfBars(section.bars.length);
-		this.setTimeSignature(section.timeSig);
-		this.setRepeatTimes(section.repeat ? parseInt(section.repeat) : 0);
-		this.setStyle(section.style);
-	};
 	return SectionModel;
 });
