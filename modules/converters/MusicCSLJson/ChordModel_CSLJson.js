@@ -3,19 +3,19 @@ define([], function() {
 
 	};
 
-	ChordModel_CSLJson.prototype.importFromMusicCSLJSON = function(JSONChord) {
-		this.setNote(JSONChord.p);
-		this.setChordType(JSONChord.ch);
-		this.setParenthesis(JSONChord.parenthesis);
-		this.setBeat(JSONChord.beat);
+	ChordModel_CSLJson.prototype.importFromMusicCSLJSON = function(JSONChord, chordModel) {
+		chordModel.setNote(JSONChord.p);
+		chordModel.setChordType(JSONChord.ch);
+		chordModel.setParenthesis(JSONChord.parenthesis);
+		chordModel.setBeat(JSONChord.beat);
 		if (JSONChord.hasOwnProperty('bp') && JSONChord.bp.length != 0) {
 			chordModelBase = new ChordModel();
 			chordModelBase.setNote(JSONChord.bp);
 			chordModelBase.setChordType(JSONChord.bch);
-			this.setBase(chordModelBase);
+			chordModel.setBase(chordModelBase);
 		}
 		if (JSONChord.barNumber != null)
-			this.barNumber = JSONChord.barNumber;
+			chordModel.barNumber = JSONChord.barNumber;
 	};
 
 

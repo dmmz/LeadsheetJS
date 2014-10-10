@@ -305,7 +305,7 @@ define(['modules/core/NoteManager', 'modules/core/BarManager'], function(NoteMan
 	/**
 	 * gets component (either chords or notes)
 	 * @param  {String} componentTitle must be "chords" or "notes" or "bars"
-	 * @return {NoteManagerModel or ChordManagerModel}
+	 * @return {NoteManager or ChordManager}
 	 */
 	SongModel.prototype.getComponent = function(componentTitle) {
 
@@ -402,11 +402,11 @@ define(['modules/core/NoteManager', 'modules/core/BarManager'], function(NoteMan
 
 	SongModel.prototype.importFromMusicCSLJSON = function(MusicCSLJSON, id) {
 		var self = this;
-		var chordManager = new ChordManagerModel({
+		var chordManager = new ChordManager({
 			songModel: this
 		});
-		var noteManager = new NoteManagerModel();
-		var barManager = new BarManagerModel();
+		var noteManager = new NoteManager();
+		var barManager = new BarManager();
 
 		//if (!MusicCSLJSON._id && !id)	throw "SongModel: importing from MusicCSL no id specified";
 
@@ -652,12 +652,12 @@ define(['modules/core/NoteManager', 'modules/core/BarManager'], function(NoteMan
 		}
 
 		var modelManager = this.components[componentTitle];
-		if (typeof ChordManagerModel !== "undefined" && modelManager instanceof ChordManagerModel) {
+		if (typeof ChordManager !== "undefined" && modelManager instanceof ChordManager) {
 			var chords = modelManager.getChordsByBarNumber(barNumber);
 			for (var i = 0; i < chords.length; i++) {
 				components.push(chords[i]);
 			}
-		} else if (typeof NoteManagerModel !== "undefined" && modelManager instanceof NoteManagerModel) {
+		} else if (typeof NoteManager !== "undefined" && modelManager instanceof NoteManager) {
 			var notes = components.concat(modelManager.getNotesByBarNumber(barNumber));
 			for (var j = 0; j < notes.length; j++) {
 				components.push(notes[j]);

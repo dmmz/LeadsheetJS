@@ -31,10 +31,6 @@ define(['modules/core/ChordModel'], function(ChordModel) {
 				// ChordTypes
 				chord.setChordType("M7");
 				assert.equal(chord.getChordType(), "M7");
-				
-				assert.throws(function() {
-					chord.setParenthesis();
-				});
 
 				// testing to String
 				assert.equal(chord.toString(), "DbM7");

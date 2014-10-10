@@ -79,9 +79,6 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		return this.parenthesis;
 	};
 	ChordModel.prototype.setParenthesis = function(parenthesis) {
-		if (typeof parenthesis === "undefined") {
-			throw "Parenthesis have not been set";
-		}
 		this.parenthesis = !!parenthesis;
 	};
 

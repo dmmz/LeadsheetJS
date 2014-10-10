@@ -3,16 +3,16 @@ define([], function() {
 
 	};
 	
-	NoteModel_CSLJson.prototype.importFromMusicCSLJSON = function(noteStruct) {
-		this.numPitches = noteStruct.keys.length;
+	NoteModel_CSLJson.prototype.importFromMusicCSLJSON = function(noteStruct, noteModel) {
+		noteModel.numPitches = noteStruct.keys.length;
 
 		var duration = noteStruct.duration;
 		if ((duration.indexOf("r") != -1)) {
-			this.duration = duration.substring(0, duration.length - 1);
-			this.isRest = true;
+			noteModel.duration = duration.substring(0, duration.length - 1);
+			noteModel.isRest = true;
 		} else {
-			this.duration = duration;
-			this.isRest = false;
+			noteModel.duration = duration;
+			noteModel.isRest = false;
 		}
 
 		if (noteStruct.keys.length > 1) {
@@ -23,17 +23,17 @@ define([], function() {
 		for (var i = 0; i < noteStruct.keys.length; i++) {
 			parsedNote = string2Obj(noteStruct.keys[i]);
 
-			this.pitchClass[i] = parsedNote.pitchClass;
-			this.accidental[i] = parsedNote.accidental;
-			this.octave[i] = parsedNote.octave;
+			noteModel.pitchClass[i] = parsedNote.pitchClass;
+			noteModel.accidental[i] = parsedNote.accidental;
+			noteModel.octave[i] = parsedNote.octave;
 		}
 
-		this.setDot(noteStruct.dot);
-		this.setTie(noteStruct.tie);
-		this.setTuplet(noteStruct.tuplet, noteStruct.time_modification);
+		noteModel.setDot(noteStruct.dot);
+		noteModel.setTie(noteStruct.tie);
+		noteModel.setTuplet(noteStruct.tuplet, noteStruct.time_modification);
 
 		if (typeof noteStruct.num_measure !== "undefined") {
-			this.setMeasure(noteStruct.num_measure);
+			noteModel.setMeasure(noteStruct.num_measure);
 		}
 
 		function string2Obj(strPitch) {

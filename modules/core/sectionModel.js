@@ -49,9 +49,6 @@ define(function() {
 	};
 
 	SectionModel.prototype.setStyle = function(style) {
-		if (typeof style === "undefined") {
-			throw 'SectionModel - style should not be undefined';
-		}
 		this.style = style;
 	};
 
@@ -60,9 +57,6 @@ define(function() {
 	};
 
 	SectionModel.prototype.setTimeSignature = function(timeSignature) {
-		if (typeof timeSignature === "undefined") {
-			throw 'SectionModel - timeSignature should not be undefined';
-		}
 		this.timeSignature = timeSignature;
 	};
 

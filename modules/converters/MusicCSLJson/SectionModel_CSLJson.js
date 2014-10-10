@@ -1,19 +1,21 @@
-define([], function() {
+define(['modules/core/SectionModel'], function(SectionModel) {
 	function SectionModel_CSLJson(MusicCSLJSON) {
 
 	};
-	
+
 	/////////////////////////
 	//  Advanced function  //
 	/////////////////////////
 
-	SectionModel_CSLJson.prototype.importFromMusicCSLJSON = function(section) {
-		//console.log(section);
-		this.setName(section.name);
-		this.setNumberOfBars(section.bars.length);
-		this.setTimeSignature(section.timeSig);
-		this.setRepeatTimes(section.repeat ? parseInt(section.repeat) : 0);
-		this.setStyle(section.style);
+	SectionModel_CSLJson.prototype.importFromMusicCSLJSON = function(JSONSection, sectionModel) {
+		if (typeof JSONSection === "undefined" || typeof sectionModel === "undefined" || !(sectionModel instanceof SectionModel)) {
+			throw 'SectionModel_CSLJson - importFromMusicCSLJSON - bad arguments type';
+		}
+		sectionModel.setName(JSONSection.name);
+		sectionModel.setNumberOfBars(JSONSection.bars.length);
+		sectionModel.setTimeSignature(JSONSection.timeSig);
+		sectionModel.setRepeatTimes(JSONSection.repeat ? parseInt(JSONSection.repeat) : 0);
+		sectionModel.setStyle(JSONSection.style);
 	};
 
 	SectionModel_CSLJson.prototype.exportToMusicCSLJSON = function(sectionModel) {

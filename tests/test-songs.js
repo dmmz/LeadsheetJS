@@ -2,7 +2,7 @@ define(function(){
 	var simpleLeadSheet = {
 		composer:"Random Composer",
 		title: "Whatever song",
-		timeSignature: "4/4",
+		time: "4/4",
 		changes:[
 			{
 				id:0,
@@ -92,7 +92,7 @@ define(function(){
 	var leadSheetTimeSigChanges = {
 		composer:"Random Composer",
 		title: "Whatever song",
-		timeSignature: "4/4",
+		time: "4/4",
 		changes:[
 			{
 				id:0,

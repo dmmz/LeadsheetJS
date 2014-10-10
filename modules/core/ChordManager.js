@@ -92,11 +92,14 @@ define(['modules/core/ChordModel'], function(ChordModel) {
 
 	ChordManager.prototype.getChordsByBarNumber = function(barNumber) {
 		var chordsByBarNumber = [];
+		console.log('----');
+		console.log(barNumber);
 		if (typeof barNumber !== "undefined" && !isNaN(barNumber)) {
 			var currentChord;
 			for (var i = 0, c = this.chords.length; i < c; i++) {
 				currentChord = this.chords[i];
 				if (currentChord.getBarNumber() === barNumber) {
+					console.log('push', currentChord.getBarNumber());
 					chordsByBarNumber.push(currentChord);
 				}
 			}
