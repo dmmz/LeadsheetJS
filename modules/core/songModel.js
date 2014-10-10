@@ -1,18 +1,27 @@
-define(['modules/core/NoteManager','modules/core/BarManager'],function(){
-	function SongModel(MusicCSLJSON) {
-		this.composers = [];
-		this.sections = [];
-		this.components = [];
+define([
+	'modules/core/NoteManager',
+	'modules/core/ChordManager',
+	'modules/core/BarManager',
+	'modules/core/SectionModel',
+	'modules/core/BarModel',
+	'modules/core/ChordModel',
+	],
+	function(NoteManager,ChordManager,BarManager,SectionModel,BarModel,ChordModel)
+	{	
+		function SongModel(MusicCSLJSON) {
+			this.composers = [];
+			this.sections = [];
+			this.components = [];
 
-		if (MusicCSLJSON != null) {
-			this.importFromMusicCSLJSON(MusicCSLJSON);
-		} else { //construct from scratch
-			this.setTimeSignature("4/4");
-			this.setTonality("C");
-			this.addComponent('notes', new NoteManager());
-			this.addComponent('bars', new BarManager());
+			if (MusicCSLJSON != null) {
+				this.importFromMusicCSLJSON(MusicCSLJSON);
+			} else { //construct from scratch
+				this.setTimeSignature("4/4");
+				this.setTonality("C");
+				this.addComponent('notes', new NoteManager());
+				this.addComponent('bars', new BarManager());
+			}
 		}
-	}
 
 	/////////////////////////
 	// Basic getters and setters //
@@ -116,7 +125,7 @@ define(['modules/core/NoteManager','modules/core/BarManager'],function(){
 
 	SongModel.prototype.setTimeSignature = function(timeSignature) {
 		if (!timeSignature){
-			throw "invalid timeSignature "
+			throw "invalid timeSignature ";
 		}
 		if (typeof timeSignature !== "undefined") {
 			this.timeSignature = timeSignature;
@@ -398,11 +407,11 @@ define(['modules/core/NoteManager','modules/core/BarManager'],function(){
 
 	SongModel.prototype.importFromMusicCSLJSON = function(MusicCSLJSON, id) {
 		var self = this;
-		var chordManager = new ChordManagerModel({
+		var chordManager = new ChordManager({
 			songModel: this
 		});
-		var noteManager = new NoteManagerModel();
-		var barManager = new BarManagerModel();
+		var noteManager = new NoteManager();
+		var barManager = new BarManager();
 
 		//if (!MusicCSLJSON._id && !id)	throw "SongModel: importing from MusicCSL no id specified";
 		
@@ -649,12 +658,12 @@ define(['modules/core/NoteManager','modules/core/BarManager'],function(){
 		}
 		
 		var modelManager = this.components[componentTitle];
-		if (typeof ChordManagerModel !== "undefined" && modelManager instanceof ChordManagerModel) {
+		if (typeof ChordManager !== "undefined" && modelManager instanceof ChordManager) {
 			var chords = modelManager.getChordsByBarNumber(barNumber);
 			for (var i = 0; i < chords.length; i++) {
 				components.push(chords[i]);
 			}
-		} else if (typeof NoteManagerModel !== "undefined" && modelManager instanceof NoteManagerModel) {
+		} else if (typeof NoteManager !== "undefined" && modelManager instanceof NoteManager) {
 			var notes = components.concat(modelManager.getNotesByBarNumber(barNumber));
 			for (var j = 0; j < notes.length; j++) {
 				components.push(notes[j]);

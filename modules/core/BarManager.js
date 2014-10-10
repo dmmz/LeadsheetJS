@@ -1,17 +1,17 @@
 define(function(){
-	function BarManagerModel(){
+	function BarManager(){
 		this.bars = [];
 	}
 
-	BarManagerModel.prototype.getTotal = function() {
+	BarManager.prototype.getTotal = function() {
 		return this.bars.length;
 	};
 
-	BarManagerModel.prototype.getBars = function() {
+	BarManager.prototype.getBars = function() {
 		return this.bars;
 	};
 
-	BarManagerModel.prototype.getBar = function(index) 
+	BarManager.prototype.getBar = function(index) 
 	{
 		if (typeof index === "undefined" || isNaN(index)){
 			throw "invalid index "+index;
@@ -21,11 +21,13 @@ define(function(){
 	/**
 	 * @param {BarModel} bar 
 	 */
-	BarManagerModel.prototype.addBar = function(bar) {
+	BarManager.prototype.addBar = function(bar) {
 		this.bars.push(bar);
 	};
 
-	BarManagerModel.prototype.removeBar = function(index) {
+	BarManager.prototype.removeBar = function(index) {
 		this.bars.splice(index,1);
 	};
+
+	return BarManager;
 });
