@@ -3,7 +3,7 @@ define([], function() {
 
 	};
 
-	ChordModel_CSLJson.prototype.musicCSLJson2SongModel = function(JSONChord) {
+	ChordModel_CSLJson.prototype.importFromMusicCSLJSON = function(JSONChord) {
 		this.setNote(JSONChord.p);
 		this.setChordType(JSONChord.ch);
 		this.setParenthesis(JSONChord.parenthesis);
@@ -20,22 +20,21 @@ define([], function() {
 
 
 
-	ChordModel_CSLJson.prototype.songModel2MusicCSLJson = function(songModel, withNumMeasure) {
+	ChordModel_CSLJson.prototype.exportToMusicCSLJSON = function(chordModel, withNumMeasure) {
 		if (withNumMeasure === undefined) withNumMeasure = false;
 		var chord = {};
-		chord.p = this.getNote();
-		chord.ch = this.getChordType();
-		if (this.getParenthesis())
-			chord.parenthesis = this.getParenthesis();
+		chord.p = chordModel.getNote();
+		chord.ch = chordModel.getChordType();
+		if (chordModel.getParenthesis())
+			chord.parenthesis = chordModel.getParenthesis();
 
-		chord.beat = this.getBeat();
-
-		if (this.getBase()) {
-			chordBase = this.getBase();
+		chord.beat = chordModel.getBeat();
+		if (!chordModel.isEmptyBase()) {
+			chordBase = chordModel.getBase();
 			chord.bp = chordBase.getNote();
 			chord.bch = chordBase.getChordType();
 		}
-		if (withNumMeasure) chord.barNumber = this.barNumber;
+		if (withNumMeasure) chord.barNumber = chordModel.barNumber;
 		return chord;
 	};
 

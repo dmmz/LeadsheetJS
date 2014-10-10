@@ -7,7 +7,7 @@ define([], function() {
 	//  Advanced function  //
 	/////////////////////////
 
-	BarModel_CSLJson.prototype.musicCSLJson2SongModel = function(JSONBar) {
+	BarModel_CSLJson.prototype.importFromMusicCSLJSON = function(JSONBar) {
 		var self = this;
 		var labels = ["segno", "segno2", "fine", "coda", "coda2", "on cue"];
 		labels.forEach(function(label) {
@@ -21,20 +21,20 @@ define([], function() {
 		if (JSONBar.hasOwnProperty('timeSignature')) self.setTimeSignature(JSONBar.timeSignature);
 
 	};
-	BarModel_CSLJson.prototype.songModel2MusicCSLJson = function(songModel) {
+	BarModel_CSLJson.prototype.exportToMusicCSLJSON = function(barModel) {
 		var bar = {};
 
-		if (this.getLabel())
-			bar[this.getLabel()] = 1;
+		if (barModel.getLabel())
+			bar[barModel.getLabel()] = 1;
 
-		if (this.getEnding())
-			bar.ending = this.getEnding();
+		if (barModel.getEnding())
+			bar.ending = barModel.getEnding();
 
-		if (this.getSublabel())
-			bar.sublabel = this.getSublabel();
+		if (barModel.getSublabel())
+			bar.sublabel = barModel.getSublabel();
 
-		if (this.getTimeSignature())
-			bar.timeSignature = this.getTimeSignature();
+		if (barModel.getTimeSignature())
+			bar.timeSignature = barModel.getTimeSignature();
 
 		return bar;
 

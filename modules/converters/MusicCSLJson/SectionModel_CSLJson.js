@@ -7,7 +7,7 @@ define([], function() {
 	//  Advanced function  //
 	/////////////////////////
 
-	SectionModel_CSLJson.prototype.musicCSLJson2SongModel = function(section) {
+	SectionModel_CSLJson.prototype.importFromMusicCSLJSON = function(section) {
 		//console.log(section);
 		this.setName(section.name);
 		this.setNumberOfBars(section.bars.length);
@@ -15,19 +15,19 @@ define([], function() {
 		this.setRepeatTimes(section.repeat ? parseInt(section.repeat) : 0);
 		this.setStyle(section.style);
 	};
-	
-	SectionModel_CSLJson.prototype.songModel2MusicCSLJson = function(songModel) {
+
+	SectionModel_CSLJson.prototype.exportToMusicCSLJSON = function(sectionModel) {
 		var sectionMusicCSLJSON = {};
-		sectionMusicCSLJSON.name = this.getName();
+		sectionMusicCSLJSON.name = sectionModel.getName();
 
-		if (this.getTimeSignature())
-			sectionMusicCSLJSON.timeSig = this.getTimeSignature();
+		if (sectionModel.getTimeSignature())
+			sectionMusicCSLJSON.timeSig = sectionModel.getTimeSignature();
 
-		if (this.getRepeatTimes())
-			sectionMusicCSLJSON.repeat = this.getRepeatTimes();
+		if (sectionModel.getRepeatTimes())
+			sectionMusicCSLJSON.repeat = sectionModel.getRepeatTimes();
 
-		if (this.getStyle())
-			sectionMusicCSLJSON.style = this.getStyle();
+		if (sectionModel.getStyle())
+			sectionMusicCSLJSON.style = sectionModel.getStyle();
 
 		return sectionMusicCSLJSON;
 	};

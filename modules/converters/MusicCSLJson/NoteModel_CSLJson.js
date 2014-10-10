@@ -1,9 +1,9 @@
 define([], function() {
-	function NoteModel_CSLJson_CSLJson(MusicCSLJSON) {
+	function NoteModel_CSLJson(MusicCSLJSON) {
 
 	};
 	
-	NoteModel_CSLJson.prototype.musicCSLJson2SongModel = function(noteStruct) {
+	NoteModel_CSLJson.prototype.importFromMusicCSLJSON = function(noteStruct) {
 		this.numPitches = noteStruct.keys.length;
 
 		var duration = noteStruct.duration;
@@ -53,25 +53,25 @@ define([], function() {
 			};
 		}
 	};
-	NoteModel_CSLJson.prototype.songModel2MusicCSLJson = function(songModel, complete, withNumMeasure) {
+	NoteModel_CSLJson.prototype.exportToMusicCSLJSON = function(noteModel, complete, withNumMeasure) {
 		if (complete === undefined) complete = true;
 		if (withNumMeasure === undefined) withNumMeasure = false;
 
 		var noteObj = {};
 
 		noteObj.keys = [];
-		for (var i = 0; i < this.numPitches; i++) {
-			noteObj.keys.push(this.getPitch(i));
+		for (var i = 0; i < noteModel.numPitches; i++) {
+			noteObj.keys.push(noteModel.getPitch(i));
 		}
-		noteObj.duration = this.duration;
+		noteObj.duration = noteModel.duration;
 		//important only set property if not null, 
-		if (this.dot != null) noteObj.dot = this.dot;
-		if (this.tie != null && complete) noteObj.tie = this.tie;
-		if (this.tuplet != null && complete) noteObj.tuplet = this.tuplet;
-		if (this.time_modification != null && complete) noteObj.time_modification = this.time_modification;
-		if (this.isRest) noteObj.duration += "r";
+		if (noteModel.dot != null) noteObj.dot = noteModel.dot;
+		if (noteModel.tie != null && complete) noteObj.tie = noteModel.tie;
+		if (noteModel.tuplet != null && complete) noteObj.tuplet = noteModel.tuplet;
+		if (noteModel.time_modification != null && complete) noteObj.time_modification = noteModel.time_modification;
+		if (noteModel.isRest) noteObj.duration += "r";
 
-		if (this.measure != null && withNumMeasure) noteObj.num_measure = this.measure;
+		if (noteModel.measure != null && withNumMeasure) noteObj.num_measure = noteModel.measure;
 
 
 

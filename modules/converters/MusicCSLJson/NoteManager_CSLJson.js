@@ -3,7 +3,7 @@ define(['modules/core/NoteModel'], function(NoteModel) {
 
 	};
 
-	NoteManager_CSLJson.prototype.musicCSLJson2SongModel = function(notes, song) {
+	NoteManager_CSLJson.prototype.importFromMusicCSLJSON = function(notes, song) {
 		if (typeof notes !== "undefined") {
 			for (var i in notes) {
 				this.addNote(new NoteModel(notes[i]));
@@ -13,10 +13,10 @@ define(['modules/core/NoteModel'], function(NoteModel) {
 		return this;
 	};
 
-	NoteManager_CSLJson.prototype.songModel2MusicCSLJson = function(songModel, from, to) {
+	NoteManager_CSLJson.prototype.exportToMusicCSLJSON = function(noteManager, from, to) {
 		var notes = [];
-		this.getNotes(from, to + 1).forEach(function(note) {
-			notes.push(note.songModel2MusicCSLJson(songModel));
+		noteManager.getNotes(from, to + 1).forEach(function(note) {
+			notes.push(note.exportToMusicCSLJSON(songModel));
 		});
 		return notes;
 	};

@@ -1,9 +1,9 @@
 define(['modules/core/ChordModel'], function(ChordModel) {
-	function ChordModel_CSLJson(MusicCSLJSON) {
+	function ChordManager_CSLJson(MusicCSLJSON) {
 
 	};
 
-	ChordModel_CSLJson.prototype.musicCSLJson2SongModel = function(MusicCSLJSON) {
+	ChordManager_CSLJson.prototype.importFromMusicCSLJSON = function(MusicCSLJSON) {
 		if (typeof MusicCSLJSON !== "undefined") {
 			var chordsSection = [];
 			var chordModel;
@@ -21,7 +21,7 @@ define(['modules/core/ChordModel'], function(ChordModel) {
 					for (var j = 0; j < chordsSection.length; j++) {
 						for (var k = 0; k < chordsSection[j].length; k++) {
 							chordModel = new ChordModel();
-							chordModel.musicCSLJson2SongModel(chordsSection[j][k])
+							chordModel.importFromMusicCSLJSON(chordsSection[j][k])
 							chordModel.setBarNumber(barNumber);
 							this.addChord(chordModel);
 						}
@@ -33,12 +33,12 @@ define(['modules/core/ChordModel'], function(ChordModel) {
 		return this;
 	}
 
-	ChordModel_CSLJson.prototype.songModel2MusicCSLJson = function(songModel) {
+	ChordManager_CSLJson.prototype.exportToMusicCSLJSON = function(chordModel) {
 		var chords = [];
-		if (typeof this.chords !== "undefined" && this.chords.length) {
+		if (typeof chordModel.chords !== "undefined" && chordModel.chords.length) {
 			var currentChord, currentBn;
-			for (var i = 0; i < this.chords.length; i++) {
-				currentChord = this.getChord(i);
+			for (var i = 0; i < chordModel.chords.length; i++) {
+				currentChord = chordModel.getChord(i);
 				currentBn = currentChord.getBarNumber();
 				if (typeof chords[currentBn] === "undefined") {
 					chords[currentBn] = [];
@@ -62,5 +62,5 @@ define(['modules/core/ChordModel'], function(ChordModel) {
 		}
 		return chords;
 	}
-	return ChordModel_CSLJson;
+	return ChordManager_CSLJson;
 });

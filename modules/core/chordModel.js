@@ -64,6 +64,9 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 	ChordModel.prototype.getBase = function() {
 		return this.base;
 	};
+	ChordModel.prototype.isEmptyBase = function() {
+		return (Object.keys(this.base).length === 0) ? true : false;
+	};
 
 	ChordModel.prototype.setBase = function(chordBase) {
 		if ((typeof chordBase === "undefined" || !(chordBase instanceof ChordModel)) && chordBase !== "") {

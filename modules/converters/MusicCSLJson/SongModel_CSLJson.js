@@ -4,7 +4,7 @@ define(['modules/core/SongModel', 'modules/core/SectionModel', 'modules/core/Bar
 
 		};
 
-		SongModel_CSLJson.prototype.musicCSLJson2SongModel = function(MusicCSLJSON, id) {
+		SongModel_CSLJson.prototype.importFromMusicCSLJSON = function(MusicCSLJSON, id) {
 			var self = songModel;
 			var chordManager = new ChordManager({
 				songModel: songModel
@@ -36,18 +36,18 @@ define(['modules/core/SongModel', 'modules/core/SectionModel', 'modules/core/Bar
 					MusicCSLJSON.changes.forEach(function(JSONSection) {
 
 						section = new SectionModel();
-						section.musicCSLJson2SongModel(JSONSection);
+						section.importFromMusicCSLJSON(JSONSection);
 						self.addSection(section);
 
 						if (JSONSection.bars != null) {
 							JSONSection.bars.forEach(function(JSONBar) {
 								bar = new BarModel();
-								bar.musicCSLJson2SongModel(JSONBar);
+								bar.importFromMusicCSLJSON(JSONBar);
 								barManager.addBar(bar);
 								if (JSONBar.chords != null) {
 									JSONBar.chords.forEach(function(JSONChord) {
 										chord = new ChordModel();
-										chord.musicCSLJson2SongModel(JSONChord);
+										chord.importFromMusicCSLJSON(JSONChord);
 										chord.setBarNumber(barNumber);
 										chordManager.addChord(chord);
 									});
@@ -75,10 +75,9 @@ define(['modules/core/SongModel', 'modules/core/SectionModel', 'modules/core/Bar
 			//songModel.getUnfoldedSongStructure();
 		};
 
-		SongModel_CSLJson.prototype.songModel2MusicCSLJson = function(songModel) {
-			console.log(songModel);
+		SongModel_CSLJson.prototype.exportToMusicCSLJSON = function(songModel) {
 			if (!songModel instanceof SongModel) {
-				throw 'SongModel_CSLJson - songModel2MusicCSLJson - songModel parameters must be an instanceof SongModel'
+				throw 'SongModel_CSLJson - exportToMusicCSLJSON - songModel parameters must be an instanceof SongModel'
 			}
 
 			var MusicCSLJSON = {};
@@ -104,7 +103,7 @@ define(['modules/core/SongModel', 'modules/core/SectionModel', 'modules/core/Bar
 			MusicCSLJSON.changes = [];
 			for (var i = 0, c = songModel.getSections().length; i < c; i++) {
 				// section information
-				section = songModel.getSection(i).songModel2MusicCSLJson(songModel);
+				section = songModel.getSection(i).exportToMusicCSLJSON(songModel);
 
 				// bar information
 				startBar = songModel.getStartBarNumberFromSectionNumber(i);
@@ -115,13 +114,13 @@ define(['modules/core/SongModel', 'modules/core/SectionModel', 'modules/core/Bar
 
 				for (var j = startBar; j <= lastBarSection; j++) {
 
-					bar = songModel.getBar(j).songModel2MusicCSLJson(songModel);
+					bar = songModel.getBar(j).exportToMusicCSLJSON(songModel);
 
 					chords = [];
 					barChords = songModel.getComponentsAtBarNumber(j, 'chords');
 					//jsLint complains but nevermind
 					barChords.forEach(function(chord) {
-						chords.push(chord.songModel2MusicCSLJson(songModel));
+						chords.push(chord.exportToMusicCSLJSON(songModel));
 					});
 
 					if (chords.length != 0)
@@ -131,7 +130,7 @@ define(['modules/core/SongModel', 'modules/core/SectionModel', 'modules/core/Bar
 
 					melody = [];
 					barNotes.forEach(function(note) {
-						melody.push(note.songModel2MusicCSLJson(songModel));
+						melody.push(note.exportToMusicCSLJSON(songModel));
 					});
 
 					if (melody.length != 0)
