@@ -1,7 +1,7 @@
 define(['tests/test-songs','modules/core/SongModel'], function(testSongs,SongModel) {
 	return {
 		run: function(){
-			var song = new SongModel(testSongs.simpleLeadSheet);
+//			var song = new SongModel(testSongs.simpleLeadSheet);
 /*
 			var converter = new SongModel_CSLJSON();
 			var song = converter.convert(testSongs.simpleLeadSheet);

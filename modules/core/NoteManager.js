@@ -26,7 +26,7 @@ define(['modules/core/NoteModel'], function(NoteModel) {
 		return totalDur;
 	};
 
-	NoteManager.prototype.insertNote = function(note, pos) {
+	NoteManager.prototype.addNote = function(note, pos) {
 		if (!note instanceof NoteModel) throw "note is not an instance of Note";
 		if (typeof pos === "undefined") {
 			this.notes.push(note);

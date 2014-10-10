@@ -13,45 +13,12 @@ define(function() {
 		this.sublabel = (typeof(option.sublabel) !== "undefined") ? option.sublabel : undefined;
 	}
 
-	BarModel.prototype.importFromMusicCSLJSON = function(JSONBar) {
-		var self = this;
-		var labels = ["segno", "segno2", "fine", "coda", "coda2", "on cue"];
-		labels.forEach(function(label) {
-			if (JSONBar.hasOwnProperty(label)) {
-				self.setLabel(label);
-			}
-		});
-		//so far now we allow only one label per bar in the DB, but this code is prepared to allow more than one, as an array
-		if (JSONBar.hasOwnProperty('ending')) self.setEnding(JSONBar.ending);
-		if (JSONBar.hasOwnProperty('sublabel')) self.setSublabel(JSONBar.sublabel);
-		if (JSONBar.hasOwnProperty('timeSignature')) self.setTimeSignature(JSONBar.timeSignature);
-
-	};
-	BarModel.prototype.exportToMusicCSLJSON = function() {
-		var bar = {};
-		
-		if (this.getLabel())
-			bar[this.getLabel()] = 1;
-
-		if (this.getEnding())
-			bar.ending = this.getEnding();
-		
-		if (this.getSublabel())
-			bar.sublabel = this.getSublabel();
-
-		if (this.getTimeSignature())
-			bar.timeSignature=this.getTimeSignature();
-
-		return bar;
-
-	};
 
 	BarModel.prototype.setBegining = function(begining) {
-		if (typeof begining !== "undefined") {
-			this.begining = begining;
-			return true;
+		if (typeof begining === "undefined") {
+			throw 'BarModel - begining should not be undefined';
 		}
-		return false;
+		this.begining = begining;
 	};
 
 	BarModel.prototype.getBegining = function() {
@@ -60,18 +27,20 @@ define(function() {
 
 	BarModel.prototype.setClef = function(clef) {
 		var clefType = ['', 'treble', 'bass', 'alto', 'tenor', 'percussion'];
-		if (typeof clef !== "undefined" && typeof clefType[clef] !== "undefined") {
-			this.clef = clef;
-			return true;
+		if (typeof clef === "undefined" && typeof clefType[clef] === "undefined") {
+			throw 'BarModel - clef should not be undefined';
 		}
-		return false;
+		this.clef = clef;
 	};
 
 	BarModel.prototype.getClef = function() {
 		return this.clef;
 	};
 
-	BarModel.prototype.setEnding = function( ending ) {
+	BarModel.prototype.setEnding = function(ending) {
+		if (typeof ending === "undefined") {
+			throw 'BarModel - ending should not be undefined';
+		}
 		this.ending = ending;
 	};
 
@@ -79,7 +48,10 @@ define(function() {
 		return this.ending;
 	};
 
-	BarModel.prototype.setStyle = function( style ) {
+	BarModel.prototype.setStyle = function(style) {
+		if (typeof style === "undefined") {
+			throw 'BarModel - style should not be undefined';
+		}
 		this.style = style;
 	};
 
@@ -87,7 +59,10 @@ define(function() {
 		return this.style;
 	};
 
-	BarModel.prototype.setTimeSignature = function( timeSignature ) {
+	BarModel.prototype.setTimeSignature = function(timeSignature) {
+		if (typeof timeSignature === "undefined") {
+			throw 'BarModel - timeSignature should not be undefined';
+		}
 		this.timeSignature = timeSignature;
 	};
 
@@ -95,7 +70,10 @@ define(function() {
 		return this.timeSignature;
 	};
 
-	BarModel.prototype.setTonality = function( tonality ) {
+	BarModel.prototype.setTonality = function(tonality) {
+		if (typeof tonality === "undefined") {
+			throw 'BarModel - tonality should not be undefined';
+		}
 		this.tonality = tonality;
 	};
 
@@ -103,7 +81,10 @@ define(function() {
 		return this.tonality;
 	};
 
-	BarModel.prototype.setLabel = function( label ) {
+	BarModel.prototype.setLabel = function(label) {
+		if (typeof label === "undefined") {
+			throw 'BarModel - label should not be undefined';
+		}
 		this.label = label;
 	};
 
@@ -111,7 +92,10 @@ define(function() {
 		return this.label;
 	};
 
-	BarModel.prototype.setSublabel = function( sublabel ) {
+	BarModel.prototype.setSublabel = function(sublabel) {
+		if (typeof sublabel === "undefined") {
+			throw 'BarModel - sublabel should not be undefined';
+		}
 		this.sublabel = sublabel;
 	};
 
@@ -130,6 +114,39 @@ define(function() {
 
 	BarModel.prototype.clone = function() {
 		return new BarModel(this);
+	};
+
+	BarModel.prototype.importFromMusicCSLJSON = function(JSONBar) {
+		var self = this;
+		var labels = ["segno", "segno2", "fine", "coda", "coda2", "on cue"];
+		labels.forEach(function(label) {
+			if (JSONBar.hasOwnProperty(label)) {
+				self.setLabel(label);
+			}
+		});
+		//so far now we allow only one label per bar in the DB, but this code is prepared to allow more than one, as an array
+		if (JSONBar.hasOwnProperty('ending')) self.setEnding(JSONBar.ending);
+		if (JSONBar.hasOwnProperty('sublabel')) self.setSublabel(JSONBar.sublabel);
+		if (JSONBar.hasOwnProperty('timeSignature')) self.setTimeSignature(JSONBar.timeSignature);
+
+	};
+	BarModel.prototype.exportToMusicCSLJSON = function() {
+		var bar = {};
+
+		if (this.getLabel())
+			bar[this.getLabel()] = 1;
+
+		if (this.getEnding())
+			bar.ending = this.getEnding();
+
+		if (this.getSublabel())
+			bar.sublabel = this.getSublabel();
+
+		if (this.getTimeSignature())
+			bar.timeSignature = this.getTimeSignature();
+
+		return bar;
+
 	};
 
 	return BarModel;

@@ -64,6 +64,9 @@ define(function() {
 	ChordModel.prototype.getBase = function() {
 		return this.base;
 	};
+	ChordModel.prototype.isEmptyBase = function() {
+		return (Object.keys(this.base).length === 0) ? true : false;
+	};
 
 	ChordModel.prototype.setBase = function(chordBase) {
 		if ((typeof chordBase === "undefined" || !(chordBase instanceof ChordModel)) && chordBase !== "") {
@@ -76,9 +79,6 @@ define(function() {
 		return this.parenthesis;
 	};
 	ChordModel.prototype.setParenthesis = function(parenthesis) {
-		if (typeof parenthesis === "undefined") {
-			throw "Parenthesis have not been set";
-		}
 		this.parenthesis = !!parenthesis;
 	};
 

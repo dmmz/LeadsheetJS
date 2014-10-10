@@ -22,25 +22,25 @@ define(['modules/core/NoteManager', 'modules/core/NoteModel'], function(NoteMana
 				var noteManager = new NoteManager();
 
 				// insert notes in order
-				noteManager.insertNote(new NoteModel({
+				noteManager.addNote(new NoteModel({
 					keys: ["E/4"],
 					duration: "q"
 				}));
 
-				noteManager.insertNote(new NoteModel({
+				noteManager.addNote(new NoteModel({
 					keys: ["F/4"],
 					duration: "8"
 				}));
-				noteManager.insertNote(new NoteModel({
+				noteManager.addNote(new NoteModel({
 					keys: ["G/4"],
 					duration: "8"
 				}));
-				noteManager.insertNote(new NoteModel({
+				noteManager.addNote(new NoteModel({
 					keys: ["A/4"],
 					duration: "8",
 					dot: 1
 				}));
-				noteManager.insertNote(new NoteModel({
+				noteManager.addNote(new NoteModel({
 					keys: ["B/4"],
 					duration: "16"
 				}));
@@ -51,7 +51,7 @@ define(['modules/core/NoteManager', 'modules/core/NoteModel'], function(NoteMana
 				testPitchList(noteManager, assert, ["E/4", "F/4", "G/4", "A/4", "B/4"]);
 
 				// insert in pos 0
-				noteManager.insertNote(new NoteModel({
+				noteManager.addNote(new NoteModel({
 					keys: ["C/5"],
 					duration: "8"
 				}), 0);
@@ -59,7 +59,7 @@ define(['modules/core/NoteManager', 'modules/core/NoteModel'], function(NoteMana
 				testPitchList(noteManager, assert, ["C/5", "E/4", "F/4", "G/4", "A/4", "B/4"]);
 
 				// insert in pos 1  
-				noteManager.insertNote(new NoteModel({
+				noteManager.addNote(new NoteModel({
 					keys: ["D/5"],
 					duration: "8"
 				}), 1);
