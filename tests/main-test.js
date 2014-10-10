@@ -18,7 +18,7 @@ require.config({
 });
 
 
-require(['tests/testNoteModel', 'tests/testChordModel', 'tests/testNoteManager', 'tests/testSongModel', 'tests/testChordManager',
+require(['tests/core/testNoteModel', 'tests/core/testChordModel', 'tests/core/testNoteManager', 'tests/core/testSongModel', 'tests/core/testChordManager',
  'tests/converters/MusicCSLJson/testSongModel_CSLJson', 'tests/converters/MusicCSLJson/testBarModel_CSLJson','tests/converters/MusicCSLJson/testSectionModel_CSLJson',  'tests/converters/MusicCSLJson/testChordManager_CSLJson', 'tests/converters/MusicCSLJson/testChordModel_CSLJson', 'tests/converters/MusicCSLJson/testNoteManager_CSLJson', 'tests/converters/MusicCSLJson/testNoteModel_CSLJson',
   'qunit'],
   function(testNoteModel, testChordModel, testNoteManager, testSongModel, testChordManager,
