@@ -1,4 +1,4 @@
-define([], function() {
+define(['modules/core/ChordModel'], function(ChordModel) {
 	function ChordModel_CSLJson(MusicCSLJSON) {
 
 	};
@@ -23,18 +23,20 @@ define([], function() {
 	ChordModel_CSLJson.prototype.exportToMusicCSLJSON = function(chordModel, withNumMeasure) {
 		if (withNumMeasure === undefined) withNumMeasure = false;
 		var chord = {};
-		chord.p = chordModel.getNote();
-		chord.ch = chordModel.getChordType();
-		if (chordModel.getParenthesis())
-			chord.parenthesis = chordModel.getParenthesis();
+		if (typeof chordModel !== "undefined" && chordModel instanceof ChordModel) {
+			chord.p = chordModel.getNote();
+			chord.ch = chordModel.getChordType();
+			if (chordModel.getParenthesis())
+				chord.parenthesis = chordModel.getParenthesis();
 
-		chord.beat = chordModel.getBeat();
-		if (!chordModel.isEmptyBase()) {
-			chordBase = chordModel.getBase();
-			chord.bp = chordBase.getNote();
-			chord.bch = chordBase.getChordType();
+			chord.beat = chordModel.getBeat();
+			if (!chordModel.isEmptyBase()) {
+				chordBase = chordModel.getBase();
+				chord.bp = chordBase.getNote();
+				chord.bch = chordBase.getChordType();
+			}
+			if (withNumMeasure) chord.barNumber = chordModel.barNumber;
 		}
-		if (withNumMeasure) chord.barNumber = chordModel.barNumber;
 		return chord;
 	};
 

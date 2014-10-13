@@ -1,4 +1,4 @@
-define([], function() {
+define(['modules/core/NoteModel'], function(NoteModel) {
 	function NoteModel_CSLJson(MusicCSLJSON) {
 
 	};
@@ -58,23 +58,21 @@ define([], function() {
 		if (withNumMeasure === undefined) withNumMeasure = false;
 
 		var noteObj = {};
+		if (typeof noteModel !== "undefined" && noteModel instanceof NoteModel) {
+			noteObj.keys = [];
+			for (var i = 0; i < noteModel.getNumPitches(); i++) {
+				noteObj.keys.push(noteModel.getPitch(i));
+			}
+			noteObj.duration = noteModel.duration;
+			//important only set property if not null, 
+			if (noteModel.dot != null) noteObj.dot = noteModel.dot;
+			if (noteModel.tie != null && complete) noteObj.tie = noteModel.tie;
+			if (noteModel.tuplet != null && complete) noteObj.tuplet = noteModel.tuplet;
+			if (noteModel.time_modification != null && complete) noteObj.time_modification = noteModel.time_modification;
+			if (noteModel.isRest) noteObj.duration += "r";
 
-		noteObj.keys = [];
-		for (var i = 0; i < noteModel.numPitches; i++) {
-			noteObj.keys.push(noteModel.getPitch(i));
+			if (noteModel.measure != null && withNumMeasure) noteObj.num_measure = noteModel.measure;
 		}
-		noteObj.duration = noteModel.duration;
-		//important only set property if not null, 
-		if (noteModel.dot != null) noteObj.dot = noteModel.dot;
-		if (noteModel.tie != null && complete) noteObj.tie = noteModel.tie;
-		if (noteModel.tuplet != null && complete) noteObj.tuplet = noteModel.tuplet;
-		if (noteModel.time_modification != null && complete) noteObj.time_modification = noteModel.time_modification;
-		if (noteModel.isRest) noteObj.duration += "r";
-
-		if (noteModel.measure != null && withNumMeasure) noteObj.num_measure = noteModel.measure;
-
-
-
 		return noteObj;
 	};
 	

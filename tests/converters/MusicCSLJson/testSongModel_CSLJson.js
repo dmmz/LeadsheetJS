@@ -5,11 +5,11 @@ define(['modules/converters/MusicCSLJson/SongModel_CSLJson', 'modules/core/SongM
 				var song = new SongModel();
 				var CSLJsonConverter = new SongModel_CSLJson();
 				var songModel = CSLJsonConverter.importFromMusicCSLJSON(testSong.simpleLeadSheet, song);
-				/*
-				TODO, uncomment when getNotesBy Bar Number is back
+				
+				
 				var exportedCSLJson = CSLJsonConverter.exportToMusicCSLJSON(songModel);
-				assert.deepEqual(exportedCSLJson, testSong.simpleLeadSheet);
-				*/
+				//assert.deepEqual(exportedCSLJson, testSong.simpleLeadSheet);
+				
 				expect(0);
 			});
 		}

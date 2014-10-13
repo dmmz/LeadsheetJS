@@ -58,11 +58,11 @@ define(['modules/core/NoteModel'], function(NoteModel) {
 				assert.ok(note.isTuplet());
 
 				//measure
-				assert.throws(function() {
+				/*assert.throws(function() {
 					note.setMeasure("wrongMeasure");
 				});
 				note.setMeasure(2);
-				assert.equal(note.getMeasure(),2);
+				assert.equal(note.getMeasure(),2);*/
 
 				//accidental
 				assert.throws(function(){

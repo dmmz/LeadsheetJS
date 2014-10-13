@@ -86,7 +86,9 @@ define(['modules/core/SongModel', 'modules/core/SectionModel', 'modules/core/Bar
 			}
 
 			var MusicCSLJSON = {};
-			MusicCSLJSON._id = songModel._id;
+			if (typeof songModel._id !== "undefined") {
+				MusicCSLJSON._id = songModel._id;
+			}
 			var composer = songModel.getComposer();
 			if (typeof composer !== "undefined") {
 				composer = composer.toString();
@@ -111,7 +113,6 @@ define(['modules/core/SongModel', 'modules/core/SectionModel', 'modules/core/Bar
 				// section information
 				var sectionConverter = new SectionModel_CSLJson();
 				JSONSection = sectionConverter.exportToMusicCSLJSON(songModel.getSection(i));
-				console.log(JSONSection);
 				// bar information
 				startBar = songModel.getStartBarNumberFromSectionNumber(i);
 				lastBarSection = startBar + songModel.getSection(i).getNumberOfBars() - 1;
@@ -127,12 +128,10 @@ define(['modules/core/SongModel', 'modules/core/SectionModel', 'modules/core/Bar
 
 					chords = [];
 					barChords = songModel.getComponentsAtBarNumber(j, 'chords');
-					console.log(barChords);
 					//jsLint complains but nevermind
 					barChords.forEach(function(chord) {
 						var chordConverter = new ChordModel_CSLJson();
 						JSONChord = chordConverter.exportToMusicCSLJSON(chord);
-						console.log(chord);
 						chords.push(JSONChord);
 					});
 
@@ -145,7 +144,6 @@ define(['modules/core/SongModel', 'modules/core/SectionModel', 'modules/core/Bar
 					barNotes.forEach(function(note) {
 						var noteConverter = new NoteModel_CSLJson();
 						JSONNote = noteConverter.exportToMusicCSLJSON(note);
-						console.log('JSONNote');
 						melody.push(JSONNote);
 					});
 

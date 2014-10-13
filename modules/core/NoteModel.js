@@ -113,15 +113,6 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 			this.timeModification != null && this.tuplet && this.tuplet.indexOf(type) != -1;
 	};
 
-	NoteModel.prototype.setMeasure = function(numMeasure) {
-		if (!numMeasure || isNaN(numMeasure)) throw "invalid numMeasure";
-		this.measure = numMeasure;
-	};
-
-	NoteModel.prototype.getMeasure = function() {
-		return this.measure;
-	};
-
 	/**
 	 * @param {Boolean} bool
 	 */

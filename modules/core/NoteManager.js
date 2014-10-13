@@ -198,6 +198,12 @@ define(['modules/core/NoteModel'], function(NoteModel) {
 		return Math.round(beat * 1000000) / 1000000;
 	}
 
+	NoteManager.prototype.incrOffset = function(offset, dur) {
+		offset += dur;
+		var roundOffset = Math.round(offset);
+		if (Math.abs(roundOffset - offset) < 0.01) offset = roundOffset; //0.01 to round only for 0.99999
+		return offset;
+	};
 	//NoteManager.prototype.toString = function() {
 	//	this.getNotes().forEach(function(note) {
 	//		console.log(note.toString());

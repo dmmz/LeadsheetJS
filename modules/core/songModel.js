@@ -1,4 +1,4 @@
-define(['modules/core/NoteManager', 'modules/core/BarManager'], function(NoteManager, BarManager) {
+define(['modules/core/NoteManager', 'modules/core/BarManager', 'modules/core/ChordManager'], function(NoteManager, BarManager, ChordManager) {
 	function SongModel(MusicCSLJSON) {
 		this.composers = [];
 		this.sections = [];
@@ -658,13 +658,69 @@ define(['modules/core/NoteManager', 'modules/core/BarManager'], function(NoteMan
 				components.push(chords[i]);
 			}
 		} else if (typeof NoteManager !== "undefined" && modelManager instanceof NoteManager) {
-			var notes = components.concat(modelManager.getNotesByBarNumber(barNumber));
+			var notes = components.concat(this.getNotesByBarNumber(modelManager, barNumber));
 			for (var j = 0; j < notes.length; j++) {
 				components.push(notes[j]);
 			}
 		}
 		return components;
 	};
+
+	SongModel.prototype.getNotesByBarNumber = function(noteManager, barNumber) {
+		function isSameMeasure(offset, offsetAnt, nMeasureBeats, beatsPerBar, timeSig, songModel) {
+			var tu = songModel.getBeatUnitFromTimeSignature(timeSig);
+
+			offset -= nMeasureBeats;
+			offsetAnt -= nMeasureBeats;
+			var mOffset = offset / (beatsPerBar * tu);
+			var mOffsetAnt = offsetAnt / (beatsPerBar * tu);
+
+			var isSameMeasure = (Math.floor(Math.round((mOffset) * 100) / 100) == Math.floor(Math.round((mOffsetAnt) * 100) / 100));
+			var error = (!isSameMeasure && mOffset > 1);
+			//first round to 2 decimals (to aviod issues with triplets (periodics 0.3333333), then floor to see if they are in the same beat ) 
+			return {
+				v: isSameMeasure,
+				error: error
+			};
+		}
+
+		var currentBar = 0;
+		var beatsPerBar = this.getBeatsFromTimeSignatureAt(currentBar);
+		var localTimeSig = this.getTimeSignatureAt(currentBar);
+		var nMeasureBeatsAcc = 0; //offset in beats on absolute bars
+		var nMeasureBeats = beatsPerBar * this.getBeatUnitFromTimeSignature(localTimeSig);
+		var offset = 0,
+			offsetAnt = 0;
+
+		var notesBar = [];
+		for (var i = 0; i < noteManager.getTotal(); i++) {
+			note = noteManager.getNote(i);
+
+			// isSameMeasure=this.isSameMeasure(offset,offsetAnt,nMeasureBeatsAcc,beatsPerBar,localTimeSig);
+			var sameMeasure = isSameMeasure(offset, offsetAnt, nMeasureBeatsAcc, beatsPerBar, localTimeSig, this);
+
+			if (!sameMeasure.v) { //will not enter the first time
+				currentBar++;
+				// if we have finish to compute desired bar we return result
+				if (currentBar > barNumber) {
+					return notesBar[barNumber];
+				}
+				nMeasureBeats = beatsPerBar * this.getBeatUnitFromTimeSignature(localTimeSig);
+				nMeasureBeatsAcc += nMeasureBeats;
+				localTimeSig = this.getTimeSignatureAt(currentBar);
+				beatsPerBar = this.getBeatsFromTimeSignatureAt(currentBar);
+
+			}
+			if(!notesBar[currentBar]){
+				notesBar[currentBar] = [];
+			}
+			notesBar[currentBar].push(note);
+			offsetAnt = offset;
+			offset = noteManager.incrOffset(offset, note.getDuration(nMeasureBeats));
+		}
+
+	};
+
 
 	/**
 	 * Function returns the number of beats before a bar number.
