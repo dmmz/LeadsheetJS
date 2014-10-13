@@ -1,4 +1,4 @@
-define(['utils/NoteUtils'], function(NoteUtils) {
+define(function() {
 	/**
 	 * Chord Model is a core model representing a leadsheet chord
 	 * @param {} param is an object of parameters

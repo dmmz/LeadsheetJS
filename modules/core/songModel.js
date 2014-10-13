@@ -3,7 +3,6 @@ define(['modules/core/NoteManager', 'modules/core/BarManager', 'modules/core/Cho
 		this.composers = [];
 		this.sections = [];
 		this.components = [];
-
 		if (MusicCSLJSON != null) {
 			this.importFromMusicCSLJSON(MusicCSLJSON);
 		} else { //construct from scratch
@@ -115,14 +114,11 @@ define(['modules/core/NoteManager', 'modules/core/BarManager', 'modules/core/Cho
 	};
 
 	SongModel.prototype.setTimeSignature = function(timeSignature) {
+
 		if (!timeSignature) {
-			throw "invalid timeSignature "
+			throw "invalid timeSignature ";
 		}
-		if (typeof timeSignature !== "undefined") {
-			this.timeSignature = timeSignature;
-			return true;
-		}
-		return false;
+		this.timeSignature = timeSignature;
 	}
 
 	/**
@@ -325,153 +321,6 @@ define(['modules/core/NoteManager', 'modules/core/BarManager', 'modules/core/Cho
 
 	SongModel.prototype.clearComponents = function() {
 		this.components = [];
-	};
-
-
-
-	/////////////////////////
-	//  Advanced functions  //
-	/////////////////////////
-
-	SongModel.prototype.exportToMusicCSLJSON = function() {
-
-		var MusicCSLJSON = {};
-		MusicCSLJSON._id = this._id;
-		MusicCSLJSON.title = this.getTitle();
-		var composer = this.getComposer();
-		if (typeof composer !== "undefined") {
-			composer = composer.toString();
-		}
-		MusicCSLJSON.composer = composer;
-		MusicCSLJSON.time = this.getTimeSignature();
-		MusicCSLJSON.keySignature = this.getTonality();
-		MusicCSLJSON.tempo = this.getTempo();
-
-		MusicCSLJSON.style = this.getStyle();
-		MusicCSLJSON.source = this.getSource();
-
-		// Sections
-		var section = {};
-		var startbarNumber, barNumber, currentBar;
-		MusicCSLJSON.changes = [];
-		for (var i = 0, c = this.getSections().length; i < c; i++) {
-			// section information
-			section = this.getSection(i).exportToMusicCSLJSON();
-
-			// bar information
-			startBar = this.getStartBarNumberFromSectionNumber(i);
-			lastBarSection = startBar + this.getSection(i).getNumberOfBars() - 1;
-
-			var bars = [];
-			var bar, chords, melody;
-
-			for (var j = startBar; j <= lastBarSection; j++) {
-
-				bar = this.getBar(j).exportToMusicCSLJSON();
-
-
-				chords = [];
-				barChords = this.getComponentsAtBarNumber(j, 'chords');
-				//jsLint complains but nevermind
-				barChords.forEach(function(chord) {
-					chords.push(chord.exportToMusicCSLJSON());
-				});
-
-				if (chords.length != 0)
-					bar.chords = chords;
-
-				barNotes = this.getComponentsAtBarNumber(j, 'notes');
-
-				melody = [];
-				barNotes.forEach(function(note) {
-					melody.push(note.exportToMusicCSLJSON());
-				});
-
-				if (melody.length != 0)
-					bar.melody = melody;
-
-				bars.push(bar);
-
-			}
-
-			section.bars = bars;
-			MusicCSLJSON.changes[i] = section;
-		}
-		return MusicCSLJSON;
-	};
-
-	SongModel.prototype.importFromMusicCSLJSON = function(MusicCSLJSON, id) {
-		var self = this;
-		var chordManager = new ChordManager({
-			songModel: this
-		});
-		var noteManager = new NoteManager();
-		var barManager = new BarManager();
-
-		//if (!MusicCSLJSON._id && !id)	throw "SongModel: importing from MusicCSL no id specified";
-
-		//there are 3 cases: id by param, _id is 'MongoId' or _id is string
-		this._id = (MusicCSLJSON._id) ? MusicCSLJSON._id['$id'] : id;
-		if (!this._id)
-			this._id = MusicCSLJSON._id;
-
-		if (typeof MusicCSLJSON !== "undefined") {
-
-			this.setTitle(MusicCSLJSON.title);
-			this.setTimeSignature(MusicCSLJSON.time);
-			this.setTonality(MusicCSLJSON.keySignature);
-			this.addComposer(MusicCSLJSON.composer);
-			this.setStyle(MusicCSLJSON.style);
-			this.setSource(MusicCSLJSON.source);
-			this.setTempo(MusicCSLJSON.tempo);
-
-			var section, chord, note, bar;
-			var existsMelody = false;
-			var barNumber = 0;
-			if (MusicCSLJSON.changes != null) {
-				MusicCSLJSON.changes.forEach(function(JSONSection) {
-
-					section = new SectionModel();
-					section.importFromMusicCSLJSON(JSONSection);
-					self.addSection(section);
-
-					if (JSONSection.bars != null) {
-						JSONSection.bars.forEach(function(JSONBar) {
-							bar = new BarModel();
-							bar.importFromMusicCSLJSON(JSONBar);
-							barManager.addBar(bar);
-							if (JSONBar.chords != null) {
-								JSONBar.chords.forEach(function(JSONChord) {
-									chord = new ChordModel();
-									chord.importFromMusicCSLJSON(JSONChord);
-									chord.setBarNumber(barNumber);
-									chordManager.addChord(chord);
-								});
-							}
-							if (JSONBar.melody != null) {
-								existsMelody = true;
-								JSONBar.melody.forEach(function(JSONNote) {
-									noteManager.addNote(new NoteModel(JSONNote));
-								});
-							}
-							barNumber++;
-						});
-					} else {
-						console.log(JSONSection.bars);
-					}
-
-
-				});
-				this.addComponent('bars', barManager);
-				noteManager.setNotesBarNum(self);
-				this.addComponent('chords', chordManager);
-				this.addComponent('notes', noteManager);
-
-
-
-			}
-		}
-		//this.getUnfoldedSongStructure();
 	};
 
 	/**
@@ -711,7 +560,7 @@ define(['modules/core/NoteManager', 'modules/core/BarManager', 'modules/core/Cho
 				beatsPerBar = this.getBeatsFromTimeSignatureAt(currentBar);
 
 			}
-			if(!notesBar[currentBar]){
+			if (!notesBar[currentBar]) {
 				notesBar[currentBar] = [];
 			}
 			notesBar[currentBar].push(note);
