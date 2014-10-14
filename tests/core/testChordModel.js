@@ -46,6 +46,8 @@ define(['modules/core/ChordModel'], function(ChordModel) {
 				assert.equal(chord.getBase().getNote(), "E");
 				assert.equal(chord.getBase().getChordType(), "");
 
+				var newChord = new ChordModel({'note':'G', 'chordType':'m7', 'beat':3});
+				assert.equal(newChord.getNote(), "G");
 			});
 		}
 	}

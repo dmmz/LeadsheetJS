@@ -39,14 +39,13 @@ define(['modules/core/ChordModel'], function(ChordModel) {
 				if (typeof chords[currentBn] === "undefined") {
 					chords[currentBn] = [];
 				}
-				var existsBase = !$.isEmptyObject(currentChord.getBase());
 
 				var jsonChord = {
 					"beat": currentChord.getBeat(),
 					"p": currentChord.getNote(),
 					"ch": currentChord.getChordType(),
 				};
-				if (existsBase) {
+				if (!currentChord.isEmptyBase()) {
 					jsonChord.bp = currentChord.getBase().getNote();
 					jsonChord.bch = currentChord.getBase().getChordType();
 				}

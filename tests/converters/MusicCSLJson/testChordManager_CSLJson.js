@@ -5,8 +5,10 @@ define(['modules/converters/MusicCSLJson/ChordManager_CSLJson', 'modules/core/Ch
 				var cm = new ChordManager();
 				var CSLJsonConverter = new ChordManager_CSLJson();
 				var t = CSLJsonConverter.exportToMusicCSLJSON(cm);
+				assert.deepEqual(t, []);
+
 				// assert.deepEqual(t, cm.exportToMusicCSLJSON());
-				expect(0);
+				
 			});
 		}
 	}

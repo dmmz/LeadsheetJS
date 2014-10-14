@@ -12,7 +12,7 @@ define(['modules/core/SectionModel'], function(SectionModel) {
 			throw 'SectionModel_CSLJson - importFromMusicCSLJSON - bad arguments type';
 		}
 		sectionModel.setName(JSONSection.name);
-		sectionModel.setNumberOfBars(JSONSection.bars.length);
+		sectionModel.setNumberOfBars(JSONSection.bars ? parseInt(JSONSection.bars.length) : 0);
 		sectionModel.setTimeSignature(JSONSection.timeSig);
 		sectionModel.setRepeatTimes(JSONSection.repeat ? parseInt(JSONSection.repeat) : 0);
 		sectionModel.setStyle(JSONSection.style);

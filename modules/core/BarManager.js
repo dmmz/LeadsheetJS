@@ -1,4 +1,3 @@
-
 define(['modules/core/BarModel'], function(BarModel) {
 	function BarManager() {
 		this.bars = [];
