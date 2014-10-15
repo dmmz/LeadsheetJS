@@ -39,22 +39,22 @@ define(['modules/core/NoteModel'], function(NoteModel) {
 				});
 				note.setTuplet("start");
 				assert.equal(note.getTuplet(),"start");
-				assert.equal(note.getTimeModif(),"3/2");
+				assert.equal(note.getTimeModification(),"3/2");
 				assert.ok(note.isTuplet());
 
 				note.removeTuplet();
 				assert.equal(note.getTuplet(),null);
-				assert.equal(note.getTimeModif(),null);				
+				assert.equal(note.getTimeModification(),null);				
 				assert.ok(!note.isTuplet());
 				
 				note.setTuplet(null,"5/4");
 				assert.equal(note.getTuplet(),"middle");
-				assert.equal(note.getTimeModif(),"5/4");
+				assert.equal(note.getTimeModification(),"5/4");
 				assert.ok(note.isTuplet());
 
 				note.setTuplet("middle","3/4");
 				assert.equal(note.getTuplet(),"middle");
-				assert.equal(note.getTimeModif(),"3/4");
+				assert.equal(note.getTimeModification(),"3/4");
 				assert.ok(note.isTuplet());
 
 				//measure
@@ -76,14 +76,14 @@ define(['modules/core/NoteModel'], function(NoteModel) {
 				
 
 				var noteMinuscule = new NoteModel({
-					keys: ["e/4"],
+					pitchList: ["E/4"],
 					duration: "q"
 				});
 				assert.equal(noteMinuscule.getPitch(), "E/4");
 				assert.equal(noteMinuscule.getNumPitches(), 1);
 
 				var polyphonicNote = new NoteModel({
-					keys: ["E/4", "C/4", "G#/3"],
+					pitchList: ["E/4", "C/4", "G#/3"],
 					duration: "q"
 				});
 
@@ -96,7 +96,20 @@ define(['modules/core/NoteModel'], function(NoteModel) {
 				assert.equal(restNote.getDuration(),2);
 				assert.ok(restNote.isRest);
 
+				var restNote = new NoteModel("hr");
+				assert.equal(restNote.getDuration(),2);
+				assert.ok(restNote.isRest);
 
+				var inlineNote = new NoteModel('C#/4-8.');
+				assert.equal(inlineNote.getPitch(),'C#/4');
+				assert.equal(inlineNote.getNumPitches(),1);
+				assert.equal(inlineNote.getAccidental(),"#");
+				assert.equal(inlineNote.getDuration(),3);
+				assert.equal(inlineNote.getDot(),1);
+				assert.equal(inlineNote.getTie(),undefined); 
+				assert.equal(inlineNote.getTuplet(),null);
+				assert.equal(inlineNote.getTimeModification(),null);
+				assert.ok(!inlineNote.isRest);
 				
 
 			});

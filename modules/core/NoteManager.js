@@ -181,7 +181,7 @@ define(['modules/core/NoteModel'], function(NoteModel) {
 	NoteManager.prototype.getNoteIndex = function( note ) {
 		if(typeof note !== "undefined" && note instanceof NoteModel){
 			for (var i = 0; i < this.notes.length; i++) {
-				if(JSON.stringify(this.notes[i].toNoteStruct(true, true)) === JSON.stringify(note.toNoteStruct(true, true))) {
+				if(JSON.stringify(this.notes[i].serialize(true, true)) === JSON.stringify(note.serialize(true, true))) {
 					return i;
 				}
 			}
@@ -212,48 +212,3 @@ define(['modules/core/NoteModel'], function(NoteModel) {
 
 	return NoteManager;
 });
-
-
-
-/**
- * @interface
- *
- * @param  {integer} from index of first note to get
- * @param  {integer} to   index of last note to get
- * @return {Array}      array of NoteModel
- */
-/*NoteManager.prototype.getElemsToMusicCSLJSON = function(from, to) {
-	var notes = [];
-	this.getNotes(from, to + 1).forEach(function(note) {
-		notes.push(note.exportToMusicCSLJSON());
-	});
-	return notes;
-};*/
-
-/**
- * @interface
- *
- * returns a copy of the notes from, pos1, to pos2.
- * @param  {Integer} pos1
- * @param  {Integer} pos2
- * @param  {String} type : if "model" returns notes as copies of NoteMode Prototype, if "struct" it returns it in 'struct' fromat
- * @return {[type]}      [description]
- */
-/*NoteManager.prototype.clone = function(pos1, pos2, type) {
-	type = type || "model";
-	var newNotes = [];
-	var note;
-	var notesToClone = this.getNotes(pos1, pos2);
-
-	notesToClone.forEach(function(note) {
-		var cNote;
-		if (type == "struct")
-			cNote = note.toNoteStruct();
-		else
-			cNote = note.clone();
-
-		newNotes.push(cNote);
-	});
-
-	return newNotes;
-};*/

@@ -6,24 +6,68 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 	 * @param {Object, String, null} param : depending on the type it will create an empty note, a rest note or a pitch note
 	 */
 	function NoteModel(param) {
-
 		this.pitchClass = []; // Note c, b
 		this.octave = []; // octave from 0 to 8
 		this.accidental = []; // b or #
-		this.dot = 0; // 0,1,2
-		this.tie = undefined; // contain "start", "stop", "stop_start"
-		this.tuplet = undefined
-		this.timeModification;
+		this.duration = (typeof param !== "undefined" && param.duration) ? param.duration : undefined;
+		this.isRest = (typeof param !== "undefined" && typeof param.isRest !== "undefined") ? param.isRest : false;
+		this.dot = (typeof param !== "undefined" && typeof param.dot !== "undefined") ? param.dot : 0; // 0,1,2
+		this.tie = (typeof param !== "undefined" && typeof param.tie !== "undefined") ? param.tie : undefined; // contain "start", "stop", "stop_start"
+		this.tuplet = (typeof param !== "undefined" && typeof param.tuplet !== "undefined") ? param.tuplet : undefined;
+		this.timeModification = (typeof param !== "undefined" && typeof param.timeModification !== "undefined") ? param.timeModification : undefined;
+		if (typeof this.tuplet !== "undefined") {
+			this.setTuplet(this.tuplet, this.timeModification);
+		}
 
-		if (typeof param == "string") { //duration "h","d","8"
-			this.populateFromRestNote(param);
-			return;
-		} else if (param == null) {
-			return;
-		} else {
-			this.populateFromStruct(param);
+		if (typeof param == "string") { //duration "h","d","8" or C#/4-8r
+			this.setNoteFromString(param);
+		} else if (typeof param !== "undefined" && typeof param.pitchList !== "undefined") {
+			if (param.pitchList.length > 1) {
+				param.pitchList = NoteUtils.sortPitches(param.pitchList);
+			}
+			for (var i = 0; i < param.pitchList.length; i++) {
+				this.setNoteFromString(param.pitchList[i], i);
+			}
 		}
 	}
+
+	NoteModel.prototype.setNoteFromString = function(string, index) {
+		index = index || 0;
+		var re = /[a-g|A-G](#{1,2}|b{1,2}|n)?(-[w|h|q|8|16|32|64])?\.{0,2}\/\d/;
+		if (string.match(re)) {
+			var parts = string.split("-");
+			var partsPitch = parts[0].split("/");
+			this.pitchClass[index] = partsPitch[0].substr(0, 1).toUpperCase();
+			this.accidental[index] = partsPitch[0].substr(1, partsPitch[0].length);
+			this.octave[index] = partsPitch[1];
+			if (parts.length == 2) {
+				var partsDuration = parts[1].split("/");
+
+				// look if there is a dot
+				var dotPosition = partsDuration[0].indexOf(".");
+				if (dotPosition == -1) {
+					this.duration = partsDuration[0];
+				} else {
+					this.dot = partsDuration[0].length - dotPosition;
+				}
+			}
+
+		} else {
+			var re = /[w|h|q|8|16|32|64](r)?/;
+			if (!string.match(re)) {
+				throw "Creating pitch " + string + ". Should be in de form [pitch][acc]/[octave]. e.g. Ab/4 or [duration] if you want a rest eg. '8'";
+			}
+			var restPosition = string.indexOf("r");
+			if (restPosition == -1) {
+				this.duration = string;
+			} else {
+				this.duration = string.substr(0, restPosition);
+			}
+			this.isRest = true;
+		}
+	}
+
+
 	/**
 	 * @param  {Number} index
 	 * @return {String} pitch. e.g.: "A#/5", "Bb/4"
@@ -31,8 +75,19 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 	NoteModel.prototype.getPitch = function(index) {
 		// check if number, check if  < numPitches
 		index = index || 0;
-		return this.pitchClass[index] + this.accidental[index] + "/" + this.octave[index];
+
+		var accidental = '';
+		if (typeof this.accidental[index] !== "undefined") {
+			accidental = this.accidental[index];
+		}
+
+		var octave = '';
+		if (typeof this.octave[index] !== "undefined") {
+			octave = '/' + this.octave[index];
+		}
+		return this.pitchClass[index] + accidental + octave;
 	};
+
 	/**
 	 * @param {Number} dots
 	 */
@@ -94,7 +149,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		else return this.tuplet;
 	};
 
-	NoteModel.prototype.getTimeModif = function() {
+	NoteModel.prototype.getTimeModification = function() {
 		return this.timeModification || null;
 	};
 
@@ -188,100 +243,39 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		}
 		return dur;
 	};
-	/**
-	 * [populateFromStruct description]
-	 * @param  {[type]} noteStruct [description]
-	 * @return {[type]}            [description]
-	 */
-	NoteModel.prototype.populateFromStruct = function(noteStruct) {
-		this.numPitches = noteStruct.keys.length;
 
-		var duration = noteStruct.duration;
-		if ((duration.indexOf("r") != -1)) {
-			this.duration = duration.substring(0, duration.length - 1);
-			this.isRest = true;
-		} else {
-			this.duration = duration;
-			this.isRest = false;
-		}
 
-		if (noteStruct.keys.length > 1) {
-			noteStruct.keys = NoteUtils.sortPitches(noteStruct.keys);
-		}
-
-		var parsedNote;
-		for (var i = 0; i < noteStruct.keys.length; i++) {
-			parsedNote = string2Obj(noteStruct.keys[i]);
-
-			this.pitchClass[i] = parsedNote.pitchClass;
-			this.accidental[i] = parsedNote.accidental;
-			this.octave[i] = parsedNote.octave;
-		}
-
-		this.setDot(noteStruct.dot);
-		this.setTie(noteStruct.tie);
-		this.setTuplet(noteStruct.tuplet, noteStruct.time_modification);
-
-		if (typeof noteStruct.num_measure !== "undefined") {
-			this.setMeasure(noteStruct.num_measure);
-		}
-
-		function string2Obj(strPitch) {
-			var re = /[a-g|A-G](#{1,2}|b{1,2}|n)?\/\d/;
-			if (!strPitch.match(re)) throw "Error creating pitch " + strPitch + ". Should be in de form [pitch][acc]/[octave]. e.g. Ab/4";
-
-			var parts = strPitch.split("/");
-
-			var pitchClass = parts[0].substr(0, 1).toUpperCase();
-			var accidental = parts[0].substr(1, parts[0].length);
-			var octave = parts[1];
-
-			return {
-				pitchClass: pitchClass,
-				accidental: accidental,
-				octave: octave
-			};
-		}
-	};
-
-	/**
-	 * @param  {String} symbDuration "h","q","8","16"
-	 */
-	NoteModel.prototype.populateFromRestNote = function(symbDuration) {
-		this.duration = symbDuration;
-		this.isRest = true;
-		this.numPitches = 1;
-		this.setRest();
-	};
-
-	NoteModel.prototype.toNoteStruct = function(complete, withNumMeasure) {
+	NoteModel.prototype.serialize = function(complete, withNumMeasure) {
 		if (complete === undefined) complete = true;
 		if (withNumMeasure === undefined) withNumMeasure = false;
 
 		var noteObj = {};
-
-		noteObj.keys = [];
-		for (var i = 0; i < this.numPitches; i++) {
-			noteObj.keys.push(this.getPitch(i));
+		noteObj.pitchList = [];
+		for (var i = 0; i < this.getNumPitches(); i++) {
+			noteObj.pitchList.push(this.getPitch(i));
 		}
 		noteObj.duration = this.duration;
 		//important only set property if not null, 
 		if (this.dot != null) noteObj.dot = this.dot;
 		if (this.tie != null && complete) noteObj.tie = this.tie;
 		if (this.tuplet != null && complete) noteObj.tuplet = this.tuplet;
-		if (this.timeModification != null && complete) noteObj.timeModification = this.time_modification;
+		if (this.time_modification != null && complete) noteObj.time_modification = this.time_modification;
 		if (this.isRest) noteObj.duration += "r";
 
 		if (this.measure != null && withNumMeasure) noteObj.num_measure = this.measure;
+
 		return noteObj;
 	};
+
+
+
 	/**
 	 * @param  {boolean} complete: if true, clones completely (case of copy/paste), if false,
 	 *                             ommits ties and tuplets (case of addNote). If not defined, it's true
 	 * @return {NoteModel}
 	 */
 	NoteModel.prototype.clone = function(complete) {
-		return new NoteModel(this.toNoteStruct(complete, true));
+		return new NoteModel(this.serialize());
 	};
 
 	return NoteModel;

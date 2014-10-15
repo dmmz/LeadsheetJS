@@ -116,9 +116,10 @@ define(function() {
 	};
 
 	ChordModel.prototype.clone = function() {
-		var chord = JSON.parse(JSON.stringify(this));
+		var chord = JSON.parse(JSON.stringify(this)); // if you need a serialize function, get inspiration from ChordModel_CSLJson
 		return chord;
 	};
+
 
 	/**
 	 *
@@ -168,14 +169,13 @@ define(function() {
 		var stringChordRoot = stringChord[0];
 
 		if (stringChord.length >= 2) {
-
 			var stringChordBase = stringChord[1];
-
 			if (this.base instanceof ChordModel === false) {
 				this.base = new ChordModel();
 			}
 			this.base.setChordFromString(stringChordBase);
 		}
+		
 		// Set current chord note and chordtype
 		stringChordRoot = stringChordRoot.replace(/\s/g, '');
 
