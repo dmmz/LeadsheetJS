@@ -12,7 +12,7 @@ define(['modules/converters/MusicCSLJson/SongModel_CSLJson', 'modules/core/SongM
 						displaySection: true,
 						displayBar: true,
 						delimiterBar: "|",
-						unfoldSong: false,
+						unfoldSong: false,//TODO unfoldSong is not working yet
 						fillEmptyBar: true,
 						fillEmptyBarCharacter: "%",
 					}

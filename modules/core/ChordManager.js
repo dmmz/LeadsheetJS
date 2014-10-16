@@ -20,11 +20,10 @@ define(['modules/core/ChordModel'], function(ChordModel) {
 	};
 
 	ChordManager.prototype.setAllChords = function(chords) {
-		if (typeof chords !== "undefined") {
-			this.chords = chords;
-			return true;
+		if (typeof chord === "undefined" || !(chord instanceof ChordModel)) {
+			throw 'Chord must be a ChordModel';
 		}
-		return false;
+		this.chords = chords;
 	}
 
 	ChordManager.prototype.getChord = function(index) {
@@ -39,7 +38,7 @@ define(['modules/core/ChordModel'], function(ChordModel) {
 		if (typeof chord === "undefined" || !(chord instanceof ChordModel)) {
 			throw 'Chord must be a ChordModel';
 		}
-		for (var i = 0; i < this.chords.length; i++) {
+		for (var i = 0, c = this.chords.length; i < c; i++) {
 			if (JSON.stringify(this.getChord(i)) === JSON.stringify(chord)) {
 				return i;
 			}
@@ -47,13 +46,22 @@ define(['modules/core/ChordModel'], function(ChordModel) {
 		return undefined;
 	}
 
+	/**
+	 * Set a new chord to a specific index, if chords[index] already have a chord it will replace it
+	 * @param {ChordModel} chord
+	 * @param {int} index
+	 */
 	ChordManager.prototype.setChord = function(chord, index) {
-		if (typeof chord === "undefined" || !(chord instanceof ChordModel) || typeof index === "undefined" || isNaN(index)) {
+		if (typeof chord === "undefined" || !(chord instanceof ChordModel) || typeof index === "undefined" || isNaN(index) || index < 0) {
 			throw 'Wrong Parameters';
 		}
 		this.chords[index] = chord;
 	}
 
+	/**
+	 * Add a new chord at the end of chords array, if chord is not set, it create a new instance of chordModel
+	 * @param {ChordModel} chord
+	 */
 	ChordManager.prototype.addChord = function(chord) {
 		if (typeof chord !== "undefined" && chord instanceof ChordModel) {
 			this.chords.push(chord);
@@ -62,6 +70,11 @@ define(['modules/core/ChordModel'], function(ChordModel) {
 		}
 	}
 
+	/**
+	 * Insert a  new chord to a specific index, all chords after index will have their index incremented
+	 * @param {ChordModel} chord
+	 * @param {int} index
+	 */
 	ChordManager.prototype.insertChord = function(index, chord) {
 		if (typeof index !== "undefined" && isNaN(index)) {
 			throw 'Index must be a int in insert chord';
@@ -72,6 +85,10 @@ define(['modules/core/ChordModel'], function(ChordModel) {
 		this.chords.splice(index, 0, chord);
 	}
 
+	/**
+	 * Search and remove a chord from the array, chordModel is destroyed
+	 * @param  {ChordModel} chord
+	 */
 	ChordManager.prototype.removeChord = function(chord) {
 		if (typeof chord !== "undefined" && !(chord instanceof ChordModel)) {
 			throw 'Chord must be a ChordModel';
@@ -80,8 +97,12 @@ define(['modules/core/ChordModel'], function(ChordModel) {
 		this.removeChordByIndex(chordIndex);
 	};
 
+	/**
+	 * Remove a chord from the array based on it's index, chordModel is destroyed
+	 * @param  {int} index
+	 */
 	ChordManager.prototype.removeChordByIndex = function(index) {
-		if (typeof index === "undefined" || isNaN(index)) {
+		if (typeof index === "undefined" || isNaN(index) || index < 0) {
 			throw 'Index must be a int in removeChordByIndex';
 		}
 		if (this.chords[index]) {
@@ -90,9 +111,13 @@ define(['modules/core/ChordModel'], function(ChordModel) {
 		}
 	};
 
+	/**
+	 * Return an array of chords that are in a bar define by barNumber argument
+	 * @param  {int} barNumber
+	 */
 	ChordManager.prototype.getChordsByBarNumber = function(barNumber) {
 		var chordsByBarNumber = [];
-		if (typeof barNumber !== "undefined" && !isNaN(barNumber)) {
+		if (typeof barNumber !== "undefined" && !isNaN(barNumber) && barNumber >= 0) {
 			var currentChord;
 			for (var i = 0, c = this.chords.length; i < c; i++) {
 				currentChord = this.chords[i];
@@ -110,11 +135,9 @@ define(['modules/core/ChordModel'], function(ChordModel) {
 	 * returns a copy of the chords from, pos1, to pos2.
 	 * @param  {Integer} pos1
 	 * @param  {Integer} pos2
-	 * @param  {String} type : if "model" returns notes as copies of NoteMode Prototype, if "struct" it returns it in 'struct' fromat
 	 * @return {[type]}      [description]
 	 */
-	ChordManager.prototype.cloneElems = function(pos1, pos2, type) {
-		type = type || "model";
+	ChordManager.prototype.cloneElems = function(pos1, pos2) {
 		var newChords = [];
 		var chordsToClone = this.getChords(pos1, pos2);
 		chordsToClone.forEach(function(chord) {
@@ -124,53 +147,10 @@ define(['modules/core/ChordModel'], function(ChordModel) {
 		return newChords;
 	};
 
-
 	/**
-	 * returns next position for a given chord. It's based on a 2 chords per bar grid.
-	 * Searches next position in this grid. If it's already filled, does nothing
-	 * @param  {boolean}		jump (if not defined, jumps by half bars, if true, jumps by bar)
-	 * @param  {ChordModel}		chord from which we want to get next position
-	 * @return {Object, null or string}  		Object: two fields: numBar, and numBeat
-	 *                       					null when next
-	 */
-	ChordManager.prototype.getNextPositionForNewChord = function(chord, jumpWholeBar) {
-		var indexSelectedChord = this.getChordIndex(chord);
-		var isLastChord = (indexSelectedChord == this.chords.length - 1)
-		var nextChord = (isLastChord) ? null : this.getChord(indexSelectedChord + 1);
-
-		var isInLastBar = (chord.getBarNumber() == this.songModel.getTotalNumberOfBars() - 1);
-
-		var timeSig = this.songModel.getTimeSignatureAt(chord.getBarNumber());
-		var numBeatsOnTimeSig = this.songModel.getBeatsFromTimeSignature(timeSig);
-		var beatOnSecondHalfOfBar = Math.ceil(numBeatsOnTimeSig / 2) + 1;
-
-		//chord is in 1st half, we create it in 2nd half of same Bar, if empty
-		if (chord.getBeat() < beatOnSecondHalfOfBar && !jumpWholeBar) {
-
-			if (isLastChord || nextChord.getBarNumber() != chord.getBarNumber()) {
-				return {
-					numBar: chord.getBarNumber(),
-					numBeat: beatOnSecondHalfOfBar
-				};
-			}
-		} //chord is in 2nd half, we create it in 1st beat of following bar
-		else if ((isLastChord || chord.getBarNumber() + 1 < nextChord.getBarNumber()) && !isInLastBar) {
-			return {
-				numBar: chord.getBarNumber() + 1,
-				numBeat: 1
-			};
-		} else if (isLastChord || isInLastBar) {
-			return null;
-		}
-		//if next position is filled or we are in the end, return null
-		return "filled";
-	};
-
-
-	/**
-	 * Return the duration of a chord in the number of beat
-	 * @param  {[int]} index of chord in this.chords
-	 * @return {[int]} number of beat the chord last
+	 * Return the duration of a chord in beat
+	 * @param  {int} index of chord in this.chords
+	 * @return {int} number of beat the chord last
 	 */
 	ChordManager.prototype.getChordDuration = function(index) {
 		if (typeof index !== "undefined" && !isNaN(index)) {
@@ -196,7 +176,7 @@ define(['modules/core/ChordModel'], function(ChordModel) {
 				return duration;
 			}
 		}
-		return false;
+		return undefined;
 	}
 
 	/**

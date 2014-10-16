@@ -4,6 +4,8 @@ define(['modules/core/SongModel', 'modules/core/SectionModel', 'modules/core/Bar
 			// songModel
 			this.songModel = (typeof songModel !== "undefined" && songModel instanceof SongModel) ? songModel : undefined;
 
+			//TODO unfoldSong is not working yet
+
 			// display general option
 			this.displayTitle = (typeof option !== "undefined" && typeof option.displayTitle !== "undefined") ? option.displayTitle : true;
 			this.displayComposer = (typeof option !== "undefined" && typeof option.displayComposer !== "undefined") ? option.displayComposer : true;
@@ -32,6 +34,7 @@ define(['modules/core/SongModel', 'modules/core/SectionModel', 'modules/core/Bar
 					txt += this.getSectionView(i);
 					if (this.displayBar === true) {
 						var sections = this.songModel.getUnfoldedSongSection(i);
+
 						var currentBarNumber = 0;
 						var currentBar;
 						for (var j = 0; j < sections.length; j++) {
