@@ -1,19 +1,19 @@
 define(function(require) {
 
-	var SongModel = require('modules/core/SongModel');
-	var SectionModel = require('modules/core/SectionModel');
-	var BarManager = require('modules/core/BarManager');
-	var BarModel = require('modules/core/BarModel');
-	var ChordManager = require('modules/core/ChordManager');
-	var ChordModel = require('modules/core/ChordModel');
-	var NoteManager = require('modules/core/NoteManager');
-	var NoteModel = require('modules/core/NoteModel');
-	var SectionModel_CSLJson = require('modules/converters/MusicCSLJson/SectionModel_CSLJson');
-	var BarModel_CSLJson = require('modules/converters/MusicCSLJson/BarModel_CSLJson');
-	var ChordManager_CSLJson = require('modules/converters/MusicCSLJson/ChordManager_CSLJson');
-	var ChordModel_CSLJson = require('modules/converters/MusicCSLJson/ChordModel_CSLJson');
-	var NoteManager_CSLJson = require('modules/converters/MusicCSLJson/NoteManager_CSLJson');
-	var NoteModel_CSLJson = require('modules/converters/MusicCSLJson/NoteModel_CSLJson');
+	var SongModel = require('modules/core/src/SongModel');
+	var SectionModel = require('modules/core/src/SectionModel');
+	var BarManager = require('modules/core/src/BarManager');
+	var BarModel = require('modules/core/src/BarModel');
+	var ChordManager = require('modules/core/src/ChordManager');
+	var ChordModel = require('modules/core/src/ChordModel');
+	var NoteManager = require('modules/core/src/NoteManager');
+	var NoteModel = require('modules/core/src/NoteModel');
+	var SectionModel_CSLJson = require('modules/converters/MusicCSLJson/src/SectionModel_CSLJson');
+	var BarModel_CSLJson = require('modules/converters/MusicCSLJson/src/BarModel_CSLJson');
+	var ChordManager_CSLJson = require('modules/converters/MusicCSLJson/src/ChordManager_CSLJson');
+	var ChordModel_CSLJson = require('modules/converters/MusicCSLJson/src/ChordModel_CSLJson');
+	var NoteManager_CSLJson = require('modules/converters/MusicCSLJson/src/NoteManager_CSLJson');
+	var NoteModel_CSLJson = require('modules/converters/MusicCSLJson/src/NoteModel_CSLJson');
 
 	var SongModel_CSLJson = {};
 

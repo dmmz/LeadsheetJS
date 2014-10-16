@@ -1,4 +1,4 @@
-define(['modules/core/NoteModel'], function(NoteModel) {
+define(['modules/core/src/NoteModel'], function(NoteModel) {
 	return {
 		run: function() {
 			test("Notes", function(assert) {

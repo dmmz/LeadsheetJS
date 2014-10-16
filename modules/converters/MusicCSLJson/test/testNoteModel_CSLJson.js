@@ -1,4 +1,4 @@
-define(['modules/converters/MusicCSLJson/NoteModel_CSLJson', 'modules/core/NoteModel'], function(NoteModel_CSLJson, NoteModel) {
+define(['modules/converters/MusicCSLJson/src/NoteModel_CSLJson', 'modules/core/src/NoteModel'], function(NoteModel_CSLJson, NoteModel) {
 	return {
 		run: function() {
 			test("NoteModel_CSLJson", function(assert) {

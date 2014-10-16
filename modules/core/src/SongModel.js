@@ -1,4 +1,4 @@
-define(['modules/core/NoteManager', 'modules/core/BarManager', 'modules/core/ChordManager'], function(NoteManager, BarManager, ChordManager) {
+define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/core/src/ChordManager'], function(NoteManager, BarManager, ChordManager) {
 	function SongModel() 
 	{
 		this.composers = [];

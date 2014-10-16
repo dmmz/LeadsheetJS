@@ -1,4 +1,4 @@
-define(['modules/core/NoteManager', 'modules/core/NoteModel'], function(NoteManager, NoteModel) {
+define(['modules/core/src/NoteManager', 'modules/core/src/NoteModel'], function(NoteManager, NoteModel) {
 	return {
 		run: function() {
 			test("NoteManager", function(assert) {

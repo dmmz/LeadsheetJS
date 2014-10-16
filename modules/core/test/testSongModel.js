@@ -1,4 +1,4 @@
-define(['tests/test-songs', 'modules/core/SongModel', 'modules/converters/MusicCSLJson/SongModel_CSLJson'], function(testSongs, SongModel, SongModel_CSLJson) {
+define(['tests/test-songs', 'modules/core/src/SongModel', 'modules/converters/MusicCSLJson/src/SongModel_CSLJson'], function(testSongs, SongModel, SongModel_CSLJson) {
 	return {
 		run: function() {
 			test("Song", function(assert) {

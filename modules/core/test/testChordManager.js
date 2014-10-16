@@ -1,4 +1,4 @@
-define(['modules/core/ChordManager', 'modules/core/ChordModel'], function(ChordManager, ChordModel) {
+define(['modules/core/src/ChordManager', 'modules/core/src/ChordModel'], function(ChordManager, ChordModel) {
 	return {
 		run: function() {
 			test("ChordManager", function(assert) {

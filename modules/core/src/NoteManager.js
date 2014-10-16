@@ -1,4 +1,4 @@
-define(['modules/core/NoteModel'], function(NoteModel) {
+define(['modules/core/src/NoteModel'], function(NoteModel) {
 	function NoteManager() {
 		this.notes = [];
 	}

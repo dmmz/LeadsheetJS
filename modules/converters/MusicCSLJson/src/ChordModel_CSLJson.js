@@ -1,4 +1,4 @@
-define(['modules/core/ChordModel'], function(ChordModel) {
+define(['modules/core/src/ChordModel'], function(ChordModel) {
 	var ChordModel_CSLJson = {};
 
 	ChordModel_CSLJson.importFromMusicCSLJSON = function(JSONChord, chordModel) {

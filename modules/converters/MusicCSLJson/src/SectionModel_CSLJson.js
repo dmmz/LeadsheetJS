@@ -1,4 +1,4 @@
-define(['modules/core/SectionModel'], function(SectionModel) {
+define(['modules/core/src/SectionModel'], function(SectionModel) {
 	var SectionModel_CSLJson = {};
 
 	/////////////////////////

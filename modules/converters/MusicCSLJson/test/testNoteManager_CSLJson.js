@@ -1,4 +1,4 @@
-define(['modules/converters/MusicCSLJson/NoteManager_CSLJson', 'modules/core/NoteManager'], function(NoteManager_CSLJson, NoteManager) {
+define(['modules/converters/MusicCSLJson/src/NoteManager_CSLJson', 'modules/core/src/NoteManager'], function(NoteManager_CSLJson, NoteManager) {
 	return {
 		run: function() {
 			test("NoteManager_CSLJson", function(assert) {

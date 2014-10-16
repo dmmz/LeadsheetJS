@@ -1,4 +1,4 @@
-define(['modules/converters/MusicCSLJson/ChordModel_CSLJson', 'modules/core/ChordModel'], function(ChordModel_CSLJson, ChordModel) {
+define(['modules/converters/MusicCSLJson/src/ChordModel_CSLJson', 'modules/core/src/ChordModel'], function(ChordModel_CSLJson, ChordModel) {
 	return {
 		run: function() {
 			test("ChordModel_CSLJson", function(assert) {

@@ -1,4 +1,4 @@
-define(['modules/converters/MusicCSLJson/ChordManager_CSLJson', 'modules/core/ChordManager'], function(ChordManager_CSLJson, ChordManager) {
+define(['modules/converters/MusicCSLJson/src/ChordManager_CSLJson', 'modules/core/src/ChordManager'], function(ChordManager_CSLJson, ChordManager) {
 	return {
 		run: function() {
 			test("ChordManager_CSLJson", function(assert) {

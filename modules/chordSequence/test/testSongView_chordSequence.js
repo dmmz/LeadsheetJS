@@ -1,4 +1,4 @@
-define(['modules/converters/MusicCSLJson/SongModel_CSLJson', 'modules/core/SongModel', 'modules/chordSequence/SongView_chordSequence', 'tests/test-songs'],
+define(['modules/converters/MusicCSLJson/src/SongModel_CSLJson', 'modules/core/src/SongModel', 'modules/chordSequence/src/SongView_chordSequence', 'tests/test-songs'],
 	function(SongModel_CSLJson, SongModel, SongView_chordSequence, testSong) {
 		return {
 			run: function() {

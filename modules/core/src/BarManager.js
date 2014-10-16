@@ -1,4 +1,4 @@
-define(['modules/core/BarModel'], function(BarModel) {
+define(['modules/core/src/BarModel'], function(BarModel) {
 	function BarManager() {
 		this.bars = [];
 	}

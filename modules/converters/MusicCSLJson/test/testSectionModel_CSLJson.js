@@ -1,4 +1,4 @@
-define(['modules/converters/MusicCSLJson/SectionModel_CSLJson', 'modules/core/SectionModel'], function(SectionModel_CSLJson, SectionModel) {
+define(['modules/converters/MusicCSLJson/src/SectionModel_CSLJson', 'modules/core/src/SectionModel'], function(SectionModel_CSLJson, SectionModel) {
 	return {
 		run: function() {
 			test("SectionModel_CSLJson", function(assert) {

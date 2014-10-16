@@ -1,4 +1,4 @@
-define(['modules/core/ChordModel'], function(ChordModel) {
+define(['modules/core/src/ChordModel'], function(ChordModel) {
 	return {
 		run: function() {
 			test("Chords", function(assert) {

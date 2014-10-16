@@ -1,4 +1,4 @@
-define(['modules/core/ChordModel'], function(ChordModel) {
+define(['modules/core/src/ChordModel'], function(ChordModel) {
 	function ChordManager(chords) {
 		this.chords = chords ? chords : []; // array of chordModel
 	};

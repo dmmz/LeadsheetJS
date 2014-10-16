@@ -1,4 +1,4 @@
-define(['modules/converters/MusicCSLJson/BarModel_CSLJson', 'modules/core/BarModel'], function(BarModel_CSLJson, BarModel) {
+define(['modules/converters/MusicCSLJson/src/BarModel_CSLJson', 'modules/core/src/BarModel'], function(BarModel_CSLJson, BarModel) {
 	return {
 		run: function() {
 			test("BarModel_CSLJson", function(assert) {

@@ -1,4 +1,4 @@
-define(['modules/core/NoteModel'], function(NoteModel) {
+define(['modules/core/src/NoteModel'], function(NoteModel) {
 	var NoteManager_CSLJson = {};
 
 	NoteManager_CSLJson.importFromMusicCSLJSON = function(notes, song) {

@@ -18,9 +18,9 @@ require.config({
 });
 
 
-require(['tests/core/testNoteModel', 'tests/core/testChordModel', 'tests/core/testNoteManager', 'tests/core/testSongModel', 'tests/core/testChordManager',
- 'tests/converters/MusicCSLJson/testSongModel_CSLJson', 'tests/converters/MusicCSLJson/testBarModel_CSLJson','tests/converters/MusicCSLJson/testSectionModel_CSLJson',  'tests/converters/MusicCSLJson/testChordManager_CSLJson', 'tests/converters/MusicCSLJson/testChordModel_CSLJson', 'tests/converters/MusicCSLJson/testNoteManager_CSLJson', 'tests/converters/MusicCSLJson/testNoteModel_CSLJson',
- 'tests/chordSequence/testSongView_chordSequence',
+require(['modules/core/test/testNoteModel', 'modules/core/test/testChordModel', 'modules/core/test/testNoteManager', 'modules/core/test/testSongModel', 'modules/core/test/testChordManager',
+ 'modules/converters/MusicCSLJson/test/testSongModel_CSLJson', 'modules/converters/MusicCSLJson/test/testBarModel_CSLJson','modules/converters/MusicCSLJson/test/testSectionModel_CSLJson',  'modules/converters/MusicCSLJson/test/testChordManager_CSLJson', 'modules/converters/MusicCSLJson/test/testChordModel_CSLJson', 'modules/converters/MusicCSLJson/test/testNoteManager_CSLJson', 'modules/converters/MusicCSLJson/test/testNoteModel_CSLJson',
+ 'modules/chordSequence/test/testSongView_chordSequence',
   'qunit'],
   function(testNoteModel, testChordModel, testNoteManager, testSongModel, testChordManager,
    testSongModel_CSLJson, testBarModel_CSLJson,testSectionModel_CSLJson, testChordManager_CSLJson, testChordModel_CSLJson, testNoteManager_CSLJson, testNoteModel_CSLJson,
