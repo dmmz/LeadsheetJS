@@ -7,22 +7,14 @@ define(['modules/core/ChordModel'], function(ChordModel) {
 			var chordModel;
 			var barNumber = 0;
 			for (var i = 0; i < MusicCSLJSON.sections.length; i++) {
-				if (typeof MusicCSLJSON.sections[i].chords !== "undefined") {
-					if (MusicCSLJSON.sections[i].hasOwnProperty('chords')) {
-						chordsSection = Utils.clone(MusicCSLJSON.sections[i].chords);
+				for (var j = 0; j < chordsSection.length; j++) {
+					for (var k = 0; k < chordsSection[j].length; k++) {
+						chordModel = new ChordModel();
+						chordModel.importFromMusicCSLJSON(chordsSection[j][k])
+						chordModel.setBarNumber(barNumber);
+						this.addChord(chordModel);
 					}
-				}
-
-				if (chordsSection) {
-					for (var j = 0; j < chordsSection.length; j++) {
-						for (var k = 0; k < chordsSection[j].length; k++) {
-							chordModel = new ChordModel();
-							chordModel.importFromMusicCSLJSON(chordsSection[j][k])
-							chordModel.setBarNumber(barNumber);
-							this.addChord(chordModel);
-						}
-						barNumber++;
-					}
+					barNumber++;
 				}
 			}
 		}

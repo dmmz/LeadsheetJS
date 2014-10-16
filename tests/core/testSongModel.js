@@ -1,38 +1,29 @@
-define(['tests/test-songs','modules/core/SongModel'], function(testSongs,SongModel) {
+define(['tests/test-songs', 'modules/core/SongModel', 'modules/converters/MusicCSLJson/SongModel_CSLJson'], function(testSongs, SongModel, SongModel_CSLJson) {
 	return {
-		run: function(){
-//			var song = new SongModel(testSongs.simpleLeadSheet);
-/*
-			var converter = new SongModel_CSLJSON();
-			var song = converter.convert(testSongs.simpleLeadSheet);
-*/
-/*			var song new SongModel();
-			var chordManager = new ChordManager();
-			var chord = new ChordModel();
-			chord.setNote("A");
-			chord.setChordType("M");
-			chordManager.insertChord(chord);
-			..
-			...
-			..
-			..
-			var noteManager = new NoteManager();
-			var note = new NoteModel();
-			note.setPitch("A/4");
-			noteManager.insertNote(note);
-			var note2 = new NoteModel();
-			note.setPitch("A/4");
-			noteManager.insertNote(note);
-			...
-			..
-			..
+		run: function() {
+			test("Song", function(assert) {
+				var CSLJsonConverter = new SongModel_CSLJson();
+				var song = CSLJsonConverter.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
 
-			
-			song.addComponent(notes,noteManager);
-			song.addComponent(chords,chordManager);
+				//Get Tonality
+				song.getComponent('bars').getBar(5).setTonality("Eb");
+				assert.equal(song.getTonalityAt(1), "C");
+				assert.equal(song.getTonalityAt(5), "Eb");
+				assert.equal(song.getTonalityAt(6), "Eb");
 
-			// console.log(song.getTonality());
-			// song.getComponent('bars').getBar(5).setTonality("Eb");*/
+				// //Get TimeSignature
+				song.getComponent('bars').getBar(5).setTimeSignature("3/4");
+
+				assert.throws(function() {
+					song.getTimeSignatureAt();
+				});
+				assert.equal(song.getTimeSignatureAt(1),"4/4");
+				assert.equal(song.getTimeSignatureAt(5),"3/4");
+				assert.equal(song.getTimeSignatureAt(6),"3/4");
+
+
+
+			});
 		}
 	};
 });

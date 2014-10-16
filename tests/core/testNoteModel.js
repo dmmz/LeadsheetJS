@@ -96,7 +96,7 @@ define(['modules/core/NoteModel'], function(NoteModel) {
 				assert.equal(restNote.getDuration(),2);
 				assert.ok(restNote.isRest);
 
-				var restNote = new NoteModel("hr");
+				restNote = new NoteModel("hr");
 				assert.equal(restNote.getDuration(),2);
 				assert.ok(restNote.isRest);
 

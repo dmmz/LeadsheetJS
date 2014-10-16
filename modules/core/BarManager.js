@@ -13,8 +13,8 @@ define(['modules/core/BarModel'], function(BarModel) {
 
 
 	BarManager.prototype.getBar = function(index) {
-		if (typeof index === "undefined" || isNaN(index) || index < 0) {
-			throw "BarManager - getBar - invalid index " + index;
+		if (isNaN(index) || index < 0) {
+			throw "BarManager - getBar - invalid index :" + index;
 		}
 		return this.bars[index];
 	};

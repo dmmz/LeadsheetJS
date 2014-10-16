@@ -25,8 +25,7 @@ require(['tests/core/testNoteModel', 'tests/core/testChordModel', 'tests/core/te
    testSongModel_CSLJson, testBarModel_CSLJson,testSectionModel_CSLJson, testChordManager_CSLJson, testChordModel_CSLJson, testNoteManager_CSLJson, testNoteModel_CSLJson,
     Qunit) {
 
-    //Test qui ne marche pas: TypeError: undefined is not a function at NoteModel.populateFromStruct...
-    
+        
     // Core Module
     testNoteModel.run();
     testChordModel.run();

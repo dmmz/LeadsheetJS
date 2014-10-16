@@ -1,16 +1,13 @@
 define(['modules/core/NoteManager', 'modules/core/BarManager', 'modules/core/ChordManager'], function(NoteManager, BarManager, ChordManager) {
-	function SongModel(MusicCSLJSON) {
+	function SongModel() 
+	{
 		this.composers = [];
 		this.sections = [];
 		this.components = [];
-		if (MusicCSLJSON != null) {
-			this.importFromMusicCSLJSON(MusicCSLJSON);
-		} else { //construct from scratch
-			this.setTimeSignature("4/4");
-			this.setTonality("C");
-			this.addComponent('notes', new NoteManager());
-			this.addComponent('bars', new BarManager());
-		}
+		this.setTimeSignature("4/4");
+		this.setTonality("C");
+		this.addComponent('notes', new NoteManager());
+		this.addComponent('bars', new BarManager());
 	}
 
 	/////////////////////////
@@ -85,6 +82,50 @@ define(['modules/core/NoteManager', 'modules/core/BarManager', 'modules/core/Cho
 		}
 		return false;
 	};
+	/**
+	 * @param  {Integer} index  index of the section
+	 * @return {SectionModel}
+	 */
+	SongModel.prototype.getSection = function(index) {
+		if (isNaN(index) || index<0 ||index > this.sections.length) {
+			throw "getSection - invalid index :"+index;
+		}
+		return this.sections[index];
+	};
+	SongModel.prototype.getBars = function() {
+		return this.getComponent("bars").getBars();
+	};
+
+	SongModel.prototype.getBar = function(index) {
+		return this.getComponent("bars").getBar(index);
+	};
+
+	SongModel.prototype.addSection = function(sectionsItem) {
+		this.sections.push(sectionsItem);
+	};
+
+	SongModel.prototype.getSections = function() {
+		return this.sections;
+	};
+		/**
+	 * gets component (either chords or notes)
+	 * @param  {String} componentTitle must be "chords" or "notes" or "bars"
+	 * @return {NoteManager or ChordManager}
+	 */
+	SongModel.prototype.getComponent = function(componentTitle) {
+
+		if (this.components.hasOwnProperty(componentTitle))
+			return this.components[componentTitle];
+		else
+			return undefined;
+	};
+
+	SongModel.prototype.addComponent = function(componentTitle, componentItem) {
+		if (!componentItem) return false;
+		this.components[componentTitle] = componentItem;
+		return true;
+
+	};
 
 	/**
 	 * Get the tonality of a bar by looping for each previous bar or by default on song tonality
@@ -92,7 +133,8 @@ define(['modules/core/NoteManager', 'modules/core/BarManager', 'modules/core/Cho
 	 * @return {string} eg. C, Bb etc
 	 */
 	SongModel.prototype.getTonalityAt = function(barNumber) {
-		if (typeof barNumber === "undefined" || !isNaN(barNumber)) {
+		
+		if (typeof barNumber === "undefined" || isNaN(barNumber)) {
 			throw "invalid barNumber " + barNumber;
 		}
 		var currentTonality = this.tonality;
@@ -119,7 +161,7 @@ define(['modules/core/NoteManager', 'modules/core/BarManager', 'modules/core/Cho
 			throw "invalid timeSignature ";
 		}
 		this.timeSignature = timeSignature;
-	}
+	};
 
 	/**
 	 * GetTimeSignatureAt returns the time signature at one precise moment defined by the barNumber
@@ -128,36 +170,58 @@ define(['modules/core/NoteManager', 'modules/core/BarManager', 'modules/core/Cho
 	 */
 	SongModel.prototype.getTimeSignatureAt = function(barNumber) {
 		var currentTimeSignature = this.getTimeSignature();
-		if (typeof barNumber !== "undefined" && !isNaN(barNumber)) {
-			var timeSig;
-			var sectionNumber = this.getSectionNumberFromBarNumber(barNumber);
-			if (typeof sectionNumber === "undefined") {
-				return currentTimeSignature;
-			}
-			var startBarSection = this.getStartBarNumberFromSectionNumber(sectionNumber);
-			// loop in all previous bar in the current section
-			while (barNumber >= startBarSection) {
-				// INFO If typeof was commented, it's usefull in case barNumber does not exist
-				if (typeof this.getBar(barNumber) !== "undefined") {
-					timeSig = this.getBar(barNumber).getTimeSignature();
-					if (typeof timeSig !== "undefined") {
-						return timeSig;
-					}
-				}
-				barNumber--;
-			}
-			// loop in current Section attributes
-			timeSig = this.getSection(sectionNumber).getTimeSignature();
+		var timeSig;
+		var sectionNumber = this.getSectionNumberFromBarNumber(barNumber);
+		var startBarSection = this.getStartBarNumberFromSectionNumber(sectionNumber);
+		// loop in all previous bar in the current section
+		while (barNumber >= startBarSection) {
+			timeSig = this.getBar(barNumber).getTimeSignature();
 			if (typeof timeSig !== "undefined") {
 				return timeSig;
 			}
+			barNumber--;
+		}
+		// loop in current Section attributes
+		timeSig = this.getSection(sectionNumber).getTimeSignature();
+		if (typeof timeSig !== "undefined") {
+			return timeSig;
 		}
 		// otherwise returns song timeSig
 		return currentTimeSignature;
 	};
-	SongModel.prototype.getBeatsFromTimeSignatureAt = function(barNumber) {
-		return this.getBeatsFromTimeSignature(this.getTimeSignatureAt(barNumber));
-	}
+	/**
+	 * 
+	 * @param  {Number} barNumber 
+	 * @return {Number} section number
+	 */
+	SongModel.prototype.getSectionNumberFromBarNumber = function(barNumber) {
+		if (isNaN(barNumber)){
+			throw "barNumber is not a number: "+barNumber;
+		}
+		var sections = this.getSections();
+		var sumBar = 0;
+		for (var i = 0; i < sections.length; i++) {
+			sumBar += sections[i].getNumberOfBars();
+			if (sumBar > barNumber) {
+				return i;
+			}
+		}
+	};
+		/**
+	 * Function return the start bar number of any section, first bar is 0
+	 * @param  {int} sectionNumber
+	 * @return {int} start Bar Number of section
+	 */
+	SongModel.prototype.getStartBarNumberFromSectionNumber = function(sectionNumber) {
+		if (isNaN(sectionNumber)){
+			throw "sectionNumber is not a number: "+sectionNumber;
+		}
+		var barNumber = 0;
+		for (var i = 0, c = sectionNumber; i < c; i++) {
+			barNumber += this.getSection(i).getNumberOfBars();
+		}
+		return barNumber;
+	};
 
 	/**
 	 * The function returns the number of beats from the timeSig arguments or by default on current timeSignature
@@ -165,325 +229,10 @@ define(['modules/core/NoteManager', 'modules/core/BarManager', 'modules/core/Cho
 	 * @return {int} number of beats in a measure  in the unit of the signature. E.g.: for 6/8 -> 6, for 4/4 -> 4 for 2/2 -> 2
 	 */
 	SongModel.prototype.getBeatsFromTimeSignature = function(timeSig) {
-		if (typeof timeSig !== "undefined") {
+		if (timeSig !== "undefined") {
 			return parseInt(timeSig.split("/")[0], null);
 		}
 		return parseInt(this.timeSignature.split("/")[0], null);
-	};
-
-	/**
-	 * @param  {string} timeSig, optional
-	 * @return {int} number of quarter beats in a measure, e.g. for 6/8 -> 3, for 4/4 -> 4, for 2/2 -> 4
-	 */
-	SongModel.prototype.getQuarterBeatsFromTimeSignature = function(timeSig) {
-		var beats = this.getBeatsFromTimeSignature(timeSig);
-		var beatUnit = this.getBeatUnitFromTimeSignature(timeSig);
-		return beats * beatUnit;
-	};
-
-
-	/**
-	 * The function returns the beats unit from the timeSig arguments or by default on current timeSignature
-	 * @param  {string} timeSig, optionnal
-	 * @return {int} beat unit in a measure
-	 */
-	SongModel.prototype.getBeatUnitFromTimeSignature = function(timeSig) {
-		if (timeSig == null) timeSig = this.timeSignature;
-		var u = parseInt(timeSig.split("/")[1], null);
-		return 4 / u;
-	};
-
-	SongModel.prototype.getSections = function() {
-		return this.sections;
-	};
-
-	SongModel.prototype.getNumSections = function() {
-		return this.sections.length;
-	};
-
-	/**
-	 *
-	 * @param  {Integer} 	beat
-	 * @return {Object}      @param  {Object} pos {	numBar: valNumBar,
-	 *                      	        	  		numBeat: valNumBeatInBar}
-	 */
-	SongModel.prototype.getPositionFromBeat = function(beat) {
-
-		var numBar = -1;
-		var barStartBeat = 1;
-		var numBeats = 0;
-		var rBeat;
-		while (numBar <= this.getTotalNumberOfBars()) {
-			numBar++;
-			numBeats = this.getBeatsFromTimeSignature(this.getTimeSignatureAt(numBar));
-			rBeat = barStartBeat;
-
-			barStartBeat += numBeats;
-			if (barStartBeat > beat) break;
-		}
-		return {
-			numBar: numBar,
-			numBeat: beat - rBeat + 1
-		}
-	};
-	/**
-	 
-	 * @param  {Object} pos {	numBar: valNumBar,
-	 *                 	  		numBeat: valNumBeatInBar}
-	 * @return {Integer}     
-	 */
-	SongModel.prototype.getBeatFromPosition = function(pos) {
-		var numBar = 0;
-		var numBeats = 0;
-		while (numBar < pos.numBar) {
-			numBeats += this.getBeatsFromTimeSignature(this.getTimeSignatureAt(numBar));
-			numBar++;
-		}
-		return numBeats + pos.numBeat;
-	};
-
-	/**
-	 * (if no index specified , returns all sections (<-revise?))
-	 * @param  {Integer} index  index of the section
-	 * @return {SectionModel}
-	 */
-	SongModel.prototype.getSection = function(index) {
-		if (typeof index !== "undefined" && !isNaN(index)) {
-			return this.sections[index];
-		}
-		return null;
-	};
-
-	SongModel.prototype.addSection = function(sectionsItem) {
-		this.sections.push(sectionsItem);
-	};
-
-	SongModel.prototype.clearSections = function() {
-		this.sections = [];
-	};
-
-	SongModel.prototype.getBars = function() {
-		return this.getComponent("bars").getBars();
-	};
-
-	SongModel.prototype.getBar = function(index) {
-		var barMn = this.getComponent("bars");
-		if (!barMn) return null;
-		else return barMn.getBar(index);
-	};
-	/**
-	 *
-	 *
-	 * adds bar, and if number of bars exceeds the actual count,
-	 * it increments the numberOfBars of last section
-	 * This happens if bars are added to inital loaded structure,
-	 * for the moment is not possible
-	 *
-	 * @param {BarModel} barsItem
-	 */
-	// SongModel.prototype.addBar = function(barsItem) {
-	// 	var barManager=this.getComponent("bars");
-	// 	barManager.addBar(barsItem);
-
-
-	// 	if (barManager.getTotal() > this.getTotalNumberOfBars()) {
-	// 		var lastSection = this.getSection(this.sections.length - 1);
-	// 		lastSection.setNumberOfBars(lastSection.getNumberOfBars() + 1);
-	// 	}
-	//};
-
-
-
-	SongModel.prototype.getNumSections = function() {
-		return this.sections.length;
-	};
-
-	/**
-	 * gets component (either chords or notes)
-	 * @param  {String} componentTitle must be "chords" or "notes" or "bars"
-	 * @return {NoteManager or ChordManager}
-	 */
-	SongModel.prototype.getComponent = function(componentTitle) {
-
-		if (this.components.hasOwnProperty(componentTitle))
-			return this.components[componentTitle];
-		else
-			return undefined;
-	};
-
-	SongModel.prototype.addComponent = function(componentTitle, componentItem) {
-		if (!componentItem) return false;
-		this.components[componentTitle] = componentItem;
-		return true;
-
-	};
-
-
-	SongModel.prototype.clearComponents = function() {
-		this.components = [];
-	};
-
-	/**
-	 * gets the total according to the information on Sections
-	 */
-	SongModel.prototype.getTotalNumberOfBars = function() {
-		var barNumber = 0;
-		for (var i = 0, c = this.getSections().length; i < c; i++) {
-			if (typeof this.getSection(i) !== "undefined") {
-				barNumber += this.getSection(i).getNumberOfBars();
-			}
-		}
-		return barNumber;
-	};
-
-
-	//Comented because not used
-	/**
-	 * Function returns all components of the song, componentTitle attriubtes is a filter for component title (eg chords, notes...)
-	 * @param  {string} componentTitle will filter all the result depending the type (chords, notes...)
-	 * @return {array} it returns an array of the direct object
-	 */
-	/*SongModel.prototype.getSongComponents = function(componentTitle) {
-		var song = [];
-		for (var i = 0, c = this.sections.length; i < c; i++) {
-			var startBar = this.getStartBarNumberFromSectionNumber(i);
-			var barNumber = this.sections[i].getNumberOfBars();
-			for (var j = startBar; j < barNumber; j++) {
-				song.push(this.getComponentsAtBarNumber(j, componentTitle));
-			}
-		}
-		return song;
-	};*/
-
-
-	SongModel.prototype.getUnfoldedSongComponents = function(componentTitle) {
-		var song = [];
-		if (typeof componentTitle === "undefined") {
-			componentTitle = undefined;
-		}
-		var barsIndex = this.getUnfoldedSongStructure();
-		for (var i = 0; i < barsIndex.length; i++) {
-			song.push(this.getComponentsAtBarNumber(barsIndex[i], componentTitle));
-		}
-		return song;
-	}
-
-	/**
-	 * Function return an array containing index of bars in an unfolded song
-	 * @return {array}
-	 */
-	SongModel.prototype.getUnfoldedSongStructure = function() {
-		var pointerbarNumberStructure = [];
-		for (var i = 0, c = this.getSections().length; i < c; i++) {
-			// looping on all sections
-			pointerbarNumberStructure = pointerbarNumberStructure.concat(this.getUnfoldedSongSection(i));
-		}
-		return pointerbarNumberStructure;
-	}
-
-	/**
-	 * Function return an array containing index of bars in an unfolded song
-	 * @return {array}
-	 */
-	SongModel.prototype.getUnfoldedSongSection = function(sectionNumber) {
-		if (typeof sectionNumber !== "undefined" && !isNaN(sectionNumber)) {
-			var pointerbarNumberStructure = [];
-			var endingBar;
-			var alreadyAddedbars = []; // contain the bars that are in 1 part so when we will look in 2 part they will not be getted
-			var currentRepeatedPart = 0;
-			var section = this.getSection(sectionNumber);
-			var repeat = section.getRepeatTimes();
-			var whileSecurity = 0;
-			while (repeat >= 0 || whileSecurity > 1000) {
-				whileSecurity++;
-				// looping in all sections repeat
-				alreadyAddedbars = [];
-				currentRepeatedPart = 0;
-				startBar = this.getStartBarNumberFromSectionNumber(sectionNumber);
-				endBar = startBar + section.getNumberOfBars();
-				for (var barNumber = startBar; barNumber < endBar; barNumber++) {
-					if ($.inArray(barNumber, alreadyAddedbars) === -1) { // excluding first part if there is one
-						endingBar = this.getBar(barNumber).getEnding();
-						pointerbarNumberStructure.push(barNumber);
-
-						// Case bars after the 1 start
-						if (currentRepeatedPart == 1) {
-							alreadyAddedbars.push(barNumber);
-						}
-						// Case bars got a 1 repetition (it happen only to the first bar repeated)
-						if (typeof endingBar !== "undefined" && endingBar == 1) {
-							alreadyAddedbars.push(barNumber);
-							currentRepeatedPart = 1;
-						}
-
-						//  Case bars got a 2 repetition (it happen only to the first repeated bar)
-						if (typeof endingBar !== "undefined" && endingBar == 2) {
-							// case it's the first time we arrive on 2
-							if (currentRepeatedPart == 1) {
-								pointerbarNumberStructure.pop();
-								alreadyAddedbars.pop();
-								barNumber = startBar - 1;
-								currentRepeatedPart++;
-							}
-						}
-
-					}
-				}
-				repeat--;
-			}
-			return pointerbarNumberStructure;
-		}
-	}
-
-	/**
-	 * Function return the start bar number of any section, first bar is 0
-	 * @param  {int} sectionNumber
-	 * @return {int} start Bar Number of section
-	 */
-	SongModel.prototype.getStartBarNumberFromSectionNumber = function(sectionNumber) {
-		var barNumber = 0;
-		if (typeof sectionNumber !== "undefined" && !isNaN(sectionNumber)) {
-			for (var i = 0, c = sectionNumber; i < c; i++) {
-				if (typeof this.getSection(i) !== "undefined") {
-					barNumber += this.getSection(i).getNumberOfBars();
-				}
-			}
-		}
-		return barNumber;
-	};
-
-	SongModel.prototype.getSectionNumberFromBarNumber = function(barNumber) {
-		if (typeof barNumber !== "undefined" && !isNaN(barNumber) && barNumber >= 0) {
-			var sections = this.getSections();
-			var sumBar = 0;
-			for (var i = 0; i < sections.length; i++) {
-				if (typeof sections[i] !== "undefined") {
-					sumBar += sections[i].getNumberOfBars();
-					if (sumBar > barNumber) {
-						return i;
-					}
-				}
-			}
-		}
-		return undefined;
-	}
-
-	/**
-	 * Function return all components in a given section number, componentTitle attriubtes is a filter for component title (eg chords, notes...)
-	 * @param  {int} sectionNumber
-	 * @param  {string} componentTitle will filter all the result depending the type (chords, notes...)
-	 * @return {array} it return an array of the direct object
-	 */
-	SongModel.prototype.getComponentsAtSectionNumber = function(sectionNumber, componentTitle) {
-		var components = [];
-		if (typeof this.sections[sectionNumber] !== "undefined") {
-			var startBar = this.getStartBarNumberFromSectionNumber(sectionNumber);
-			var barNumber = this.sections[sectionNumber].getNumberOfBars();
-			for (var i = startBar, c = barNumber; i < c; i++) {
-				components.push(this.getComponentsAtBarNumber(i, componentTitle));
-			}
-		}
-		return components;
 	};
 
 	/**
@@ -495,9 +244,8 @@ define(['modules/core/NoteManager', 'modules/core/BarManager', 'modules/core/Cho
 	SongModel.prototype.getComponentsAtBarNumber = function(barNumber, componentTitle) {
 		var components = [];
 
-		if (typeof componentTitle === "undefined" || !this.components.hasOwnProperty(componentTitle)) {
-			console.error('the item is matching no known type in getComponentsAtBarNumber');
-			return;
+		if (!componentTitle || !this.components.hasOwnProperty(componentTitle)) {
+			throw 'the item is matching no known type in getComponentsAtBarNumber';
 		}
 
 		var modelManager = this.components[componentTitle];
@@ -514,7 +262,6 @@ define(['modules/core/NoteManager', 'modules/core/BarManager', 'modules/core/Cho
 		}
 		return components;
 	};
-
 	SongModel.prototype.getNotesByBarNumber = function(noteManager, barNumber) {
 		function isSameMeasure(offset, offsetAnt, nMeasureBeats, beatsPerBar, timeSig, songModel) {
 			var tu = songModel.getBeatUnitFromTimeSignature(timeSig);
@@ -570,65 +317,19 @@ define(['modules/core/NoteManager', 'modules/core/BarManager', 'modules/core/Cho
 
 	};
 
-
 	/**
-	 * Function returns the number of beats before a bar number.
-	 * Example: in a 4/4 timesignature, for barNumber 0 will return 0, for barNumber 1 will return 4
-	 * IT'S NOT the first beat of the bar. First beat is the returned numberOfBeats + 1 (e.g: for barNum 0 is 1, for barNumber 1 is 5),
-	 * we return instead the numberOfBeats 'before'
-	 *
-	 * @param  {int} barNumber
-	 * @return {int} number of beats to reach barNumber
+	 * The function returns the beats unit from the timeSig arguments or by default on current timeSignature
+	 * @param  {string} timeSig, optionnal
+	 * @return {int} beat unit in a measure
 	 */
-	SongModel.prototype.getBeatsBeforeBarNumber = function(barNumber) {
-		var numberOfBeats = 0;
-		if (typeof barNumber !== "undefined" && !isNaN(barNumber) && barNumber >= 0) {
-			for (var i = 0; i < barNumber; i++) {
-				numberOfBeats += this.getBeatsFromTimeSignatureAt(i);
-			}
-		}
-		return numberOfBeats;
-	}
-
-	SongModel.prototype.getFirstBeatOfBarNumber = function(barNumber) {
-		return this.getBeatsBeforeBarNumber(barNumber) + 1;
+	SongModel.prototype.getBeatUnitFromTimeSignature = function(timeSig) {
+		if (timeSig == null) timeSig = this.timeSignature;
+		var u = parseInt(timeSig.split("/")[1], null);
+		return 4 / u;
 	};
-
-	/**
-	 * Function return the number of beat before a bar number in an unfolded song
-	 * @param  {int} realBarNumber is the number of bar before (it is not the written number of bar)
-	 * @return {int} number of beat to reach realBarNumber
-	 */
-	SongModel.prototype.getStartBeatFromUnfoldedBarNumber = function(realBarNumber) {
-		var numberOfBeats = 0;
-		if (typeof realBarNumber !== "undefined" && !isNaN(realBarNumber) && realBarNumber >= 0) {
-			var barsIndex = this.getUnfoldedSongStructure();
-			for (var i = 0; i < realBarNumber; i++) {
-				numberOfBeats += this.getBeatsFromTimeSignatureAt(barsIndex[i]);
-			}
-		}
-		return numberOfBeats;
+	SongModel.prototype.getBeatsFromTimeSignatureAt = function(barNumber) {
+		return this.getBeatsFromTimeSignature(this.getTimeSignatureAt(barNumber));
 	}
-
-	/**
-	 * Function return the section index from a section name, return -1 if name is not found
-	 * @param  {string} name of the section
-	 * @return {int} number of beat to reach realBarNumber
-	 */
-	SongModel.prototype.getSectionIndexFromName = function(name) {
-		if (typeof this.sections !== "undefined" && typeof name !== "undefined") {
-			for (var i = 0, c = this.getSections().length; i < c; i++) {
-				if (name === this.getSection(i).getName()) {
-					return i;
-				}
-			}
-		}
-		return -1;
-	}
-
-	SongModel.prototype.isEmpty = function() {
-		return (this.sections == null || this.sections.length == 0);
-	};
 
 	return SongModel;
 });
