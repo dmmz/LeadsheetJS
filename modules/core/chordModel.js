@@ -20,7 +20,7 @@ define(function() {
 		this.barNumber = (typeof param !== "undefined" && typeof param.barNumber !== "undefined") ? param.barNumber : 0;
 		this.chordSymbolList = getChordSymbolList();
 
-		function getChordSymbolList(){
+		function getChordSymbolList() {
 			function htmlDecode(value) {
 				var div = document.createElement('div');
 				div.innerHTML = value;
@@ -115,11 +115,6 @@ define(function() {
 		return false;
 	};
 
-	ChordModel.prototype.clone = function() {
-		var chord = JSON.parse(JSON.stringify(this)); // if you need a serialize function, get inspiration from ChordModel_CSLJson
-		return chord;
-	};
-
 
 	/**
 	 *
@@ -175,7 +170,7 @@ define(function() {
 			}
 			this.base.setChordFromString(stringChordBase);
 		}
-		
+
 		// Set current chord note and chordtype
 		stringChordRoot = stringChordRoot.replace(/\s/g, '');
 
@@ -224,8 +219,25 @@ define(function() {
 */
 	};
 
+	ChordModel.prototype.serialize = function() {
+		var chordObj = {};
+		chordObj.note = this.note;
+		chordObj.chordType = this.chordType;
 
-	
+		if (this.isEmptyBase() !== true) {
+			chordObj.base = this.base.toString();
+		}
+		chordObj.parenthesis = this.parenthesis;
+		chordObj.beat = this.beat;
+		chordObj.barNumber = this.barNumber;
+		return chordObj;
+	};
+
+
+	ChordModel.prototype.clone = function() {
+		return new ChordModel(this.serialize());
+	};
+
 	/*
 	 * The function transform a chordType String to symbols according chordSymbolList maps
 	 * Example: halfdim become ø
