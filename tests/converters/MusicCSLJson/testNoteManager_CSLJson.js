@@ -3,8 +3,7 @@ define(['modules/converters/MusicCSLJson/NoteManager_CSLJson', 'modules/core/Not
 		run: function() {
 			test("NoteManager_CSLJson", function(assert) {
 				var nm = new NoteManager();
-				var CSLJsonConverter = new NoteManager_CSLJson();
-				var t = CSLJsonConverter.exportToMusicCSLJSON(nm);
+				var t = NoteManager_CSLJson.exportToMusicCSLJSON(nm);
 				//assert.deepEqual(t, nm.exportToMusicCSLJSON());
 				expect(0);
 

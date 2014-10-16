@@ -1,13 +1,11 @@
 define(['modules/core/SectionModel'], function(SectionModel) {
-	function SectionModel_CSLJson(MusicCSLJSON) {
-
-	};
+	var SectionModel_CSLJson = {};
 
 	/////////////////////////
 	//  Advanced function  //
 	/////////////////////////
 
-	SectionModel_CSLJson.prototype.importFromMusicCSLJSON = function(JSONSection, sectionModel) {
+	SectionModel_CSLJson.importFromMusicCSLJSON = function(JSONSection, sectionModel) {
 		if (typeof JSONSection === "undefined" || typeof sectionModel === "undefined" || !(sectionModel instanceof SectionModel)) {
 			throw 'SectionModel_CSLJson - importFromMusicCSLJSON - bad arguments type';
 		}
@@ -18,7 +16,7 @@ define(['modules/core/SectionModel'], function(SectionModel) {
 		sectionModel.setStyle(JSONSection.style);
 	};
 
-	SectionModel_CSLJson.prototype.exportToMusicCSLJSON = function(sectionModel) {
+	SectionModel_CSLJson.exportToMusicCSLJSON = function(sectionModel) {
 		var sectionMusicCSLJSON = {};
 		sectionMusicCSLJSON.name = sectionModel.getName();
 

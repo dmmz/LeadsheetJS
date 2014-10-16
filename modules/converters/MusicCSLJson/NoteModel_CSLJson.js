@@ -1,7 +1,7 @@
 define(['modules/core/NoteModel'], function(NoteModel) {
-	function NoteModel_CSLJson(MusicCSLJSON) {};
+	var NoteModel_CSLJson = {};
 	
-	NoteModel_CSLJson.prototype.importFromMusicCSLJSON = function(noteStruct, noteModel) {
+	NoteModel_CSLJson.importFromMusicCSLJSON = function(noteStruct, noteModel) {
 		noteModel.numPitches = noteStruct.keys.length;
 
 		var duration = noteStruct.duration;
@@ -52,7 +52,7 @@ define(['modules/core/NoteModel'], function(NoteModel) {
 		}
 	};
 	
-	NoteModel_CSLJson.prototype.exportToMusicCSLJSON = function(noteModel, complete, withNumMeasure) {
+	NoteModel_CSLJson.exportToMusicCSLJSON = function(noteModel, complete, withNumMeasure) {
 		if (complete === undefined) complete = true;
 		if (withNumMeasure === undefined) withNumMeasure = false;
 

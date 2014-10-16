@@ -15,9 +15,9 @@ define(function(require) {
 	var NoteManager_CSLJson = require('modules/converters/MusicCSLJson/NoteManager_CSLJson');
 	var NoteModel_CSLJson = require('modules/converters/MusicCSLJson/NoteModel_CSLJson');
 
-	function SongModel_CSLJson() {}
+	var SongModel_CSLJson = {};
 
-	SongModel_CSLJson.prototype.importFromMusicCSLJSON = function(MusicCSLJSON, songModel, id) {
+	SongModel_CSLJson.importFromMusicCSLJSON = function(MusicCSLJSON, songModel, id) {
 		var chordManager = new ChordManager();
 		var noteManager = new NoteManager();
 		var barManager = new BarManager();
@@ -44,23 +44,19 @@ define(function(require) {
 			var barNumber = 0;
 			if (MusicCSLJSON.changes != null) {
 				MusicCSLJSON.changes.forEach(function(JSONSection) {
-
 					section = new SectionModel();
-					sectionConverter = new SectionModel_CSLJson();
-					sectionConverter.importFromMusicCSLJSON(JSONSection, section);
+					SectionModel_CSLJson.importFromMusicCSLJSON(JSONSection, section);
 					songModel.addSection(section);
 
 					if (JSONSection.bars != null) {
 						JSONSection.bars.forEach(function(JSONBar) {
 							bar = new BarModel();
-							barConverter = new BarModel_CSLJson();
-							barConverter.importFromMusicCSLJSON(JSONBar, bar);
+							BarModel_CSLJson.importFromMusicCSLJSON(JSONBar, bar);
 							barManager.addBar(bar);
 							if (JSONBar.chords != null) {
 								JSONBar.chords.forEach(function(JSONChord) {
 									chord = new ChordModel();
-									chordConverter = new ChordModel_CSLJson();
-									chordConverter.importFromMusicCSLJSON(JSONChord, chord);
+									ChordModel_CSLJson.importFromMusicCSLJSON(JSONChord, chord);
 									chord.setBarNumber(barNumber);
 									chordManager.addChord(chord);
 								});
@@ -69,8 +65,7 @@ define(function(require) {
 								existsMelody = true;
 								JSONBar.melody.forEach(function(JSONNote) {
 									note = new NoteModel();
-									noteConverter = new NoteModel_CSLJson();
-									noteConverter.importFromMusicCSLJSON(JSONNote, note);
+									NoteModel_CSLJson.importFromMusicCSLJSON(JSONNote, note);
 									noteManager.addNote(note);
 								});
 							}
@@ -92,7 +87,7 @@ define(function(require) {
 		return songModel;
 	};
 
-	SongModel_CSLJson.prototype.exportToMusicCSLJSON = function(songModel) {
+	SongModel_CSLJson.exportToMusicCSLJSON = function(songModel) {
 		if (!songModel instanceof SongModel) {
 			throw 'SongModel_CSLJson - exportToMusicCSLJSON - songModel parameters must be an instanceof SongModel';
 		}
@@ -123,8 +118,7 @@ define(function(require) {
 		MusicCSLJSON.changes = [];
 		for (var i = 0, c = songModel.getSections().length; i < c; i++) {
 			// section information
-			var sectionConverter = new SectionModel_CSLJson();
-			JSONSection = sectionConverter.exportToMusicCSLJSON(songModel.getSection(i));
+			JSONSection = SectionModel_CSLJson.exportToMusicCSLJSON(songModel.getSection(i));
 			// bar information
 			startBar = songModel.getStartBarNumberFromSectionNumber(i);
 			lastBarSection = startBar + songModel.getSection(i).getNumberOfBars() - 1;
@@ -133,17 +127,14 @@ define(function(require) {
 			var bar, chords, melody;
 
 			for (var j = startBar; j <= lastBarSection; j++) {
-
-				var barConverter = new BarModel_CSLJson();
-				JSONBar = barConverter.exportToMusicCSLJSON(songModel.getBar(j));
+				JSONBar = BarModel_CSLJson.exportToMusicCSLJSON(songModel.getBar(j));
 				//bar = songModel.getBar(j).exportToMusicCSLJSON(songModel);
 
 				chords = [];
 				barChords = songModel.getComponentsAtBarNumber(j, 'chords');
 				//jsLint complains but nevermind
 				barChords.forEach(function(chord) {
-					var chordConverter = new ChordModel_CSLJson();
-					JSONChord = chordConverter.exportToMusicCSLJSON(chord);
+					JSONChord = ChordModel_CSLJson.exportToMusicCSLJSON(chord);
 					chords.push(JSONChord);
 				});
 
@@ -153,8 +144,7 @@ define(function(require) {
 
 				melody = [];
 				barNotes.forEach(function(note) {
-					var noteConverter = new NoteModel_CSLJson();
-					JSONNote = noteConverter.exportToMusicCSLJSON(note);
+					JSONNote = NoteModel_CSLJson.exportToMusicCSLJSON(note);
 					melody.push(JSONNote);
 				});
 

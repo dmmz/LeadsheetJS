@@ -1,14 +1,11 @@
 define([], function() {
-	function BarModel_CSLJson(MusicCSLJSON) {
-
-	};
+	var BarModel_CSLJson = {};
 	
 	/////////////////////////
 	//  Advanced function  //
 	/////////////////////////
 
-	BarModel_CSLJson.prototype.importFromMusicCSLJSON = function(JSONBar) {
-		var self = this;
+	BarModel_CSLJson.importFromMusicCSLJSON = function(JSONBar) {
 		var labels = ["segno", "segno2", "fine", "coda", "coda2", "on cue"];
 		labels.forEach(function(label) {
 			if (JSONBar.hasOwnProperty(label)) {
@@ -19,9 +16,9 @@ define([], function() {
 		if (JSONBar.hasOwnProperty('ending')) self.setEnding(JSONBar.ending);
 		if (JSONBar.hasOwnProperty('sublabel')) self.setSublabel(JSONBar.sublabel);
 		if (JSONBar.hasOwnProperty('timeSignature')) self.setTimeSignature(JSONBar.timeSignature);
-
 	};
-	BarModel_CSLJson.prototype.exportToMusicCSLJSON = function(barModel) {
+
+	BarModel_CSLJson.exportToMusicCSLJSON = function(barModel) {
 		var bar = {};
 
 		if (barModel.getLabel())
@@ -37,9 +34,7 @@ define([], function() {
 			bar.timeSignature = barModel.getTimeSignature();
 
 		return bar;
-
 	};
-
 	return BarModel_CSLJson;
 });
 	

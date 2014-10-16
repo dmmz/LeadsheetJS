@@ -3,8 +3,7 @@ define(['modules/converters/MusicCSLJson/ChordManager_CSLJson', 'modules/core/Ch
 		run: function() {
 			test("ChordManager_CSLJson", function(assert) {
 				var cm = new ChordManager();
-				var CSLJsonConverter = new ChordManager_CSLJson();
-				var t = CSLJsonConverter.exportToMusicCSLJSON(cm);
+				var t = ChordManager_CSLJson.exportToMusicCSLJSON(cm);
 				assert.deepEqual(t, []);
 
 				// assert.deepEqual(t, cm.exportToMusicCSLJSON());

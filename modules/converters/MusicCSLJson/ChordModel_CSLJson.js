@@ -1,9 +1,7 @@
 define(['modules/core/ChordModel'], function(ChordModel) {
-	function ChordModel_CSLJson(MusicCSLJSON) {
+	var ChordModel_CSLJson = {};
 
-	};
-
-	ChordModel_CSLJson.prototype.importFromMusicCSLJSON = function(JSONChord, chordModel) {
+	ChordModel_CSLJson.importFromMusicCSLJSON = function(JSONChord, chordModel) {
 		chordModel.setNote(JSONChord.p);
 		chordModel.setChordType(JSONChord.ch);
 		chordModel.setParenthesis(JSONChord.parenthesis);
@@ -20,7 +18,7 @@ define(['modules/core/ChordModel'], function(ChordModel) {
 
 
 
-	ChordModel_CSLJson.prototype.exportToMusicCSLJSON = function(chordModel, withNumMeasure) {
+	ChordModel_CSLJson.exportToMusicCSLJSON = function(chordModel, withNumMeasure) {
 		if (withNumMeasure === undefined) withNumMeasure = false;
 		var chord = {};
 		if (typeof chordModel !== "undefined" && chordModel instanceof ChordModel) {

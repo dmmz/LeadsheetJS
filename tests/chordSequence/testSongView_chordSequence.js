@@ -4,8 +4,7 @@ define(['modules/converters/MusicCSLJson/SongModel_CSLJson', 'modules/core/SongM
 			run: function() {
 				test("SongView_chordSequence", function(assert) {
 					var song = new SongModel();
-					var CSLJsonConverter = new SongModel_CSLJson();
-					var songModel = CSLJsonConverter.importFromMusicCSLJSON(testSong.simpleLeadSheet, song);
+					var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSong.simpleLeadSheet, song);
 					var option = {
 						displayTitle: true,
 						displayComposer: true,

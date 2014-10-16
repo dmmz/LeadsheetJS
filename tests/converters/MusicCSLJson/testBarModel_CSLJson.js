@@ -3,8 +3,7 @@ define(['modules/converters/MusicCSLJson/BarModel_CSLJson', 'modules/core/BarMod
 		run: function() {
 			test("BarModel_CSLJson", function(assert) {
 				var bar = new BarModel();
-				var CSLJsonConverter = new BarModel_CSLJson();
-				var t = CSLJsonConverter.exportToMusicCSLJSON(bar);
+				var t = BarModel_CSLJson.exportToMusicCSLJSON(bar);
 				expect(0);
 			});
 		}

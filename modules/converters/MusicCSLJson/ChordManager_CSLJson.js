@@ -1,7 +1,7 @@
 define(['modules/core/ChordModel'], function(ChordModel) {
-	function ChordManager_CSLJson(MusicCSLJSON) {};
+	var ChordManager_CSLJson = {};
 
-	ChordManager_CSLJson.prototype.importFromMusicCSLJSON = function(MusicCSLJSON) {
+	ChordManager_CSLJson.importFromMusicCSLJSON = function(MusicCSLJSON) {
 		if (typeof MusicCSLJSON !== "undefined") {
 			var chordsSection = [];
 			var chordModel;
@@ -21,7 +21,7 @@ define(['modules/core/ChordModel'], function(ChordModel) {
 		return this;
 	}
 
-	ChordManager_CSLJson.prototype.exportToMusicCSLJSON = function(chordModel) {
+	ChordManager_CSLJson.exportToMusicCSLJSON = function(chordModel) {
 		var chords = [];
 		if (typeof chordModel.chords !== "undefined" && chordModel.chords.length) {
 			var currentChord, currentBn;

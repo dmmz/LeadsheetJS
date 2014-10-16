@@ -3,8 +3,7 @@ define(['modules/converters/MusicCSLJson/NoteModel_CSLJson', 'modules/core/NoteM
 		run: function() {
 			test("NoteModel_CSLJson", function(assert) {
 				var note = new NoteModel('h');
-				var CSLJsonConverter = new NoteModel_CSLJson();
-				var t = CSLJsonConverter.exportToMusicCSLJSON(note);
+				var t = NoteModel_CSLJson.exportToMusicCSLJSON(note);
 				
 				// testing default export
 				assert.deepEqual(t, {'dot':0,'duration':'hr',"keys":[]});

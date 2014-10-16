@@ -2,8 +2,7 @@ define(['tests/test-songs', 'modules/core/SongModel', 'modules/converters/MusicC
 	return {
 		run: function() {
 			test("Song", function(assert) {
-				var CSLJsonConverter = new SongModel_CSLJson();
-				var song = CSLJsonConverter.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
+				var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
 
 				//Get Tonality
 				song.getComponent('bars').getBar(5).setTonality("Eb");
