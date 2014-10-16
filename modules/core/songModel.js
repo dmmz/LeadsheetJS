@@ -402,7 +402,7 @@ define(['modules/core/NoteManager', 'modules/core/BarManager', 'modules/core/Cho
 				startBar = this.getStartBarNumberFromSectionNumber(sectionNumber);
 				endBar = startBar + section.getNumberOfBars();
 				for (var barNumber = startBar; barNumber < endBar; barNumber++) {
-					if ($.inArray(barNumber, alreadyAddedbars) === -1) { // excluding first part if there is one
+					if (alreadyAddedbars.indexOf(barNumber) === -1) { // excluding first part if there is one
 						endingBar = this.getBar(barNumber).getEnding();
 						pointerbarNumberStructure.push(barNumber);
 
