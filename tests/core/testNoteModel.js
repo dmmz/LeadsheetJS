@@ -111,6 +111,8 @@ define(['modules/core/NoteModel'], function(NoteModel) {
 				assert.equal(inlineNote.getTimeModification(),null);
 				assert.ok(!inlineNote.isRest);
 				
+				var clonedChord = inlineNote.clone();
+				assert.deepEqual(clonedChord, inlineNote, "clone test");
 
 			});
 		}

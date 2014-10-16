@@ -48,6 +48,9 @@ define(['modules/core/ChordModel'], function(ChordModel) {
 
 				var newChord = new ChordModel({'note':'G', 'chordType':'m7', 'beat':3});
 				assert.equal(newChord.getNote(), "G");
+
+				var clonedChord = newChord.clone();
+				assert.deepEqual(clonedChord, newChord);
 			});
 		}
 	}

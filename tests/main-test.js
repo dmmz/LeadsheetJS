@@ -20,9 +20,11 @@ require.config({
 
 require(['tests/core/testNoteModel', 'tests/core/testChordModel', 'tests/core/testNoteManager', 'tests/core/testSongModel', 'tests/core/testChordManager',
  'tests/converters/MusicCSLJson/testSongModel_CSLJson', 'tests/converters/MusicCSLJson/testBarModel_CSLJson','tests/converters/MusicCSLJson/testSectionModel_CSLJson',  'tests/converters/MusicCSLJson/testChordManager_CSLJson', 'tests/converters/MusicCSLJson/testChordModel_CSLJson', 'tests/converters/MusicCSLJson/testNoteManager_CSLJson', 'tests/converters/MusicCSLJson/testNoteModel_CSLJson',
+ 'tests/chordSequence/testSongView_chordSequence',
   'qunit'],
   function(testNoteModel, testChordModel, testNoteManager, testSongModel, testChordManager,
    testSongModel_CSLJson, testBarModel_CSLJson,testSectionModel_CSLJson, testChordManager_CSLJson, testChordModel_CSLJson, testNoteManager_CSLJson, testNoteModel_CSLJson,
+   testSongView_chordSequence,
     Qunit) {
 
         
@@ -42,6 +44,9 @@ require(['tests/core/testNoteModel', 'tests/core/testChordModel', 'tests/core/te
     testNoteManager_CSLJson.run();
     testNoteModel_CSLJson.run();
 
+    // Chord Sequence Module
+    testSongView_chordSequence.run();
+    
 
 
     QUnit.load();

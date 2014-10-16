@@ -207,7 +207,65 @@ define(['modules/core/NoteManager', 'modules/core/BarManager', 'modules/core/Cho
 			}
 		}
 	};
-		/**
+
+
+
+	/**
+	 * Function return an array containing index of bars in an unfolded song
+	 * @return {array}
+	 */
+	SongModel.prototype.getUnfoldedSongSection = function(sectionNumber) {
+		if (typeof sectionNumber !== "undefined" && !isNaN(sectionNumber)) {
+			var pointerbarNumberStructure = [];
+			var endingBar;
+			var alreadyAddedbars = []; // contain the bars that are in 1 part so when we will look in 2 part they will not be getted
+			var currentRepeatedPart = 0;
+			var section = this.getSection(sectionNumber);
+			var repeat = section.getRepeatTimes();
+			var whileSecurity = 0;
+			while (repeat >= 0 || whileSecurity > 1000) {
+				whileSecurity++;
+				// looping in all sections repeat
+				alreadyAddedbars = [];
+				currentRepeatedPart = 0;
+				startBar = this.getStartBarNumberFromSectionNumber(sectionNumber);
+				endBar = startBar + section.getNumberOfBars();
+				for (var barNumber = startBar; barNumber < endBar; barNumber++) {
+					if (alreadyAddedbars.indexOf(barNumber) === -1) { // excluding first part if there is one
+						endingBar = this.getBar(barNumber).getEnding();
+						pointerbarNumberStructure.push(barNumber);
+
+						// Case bars after the 1 start
+						if (currentRepeatedPart == 1) {
+							alreadyAddedbars.push(barNumber);
+						}
+						// Case bars got a 1 repetition (it happen only to the first bar repeated)
+						if (typeof endingBar !== "undefined" && endingBar == 1) {
+							alreadyAddedbars.push(barNumber);
+							currentRepeatedPart = 1;
+						}
+
+						//  Case bars got a 2 repetition (it happen only to the first repeated bar)
+						if (typeof endingBar !== "undefined" && endingBar == 2) {
+							// case it's the first time we arrive on 2
+							if (currentRepeatedPart == 1) {
+								pointerbarNumberStructure.pop();
+								alreadyAddedbars.pop();
+								barNumber = startBar - 1;
+								currentRepeatedPart++;
+							}
+						}
+
+					}
+				}
+				repeat--;
+			}
+			return pointerbarNumberStructure;
+		}
+	};
+
+	/**
+
 	 * Function return the start bar number of any section, first bar is 0
 	 * @param  {int} sectionNumber
 	 * @return {int} start Bar Number of section
