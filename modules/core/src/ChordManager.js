@@ -205,7 +205,7 @@ define(['modules/core/src/ChordModel'], function(ChordModel) {
 
 		var chords = this.getChords();
 		var r;
-		for (var i = 0; i < chords.length; i++) {
+		for (var i = 0, c = chords.length; i < c; i++) {
 			if (equalPosition(pos, chords[i])) {
 				r = "equal";
 				break;

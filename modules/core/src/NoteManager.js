@@ -78,7 +78,7 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 		var part1 = this.notes.slice(0, cursor[0]);
 		var part2 = this.notes.slice(cursor[1] + 1, this.notes.length); //selected notes are removed
 		var copyArr = [];
-		for (var i = 0; i < notesToPaste.length; i++) copyArr.push(notesToPaste[i].clone());
+		for (var i = 0, c = notesToPaste.length; i < c; i++) copyArr.push(notesToPaste[i].clone());
 		this.notes = part1.concat(copyArr, part2);
 	};
 
@@ -180,7 +180,7 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 	 */
 	NoteManager.prototype.getNoteIndex = function( note ) {
 		if(typeof note !== "undefined" && note instanceof NoteModel){
-			for (var i = 0; i < this.notes.length; i++) {
+			for (var i = 0, c = this.notes.length; i < c; i++) {
 				if(JSON.stringify(this.notes[i].serialize(true, true)) === JSON.stringify(note.serialize(true, true))) {
 					return i;
 				}

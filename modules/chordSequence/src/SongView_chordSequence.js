@@ -33,12 +33,12 @@ define(['modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/
 				for (var i = 0; i < sectionsLength; i++) {
 					txt += this.getSectionView(i);
 					if (this.displayBar === true) {
-						var sections = this.songModel.getUnfoldedSongSection(i);
+						var bars = this.songModel.getUnfoldedSongSection(i);
 
 						var currentBarNumber = 0;
 						var currentBar;
-						for (var j = 0; j < sections.length; j++) {
-							currentBarNumber = sections[j];
+						for (var j = 0, c = bars.length; j < c; j++) {
+							currentBarNumber = bars[j];
 							currentBar = this.songModel.getBar(currentBarNumber);
 							if (j !== 0) {
 								txt += this.delimiterBar;
@@ -53,8 +53,8 @@ define(['modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/
 							if (chordsInCurrentBar.length == 0 && this.fillEmptyBar === true) {
 								txt += this.fillEmptyBarCharacter;
 							} else {
-								for (var v = 0; v < chordsInCurrentBar.length; v++) {
-									txt += chordsInCurrentBar[v].toString('');
+								for (var k = 0, v = chordsInCurrentBar.length; k < v; k++) {
+									txt += chordsInCurrentBar[k].toString('');
 								}
 							}
 							txt += ' ';

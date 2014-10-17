@@ -1,6 +1,5 @@
 define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/core/src/ChordManager'], function(NoteManager, BarManager, ChordManager) {
-	function SongModel() 
-	{
+	function SongModel() {
 		this.composers = [];
 		this.sections = [];
 		this.components = [];
@@ -57,11 +56,10 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 	};
 
 	SongModel.prototype.setStyle = function(style) {
-		if (typeof style !== "undefined") {
-			this.style = style;
-			return true;
+		if (typeof style === "undefined") {
+			return;
 		}
-		return false;
+		this.style = style;
 	};
 
 	SongModel.prototype.setTempo = function(tempo) {
@@ -87,8 +85,8 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 	 * @return {SectionModel}
 	 */
 	SongModel.prototype.getSection = function(index) {
-		if (isNaN(index) || index<0 ||index > this.sections.length) {
-			throw "getSection - invalid index :"+index;
+		if (isNaN(index) || index < 0 || index > this.sections.length) {
+			throw "getSection - invalid index :" + index;
 		}
 		return this.sections[index];
 	};
@@ -107,13 +105,12 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 	SongModel.prototype.getSections = function() {
 		return this.sections;
 	};
-		/**
+	/**
 	 * gets component (either chords or notes)
 	 * @param  {String} componentTitle must be "chords" or "notes" or "bars"
 	 * @return {NoteManager or ChordManager}
 	 */
 	SongModel.prototype.getComponent = function(componentTitle) {
-
 		if (this.components.hasOwnProperty(componentTitle))
 			return this.components[componentTitle];
 		else
@@ -133,7 +130,6 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 	 * @return {string} eg. C, Bb etc
 	 */
 	SongModel.prototype.getTonalityAt = function(barNumber) {
-		
 		if (typeof barNumber === "undefined" || isNaN(barNumber)) {
 			throw "invalid barNumber " + barNumber;
 		}
@@ -156,7 +152,6 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 	};
 
 	SongModel.prototype.setTimeSignature = function(timeSignature) {
-
 		if (!timeSignature) {
 			throw "invalid timeSignature ";
 		}
@@ -189,18 +184,19 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 		// otherwise returns song timeSig
 		return currentTimeSignature;
 	};
+
 	/**
-	 * 
-	 * @param  {Number} barNumber 
+	 *
+	 * @param  {Number} barNumber
 	 * @return {Number} section number
 	 */
 	SongModel.prototype.getSectionNumberFromBarNumber = function(barNumber) {
-		if (isNaN(barNumber)){
-			throw "barNumber is not a number: "+barNumber;
+		if (isNaN(barNumber)) {
+			throw "barNumber is not a number: " + barNumber;
 		}
 		var sections = this.getSections();
 		var sumBar = 0;
-		for (var i = 0; i < sections.length; i++) {
+		for (var i = 0, c = sections.length; i < c; i++) {
 			sumBar += sections[i].getNumberOfBars();
 			if (sumBar > barNumber) {
 				return i;
@@ -265,33 +261,21 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 	};
 
 	/**
-
 	 * Function return the start bar number of any section, first bar is 0
 	 * @param  {int} sectionNumber
 	 * @return {int} start Bar Number of section
 	 */
 	SongModel.prototype.getStartBarNumberFromSectionNumber = function(sectionNumber) {
-		if (isNaN(sectionNumber)){
-			throw "sectionNumber is not a number: "+sectionNumber;
+		if (isNaN(sectionNumber)) {
+			throw "sectionNumber is not a number: " + sectionNumber;
 		}
 		var barNumber = 0;
-		for (var i = 0, c = sectionNumber; i < c; i++) {
+		for (var i = 0; i < sectionNumber; i++) {
 			barNumber += this.getSection(i).getNumberOfBars();
 		}
 		return barNumber;
 	};
 
-	/**
-	 * The function returns the number of beats from the timeSig arguments or by default on current timeSignature
-	 * @param  {string} timeSig, optional
-	 * @return {int} number of beats in a measure  in the unit of the signature. E.g.: for 6/8 -> 6, for 4/4 -> 4 for 2/2 -> 2
-	 */
-	SongModel.prototype.getBeatsFromTimeSignature = function(timeSig) {
-		if (timeSig !== "undefined") {
-			return parseInt(timeSig.split("/")[0], null);
-		}
-		return parseInt(this.timeSignature.split("/")[0], null);
-	};
 
 	/**
 	 * Function return all components in a given bar number, componentTitle attriubtes is a filter for component title (eg chords, notes...)
@@ -309,12 +293,12 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 		var modelManager = this.components[componentTitle];
 		if (typeof ChordManager !== "undefined" && modelManager instanceof ChordManager) {
 			var chords = modelManager.getChordsByBarNumber(barNumber);
-			for (var i = 0; i < chords.length; i++) {
+			for (var i = 0, c = chords.length; i < c; i++) {
 				components.push(chords[i]);
 			}
 		} else if (typeof NoteManager !== "undefined" && modelManager instanceof NoteManager) {
 			var notes = components.concat(this.getNotesByBarNumber(modelManager, barNumber));
-			for (var j = 0; j < notes.length; j++) {
+			for (var j = 0, c = notes.length; j < c; j++) {
 				components.push(notes[j]);
 			}
 		}
@@ -323,7 +307,6 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 	SongModel.prototype.getNotesByBarNumber = function(noteManager, barNumber) {
 		function isSameMeasure(offset, offsetAnt, nMeasureBeats, beatsPerBar, timeSig, songModel) {
 			var tu = songModel.getBeatUnitFromTimeSignature(timeSig);
-
 			offset -= nMeasureBeats;
 			offsetAnt -= nMeasureBeats;
 			var mOffset = offset / (beatsPerBar * tu);
@@ -337,7 +320,6 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 				error: error
 			};
 		}
-
 		var currentBar = 0;
 		var beatsPerBar = this.getBeatsFromTimeSignatureAt(currentBar);
 		var localTimeSig = this.getTimeSignatureAt(currentBar);
@@ -347,7 +329,7 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 			offsetAnt = 0;
 
 		var notesBar = [];
-		for (var i = 0; i < noteManager.getTotal(); i++) {
+		for (var i = 0, c = noteManager.getTotal(); i < c; i++) {
 			note = noteManager.getNote(i);
 
 			// isSameMeasure=this.isSameMeasure(offset,offsetAnt,nMeasureBeatsAcc,beatsPerBar,localTimeSig);
@@ -372,22 +354,34 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 			offsetAnt = offset;
 			offset = noteManager.incrOffset(offset, note.getDuration(nMeasureBeats));
 		}
-
 	};
+
+	/**
+	 * The function returns the number of beats from the timeSig arguments or by default on current timeSignature
+	 * @param  {string} timeSig, optional
+	 * @return {int} number of beats in a measure in the unit of the signature. E.g.: for 6/8 -> 6, for 4/4 -> 4 for 2/2 -> 2
+	 */
+	SongModel.prototype.getBeatsFromTimeSignature = function(timeSig) {
+		if (timeSig !== "undefined") {
+			return parseInt(timeSig.split("/")[0], null);
+		}
+		return parseInt(this.timeSignature.split("/")[0], null);
+	};
+
+	SongModel.prototype.getBeatsFromTimeSignatureAt = function(barNumber) {
+		return this.getBeatsFromTimeSignature(this.getTimeSignatureAt(barNumber));
+	}
 
 	/**
 	 * The function returns the beats unit from the timeSig arguments or by default on current timeSignature
 	 * @param  {string} timeSig, optionnal
-	 * @return {int} beat unit in a measure
+	 * @return {int} beat unit in a measure. E.g.: for 6/8 -> 0.5, for 4/4 -> 1 for 2/2 -> 2
 	 */
 	SongModel.prototype.getBeatUnitFromTimeSignature = function(timeSig) {
 		if (timeSig == null) timeSig = this.timeSignature;
 		var u = parseInt(timeSig.split("/")[1], null);
 		return 4 / u;
 	};
-	SongModel.prototype.getBeatsFromTimeSignatureAt = function(barNumber) {
-		return this.getBeatsFromTimeSignature(this.getTimeSignatureAt(barNumber));
-	}
 
 	return SongModel;
 });

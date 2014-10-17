@@ -1,6 +1,6 @@
 define(['modules/core/src/NoteModel'], function(NoteModel) {
 	var NoteModel_CSLJson = {};
-	
+
 	NoteModel_CSLJson.importFromMusicCSLJSON = function(noteStruct, noteModel) {
 		noteModel.numPitches = noteStruct.keys.length;
 
@@ -18,7 +18,7 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 		}
 
 		var parsedNote;
-		for (var i = 0; i < noteStruct.keys.length; i++) {
+		for (var i = 0, c = noteStruct.keys.length; i < c; i++) {
 			parsedNote = string2Obj(noteStruct.keys[i]);
 
 			noteModel.pitchClass[i] = parsedNote.pitchClass;
@@ -51,7 +51,7 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 			};
 		}
 	};
-	
+
 	NoteModel_CSLJson.exportToMusicCSLJSON = function(noteModel, complete, withNumMeasure) {
 		if (complete === undefined) complete = true;
 		if (withNumMeasure === undefined) withNumMeasure = false;
@@ -59,7 +59,7 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 		var noteObj = {};
 		if (typeof noteModel !== "undefined" && noteModel instanceof NoteModel) {
 			noteObj.keys = [];
-			for (var i = 0; i < noteModel.getNumPitches(); i++) {
+			for (var i = 0, c = noteModel.getNumPitches(); i < c; i++) {
 				noteObj.keys.push(noteModel.getPitch(i));
 			}
 			noteObj.duration = noteModel.duration;
@@ -74,6 +74,6 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 		}
 		return noteObj;
 	};
-	
+
 	return NoteModel_CSLJson;
 });
