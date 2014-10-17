@@ -9,8 +9,6 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 		this.timeSignature = 	(typeof param !== "undefined" && param.timeSignature) ? param.timeSignature : "4/4";
 		this.sections = 		(typeof param !== "undefined" && param.sections) ? param.sections : [];
 		this.components = 		(typeof param !== "undefined" && param.components) ? param.components : [];
-		this.setTimeSignature("4/4");
-		this.setTonality("C");
 		this.addComponent('notes', new NoteManager());
 		this.addComponent('bars', new BarManager());
 	}
