@@ -1,8 +1,8 @@
-define(['modules/midiSoundModel/src/MidiNoteModel_midiSoundModel'], function(MidiNoteModel) {
+define(['modules/midiCSLModel/src/NoteModel_midiCSLModel'], function(NoteModel_midiCSLModel) {
 	return {
 		run: function() {
-			test("MidiNoteModel_midiSoundModel", function(assert) {
-				var mnm = new MidiNoteModel();
+			test("NoteModel_midiCSLModel", function(assert) {
+				var mnm = new NoteModel_midiCSLModel();
 
 				// test empty object
 				assert.equal(mnm.getCurrentTime(), 0);

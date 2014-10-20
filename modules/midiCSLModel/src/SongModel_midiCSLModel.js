@@ -1,13 +1,13 @@
-define(['modules/midiSoundModel/src/MidiNoteModel_midiSoundModel'], function(MidiSoundModel) {
-	function MidiSongModel(option) {
+define(['modules/midiCSLModel/src/NoteModel_midiCSLModel'], function(NoteModel_midiCSLModel) {
+	function SongModel_midiCSLModel(option) {
 		this.song = (typeof(option) !== "undefined" && typeof(option.song) !== "undefined") ? option.song : [];
 	};
 
-	MidiSongModel.prototype.getSong = function() {
+	SongModel_midiCSLModel.prototype.getSong = function() {
 		return this.song;
 	}
 
-	MidiSongModel.prototype.setSong = function(song, replaceBool) {
+	SongModel_midiCSLModel.prototype.setSong = function(song, replaceBool) {
 		if (typeof replaceBool !== "undefined" && replaceBool) {
 			this.song = song;
 		} else {
@@ -15,7 +15,7 @@ define(['modules/midiSoundModel/src/MidiNoteModel_midiSoundModel'], function(Mid
 		}
 	}
 
-	MidiSongModel.prototype.setFromType = function( song, type) {
+	SongModel_midiCSLModel.prototype.setFromType = function( song, type) {
 		if(typeof type === "undefined"){
 			 return;
 		}
@@ -28,7 +28,7 @@ define(['modules/midiSoundModel/src/MidiNoteModel_midiSoundModel'], function(Mid
 		/*console.log(this.song);*/
 	}
 
-	MidiSongModel.prototype.getFromType = function(type) {
+	SongModel_midiCSLModel.prototype.getFromType = function(type) {
 		var elements = [];
 		if(typeof type !== "undefined"){
 			for (var i = 0, c = this.song.length; i < c; i++) {
@@ -40,7 +40,7 @@ define(['modules/midiSoundModel/src/MidiNoteModel_midiSoundModel'], function(Mid
 		return elements;
 	}
 
-	MidiSongModel.prototype.removeFromType = function(type) {
+	SongModel_midiCSLModel.prototype.removeFromType = function(type) {
 		if(typeof type === "undefined"){
 			 return;
 		}
@@ -51,7 +51,7 @@ define(['modules/midiSoundModel/src/MidiNoteModel_midiSoundModel'], function(Mid
 		}
 	}
 
-	MidiSongModel.prototype.getLastNote = function() {
+	SongModel_midiCSLModel.prototype.getLastNote = function() {
 		// Looking for last note
 		var lastNote = this.song[0];
 		var lastNoteEndTime = lastNote.getCurrentTime() + lastNote.getDuration();
@@ -69,8 +69,8 @@ define(['modules/midiSoundModel/src/MidiNoteModel_midiSoundModel'], function(Mid
 		return lastNote;
 	}
 
-	MidiSongModel.prototype.getMidiSoundModelIndex = function(midiSoundModel) {
-		if (typeof midiSoundModel !== "undefined" && midiSoundModel instanceof MidiSoundModel) {
+	SongModel_midiCSLModel.prototype.getMidiSoundModelIndex = function(midiSoundModel) {
+		if (typeof midiSoundModel !== "undefined" && midiSoundModel instanceof SongModel_midiCSLModel) {
 			var comp = midiSoundModel.serialize();
 			for (var i = 0, c = this.song.length; i < c; i++) {
 				if (this.song[i].serialize() === comp) {
@@ -81,21 +81,21 @@ define(['modules/midiSoundModel/src/MidiNoteModel_midiSoundModel'], function(Mid
 		return -1;
 	}
 
-	MidiSongModel.prototype.serialize = function() {
-		var midiSongModel = {};
-		midiSongModel.song = this.song;
-		return midiSongModel;
+	SongModel_midiCSLModel.prototype.serialize = function() {
+		var SongModel_midiCSLModel = {};
+		SongModel_midiCSLModel.song = this.song;
+		return SongModel_midiCSLModel;
 	};
 
-	MidiSongModel.prototype.clone = function() {
-		return new MidiSongModel(this.serialize());
+	SongModel_midiCSLModel.prototype.clone = function() {
+		return new SongModel_midiCSLModel(this.serialize());
 	};
 
-	return MidiSongModel;
+	return SongModel_midiCSLModel;
 });
 
 /*
-	MidiSongModel.prototype.generateMetronome = function(songModel) {
+	SongModel_midiCSLModel.prototype.generateMetronome = function(songModel) {
 		var note, duration;
 		var noteObject = {};
 		var metronome = [];

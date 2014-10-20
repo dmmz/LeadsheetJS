@@ -21,12 +21,12 @@ require.config({
 require(['modules/core/test/testNoteModel', 'modules/core/test/testChordModel', 'modules/core/test/testNoteManager', 'modules/core/test/testSongModel', 'modules/core/test/testChordManager',
  'modules/converters/MusicCSLJson/test/testSongModel_CSLJson', 'modules/converters/MusicCSLJson/test/testBarModel_CSLJson','modules/converters/MusicCSLJson/test/testSectionModel_CSLJson',  'modules/converters/MusicCSLJson/test/testChordManager_CSLJson', 'modules/converters/MusicCSLJson/test/testChordModel_CSLJson', 'modules/converters/MusicCSLJson/test/testNoteManager_CSLJson', 'modules/converters/MusicCSLJson/test/testNoteModel_CSLJson',
  'modules/chordSequence/test/testSongView_chordSequence',
- 'modules/midiSoundModel/test/testMidiSongModel_midiSoundModel', 'modules/midiSoundModel/test/testMidiNoteModel_midiSoundModel',
+ 'modules/midiCSLModel/test/testSongModel_midiCSLModel', 'modules/midiCSLModel/test/testNoteModel_midiCSLModel',
   'qunit'],
   function(testNoteModel, testChordModel, testNoteManager, testSongModel, testChordManager,
    testSongModel_CSLJson, testBarModel_CSLJson,testSectionModel_CSLJson, testChordManager_CSLJson, testChordModel_CSLJson, testNoteManager_CSLJson, testNoteModel_CSLJson,
    testSongView_chordSequence,
-   testMidiSongModel_midiSoundModel, testMidiNoteModel_midiSoundModel,
+   testSongModel_midiCSLModel, testNoteModel_midiCSLModel,
     Qunit) {
 
         
@@ -50,8 +50,8 @@ require(['modules/core/test/testNoteModel', 'modules/core/test/testChordModel', 
     testSongView_chordSequence.run();
 
     // Midi sound model Module
-    testMidiSongModel_midiSoundModel.run();
-    testMidiNoteModel_midiSoundModel.run();
+    testSongModel_midiCSLModel.run();
+    testNoteModel_midiCSLModel.run();
 
     QUnit.load();
     QUnit.start();
