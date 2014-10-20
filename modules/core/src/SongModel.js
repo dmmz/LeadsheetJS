@@ -13,9 +13,9 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 		this.addComponent('bars', new BarManager());
 	}
 
-	/////////////////////////
+	///////////////////////////////
 	// Basic getters and setters //
-	/////////////////////////
+	///////////////////////////////
 
 	SongModel.prototype.getTitle = function() {
 		return this.title;
