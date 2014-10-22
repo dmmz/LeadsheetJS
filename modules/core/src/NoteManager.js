@@ -196,10 +196,7 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 		}
 		function getBarBeats(numBar, defaultBeats) {
 			var timeSig = song.getBar(i).timeSignature;
-			if (timeSig) {
-				return timeSig.getBeats();
-			}
-			return defaultBeats;
+			return (timeSig) ? timeSig.getBeats() : defaultBeats;
 		}
 		var startBeat = 1,
 			endBeat,
