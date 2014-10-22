@@ -25,7 +25,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 			if (param.pitchList.length > 1) {
 				param.pitchList = NoteUtils.sortPitches(param.pitchList);
 			}
-			for (var i = 0; i < param.pitchList.length; i++) {
+			for (var i = 0, c = param.pitchList.length; i < c; i++) {
 				this.setNoteFromString(param.pitchList[i], i);
 			}
 		}
@@ -237,7 +237,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 			dur = dur * parseInt(nums[1], null) / parseInt(nums[0], null);
 		}
 		var durTmp = dur;
-		for (var i = 0; i < this.dot; i++) {
+		for (var i = 0, c = this.dot; i < c; i++) {
 			durTmp /= 2;
 			dur += durTmp;
 		}
@@ -251,7 +251,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 
 		var noteObj = {};
 		noteObj.pitchList = [];
-		for (var i = 0; i < this.getNumPitches(); i++) {
+		for (var i = 0, c = this.getNumPitches(); i < c; i++) {
 			noteObj.pitchList.push(this.getPitch(i));
 		}
 		noteObj.duration = this.duration;

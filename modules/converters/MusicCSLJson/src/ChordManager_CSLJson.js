@@ -6,9 +6,9 @@ define(['modules/core/src/ChordModel'], function(ChordModel) {
 			var chordsSection = [];
 			var chordModel;
 			var barNumber = 0;
-			for (var i = 0; i < MusicCSLJSON.sections.length; i++) {
-				for (var j = 0; j < chordsSection.length; j++) {
-					for (var k = 0; k < chordsSection[j].length; k++) {
+			for (var i = 0, c = MusicCSLJSON.sections.length; i < c; i++) {
+				for (var j = 0, v = chordsSection.length; j < v; j++) {
+					for (var k = 0, b = chordsSection[j].length; k < b; k++) {
 						chordModel = new ChordModel();
 						chordModel.importFromMusicCSLJSON(chordsSection[j][k])
 						chordModel.setBarNumber(barNumber);
@@ -25,7 +25,7 @@ define(['modules/core/src/ChordModel'], function(ChordModel) {
 		var chords = [];
 		if (typeof chordModel.chords !== "undefined" && chordModel.chords.length) {
 			var currentChord, currentBn;
-			for (var i = 0; i < chordModel.chords.length; i++) {
+			for (var i = 0, c = chordModel.chords.length; i < c; i++) {
 				currentChord = chordModel.getChord(i);
 				currentBn = currentChord.getBarNumber();
 				if (typeof chords[currentBn] === "undefined") {

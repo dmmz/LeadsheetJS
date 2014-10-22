@@ -22,7 +22,6 @@ require.config({
   }
 });
 
-
 require(['modules/core/test/testNoteModel', 
         'modules/core/test/testChordModel', 
         'modules/core/test/testNoteManager', 
@@ -35,13 +34,14 @@ require(['modules/core/test/testNoteModel',
  'modules/converters/MusicCSLJson/test/testChordModel_CSLJson', 
  'modules/converters/MusicCSLJson/test/testNoteManager_CSLJson', 
  'modules/converters/MusicCSLJson/test/testNoteModel_CSLJson',
+ 'modules/midiCSLModel/test/testSongModel_midiCSLModel', 'modules/midiCSLModel/test/testNoteModel_midiCSLModel',
  'modules/chordSequence/test/testSongView_chordSequence','modules/LSViewer/test/testLSViewer',
   'qunit'/*,'vexflow_helper'*/],
   function(testNoteModel, testChordModel, testNoteManager, testSongModel, testChordManager, testTimeSignatureModel,
-   testSongModel_CSLJson, testBarModel_CSLJson,testSectionModel_CSLJson, testChordManager_CSLJson, testChordModel_CSLJson, testNoteManager_CSLJson, testNoteModel_CSLJson,testSongView_chordSequence,testLSViewer,
+   testSongModel_CSLJson, testBarModel_CSLJson,testSectionModel_CSLJson, testChordManager_CSLJson, testChordModel_CSLJson, testNoteManager_CSLJson, testNoteModel_CSLJson,testSongModel_midiCSLModel, testNoteModel_midiCSLModel, testSongView_chordSequence,testLSViewer,
     Qunit/*, Test*/) {
     
-    
+      
     // Core Module
     testNoteModel.run();
     testChordModel.run();
@@ -61,10 +61,15 @@ require(['modules/core/test/testNoteModel',
 
     // Chord Sequence Module
     testSongView_chordSequence.run();
+
     
     //LSViewer Module
     //console.log(Vex);
     //testLSViewer.run(Vex);
+
+    // Midi sound model Module
+    testSongModel_midiCSLModel.run();
+    testNoteModel_midiCSLModel.run();
 
     QUnit.load();
     QUnit.start();

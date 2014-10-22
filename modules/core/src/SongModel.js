@@ -1,23 +1,27 @@
 define([
-		'modules/core/src/NoteManager', 
-		'modules/core/src/BarManager', 
-		'modules/core/src/ChordManager',
-		'modules/core/src/TimeSignatureModel'
-		], function(NoteManager, BarManager, ChordManager, TimeSignatureModel) {
-	function SongModel() 
-	{
-		this.composers = [];
-		this.sections = [];
-		this.components = [];
-		this.setTimeSignature("4/4");
-		this.setTonality("C");
+	'modules/core/src/NoteManager',
+	'modules/core/src/BarManager',
+	'modules/core/src/ChordManager',
+	'modules/core/src/TimeSignatureModel'
+], function(NoteManager, BarManager, ChordManager, TimeSignatureModel) {
+	function SongModel(param) {
+		this.title = (typeof param !== "undefined" && param.title) ? param.title : '';
+		this.composers = (typeof param !== "undefined" && param.composers) ? param.composers : [];
+		this.style = (typeof param !== "undefined" && param.style) ? param.style : '';
+		this.source = (typeof param !== "undefined" && param.source) ? param.source : '';
+		this.tempo = (typeof param !== "undefined" && param.tempo) ? param.tempo : 120;
+		this.tonality = (typeof param !== "undefined" && param.tonality) ? param.tonality : "C";
+		this.timeSignature = (typeof param !== "undefined" && param.timeSignature) ? param.timeSignature : "4/4";
+		this.sections = (typeof param !== "undefined" && param.sections) ? param.sections : [];
+		this.components = (typeof param !== "undefined" && param.components) ? param.components : [];
+
 		this.addComponent('notes', new NoteManager());
 		this.addComponent('bars', new BarManager());
 	}
 
-	/////////////////////////
+	///////////////////////////////
 	// Basic getters and setters //
-	/////////////////////////
+	///////////////////////////////
 
 	SongModel.prototype.getTitle = function() {
 		return this.title;
@@ -45,6 +49,17 @@ define([
 		return false;
 	};*/
 
+	SongModel.prototype.getStyle = function() {
+		return this.style;
+	};
+
+	SongModel.prototype.setStyle = function(style) {
+		if (typeof style === "undefined") {
+			return;
+		}
+		this.style = style;
+	};
+
 	SongModel.prototype.getSource = function() {
 		return this.source;
 	};
@@ -57,79 +72,26 @@ define([
 		return false;
 	};
 
-	SongModel.prototype.getStyle = function() {
-		return this.style;
-	};
-
-	SongModel.prototype.setStyle = function(style) {
-		if (typeof style !== "undefined") {
-			this.style = style;
-			return true;
-		}
-		return false;
-	};
-
 	SongModel.prototype.setTempo = function(tempo) {
+		if (typeof tempo === "undefined" || isNaN(tempo) || tempo < 0) {
+			return;
+		}
 		this.tempo = tempo;
 	};
+
 	SongModel.prototype.getTempo = function() {
 		return this.tempo;
 	};
 
+	SongModel.prototype.setTonality = function(tonality) {
+		if (typeof tonality === "undefined") {
+			return;
+		}
+		this.tonality = tonality;
+	};
+
 	SongModel.prototype.getTonality = function() {
 		return this.tonality;
-	};
-
-	SongModel.prototype.setTonality = function(tonality) {
-		if (tonality != null) {
-			this.tonality = tonality;
-			return true;
-		}
-		return false;
-	};
-	/**
-	 * @param  {Integer} index  index of the section
-	 * @return {SectionModel}
-	 */
-	SongModel.prototype.getSection = function(index) {
-		if (isNaN(index) || index<0 ||index > this.sections.length) {
-			throw "getSection - invalid index :"+index;
-		}
-		return this.sections[index];
-	};
-	SongModel.prototype.getBars = function() {
-		return this.getComponent("bars").getBars();
-	};
-
-	SongModel.prototype.getBar = function(index) {
-		return this.getComponent("bars").getBar(index);
-	};
-
-	SongModel.prototype.addSection = function(sectionsItem) {
-		this.sections.push(sectionsItem);
-	};
-
-	SongModel.prototype.getSections = function() {
-		return this.sections;
-	};
-		/**
-	 * gets component (either chords or notes)
-	 * @param  {String} componentTitle must be "chords" or "notes" or "bars"
-	 * @return {NoteManager or ChordManager}
-	 */
-	SongModel.prototype.getComponent = function(componentTitle) {
-
-		if (this.components.hasOwnProperty(componentTitle))
-			return this.components[componentTitle];
-		else
-			return undefined;
-	};
-
-	SongModel.prototype.addComponent = function(componentTitle, componentItem) {
-		if (!componentItem) return false;
-		this.components[componentTitle] = componentItem;
-		return true;
-
 	};
 
 	/**
@@ -138,7 +100,6 @@ define([
 	 * @return {string} eg. C, Bb etc
 	 */
 	SongModel.prototype.getTonalityAt = function(barNumber) {
-		
 		if (typeof barNumber === "undefined" || isNaN(barNumber)) {
 			throw "invalid barNumber " + barNumber;
 		}
@@ -156,13 +117,13 @@ define([
 		return currentTonality;
 	};
 
-	SongModel.prototype.getTimeSignature = function() {
-		return this.timeSignature;
-	};
-
 	SongModel.prototype.setTimeSignature = function(timeSignature) {
 
 		this.timeSignature = new TimeSignatureModel(timeSignature);
+	};
+
+	SongModel.prototype.getTimeSignature = function() {
+		return this.timeSignature;
 	};
 
 	/**
@@ -191,26 +152,129 @@ define([
 		// otherwise returns song timeSig
 		return currentTimeSignature;
 	};
+
 	/**
-	 * 
-	 * @param  {Number} barNumber 
+	 * The function returns the number of beats from the timeSig arguments or by default on current timeSignature
+	 * @param  {string} timeSig, optional
+	 * @return {int} number of beats in a measure in the unit of the signature. E.g.: for 6/8 -> 6, for 4/4 -> 4 for 2/2 -> 2
+	 */
+	SongModel.prototype.getBeatsFromTimeSignature = function(timeSig) {
+		if (timeSig !== "undefined") {
+			return parseInt(timeSig.split("/")[0], null);
+		}
+		return parseInt(this.timeSignature.split("/")[0], null);
+	};
+
+	SongModel.prototype.getBeatsFromTimeSignatureAt = function(barNumber) {
+		return this.getBeatsFromTimeSignature(this.getTimeSignatureAt(barNumber));
+	};
+
+	/**
+	 * The function returns the beats unit from the timeSig arguments or by default on current timeSignature
+	 * @param  {string} timeSig, optionnal
+	 * @return {int} beat unit in a measure. E.g.: for 6/8 -> 0.5, for 4/4 -> 1 for 2/2 -> 2
+	 */
+	SongModel.prototype.getBeatUnitFromTimeSignature = function(timeSig) {
+		if (timeSig == null) timeSig = this.timeSignature;
+		var u = parseInt(timeSig.split("/")[1], null);
+		return 4 / u;
+	};
+
+	/**
+	 * @param  {Integer} index  index of the section
+	 * @return {SectionModel}
+	 */
+	SongModel.prototype.getSection = function(index) {
+		if (isNaN(index) || index < 0 || index > this.sections.length) {
+			throw "getSection - invalid index :" + index;
+		}
+		return this.sections[index];
+	};
+	SongModel.prototype.getSections = function() {
+		return this.sections;
+	};
+
+	SongModel.prototype.addSection = function(sectionsItem) {
+		this.sections.push(sectionsItem);
+	};
+
+
+	/**
+	 * gets component (either chords or notes)
+	 * @param  {String} componentTitle must be "chords" or "notes" or "bars"
+	 * @return {NoteManager or ChordManager}
+	 */
+	SongModel.prototype.getComponent = function(componentTitle) {
+		if (this.components.hasOwnProperty(componentTitle))
+			return this.components[componentTitle];
+		else
+			return undefined;
+	};
+
+	SongModel.prototype.addComponent = function(componentTitle, componentItem) {
+		if (!componentItem) return false;
+		this.components[componentTitle] = componentItem;
+		return true;
+	};
+
+	/**
+	 * Function return all components in a given bar number, componentTitle attriubtes is a filter for component title (eg chords, notes...)
+	 * @param  {int} barNumber
+	 * @param  {string} componentTitle will filter all the result depending the type (chords, notes...)
+	 * @return {array} it return an array of the direct object
+	 */
+	SongModel.prototype.getComponentsAtBarNumber = function(barNumber, componentTitle) {
+		var components = [];
+
+		if (!componentTitle || !this.components.hasOwnProperty(componentTitle)) {
+			throw 'the item is matching no known type in getComponentsAtBarNumber';
+		}
+
+		var modelManager = this.components[componentTitle];
+		if (typeof ChordManager !== "undefined" && modelManager instanceof ChordManager) {
+			var chords = modelManager.getChordsByBarNumber(barNumber);
+			for (var i = 0, c = chords.length; i < c; i++) {
+				components.push(chords[i]);
+			}
+		} else if (typeof NoteManager !== "undefined" && modelManager instanceof NoteManager) {
+			var notes = components.concat(this.getNotesByBarNumber(modelManager, barNumber));
+			for (var j = 0, c = notes.length; j < c; j++) {
+				components.push(notes[j]);
+			}
+		}
+		return components;
+	};
+
+	SongModel.prototype.getBar = function(index) {
+		if (isNaN(index)) {
+			throw "index is not a number: " + index;
+		}
+		return this.getComponent("bars").getBar(index);
+	};
+
+	SongModel.prototype.getBars = function() {
+		return this.getComponent("bars").getBars();
+	};
+
+
+	/**
+	 *
+	 * @param  {Number} barNumber
 	 * @return {Number} section number
 	 */
 	SongModel.prototype.getSectionNumberFromBarNumber = function(barNumber) {
-		if (isNaN(barNumber)){
-			throw "barNumber is not a number: "+barNumber;
+		if (isNaN(barNumber)) {
+			throw "barNumber is not a number: " + barNumber;
 		}
 		var sections = this.getSections();
 		var sumBar = 0;
-		for (var i = 0; i < sections.length; i++) {
+		for (var i = 0, c = sections.length; i < c; i++) {
 			sumBar += sections[i].getNumberOfBars();
 			if (sumBar > barNumber) {
 				return i;
 			}
 		}
 	};
-
-
 
 	/**
 	 * Function return an array containing index of bars in an unfolded song
@@ -267,17 +331,16 @@ define([
 	};
 
 	/**
-
 	 * Function return the start bar number of any section, first bar is 0
 	 * @param  {int} sectionNumber
 	 * @return {int} start Bar Number of section
 	 */
 	SongModel.prototype.getStartBarNumberFromSectionNumber = function(sectionNumber) {
-		if (isNaN(sectionNumber)){
-			throw "sectionNumber is not a number: "+sectionNumber;
+		if (isNaN(sectionNumber)) {
+			throw "sectionNumber is not a number: " + sectionNumber;
 		}
 		var barNumber = 0;
-		for (var i = 0, c = sectionNumber; i < c; i++) {
+		for (var i = 0; i < sectionNumber; i++) {
 			barNumber += this.getSection(i).getNumberOfBars();
 		}
 		return barNumber;
@@ -303,24 +366,22 @@ define([
 				components.push(chords[i]);
 			}
 		} else if (typeof NoteManager !== "undefined" && modelManager instanceof NoteManager) {
-			var notes = components.concat(modelManager.getNotesAtBarNumber(barNumber,this));
+			var notes = components.concat(modelManager.getNotesAtBarNumber(barNumber, this));
 			for (var j = 0; j < notes.length; j++) {
 				components.push(notes[j]);
 			}
 		}
 		return components;
 	};
-	
-		
-	SongModel.prototype.getNotesAtBarNumberOld = function(barNumber) {
+
+
+	/*SongModel.prototype.getNotesAtBarNumberOld = function(barNumber) {
 		//noteManager
 		var noteMng = this.getComponent('notes'); 
 		
 		
-
 		function isSameMeasure(offset, offsetAnt, nMeasureBeats, beatsPerBar, timeSig, songModel) {
 			var tu = songModel.getBeatUnitFromTimeSignature(timeSig);
-
 			offset -= nMeasureBeats;
 			offsetAnt -= nMeasureBeats;
 			var mOffset = offset / (beatsPerBar * tu);
@@ -334,7 +395,6 @@ define([
 				error: error
 			};
 		}
-
 		var currentBar = 0;
 		var beatsPerBar = this.getBeatsFromTimeSignatureAt(currentBar);
 		var localTimeSig = this.getTimeSignatureAt(currentBar);
@@ -344,6 +404,7 @@ define([
 			offsetAnt = 0;
 
 		var notesBar = [];
+
 		for (var i = 0; i < noteMng.getTotal(); i++) {
 			note = noteMng.getNote(i);
 
@@ -370,21 +431,7 @@ define([
 			offset = noteMng.incrOffset(offset, note.getDuration(nMeasureBeats));
 		}
 
-	};
-
-	/**
-	 * The function returns the beats unit from the timeSig arguments or by default on current timeSignature
-	 * @param  {string} timeSig, optionnal
-	 * @return {int} beat unit in a measure
-	 */
-	SongModel.prototype.getBeatUnitFromTimeSignature = function(timeSig) {
-		return this.getTimeSignatureAt(barNumber).getBeatUnitQuarter();
-	};
-	SongModel.prototype.getBeatsFromTimeSignatureAt = function(barNumber) {
-
-		return this.getTimeSignatureAt(barNumber).getBeats();
-		
-	}
+	};*/
 
 	return SongModel;
 });
