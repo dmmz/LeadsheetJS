@@ -12,12 +12,12 @@ define(function() {
 	 * }
 	 */
 	function ChordModel(param) {
-		this.note = (typeof param !== "undefined" && param.note) ? param.note : "";
-		this.chordType = (typeof param !== "undefined" && param.chordType) ? param.chordType : "";
-		this.base = (typeof param !== "undefined" && param.base) ? param.base : {};
-		this.parenthesis = (typeof param !== "undefined" && typeof param.parenthesis !== "undefined") ? param.parenthesis : false;
-		this.beat = (typeof param !== "undefined" && typeof param.beat !== "undefined") ? param.beat : 1;
-		this.barNumber = (typeof param !== "undefined" && typeof param.barNumber !== "undefined") ? param.barNumber : 0;
+		this.note = (param && param.note) ? param.note : "";
+		this.chordType = (param && param.chordType) ? param.chordType : "";
+		this.base = (param && param.base) ? param.base : {};
+		this.parenthesis = (param && typeof param.parenthesis !== "undefined") ? param.parenthesis : false;
+		this.beat = (param && typeof param.beat !== "undefined") ? param.beat : 1;
+		this.barNumber = (param && typeof param.barNumber !== "undefined") ? param.barNumber : 0;
 		this.chordSymbolList = getChordSymbolList();
 
 		function getChordSymbolList() {

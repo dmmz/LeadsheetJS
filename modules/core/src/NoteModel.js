@@ -9,12 +9,12 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		this.pitchClass = []; // Note c, b
 		this.octave = []; // octave from 0 to 8
 		this.accidental = []; // b or #
-		this.duration = (typeof param !== "undefined" && param.duration) ? param.duration : undefined;
-		this.isRest = (typeof param !== "undefined" && typeof param.isRest !== "undefined") ? param.isRest : false;
-		this.dot = (typeof param !== "undefined" && typeof param.dot !== "undefined") ? param.dot : 0; // 0,1,2
-		this.tie = (typeof param !== "undefined" && typeof param.tie !== "undefined") ? param.tie : undefined; // contain "start", "stop", "stop_start"
-		this.tuplet = (typeof param !== "undefined" && typeof param.tuplet !== "undefined") ? param.tuplet : undefined;
-		this.timeModification = (typeof param !== "undefined" && typeof param.timeModification !== "undefined") ? param.timeModification : undefined;
+		this.duration = (param && param.duration) ? param.duration : undefined;
+		this.isRest = (param && param.isRest) ? param.isRest : false;
+		this.dot = (param && param.dot) ? param.dot : 0; // 0,1,2
+		this.tie = (param && param.tie) ? param.tie : undefined; // contain "start", "stop", "stop_start"
+		this.tuplet = (param && param.tuplet) ? param.tuplet : undefined;
+		this.timeModification = (param && param.timeModification) ? param.timeModification : undefined;
 		if (typeof this.tuplet !== "undefined") {
 			this.setTuplet(this.tuplet, this.timeModification);
 		}

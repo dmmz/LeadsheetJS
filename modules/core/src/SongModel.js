@@ -1,4 +1,9 @@
-define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/core/src/ChordManager'], function(NoteManager, BarManager, ChordManager) {
+define([
+		'modules/core/src/NoteManager', 
+		'modules/core/src/BarManager', 
+		'modules/core/src/ChordManager',
+		'modules/core/src/TimeSignatureModel'
+		], function(NoteManager, BarManager, ChordManager, TimeSignatureModel) {
 	function SongModel() 
 	{
 		this.composers = [];
@@ -157,10 +162,7 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 
 	SongModel.prototype.setTimeSignature = function(timeSignature) {
 
-		if (!timeSignature) {
-			throw "invalid timeSignature ";
-		}
-		this.timeSignature = timeSignature;
+		this.timeSignature = new TimeSignatureModel(timeSignature);
 	};
 
 	/**
@@ -282,18 +284,6 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 	};
 
 	/**
-	 * The function returns the number of beats from the timeSig arguments or by default on current timeSignature
-	 * @param  {string} timeSig, optional
-	 * @return {int} number of beats in a measure  in the unit of the signature. E.g.: for 6/8 -> 6, for 4/4 -> 4 for 2/2 -> 2
-	 */
-	SongModel.prototype.getBeatsFromTimeSignature = function(timeSig) {
-		if (timeSig !== "undefined") {
-			return parseInt(timeSig.split("/")[0], null);
-		}
-		return parseInt(this.timeSignature.split("/")[0], null);
-	};
-
-	/**
 	 * Function return all components in a given bar number, componentTitle attriubtes is a filter for component title (eg chords, notes...)
 	 * @param  {int} barNumber
 	 * @param  {string} componentTitle will filter all the result depending the type (chords, notes...)
@@ -313,14 +303,21 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 				components.push(chords[i]);
 			}
 		} else if (typeof NoteManager !== "undefined" && modelManager instanceof NoteManager) {
-			var notes = components.concat(this.getNotesByBarNumber(modelManager, barNumber));
+			var notes = components.concat(modelManager.getNotesAtBarNumber(barNumber,this));
 			for (var j = 0; j < notes.length; j++) {
 				components.push(notes[j]);
 			}
 		}
 		return components;
 	};
-	SongModel.prototype.getNotesByBarNumber = function(noteManager, barNumber) {
+	
+		
+	SongModel.prototype.getNotesAtBarNumberOld = function(barNumber) {
+		//noteManager
+		var noteMng = this.getComponent('notes'); 
+		
+		
+
 		function isSameMeasure(offset, offsetAnt, nMeasureBeats, beatsPerBar, timeSig, songModel) {
 			var tu = songModel.getBeatUnitFromTimeSignature(timeSig);
 
@@ -347,8 +344,8 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 			offsetAnt = 0;
 
 		var notesBar = [];
-		for (var i = 0; i < noteManager.getTotal(); i++) {
-			note = noteManager.getNote(i);
+		for (var i = 0; i < noteMng.getTotal(); i++) {
+			note = noteMng.getNote(i);
 
 			// isSameMeasure=this.isSameMeasure(offset,offsetAnt,nMeasureBeatsAcc,beatsPerBar,localTimeSig);
 			var sameMeasure = isSameMeasure(offset, offsetAnt, nMeasureBeatsAcc, beatsPerBar, localTimeSig, this);
@@ -370,7 +367,7 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 			}
 			notesBar[currentBar].push(note);
 			offsetAnt = offset;
-			offset = noteManager.incrOffset(offset, note.getDuration(nMeasureBeats));
+			offset = noteMng.incrOffset(offset, note.getDuration(nMeasureBeats));
 		}
 
 	};
@@ -381,12 +378,12 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 	 * @return {int} beat unit in a measure
 	 */
 	SongModel.prototype.getBeatUnitFromTimeSignature = function(timeSig) {
-		if (timeSig == null) timeSig = this.timeSignature;
-		var u = parseInt(timeSig.split("/")[1], null);
-		return 4 / u;
+		return this.getTimeSignatureAt(barNumber).getBeatUnitQuarter();
 	};
 	SongModel.prototype.getBeatsFromTimeSignatureAt = function(barNumber) {
-		return this.getBeatsFromTimeSignature(this.getTimeSignatureAt(barNumber));
+
+		return this.getTimeSignatureAt(barNumber).getBeats();
+		
 	}
 
 	return SongModel;

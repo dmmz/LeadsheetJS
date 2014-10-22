@@ -1,4 +1,9 @@
-define(['modules/core/src/NoteManager', 'modules/core/src/NoteModel'], function(NoteManager, NoteModel) {
+define(['modules/core/src/NoteManager', 
+		'modules/core/src/NoteModel',
+		'modules/core/src/SongModel',
+		'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
+		'tests/test-songs'
+		], function(NoteManager, NoteModel, SongModel, SongModel_CSLJson,testSongs) {
 	return {
 		run: function() {
 			test("NoteManager", function(assert) {
@@ -202,11 +207,22 @@ define(['modules/core/src/NoteManager', 'modules/core/src/NoteModel'], function(
 				assert.equal(noteManager.getNoteBeat(3), 3);
 				assert.equal(noteManager.getNoteBeat(4).toFixed(3), 3.667);
 				assert.equal(noteManager.getNoteBeat(6), 5);
-
-
-
-
-
+				
+				var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
+				var noteMng = song.getComponent("notes");
+				var notes = noteMng.getNotesAtBarNumber(3,song);
+				// returned notes
+				// [
+				//	{ keys: ["a/4"], duration: "q" },
+				//	{ keys: ["f/4"], duration: "q" },
+				//	{ keys: ["g/4"], duration: "q" },
+				//	{ keys: ["e/4"], duration: "q" }
+				// ]
+				assert.equal(notes[0].getPitch(),"A/4");
+				assert.equal(notes[1].getPitch(),"F/4");
+				assert.equal(notes[2].getPitch(),"G/4");
+				assert.equal(notes[3].getPitch(),"E/4");
+				// TODO: add tests for time signature changes
 
 			});
 

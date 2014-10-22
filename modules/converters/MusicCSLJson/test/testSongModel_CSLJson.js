@@ -1,13 +1,18 @@
-define(['modules/converters/MusicCSLJson/src/SongModel_CSLJson', 'modules/core/src/SongModel', 'tests/test-songs'], function(SongModel_CSLJson, SongModel, testSong) {
+define(['modules/converters/MusicCSLJson/src/SongModel_CSLJson', 'modules/core/src/SongModel', 'tests/test-songs'], function(SongModel_CSLJson, SongModel, testSongs) {
 	return {
 		run: function() {
 			test("SongModel_CSLJson", function(assert) {
-				var song = new SongModel();
-				var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSong.simpleLeadSheet, song);
-								
-				var exportedCSLJson = SongModel_CSLJson.exportToMusicCSLJSON(songModel);
-				//assert.deepEqual(exportedCSLJson, testSong.simpleLeadSheet);
 				
+				var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
+								
+				var exportedCSLJson = SongModel_CSLJson.exportToMusicCSLJSON(song);
+				///assert.deepEqual(exportedCSLJson, testSongs.simpleLeadSheet);
+				
+				//var songWithKeySigChanges = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.leadSheetTimeSigChanges, new SongModel());
+				
+				
+				//console.log(songWithKeySigChanges.getBar(1));
+
 				expect(0);
 			});
 		}

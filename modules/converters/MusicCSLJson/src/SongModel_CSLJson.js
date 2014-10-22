@@ -50,8 +50,7 @@ define(function(require) {
 
 					if (JSONSection.bars != null) {
 						JSONSection.bars.forEach(function(JSONBar) {
-							bar = new BarModel();
-							BarModel_CSLJson.importFromMusicCSLJSON(JSONBar, bar);
+							bar = BarModel_CSLJson.importFromMusicCSLJSON(JSONBar, new BarModel());
 							barManager.addBar(bar);
 							if (JSONBar.chords != null) {
 								JSONBar.chords.forEach(function(JSONChord) {

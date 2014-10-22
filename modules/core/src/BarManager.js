@@ -24,7 +24,7 @@ define(['modules/core/src/BarModel'], function(BarModel) {
 	 */
 	BarManager.prototype.addBar = function(bar) {
 		if (typeof bar === "undefined" || !(bar instanceof BarModel)) {
-			throw "BarManager - removeBar - bar must be a BarModel ";
+			throw "BarManager - addBar - bar must be a BarModel ";
 		}
 
 		this.bars.push(bar);

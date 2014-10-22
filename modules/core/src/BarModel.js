@@ -1,4 +1,4 @@
-define(function() {
+define(['modules/core/src/TimeSignatureModel'],function(TimeSignatureModel) {
 	function BarModel(option) {
 		if (typeof option === "undefined") {
 			option = {};
@@ -60,10 +60,7 @@ define(function() {
 	};
 
 	BarModel.prototype.setTimeSignature = function(timeSignature) {
-		if (typeof timeSignature === "undefined") {
-			throw 'BarModel - timeSignature should not be undefined';
-		}
-		this.timeSignature = timeSignature;
+		this.timeSignature = new TimeSignatureModel(timeSignature);
 	};
 
 	BarModel.prototype.getTimeSignature = function() {
@@ -98,7 +95,7 @@ define(function() {
 		}
 		this.sublabel = sublabel;
 	};
-
+	
 	/**
 	 *
 	 * @param  {boolan} formatted : if true, it returns formatted example for drawing.

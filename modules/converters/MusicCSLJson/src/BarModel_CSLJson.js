@@ -1,4 +1,4 @@
-define([], function() {
+define(['modules/core/src/BarModel'], function(BarModel) {
 	var BarModel_CSLJson = {};
 	
 	/////////////////////////
@@ -6,16 +6,18 @@ define([], function() {
 	/////////////////////////
 
 	BarModel_CSLJson.importFromMusicCSLJSON = function(JSONBar) {
+		var bar = new BarModel();
 		var labels = ["segno", "segno2", "fine", "coda", "coda2", "on cue"];
 		labels.forEach(function(label) {
 			if (JSONBar.hasOwnProperty(label)) {
-				self.setLabel(label);
+				bar.setLabel(label);
 			}
 		});
 		//so far now we allow only one label per bar in the DB, but this code is prepared to allow more than one, as an array
-		if (JSONBar.hasOwnProperty('ending')) self.setEnding(JSONBar.ending);
-		if (JSONBar.hasOwnProperty('sublabel')) self.setSublabel(JSONBar.sublabel);
-		if (JSONBar.hasOwnProperty('timeSignature')) self.setTimeSignature(JSONBar.timeSignature);
+		if (JSONBar.hasOwnProperty('ending')) bar.setEnding(JSONBar.ending);
+		if (JSONBar.hasOwnProperty('sublabel')) bar.setSublabel(JSONBar.sublabel);
+		if (JSONBar.hasOwnProperty('timeSignature')) bar.setTimeSignature(JSONBar.timeSignature);
+		return bar;
 	};
 
 	BarModel_CSLJson.exportToMusicCSLJSON = function(barModel) {
