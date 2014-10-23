@@ -16,10 +16,10 @@ define(function() {
 		 */
 		function comparePitches(pitch1, pitch2) {
 			var r;
-			pc1 = pitch1.substring(0, 1).toUpperCase();
-			oct1 = parseInt(pitch1.slice(-1), null);
-			pc2 = pitch2.substring(0, 1).toUpperCase();
-			oct2 = parseInt(pitch2.slice(-1), null);
+			var pc1 = pitch1.substring(0, 1).toUpperCase();
+			var oct1 = parseInt(pitch1.slice(-1), null);
+			var pc2 = pitch2.substring(0, 1).toUpperCase();
+			var oct2 = parseInt(pitch2.slice(-1), null);
 
 			if (oct1 > oct2) r = 1;
 			else if (oct1 < oct2) r = -1;
@@ -49,7 +49,8 @@ define(function() {
 			i = 0,
 			inserted,
 			op,
-			resultComparison;
+			resultComparison,
+			oPitch;
 
 		for (var p in pitches) {
 			curPitch = pitches[p];

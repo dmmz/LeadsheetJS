@@ -111,19 +111,20 @@ define(function(require) {
 
 		// Sections
 		var JSONSection = {};
-		var startbarNumber, barNumber, currentBar;
+		var startbarNumber, lastBarSection, barChords, barNotes;
 		MusicCSLJSON.changes = [];
 		for (var i = 0, c = songModel.getSections().length; i < c; i++) {
 			// section information
 			JSONSection = SectionModel_CSLJson.exportToMusicCSLJSON(songModel.getSection(i));
 			// bar information
-			startBar = songModel.getStartBarNumberFromSectionNumber(i);
-			lastBarSection = startBar + songModel.getSection(i).getNumberOfBars() - 1;
+			startbarNumber = songModel.getStartBarNumberFromSectionNumber(i);
+			lastBarSection = startbarNumber + songModel.getSection(i).getNumberOfBars() - 1;
 
 			var bars = [];
 			var bar, chords, melody;
+			var JSONBar, JSONChord, JSONNote;
 
-			for (var j = startBar; j <= lastBarSection; j++) {
+			for (var j = startbarNumber; j <= lastBarSection; j++) {
 				JSONBar = BarModel_CSLJson.exportToMusicCSLJSON(songModel.getBar(j));
 				//bar = songModel.getBar(j).exportToMusicCSLJSON(songModel);
 

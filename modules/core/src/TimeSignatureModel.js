@@ -5,7 +5,7 @@ define(function() {
 			throw "Time signature not valid " + timeSig;
 		}
 
-		timeSigArr = timeSig.split("/");
+		var timeSigArr = timeSig.split("/");
 
 		// eg. 6/8 will be numBeats = 6 and beatUnit = 8
 		this.numBeats = parseInt(timeSigArr[0], 10);

@@ -240,6 +240,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 	 * @return {Float}
 	 */
 	NoteModel.prototype.getDuration = function(numBeats) {
+		var dur = 0.0;
 		switch (this.duration) {
 			case "w":
 				//problem for whole rest can't distinguish if duration is 4 or more on time sigs >= 5/4. For those time sigs, dur=4
@@ -265,7 +266,6 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 				dur = 0.0625;
 				break;
 		}
-
 		if (this.timeModification != null) {
 			var nums = this.timeModification.split("/");
 			dur = dur * parseInt(nums[1], null) / parseInt(nums[0], null);

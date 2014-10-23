@@ -7,6 +7,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 				var msm = new SongModel_midiCSL();
 				assert.deepEqual(msm.getSong(), []);
 
+				
 				// Create a song from testSong
 				var songModel  = new SongModel();
 				var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, songModel);
@@ -22,7 +23,6 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 				fakeSong.push(new NoteModel_midiCSL({currentTime:16, duration:8, midiNote:[64,67,71], type:'chord'}));
 				fakeSong.push(new NoteModel_midiCSL({currentTime:24, duration:4, midiNote:[65,69,72,75], type:'chord'}));
 				assert.deepEqual(midiSongModel.getSong(), fakeSong);
-				
 
 			});
 		}

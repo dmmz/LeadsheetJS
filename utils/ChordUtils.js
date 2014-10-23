@@ -39,7 +39,7 @@ define(['jquery', 'utils/NoteUtils', 'utils/ChordTypesCollection'], function($, 
 			ChordUtils.chordTypeToNote = [];
 			// tool function, building an associative array between chordnames and chordnotes (C root)
 			// Usage : chordTypeToNote['7b5'] will return ["C4", "E4", "Gb4", "Bb4"]
-			for (chord in ChordTypesCollection.allChordNotes) {
+			for (var chord in ChordTypesCollection.allChordNotes) {
 				ChordUtils.chordTypeToNote[chord] = NoteUtils.transformStringNote2ArrayNote(ChordTypesCollection.allChordNotes[chord]);
 			}
 			return ChordUtils.chordTypeToNote;
@@ -50,7 +50,7 @@ define(['jquery', 'utils/NoteUtils', 'utils/ChordTypesCollection'], function($, 
 			// Usage : chordTypeToNote['7b5'] will return ["C4", "E4", "Gb4", "Bb4"]
 			ChordUtils.chordTypeToNote = [];
 			ChordUtils.getAllChordTypeFromDB(function(data) {
-				for (chord in data.allChordNotes) {
+				for (var chord in data.allChordNotes) {
 					ChordUtils.chordTypeToNote[chord] = NoteUtils.transformStringNote2ArrayNote(data.allChordNotes[chord]);
 				}
 			});

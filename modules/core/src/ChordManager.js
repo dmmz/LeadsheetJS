@@ -20,9 +20,6 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 	};
 
 	ChordManager.prototype.setAllChords = function(chords) {
-		if (typeof chord === "undefined" || !(chord instanceof ChordModel)) {
-			throw 'Chord must be a ChordModel';
-		}
 		this.chords = chords;
 	}
 

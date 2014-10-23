@@ -317,6 +317,7 @@ define([
 			var section = this.getSection(sectionNumber);
 			var repeat = section.getRepeatTimes();
 			var whileSecurity = 0;
+			var startBar, endBar;
 			while (repeat >= 0 || whileSecurity > 1000) {
 				whileSecurity++;
 				// looping in all sections repeat
