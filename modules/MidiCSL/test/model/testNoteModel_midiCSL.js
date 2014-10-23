@@ -1,8 +1,8 @@
-define(['modules/MidiCSLModel/src/NoteModel_midiCSLModel'], function(NoteModel_midiCSLModel) {
+define(['modules/MidiCSL/src/model/NoteModel_midiCSL'], function(NoteModel_midiCSL) {
 	return {
 		run: function() {
-			test("NoteModel_midiCSLModel", function(assert) {
-				var mnm = new NoteModel_midiCSLModel();
+			test("NoteModel_midiCSL", function(assert) {
+				var mnm = new NoteModel_midiCSL();
 
 				// test empty object
 				assert.equal(mnm.getCurrentTime(), 0);

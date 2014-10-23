@@ -1,5 +1,5 @@
-define(['modules/core/src/SongModel', 'modules/core/src/ChordManager', 'modules/converters/MidiCSL/src/ChordConverterMidi_MidiCSL', 'modules/MidiCSLModel/src/NoteModel_midiCSLModel'],
-	function(SongModel, ChordManager, ChordConverterMidi_MidiCSL, NoteModel_midiCSLModel) {
+define(['modules/core/src/SongModel', 'modules/core/src/ChordManager', 'modules/MidiCSL/src/converters/ChordConverterMidi_MidiCSL', 'modules/MidiCSL/src/model/NoteModel_midiCSL'],
+	function(SongModel, ChordManager, ChordConverterMidi_MidiCSL, NoteModel_midiCSL) {
 		var ChordManagerConverterMidi_MidiCSL = {};
 
 		ChordManagerConverterMidi_MidiCSL.exportToMidiCSL = function(songModel) {
@@ -28,7 +28,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordManager', 'modules/
 					duration = chordManager.getChordDuration(songModel, chordIndex);
 					midiNotes = ChordConverterMidi_MidiCSL.exportToMidiCSL(chordsInBar[i]);
 					//console.log(chordsInBar[ i ], chordIndex, duration)
-					var msm = new NoteModel_midiCSLModel({
+					var msm = new NoteModel_midiCSL({
 						'currentTime': currentTime,
 						'duration': duration,
 						'midiNote': midiNotes,

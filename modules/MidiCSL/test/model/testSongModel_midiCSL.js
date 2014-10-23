@@ -1,18 +1,18 @@
-define(['modules/MidiCSLModel/src/SongModel_midiCSLModel', 'modules/MidiCSLModel/src/NoteModel_midiCSLModel'], 
-	function(SongModel_midiCSLModel, NoteModel_midiCSLModel) {
+define(['modules/MidiCSL/src/model/SongModel_midiCSL', 'modules/MidiCSL/src/model/NoteModel_midiCSL'], 
+	function(SongModel_midiCSL, NoteModel_midiCSL) {
 	return {
 		run: function() {
-			test("SongModel_midiCSLModel", function(assert) {
-				var msm = new SongModel_midiCSLModel();
+			test("SongModel_midiCSL", function(assert) {
+				var msm = new SongModel_midiCSL();
 				assert.deepEqual(msm.getSong(), []);
 
-				var n1 = new NoteModel_midiCSLModel({'currentTime': 0, 'duration': 1, 'midiNote': [45], 'type': 'melody'});
-				var n2 = new NoteModel_midiCSLModel({'currentTime': 1, 'duration': 1, 'midiNote': [60], 'type': 'melody'});
-				var c1 = new NoteModel_midiCSLModel({'currentTime': 0, 'duration': 1, 'midiNote': [60,65,67], 'type': 'chords'});
+				var n1 = new NoteModel_midiCSL({'currentTime': 0, 'duration': 1, 'midiNote': [45], 'type': 'melody'});
+				var n2 = new NoteModel_midiCSL({'currentTime': 1, 'duration': 1, 'midiNote': [60], 'type': 'melody'});
+				var c1 = new NoteModel_midiCSL({'currentTime': 0, 'duration': 1, 'midiNote': [60,65,67], 'type': 'chords'});
 				
-				var msm = new SongModel_midiCSLModel({song:[n1,n2,c1]});
+				var msm = new SongModel_midiCSL({song:[n1,n2,c1]});
 
-				var msm2 = new SongModel_midiCSLModel();
+				var msm2 = new SongModel_midiCSL();
 
 				msm2.setSong([n1, n2, c1]);
 

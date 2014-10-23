@@ -1,4 +1,9 @@
-define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/core/src/ChordManager'], function(NoteManager, BarManager, ChordManager) {
+define([
+	'modules/core/src/NoteManager',
+	'modules/core/src/BarManager',
+	'modules/core/src/ChordManager',
+	'modules/core/src/TimeSignatureModel'
+], function(NoteManager, BarManager, ChordManager, TimeSignatureModel) {
 	function SongModel(param) {
 		this.title = (typeof param !== "undefined" && param.title) ? param.title : '';
 		this.composers = (typeof param !== "undefined" && param.composers) ? param.composers : [];
@@ -9,6 +14,7 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 		this.timeSignature = (typeof param !== "undefined" && param.timeSignature) ? param.timeSignature : "4/4";
 		this.sections = (typeof param !== "undefined" && param.sections) ? param.sections : [];
 		this.components = (typeof param !== "undefined" && param.components) ? param.components : [];
+
 		this.addComponent('notes', new NoteManager());
 		this.addComponent('bars', new BarManager());
 	}
@@ -112,10 +118,8 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 	};
 
 	SongModel.prototype.setTimeSignature = function(timeSignature) {
-		if (!timeSignature) {
-			throw "invalid timeSignature ";
-		}
-		this.timeSignature = timeSignature;
+
+		this.timeSignature = new TimeSignatureModel(timeSignature);
 	};
 
 	SongModel.prototype.getTimeSignature = function() {
@@ -151,29 +155,27 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 
 	/**
 	 * The function returns the number of beats from the timeSig arguments or by default on current timeSignature
-	 * @param  {string} timeSig, optional
+	 * @param  {TimeSignatureModel} timeSig
 	 * @return {int} number of beats in a measure in the unit of the signature. E.g.: for 6/8 -> 6, for 4/4 -> 4 for 2/2 -> 2
 	 */
 	SongModel.prototype.getBeatsFromTimeSignature = function(timeSig) {
 		if (timeSig !== "undefined") {
-			return parseInt(timeSig.split("/")[0], null);
+			return timeSig.getBeats();
 		}
-		return parseInt(this.timeSignature.split("/")[0], null);
 	};
-
+	
 	SongModel.prototype.getBeatsFromTimeSignatureAt = function(barNumber) {
 		return this.getBeatsFromTimeSignature(this.getTimeSignatureAt(barNumber));
-	}
+	};
 
 	/**
 	 * The function returns the beats unit from the timeSig arguments or by default on current timeSignature
 	 * @param  {string} timeSig, optionnal
 	 * @return {int} beat unit in a measure. E.g.: for 6/8 -> 0.5, for 4/4 -> 1 for 2/2 -> 2
 	 */
+	// TODO rename function
 	SongModel.prototype.getBeatUnitFromTimeSignature = function(timeSig) {
-		if (timeSig == null) timeSig = this.timeSignature;
-		var u = parseInt(timeSig.split("/")[1], null);
-		return 4 / u;
+		return timeSig.getBeatUnitQuarter();
 	};
 
 	/**
@@ -372,7 +374,40 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 		return barNumber;
 	};
 
-	SongModel.prototype.getNotesByBarNumber = function(noteManager, barNumber) {
+	/**
+	 * Function return all components in a given bar number, componentTitle attriubtes is a filter for component title (eg chords, notes...)
+	 * @param  {int} barNumber
+	 * @param  {string} componentTitle will filter all the result depending the type (chords, notes...)
+	 * @return {array} it return an array of the direct object
+	 */
+	SongModel.prototype.getComponentsAtBarNumber = function(barNumber, componentTitle) {
+		var components = [];
+
+		if (!componentTitle || !this.components.hasOwnProperty(componentTitle)) {
+			throw 'the item is matching no known type in getComponentsAtBarNumber';
+		}
+
+		var modelManager = this.components[componentTitle];
+		if (typeof ChordManager !== "undefined" && modelManager instanceof ChordManager) {
+			var chords = modelManager.getChordsByBarNumber(barNumber);
+			for (var i = 0; i < chords.length; i++) {
+				components.push(chords[i]);
+			}
+		} else if (typeof NoteManager !== "undefined" && modelManager instanceof NoteManager) {
+			var notes = components.concat(modelManager.getNotesAtBarNumber(barNumber, this));
+			for (var j = 0; j < notes.length; j++) {
+				components.push(notes[j]);
+			}
+		}
+		return components;
+	};
+
+
+	/*SongModel.prototype.getNotesAtBarNumberOld = function(barNumber) {
+		//noteManager
+		var noteMng = this.getComponent('notes'); 
+		
+		
 		function isSameMeasure(offset, offsetAnt, nMeasureBeats, beatsPerBar, timeSig, songModel) {
 			var tu = songModel.getBeatUnitFromTimeSignature(timeSig);
 			offset -= nMeasureBeats;
@@ -397,8 +432,9 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 			offsetAnt = 0;
 
 		var notesBar = [];
-		for (var i = 0, c = noteManager.getTotal(); i < c; i++) {
-			note = noteManager.getNote(i);
+
+		for (var i = 0; i < noteMng.getTotal(); i++) {
+			note = noteMng.getNote(i);
 
 			// isSameMeasure=this.isSameMeasure(offset,offsetAnt,nMeasureBeatsAcc,beatsPerBar,localTimeSig);
 			var sameMeasure = isSameMeasure(offset, offsetAnt, nMeasureBeatsAcc, beatsPerBar, localTimeSig, this);
@@ -419,9 +455,10 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 			}
 			notesBar[currentBar].push(note);
 			offsetAnt = offset;
-			offset = noteManager.incrOffset(offset, note.getDuration(nMeasureBeats));
+			offset = noteMng.incrOffset(offset, note.getDuration(nMeasureBeats));
 		}
-	};
+
+	};*/
 
 	return SongModel;
 });

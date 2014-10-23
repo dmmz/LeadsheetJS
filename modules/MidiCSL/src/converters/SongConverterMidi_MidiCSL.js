@@ -1,5 +1,5 @@
-define(['modules/core/src/SongModel', 'modules/MidiCSLModel/src/SongModel_midiCSLModel', 'modules/MidiCSLModel/src/NoteModel_midiCSLModel', 'modules/converters/MidiCSL/src/ChordManagerConverterMidi_MidiCSL', 'modules/converters/MidiCSL/utils/MidiHelper'],
-	function(SongModel, SongModel_midiCSLModel, NoteModel_midiCSLModel, ChordManagerConverterMidi_MidiCSL, MidiHelper) {
+define(['modules/core/src/SongModel', 'modules/MidiCSL/src/model/SongModel_midiCSL', 'modules/MidiCSL/src/model/NoteModel_midiCSL', 'modules/MidiCSL/src/converters/ChordManagerConverterMidi_MidiCSL', 'modules/MidiCSL/utils/MidiHelper'],
+	function(SongModel, SongModel_midiCSL, NoteModel_midiCSL, ChordManagerConverterMidi_MidiCSL, MidiHelper) {
 		var SongConverterMidi_MidiCSL = {};
 
 		SongConverterMidi_MidiCSL.exportToMidiCSL = function(songModel) {
@@ -65,7 +65,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSLModel/src/SongModel_midiCS
 					note = notesInBar[j];
 					duration = note.getDuration(numBeats);
 					if (note.isRest) {
-						midiSoundModel = new NoteModel_midiCSLModel({
+						midiSoundModel = new NoteModel_midiCSL({
 							'midiNote': [false],
 							'type': 'melody',
 							'currentTime': currentTime,
@@ -86,14 +86,14 @@ define(['modules/core/src/SongModel', 'modules/MidiCSLModel/src/SongModel_midiCS
 							if (note.getTie() === "start") {
 								inTie = true;
 								tieNotesNumber = 1;
-								tieNotesObject = new NoteModel_midiCSLModel({
+								tieNotesObject = new NoteModel_midiCSL({
 									'midiNote': midiNote,
 									'type': 'melody',
 									'currentTime': currentTime,
 									'duration': duration,
 									'noteModel': note
 								});
-								midiSoundModel = new NoteModel_midiCSLModel({
+								midiSoundModel = new NoteModel_midiCSL({
 									'midiNote': false,
 									'type': 'melody',
 									'currentTime': currentTime,
@@ -105,7 +105,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSLModel/src/SongModel_midiCS
 							if (note.getTie() === "stop_start") {
 								tieNotesNumber++;
 								tieNotesObject.setDuration(tieNotesObject.getDuration(numBeats) + duration);
-								midiSoundModel = new NoteModel_midiCSLModel({
+								midiSoundModel = new NoteModel_midiCSL({
 									'midiNote': false,
 									'type': 'melody',
 									'currentTime': currentTime,
@@ -125,7 +125,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSLModel/src/SongModel_midiCS
 								if (typeof tieNotesObject.getDuration === "undefined") {
 									// case the tieNotes have not been yet created (it's a particular case where tie note is tie with nothing)
 									// It happens when we take a chunk of a melody
-									tieNotesObject = midiSoundModel = new NoteModel_midiCSLModel({
+									tieNotesObject = midiSoundModel = new NoteModel_midiCSL({
 										'midiNote': midiNote,
 										'type': 'melody',
 										'currentTime': currentTime,
@@ -142,7 +142,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSLModel/src/SongModel_midiCS
 								tieNotesNumber = 0;
 							}
 						} else {
-							midiSoundModel = new NoteModel_midiCSLModel({
+							midiSoundModel = new NoteModel_midiCSL({
 								'midiNote': midiNote,
 								'type': 'melody',
 								'currentTime': currentTime,

@@ -1,13 +1,13 @@
-define(['modules/MidiCSLModel/src/NoteModel_midiCSLModel'], function(NoteModel_midiCSLModel) {
-	function SongModel_midiCSLModel(option) {
+define(['modules/MidiCSL/src/model/NoteModel_midiCSL'], function(NoteModel_midiCSL) {
+	function SongModel_midiCSL(option) {
 		this.song = (typeof(option) !== "undefined" && typeof(option.song) !== "undefined") ? option.song : [];
 	};
 
-	SongModel_midiCSLModel.prototype.getSong = function() {
+	SongModel_midiCSL.prototype.getSong = function() {
 		return this.song;
 	}
 
-	SongModel_midiCSLModel.prototype.setSong = function(song, replaceBool) {
+	SongModel_midiCSL.prototype.setSong = function(song, replaceBool) {
 		if (typeof replaceBool !== "undefined" && replaceBool) {
 			this.song = song;
 		} else {
@@ -15,7 +15,7 @@ define(['modules/MidiCSLModel/src/NoteModel_midiCSLModel'], function(NoteModel_m
 		}
 	}
 
-	SongModel_midiCSLModel.prototype.setFromType = function( song, type) {
+	SongModel_midiCSL.prototype.setFromType = function( song, type) {
 		if(typeof type === "undefined"){
 			 return;
 		}
@@ -28,7 +28,7 @@ define(['modules/MidiCSLModel/src/NoteModel_midiCSLModel'], function(NoteModel_m
 		/*console.log(this.song);*/
 	}
 
-	SongModel_midiCSLModel.prototype.getFromType = function(type) {
+	SongModel_midiCSL.prototype.getFromType = function(type) {
 		var elements = [];
 		if(typeof type !== "undefined"){
 			for (var i = 0, c = this.song.length; i < c; i++) {
@@ -40,7 +40,7 @@ define(['modules/MidiCSLModel/src/NoteModel_midiCSLModel'], function(NoteModel_m
 		return elements;
 	}
 
-	SongModel_midiCSLModel.prototype.removeFromType = function(type) {
+	SongModel_midiCSL.prototype.removeFromType = function(type) {
 		if(typeof type === "undefined"){
 			 return;
 		}
@@ -51,7 +51,7 @@ define(['modules/MidiCSLModel/src/NoteModel_midiCSLModel'], function(NoteModel_m
 		}
 	}
 
-	SongModel_midiCSLModel.prototype.getLastNote = function() {
+	SongModel_midiCSL.prototype.getLastNote = function() {
 		// Looking for last note
 		var lastNote = this.song[0];
 		var lastNoteEndTime = lastNote.getCurrentTime() + lastNote.getDuration();
@@ -69,8 +69,8 @@ define(['modules/MidiCSLModel/src/NoteModel_midiCSLModel'], function(NoteModel_m
 		return lastNote;
 	}
 
-	SongModel_midiCSLModel.prototype.getMidiSoundModelIndex = function(midiSoundModel) {
-		if (typeof midiSoundModel !== "undefined" && midiSoundModel instanceof SongModel_midiCSLModel) {
+	SongModel_midiCSL.prototype.getMidiSoundModelIndex = function(midiSoundModel) {
+		if (typeof midiSoundModel !== "undefined" && midiSoundModel instanceof SongModel_midiCSL) {
 			var comp = midiSoundModel.serialize();
 			for (var i = 0, c = this.song.length; i < c; i++) {
 				if (this.song[i].serialize() === comp) {
@@ -81,21 +81,21 @@ define(['modules/MidiCSLModel/src/NoteModel_midiCSLModel'], function(NoteModel_m
 		return -1;
 	}
 
-	SongModel_midiCSLModel.prototype.serialize = function() {
-		var SongModel_midiCSLModel = {};
-		SongModel_midiCSLModel.song = this.song;
-		return SongModel_midiCSLModel;
+	SongModel_midiCSL.prototype.serialize = function() {
+		var songModel_midiCSL = {};
+		songModel_midiCSL.song = this.song;
+		return songModel_midiCSL;
 	};
 
-	SongModel_midiCSLModel.prototype.clone = function() {
-		return new SongModel_midiCSLModel(this.serialize());
+	SongModel_midiCSL.prototype.clone = function() {
+		return new SongModel_midiCSL(this.serialize());
 	};
 
-	return SongModel_midiCSLModel;
+	return SongModel_midiCSL;
 });
 
 /*
-	SongModel_midiCSLModel.prototype.generateMetronome = function(songModel) {
+	SongModel_midiCSL.prototype.generateMetronome = function(songModel) {
 		var note, duration;
 		var noteObject = {};
 		var metronome = [];

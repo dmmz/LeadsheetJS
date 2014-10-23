@@ -1,5 +1,5 @@
-define(['modules/core/src/SongModel', 'modules/core/src/ChordManager', 'modules/core/src/ChordModel', 'modules/MidiCSLModel/src/NoteModel_midiCSLModel', 'utils/NoteUtils', 'utils/ChordUtils', 'modules/converters/MidiCSL/utils/MidiHelper'],
-	function(SongModel, ChordManager, ChordModel, NoteModel_midiCSLModel, NoteUtils, ChordUtils, MidiHelper) {
+define(['modules/core/src/SongModel', 'modules/core/src/ChordManager', 'modules/core/src/ChordModel', 'modules/MidiCSL/src/model/NoteModel_midiCSL', 'utils/NoteUtils', 'utils/ChordUtils', 'modules/MidiCSL/utils/MidiHelper'],
+	function(SongModel, ChordManager, ChordModel, NoteModel_midiCSL, NoteUtils, ChordUtils, MidiHelper) {
 
 		var ChordConverterMidi_MidiCSL = {};
 

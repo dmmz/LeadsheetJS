@@ -163,8 +163,8 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 	};
 
 	/**
-	 * @param  {Integer} startBeat 
-	 * @param  {Integer} endBeat   
+	 * @param  {Integer} startBeat
+	 * @param  {Integer} endBeat
 	 * @return {Array}           indexes e.g. [1,2]
 	 */
 
@@ -175,18 +175,41 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 	};
 
 	/**
-	 * @param  {NoteModel} note 
-	 * @return {Integer}      
+	 * @param  {NoteModel} note
+	 * @return {Integer}
 	 */
-	NoteManager.prototype.getNoteIndex = function( note ) {
-		if(typeof note !== "undefined" && note instanceof NoteModel){
-			for (var i = 0, c = this.notes.length; i < c; i++) {
-				if(JSON.stringify(this.notes[i].serialize(true, true)) === JSON.stringify(note.serialize(true, true))) {
+
+	NoteManager.prototype.getNoteIndex = function(note) {
+		if (typeof note !== "undefined" && note instanceof NoteModel) {
+			for (var i = 0; i < this.notes.length; i++) {
+				if (JSON.stringify(this.notes[i].serialize(true, true)) === JSON.stringify(note.serialize(true, true))) {
 					return i;
 				}
 			}
 		}
 		return undefined;
+	};
+
+	NoteManager.prototype.getNotesAtBarNumber = function(barNumber, song) {
+		if (!song) {
+			throw "getNotesAtBarNumber: incorrect song parameter";
+		}
+		function getBarBeats(numBar, defaultBeats) {
+			var timeSig = song.getBar(i).timeSignature;
+			return (timeSig) ? timeSig.getBeats() : defaultBeats;
+		}
+		var startBeat = 1,
+			endBeat,
+			beats = song.timeSignature.getBeats();
+		for (var i = 0; i < barNumber; i++) {
+			startBeat += getBarBeats(i, beats);
+		}
+		endBeat = startBeat + getBarBeats(i, beats);
+
+		return this.getNotes(
+			this.getNextIndexNoteByBeat(startBeat),
+			this.getNextIndexNoteByBeat(endBeat)
+		);
 	};
 
 	/**
@@ -198,12 +221,14 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 		return Math.round(beat * 1000000) / 1000000;
 	}
 
-	NoteManager.prototype.incrOffset = function(offset, dur) {
-		offset += dur;
-		var roundOffset = Math.round(offset);
-		if (Math.abs(roundOffset - offset) < 0.01) offset = roundOffset; //0.01 to round only for 0.99999
-		return offset;
-	};
+
+
+	// NoteManager.prototype.incrOffset = function(offset, dur) {
+	// 	offset += dur;
+	// 	var roundOffset = Math.round(offset);
+	// 	if (Math.abs(roundOffset - offset) < 0.01) offset = roundOffset; //0.01 to round only for 0.99999
+	// 	return offset;
+	// };
 	//NoteManager.prototype.toString = function() {
 	//	this.getNotes().forEach(function(note) {
 	//		console.log(note.toString());

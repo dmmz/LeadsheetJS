@@ -1,8 +1,13 @@
-define(['tests/test-songs', 'modules/core/src/SongModel', 'modules/converters/MusicCSLJson/src/SongModel_CSLJson'], function(testSongs, SongModel, SongModel_CSLJson) {
+define([
+	'tests/test-songs', 
+	'modules/core/src/SongModel',
+	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
+	'modules/core/src/TimeSignatureModel'
+	], function(testSongs, SongModel, SongModel_CSLJson,TimeSignatureModel) {
 	return {
 		run: function() {
 			test("Song", function(assert) {
-				var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
+				 var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
 
 				//Get Tonality
 				song.getComponent('bars').getBar(5).setTonality("Eb");
@@ -16,11 +21,18 @@ define(['tests/test-songs', 'modules/core/src/SongModel', 'modules/converters/Mu
 				assert.throws(function() {
 					song.getTimeSignatureAt();
 				});
-				assert.equal(song.getTimeSignatureAt(1),"4/4");
-				assert.equal(song.getTimeSignatureAt(5),"3/4");
-				assert.equal(song.getTimeSignatureAt(6),"3/4");
-
 				
+
+				assert.deepEqual(song.getTimeSignatureAt(1).getBeats(), new TimeSignatureModel("4/4").getBeats());
+				assert.deepEqual(song.getTimeSignatureAt(5).getBeats(), new TimeSignatureModel("3/4").getBeats());
+				assert.deepEqual(song.getTimeSignatureAt(6).getBeats(), new TimeSignatureModel("3/4").getBeats());
+
+				/* MISSING TESTS: 
+					Song with no notes
+					Song with no chords
+					Export to song with 
+
+				*/
 			});
 		}
 	};

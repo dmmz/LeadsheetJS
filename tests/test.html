@@ -2,10 +2,33 @@
 <head>
 	<title></title>
 	<link rel="stylesheet" href="/external-libs/qunit/qunit.css">
+	<style type="text/css">
+    div.testcanvas {
+      font-family: Arial, sans-serif;
+      font-size: 18px;
+      padding: 10px;
+      color: #554;
+    }
+
+    div.testcanvas .vex-tabdiv {
+      background: #eed;
+      padding: 10px;
+      border: 10px solid #ddc;
+    }
+
+    div.testcanvas .name {
+      font-family: Arial, sans-serif;
+      font-size: 18px;
+      padding: 10px;
+      color: #554;
+    }
+	</style>
 </head>
 <body>
 	<div id="qunit"></div>
     <div id="qunit-fixture"></div>
+
+    <div id="vexflow_testoutput"></div>
 	<script data-main="main-test.js" src="../external-libs/require.js"></script>
 </body>
 </html>

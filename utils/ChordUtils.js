@@ -1,4 +1,4 @@
-define(['external-libs/jquery-2.1.0.min', 'utils/NoteUtils', 'utils/ChordTypesCollection'], function(jQuery, NoteUtils, ChordTypesCollection) {
+define(['jquery', 'utils/NoteUtils', 'utils/ChordTypesCollection'], function($, NoteUtils, ChordTypesCollection) {
 	var ChordUtils = {};
 
 
