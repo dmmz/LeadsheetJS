@@ -18,21 +18,21 @@ define(['modules/converters/MusicCSLJson/src/SongModel_CSLJson', 'modules/core/s
 					var chordSequence = new SongView_chordSequence(songModel, option);
 					var txt = chordSequence.display();
 
-					assert.equal(txt,"Whatever song (Random Composer)\nsection: A\nAMaj7 | % | B7 | % | Em | % | F7 | % ");
+					assert.equal(txt,"Whatever song (Random Composer)\nsection: A\nAM7 | % | B7 | % | Em | % | F7 | % ");
 
 					chordSequence.displayTitle = false;
 					txt = chordSequence.display();
-					assert.equal(txt,"(Random Composer)\nsection: A\nAMaj7 | % | B7 | % | Em | % | F7 | % ", "Display title false");
+					assert.equal(txt,"(Random Composer)\nsection: A\nAM7 | % | B7 | % | Em | % | F7 | % ", "Display title false");
 					chordSequence.displayTitle = true;
 
 					chordSequence.displayComposer = false;
 					txt = chordSequence.display();
-					assert.equal(txt,"Whatever song \nsection: A\nAMaj7 | % | B7 | % | Em | % | F7 | % ", "Display composer false");
+					assert.equal(txt,"Whatever song \nsection: A\nAM7 | % | B7 | % | Em | % | F7 | % ", "Display composer false");
 					chordSequence.displayComposer = true;
 
 					chordSequence.displaySection = false;
 					txt = chordSequence.display();
-					assert.equal(txt,"Whatever song (Random Composer)\nAMaj7 | % | B7 | % | Em | % | F7 | % ", "Display section false");
+					assert.equal(txt,"Whatever song (Random Composer)\nAM7 | % | B7 | % | Em | % | F7 | % ", "Display section false");
 					chordSequence.displaySection = true;
 
 					chordSequence.displayBar = false;
@@ -42,17 +42,17 @@ define(['modules/converters/MusicCSLJson/src/SongModel_CSLJson', 'modules/core/s
 
 					chordSequence.delimiterBar = "/";
 					txt = chordSequence.display();
-					assert.equal(txt,"Whatever song (Random Composer)\nsection: A\nAMaj7 / % / B7 / % / Em / % / F7 / % ", "delimiterBar");
+					assert.equal(txt,"Whatever song (Random Composer)\nsection: A\nAM7 / % / B7 / % / Em / % / F7 / % ", "delimiterBar");
 					chordSequence.delimiterBar = "|";
 
 					chordSequence.fillEmptyBar = false;
 					txt = chordSequence.display();
-					assert.equal(txt,"Whatever song (Random Composer)\nsection: A\nAMaj7 |  | B7 |  | Em |  | F7 |  ", "fillEmptyBar set to false");
+					assert.equal(txt,"Whatever song (Random Composer)\nsection: A\nAM7 |  | B7 |  | Em |  | F7 |  ", "fillEmptyBar set to false");
 					chordSequence.fillEmptyBar = true;
 
 					chordSequence.fillEmptyBarCharacter = "%%";
 					txt = chordSequence.display();
-					assert.equal(txt,"Whatever song (Random Composer)\nsection: A\nAMaj7 | %% | B7 | %% | Em | %% | F7 | %% ", "fillEmptyBarCharacter");
+					assert.equal(txt,"Whatever song (Random Composer)\nsection: A\nAM7 | %% | B7 | %% | Em | %% | F7 | %% ", "fillEmptyBarCharacter");
 					chordSequence.fillEmptyBarCharacter = "%";
 
 				});

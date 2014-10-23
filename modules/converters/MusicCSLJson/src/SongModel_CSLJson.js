@@ -74,8 +74,6 @@ define(function(require) {
 					} else {
 						console.log(JSONSection.bars);
 					}
-
-
 				});
 				songModel.addComponent('bars', barManager);
 				//noteManager.setNotesBarNum(songModel);

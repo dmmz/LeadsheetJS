@@ -75,5 +75,75 @@ define(function() {
 		}
 		return sortedPitches;
 	};
+
+	NoteUtils.pitch2Number = function(pitch) {
+		var pitch2NumberArray = {
+			"C": 0,
+			"C#": 1,
+			"Db": 1,
+			"D": 2,
+			"D#": 3,
+			"Eb": 3,
+			"E": 4,
+			"Fb": 4,
+			"E#": 5,
+			"F": 5,
+			"F#": 6,
+			"Gb": 6,
+			"G": 7,
+			"G#": 8,
+			"Ab": 8,
+			"A": 9,
+			"A#": 10,
+			"Bb": 10,
+			"B": 11,
+			"Cb": 11,
+			"B#": 0,
+		};
+		var number;
+		if (typeof pitch2NumberArray[pitch] !== "undefined") {
+			number = pitch2NumberArray[pitch];
+		}
+		return number;
+	}
+
+	NoteUtils.number2Pitch = function(number) {
+		number2PitchArray = {
+			0: "C",
+			1: "C#",
+			2: "D",
+			3: "D#",
+			4: "E",
+			5: "F",
+			6: "F#",
+			7: "G",
+			8: "G#",
+			9: "A",
+			10: "A#",
+			11: "B",
+		};
+		number = (number + 12) % 12;
+		var pitch;
+		if (typeof number2PitchArray[number] !== "undefined") {
+			pitch = number2PitchArray[number];
+		}
+		return pitch;
+	};
+
+
+	NoteUtils.transformStringNote2ArrayNote = function(chordString) {
+		var chordArray = [];
+		if (typeof chordString !== "undefined") {
+			var chord = chordString.split(',');
+			for (var i = 0; i < chord.length; i++) {
+				var s = (/[A-Z][b,#]{0,2}[0-9]?/i).exec(chord[i]);
+				if (s) {
+					chordArray.push(s[0]);
+				}
+			}
+		}
+		return chordArray;
+	}
+
 	return NoteUtils;
 });

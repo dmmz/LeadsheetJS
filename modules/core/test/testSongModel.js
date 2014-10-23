@@ -20,7 +20,6 @@ define(['tests/test-songs', 'modules/core/src/SongModel', 'modules/converters/Mu
 				assert.equal(song.getTimeSignatureAt(5),"3/4");
 				assert.equal(song.getTimeSignatureAt(6),"3/4");
 
-
 				
 			});
 		}

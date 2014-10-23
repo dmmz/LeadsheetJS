@@ -9,7 +9,7 @@ define(function(){
 				name:"A",
 				bars:[
 					{
-						chords:[{p:"A",ch:"Maj7",beat:1}],
+						chords:[{p:"A",ch:"M7",beat:1}],
 						melody:
 						[
 								{ keys: ["a/4"], duration: "q" },

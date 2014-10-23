@@ -31,6 +31,10 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		}
 	}
 
+	NoteModel.prototype.toString = function(string, index) {
+		return this.pitchClass[0] + this.accidental[0] + this.octave[0];
+	}
+	
 	NoteModel.prototype.setNoteFromString = function(string, index) {
 		index = index || 0;
 		var re = /[a-g|A-G](#{1,2}|b{1,2}|n)?(-[w|h|q|8|16|32|64])?\.{0,2}\/\d/;
@@ -67,6 +71,23 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		}
 	}
 
+	NoteModel.prototype.getNumPitches = function() {
+		return this.pitchClass.length;
+	};
+
+	NoteModel.prototype.getPitchClass = function(i) {
+		i = i || 0;
+		return this.pitchClass[i];
+	};
+
+	NoteModel.prototype.getAccidental = function(i) {
+		i = i || 0;
+		return this.accidental[i];
+	};
+	NoteModel.prototype.getOctave = function(i) {
+		i = i || 0;
+		return this.octave[i];
+	};
 
 	/**
 	 * @param  {Number} index
@@ -119,6 +140,19 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 
 	NoteModel.prototype.getTie = function() {
 		return this.tie;
+	};
+
+	/**
+	 * if tieType not specified, returns boolean if there is actually a tie (no matter which type)
+	 * if tieType is specified checks in a 'soft' way, that means that for tie "stop_start", both isTie("start")
+	 * and isTie("stop") will return true
+	 *
+	 * @param  {String}  tieType
+	 * @return {Boolean}
+	 */
+	NoteModel.prototype.isTie = function(tieType) {
+		if (!tieType) return this.tie != null;
+		else return this.tie && this.tie.indexOf(tieType) != -1;
 	};
 
 	/* if both parameters are null or undefined, function does not do anything, this happens on constructor

@@ -1,4 +1,4 @@
-define(['modules/core/src/ChordModel'], function(ChordModel) {
+define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(SongModel, ChordModel) {
 	function ChordManager(chords) {
 		this.chords = chords ? chords : []; // array of chordModel
 	};
@@ -152,29 +152,29 @@ define(['modules/core/src/ChordModel'], function(ChordModel) {
 	 * @param  {int} index of chord in this.chords
 	 * @return {int} number of beat the chord last
 	 */
-	ChordManager.prototype.getChordDuration = function(index) {
-		if (typeof index !== "undefined" && !isNaN(index)) {
-			if (typeof this.chords[index] !== "undefined") {
-				var currentBn = this.chords[index].getBarNumber();
-				var currentBeat = this.chords[index].getBeat();
-				var beats = this.songModel.getBeatsFromTimeSignature(this.songModel.getTimeSignatureAt(currentBn));
-				if (typeof this.chords[index + 1] !== "undefined") {
-					var nextBn = this.chords[index + 1].getBarNumber();
-					var nextBeat = this.chords[index + 1].getBeat();
-				} else {
-					/*var nextChord = 0; // case last chords, we set next to the end*/
-					var nextBn = currentBn + 1;
-					var nextBeat = 1;
-				}
-				var duration = 0;
-				if (nextBn === currentBn) { // if chord are on the same bar
-					duration = nextBeat - currentBeat;
-				} else if (nextBn > currentBn) {
-					duration = beats * (nextBn - currentBn) + nextBeat - currentBeat;
-				}
-
-				return duration;
+	ChordManager.prototype.getChordDuration = function(songModel, index) {
+		if (typeof songModel === "undefined" || typeof index === "undefined" || isNaN(index)) {
+			throw "ChordManager - getChordDuration - wrong arguments";
+		}
+		if (typeof this.chords[index] !== "undefined") {
+			var currentBn = this.chords[index].getBarNumber();
+			var currentBeat = this.chords[index].getBeat();
+			var beats = songModel.getBeatsFromTimeSignature(songModel.getTimeSignatureAt(currentBn));
+			if (typeof this.chords[index + 1] !== "undefined") {
+				var nextBn = this.chords[index + 1].getBarNumber();
+				var nextBeat = this.chords[index + 1].getBeat();
+			} else {
+				/*var nextChord = 0; // case last chords, we set next to the end*/
+				var nextBn = currentBn + 1;
+				var nextBeat = 1;
 			}
+			var duration = 0;
+			if (nextBn === currentBn) { // if chord are on the same bar
+				duration = nextBeat - currentBeat;
+			} else if (nextBn > currentBn) {
+				duration = beats * (nextBn - currentBn) + nextBeat - currentBeat;
+			}
+			return duration;
 		}
 		return undefined;
 	}

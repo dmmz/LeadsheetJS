@@ -1,14 +1,14 @@
 define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/core/src/ChordManager'], function(NoteManager, BarManager, ChordManager) {
 	function SongModel(param) {
-		this.title = 			(typeof param !== "undefined" && param.title) ? param.title : '';
-		this.composers = 		(typeof param !== "undefined" && param.composers) ? param.composers : [];
-		this.style = 			(typeof param !== "undefined" && param.style) ? param.style : '';
-		this.source = 			(typeof param !== "undefined" && param.source) ? param.source : '';
-		this.tempo = 			(typeof param !== "undefined" && param.tempo) ? param.tempo : 120;
-		this.tonality = 		(typeof param !== "undefined" && param.tonality) ? param.tonality : "C";
-		this.timeSignature = 	(typeof param !== "undefined" && param.timeSignature) ? param.timeSignature : "4/4";
-		this.sections = 		(typeof param !== "undefined" && param.sections) ? param.sections : [];
-		this.components = 		(typeof param !== "undefined" && param.components) ? param.components : [];
+		this.title = (typeof param !== "undefined" && param.title) ? param.title : '';
+		this.composers = (typeof param !== "undefined" && param.composers) ? param.composers : [];
+		this.style = (typeof param !== "undefined" && param.style) ? param.style : '';
+		this.source = (typeof param !== "undefined" && param.source) ? param.source : '';
+		this.tempo = (typeof param !== "undefined" && param.tempo) ? param.tempo : 120;
+		this.tonality = (typeof param !== "undefined" && param.tonality) ? param.tonality : "C";
+		this.timeSignature = (typeof param !== "undefined" && param.timeSignature) ? param.timeSignature : "4/4";
+		this.sections = (typeof param !== "undefined" && param.sections) ? param.sections : [];
+		this.components = (typeof param !== "undefined" && param.components) ? param.components : [];
 		this.addComponent('notes', new NoteManager());
 		this.addComponent('bars', new BarManager());
 	}
@@ -273,6 +273,36 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 	};
 
 	/**
+	 * get component using unfolded song structure
+	 * @param  {String} componentTitle must be "chords" or "notes"
+	 * @return {array} array of component (noteModel, chordModel)
+	 */
+	SongModel.prototype.getUnfoldedSongComponents = function(componentTitle) {
+		var song = [];
+		if (typeof componentTitle === "undefined") {
+			componentTitle = undefined;
+		}
+		var barsIndex = this.getUnfoldedSongStructure();
+		for (var i = 0; i < barsIndex.length; i++) {
+			song.push(this.getComponentsAtBarNumber(barsIndex[i], componentTitle));
+		}
+		return song;
+	}
+
+	/**
+	 * Function return an array containing index of bars in an unfolded song
+	 * @return {array}
+	 */
+	SongModel.prototype.getUnfoldedSongStructure = function() {
+		var pointerbarNumberStructure = [];
+		for (var i = 0, c = this.getSections().length; i < c; i++) {
+			// looping on all sections
+			pointerbarNumberStructure = pointerbarNumberStructure.concat(this.getUnfoldedSongSection(i));
+		}
+		return pointerbarNumberStructure;
+	}
+
+	/**
 	 * Function return an array containing index of bars in an unfolded song
 	 * @return {array}
 	 */
@@ -383,7 +413,6 @@ define(['modules/core/src/NoteManager', 'modules/core/src/BarManager', 'modules/
 				nMeasureBeatsAcc += nMeasureBeats;
 				localTimeSig = this.getTimeSignatureAt(currentBar);
 				beatsPerBar = this.getBeatsFromTimeSignatureAt(currentBar);
-
 			}
 			if (!notesBar[currentBar]) {
 				notesBar[currentBar] = [];
