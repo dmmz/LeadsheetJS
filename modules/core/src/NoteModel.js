@@ -52,6 +52,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 				if (dotPosition == -1) {
 					this.duration = partsDuration[0];
 				} else {
+					this.duration = partsDuration[0].split('.')[0];
 					this.dot = partsDuration[0].length - dotPosition;
 				}
 			}

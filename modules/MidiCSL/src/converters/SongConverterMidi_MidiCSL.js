@@ -10,8 +10,8 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/model/SongModel_midiC
 			song = ChordManagerConverterMidi_MidiCSL.exportToMidiCSL(songModel);
 			var nm = songModel.getComponent('notes');
 			if (typeof nm !== "undefined") {
-				// TODO, uncomment when getComponentsAtBarNumber notes will be finished
-				// SongConverterMidi_MidiCSL.exportNoteToMidiCSL(songModel);
+				var melodySong = SongConverterMidi_MidiCSL.exportNoteToMidiCSL(songModel);
+				song = song.concat(melodySong);
 			}
 			return song;
 		};
@@ -43,8 +43,8 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/model/SongModel_midiC
 
 			var midiSoundModel, notesInBar, currentNote;
 
-			// TODO
-			// use getUnfoldedSongComponents('notes');
+			
+			// We could also use songModel.getUnfoldedSongComponents('notes'), in case of unfolded song structure doesnt work with numBars
 
 			var barsIndex = songModel.getUnfoldedSongStructure();
 			if (barsIndex.length === 0) {
