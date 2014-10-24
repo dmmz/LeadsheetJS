@@ -40,7 +40,6 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/model/SongModel_midiC
 			var repeatMeasure = [];
 			var refreshTonalityNote = false;
 
-
 			var midiSoundModel, notesInBar, currentNote;
 
 			

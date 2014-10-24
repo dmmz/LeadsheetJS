@@ -5,8 +5,9 @@ require.config({
     jquery: 'external-libs/jquery-2.1.0.min',
     qunit: 'external-libs/qunit/qunit',
     vexflow_helper: 'external-libs/vexflow_test_helpers',
-    vexflow: 'external-libs/vexflow-min'
-
+    vexflow: 'external-libs/vexflow-min',
+    Midijs: 'external-libs/Midijs/midijs.min',
+    pubsub: 'external-libs/tiny-pubsub.min',
   },
   shim: {
     'qunit': {
@@ -18,6 +19,9 @@ require.config({
     },
     'vexflow': {
       exports: 'Vex'
+    },
+    'Midijs': {
+      exports: 'MIDI'
     }
   }
 });
@@ -45,6 +49,7 @@ define(function(require) {
 
   var testSongModel_midiCSL = require('modules/MidiCSL/test/model/testSongModel_midiCSL');
   var testNoteModel_midiCSL = require('modules/MidiCSL/test/model/testNoteModel_midiCSL');
+  var testPlayerModel_MidiCSL = require('modules/MidiCSL/test/model/testPlayerModel_MidiCSL');
   var testSongConverterMidi_MidiCSL = require('modules/MidiCSL/test/converters/testSongConverterMidi_MidiCSL');
 
   var testLSViewer = require('modules/LSViewer/test/testLSViewer');
@@ -75,6 +80,7 @@ define(function(require) {
   //testLSViewer.run(Vex);
 
   // Midi sound model Module
+  testPlayerModel_MidiCSL.run();
   testSongModel_midiCSL.run();
   testNoteModel_midiCSL.run();
 
