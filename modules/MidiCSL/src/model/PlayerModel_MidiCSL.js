@@ -1,3 +1,14 @@
+/**
+ * Publishable Events
+ * PlayerModel_MidiCSL-onload
+ * PlayerModel_MidiCSL-onplay
+ * PlayerModel_MidiCSL-onstop
+ * PlayerModel_MidiCSL-onpause
+ * PlayerModel_MidiCSL-onloopstart
+ * PlayerModel_MidiCSL-onfinish
+ * PlayerModel_MidiCSL-onvolumechange
+ */
+
 define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], function(SongModel_MidiCSL, MIDI, pubsub) {
 	/* option contain
 		editor 				// Score Editor Object, it is use mainly for viewer to display cursor
@@ -24,7 +35,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 			instrument: (typeof option !== "undefined" && typeof(option.melodyInstrument) !== "undefined") ? option.melodyInstrument : 0,
 		};
 		this.activeMetronome = (typeof option !== "undefined" && typeof(option.activeMetronome) !== "undefined") ? option.activeMetronome : false;
-		// When loop attributes is set to true, player will restart after the last note (indefinitively) after 1 second of silence
+		// When loop attributes is set to true, player will restart after the last note (indefinitively)
 		this.loop = (typeof option !== "undefined" && typeof option.loop !== "undefined") ? option.loop : false;
 
 		if (typeof option !== "undefined" && typeof option.editor !== "undefined") {
@@ -38,7 +49,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 		if (!!this.autoload) {
 			this.load();
 		}
-		this._startTime = 0; // it contain the timestamp of the start (when play is pressed), (it change only if player is in pause)
+		this._startTime = 0; // it contain the start timestamp  (when play is pressed), (it change only if player is in pause)
 	};
 
 	PlayerModel_MidiCSL.prototype.load = function() {
@@ -114,6 +125,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 		if (typeof volume === "undefined" || isNaN(volume)) {
 			throw 'PlayerModel_MidiCSL - setVolume - volume must be a number ' + volume;
 		}
+		$.publish('PlayerModel_MidiCSL-onvolumechange', volume);
 		this.setMelodyVolume(volume);
 		this.setChordsVolume(volume);
 	};
@@ -193,6 +205,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 		}
 		var song = songModel_MidiCSL.getSong();
 		if (song.length !== 0 && this.getReady() === true) {
+			$.publish('PlayerModel_MidiCSL-onplay');
 			this.playState = true;
 
 			var self = this;
@@ -255,8 +268,10 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 										setTimeout((function() {
 											self.setPosition(0);
 											if (self.doLoop() === false) {
+												$.publish('PlayerModel_MidiCSL-onfinish');
 												self.stop();
 											} else {
+												$.publish('PlayerModel_MidiCSL-onloopstart');
 												self.play(song, tempo);
 											}
 										}), duration * 1000);
@@ -282,6 +297,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 		for (var i in this.noteTimeOut) {
 			window.clearTimeout(this.noteTimeOut[i]);
 		}
+		$.publish('PlayerModel_MidiCSL-onpause');
 	}
 
 	PlayerModel_MidiCSL.prototype.stop = function() {
@@ -293,6 +309,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 			window.clearTimeout(this.noteTimeOut[i]);
 		}
 		this.setPosition(0);
+		$.publish('PlayerModel_MidiCSL-onstop');
 	}
 
 
@@ -377,7 +394,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 
 	PlayerModel_MidiCSL.prototype.MidiPluginIsReady = function() {
 		this.setReady(true);
-		$.publish('PlayerModel_MidiCSL-loaded');
+		$.publish('PlayerModel_MidiCSL-onload');
 	};
 
 	return PlayerModel_MidiCSL;
