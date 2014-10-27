@@ -196,7 +196,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 	}
 
 
-	PlayerModel_MidiCSL.prototype.play = function(songModel_MidiCSL, tempo, callback) {
+	PlayerModel_MidiCSL.prototype.play = function(songModel_MidiCSL, tempo) {
 		if (typeof tempo === "undefined" || isNaN(tempo)) {
 			throw 'PlayerModel_MidiCSL - play - tempo must be a number ' + tempo;
 		}
@@ -264,19 +264,16 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 
 								/*}*/
 								if (currentNote == lastNote) {
-									if (typeof callback !== "undefined") {
-										setTimeout((function() {
-											self.setPosition(0);
-											if (self.doLoop() === false) {
-												$.publish('PlayerModel_MidiCSL-onfinish');
-												self.stop();
-											} else {
-												$.publish('PlayerModel_MidiCSL-onloopstart');
-												self.play(song, tempo);
-											}
-										}), duration * 1000);
-										setTimeout(callback, duration * 1000);
-									}
+									setTimeout((function() {
+										self.setPosition(0);
+										if (self.doLoop() === false) {
+											$.publish('PlayerModel_MidiCSL-onfinish');
+											self.stop();
+										} else {
+											$.publish('PlayerModel_MidiCSL-onloopstart');
+											self.play(song, tempo);
+										}
+									}), duration * 1000);
 								}
 							}, currentNote.getCurrentTime() * self.getBeatDuration(tempo) - lastCurrentTimeBeforePaused);
 						})(currentNote, realIndex, i, j);
