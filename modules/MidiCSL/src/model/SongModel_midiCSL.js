@@ -15,9 +15,9 @@ define(['modules/MidiCSL/src/model/NoteModel_MidiCSL'], function(NoteModel_midiC
 		}
 	}
 
-	SongModel_MidiCSL.prototype.setFromType = function( song, type) {
-		if(typeof type === "undefined"){
-			 return;
+	SongModel_MidiCSL.prototype.setFromType = function(song, type) {
+		if (typeof type === "undefined") {
+			return;
 		}
 		for (var i = this.song.length - 1; i >= 0; i--) {
 			if (this.song[i].getType() === type) {
@@ -30,7 +30,7 @@ define(['modules/MidiCSL/src/model/NoteModel_MidiCSL'], function(NoteModel_midiC
 
 	SongModel_MidiCSL.prototype.getFromType = function(type) {
 		var elements = [];
-		if(typeof type !== "undefined"){
+		if (typeof type !== "undefined") {
 			for (var i = 0, c = this.song.length; i < c; i++) {
 				if (this.song[i].getType() === type) {
 					elements.push(this.song[i])
@@ -41,8 +41,8 @@ define(['modules/MidiCSL/src/model/NoteModel_MidiCSL'], function(NoteModel_midiC
 	}
 
 	SongModel_MidiCSL.prototype.removeFromType = function(type) {
-		if(typeof type === "undefined"){
-			 return;
+		if (typeof type === "undefined") {
+			return;
 		}
 		for (var i = this.song.length - 1; i >= 0; i--) {
 			if (this.song[i].getType() === type) {

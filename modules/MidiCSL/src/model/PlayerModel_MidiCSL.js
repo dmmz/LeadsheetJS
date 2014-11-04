@@ -20,7 +20,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 	*/
 	function PlayerModel_MidiCSL(option) {
 		this.isReady = false; // boolean that indicates if player is ready to be played
-		this.position = 0;
+		this.indexPosition = 0; // represent which notes have been lastly played
 		this.playState = false; // playState indicate if the player is currently playing or not, (paused player will return false)
 
 		var initVolume = (typeof option !== "undefined" && typeof(option.volume) !== "undefined") ? option.volume : 1;
@@ -180,12 +180,40 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 		}
 	}
 
-	PlayerModel_MidiCSL.prototype.setPosition = function(position) {
-		if (typeof position === "undefined" || isNaN(position)) {
-			throw 'PlayerModel_MidiCSL - setPosition - position must be a number ' + tempo;
-		}
-		this.position = position;
+	PlayerModel_MidiCSL.prototype.getPositionIndex = function() {
+		return this.indexPosition;
 	}
+
+	PlayerModel_MidiCSL.prototype.setPositionIndex = function(indexPosition) {
+		if (typeof indexPosition === "undefined" || isNaN(indexPosition)) {
+			throw 'PlayerModel_MidiCSL - setPositionIndex - indexPosition must be a number ' + indexPosition;
+		}
+		this.indexPosition = indexPosition;
+	}
+
+	/*PlayerModel_MidiCSL.prototype.setPositionInPercent = function(positionInPercent) {
+		console.log(positionInPercent);
+		if (typeof positionInPercent === "undefined" || isNaN(positionInPercent)) {
+			throw 'PlayerModel_MidiCSL - setPositionInPercent - positionInPercent must be a float ' + positionInPercent;
+		}
+		this.positionInPercent = positionInPercent;
+	}*/
+
+	/**
+	 * Give position of player in the song
+	 * @return {float} between 0 (not started) and 1 (finished)
+	 */
+	PlayerModel_MidiCSL.prototype.getPosition = function() {
+		if(typeof this._startTime === "undefined" || isNaN(this._startTime) || typeof this.songDuration === "undefined" || isNaN(this.songDuration)){
+			throw 'PlayerModel_MidiCSL - getPosition - _startTime and songDuration must be numbers ' + this._startTime + ' ' + this.songDuration;
+		}
+		var position = (Date.now() - this._startTime) / this.songDuration;
+		if(position > 1){
+			position = 1;
+		}
+		return position;
+	}
+
 
 
 	PlayerModel_MidiCSL.prototype.getBeatDuration = function(tempo) {
@@ -210,10 +238,15 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 
 			var self = this;
 			var beatDuration = this.getBeatDuration(tempo);
-			var lastCurrentTimeBeforePaused = song[this.position].getCurrentTime() * beatDuration;
+			var lastCurrentTimeBeforePaused = song[this.indexPosition].getCurrentTime() * beatDuration;
 			this._startTime = Date.now() - lastCurrentTimeBeforePaused;
+
 			this.noteTimeOut = []; // Keep every setTimeout so we can clear them on pause/stop
 			var lastNote = songModel_MidiCSL.getLastNote(); // Looking for last note
+
+			var beatOfLastNoteOff = lastNote.getCurrentTime() + lastNote.getDuration();
+			var endTime = beatOfLastNoteOff * beatDuration + Date.now();
+			this.songDuration = endTime - this._startTime;
 
 			var velocityMin = 80;
 			var randomVelocityRange = 40;
@@ -224,7 +257,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 			var currentNote, currentMidiNote, duration, velocityNote, channel, volume;
 			var playNote = false;
 			// for each different position in the song
-			for (var i = this.position, c = song.length; i < c; i++) {
+			for (var i = this.indexPosition, c = song.length; i < c; i++) {
 				currentNote = song[i];
 				if (currentNote && (currentNote.getCurrentTime() * beatDuration) >= lastCurrentTimeBeforePaused) {
 					// for each notes on a position (polyphonic song will have j > 1)
@@ -261,11 +294,16 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 									MIDI.noteOn(channel, currentMidiNote, velocityNote);
 									MIDI.noteOff(channel, currentMidiNote, duration);
 								}
-
+								if (currentNote.getType() == "melody") {
+									self.setPositionIndex(i);
+									//self.setPositionInPercent((Date.now() - self._startTime) / self.songDuration);
+									//self.setPositionInPercent(currentNote.getCurrentTime()/beatOfLastNoteOff);
+								}
 								/*}*/
 								if (currentNote == lastNote) {
 									setTimeout((function() {
-										self.setPosition(0);
+										self.setPositionIndex(0);
+										//self.setPositionInPercent(0);
 										if (self.doLoop() === false) {
 											$.publish('PlayerModel_MidiCSL-onfinish');
 											self.stop();
@@ -305,7 +343,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 		for (var i in this.noteTimeOut) {
 			window.clearTimeout(this.noteTimeOut[i]);
 		}
-		this.setPosition(0);
+		this.setPositionIndex(0);
 		$.publish('PlayerModel_MidiCSL-onstop');
 	}
 
