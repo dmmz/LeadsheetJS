@@ -223,8 +223,13 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 		return 1000 * (60 / tempo);
 	}
 
-
-	PlayerModel_MidiCSL.prototype.play = function(songModel_MidiCSL, tempo) {
+	/**
+	 * Launch midi.noteon and noteoff instructions, this function is the main play function
+	 * @param  {SongModel_MidiCSL} songModel_MidiCSL is the model that the player will read
+	 * @param  {int} tempo in bpm, it influence how fast the song will be played
+	 * @param  {float} playFrom is an optionnal attributes, if it's filled then player will start to play the note after playFrom, in sec
+	 */
+	PlayerModel_MidiCSL.prototype.play = function(songModel_MidiCSL, tempo, playFrom) {
 		if (typeof tempo === "undefined" || isNaN(tempo)) {
 			throw 'PlayerModel_MidiCSL - play - tempo must be a number ' + tempo;
 		}
@@ -233,20 +238,22 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 		}
 		var song = songModel_MidiCSL.getSong();
 		if (song.length !== 0 && this.getReady() === true) {
-			$.publish('PlayerModel_MidiCSL-onplay');
-			this.playState = true;
-
 			var self = this;
-			var beatDuration = this.getBeatDuration(tempo);
-			var lastCurrentTimeBeforePaused = song[this.indexPosition].getCurrentTime() * beatDuration;
-			this._startTime = Date.now() - lastCurrentTimeBeforePaused;
-
-			this.noteTimeOut = []; // Keep every setTimeout so we can clear them on pause/stop
 			var lastNote = songModel_MidiCSL.getLastNote(); // Looking for last note
+			var beatDuration = this.getBeatDuration(tempo);
+			this.noteTimeOut = []; // Keep every setTimeout so we can clear them on pause/stop
 
 			var beatOfLastNoteOff = lastNote.getCurrentTime() + lastNote.getDuration();
 			var endTime = beatOfLastNoteOff * beatDuration + Date.now();
 			this.songDuration = endTime - this._startTime;
+			
+			this.playState = true;
+			$.publish('PlayerModel_MidiCSL-onplay');
+			
+			if (typeof playFrom === "undefined" || isNaN(playFrom)) {
+				playFrom = song[this.indexPosition].getCurrentTime() * beatDuration;
+			}
+			this._startTime = Date.now() - playFrom;
 
 			var velocityMin = 80;
 			var randomVelocityRange = 40;
@@ -257,9 +264,9 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 			var currentNote, currentMidiNote, duration, velocityNote, channel, volume;
 			var playNote = false;
 			// for each different position in the song
-			for (var i = this.indexPosition, c = song.length; i < c; i++) {
+			for (var i = this.getPositionIndex(), c = song.length; i < c; i++) {
 				currentNote = song[i];
-				if (currentNote && (currentNote.getCurrentTime() * beatDuration) >= lastCurrentTimeBeforePaused) {
+				if (currentNote && (currentNote.getCurrentTime() * beatDuration) >= playFrom) {
 					// for each notes on a position (polyphonic song will have j > 1)
 					for (var j = 0, v = currentNote.getMidiNote().length; j < v; j++) {
 						(function(currentNote, realIndex, i, j) {
@@ -313,7 +320,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 										}
 									}), duration * 1000);
 								}
-							}, currentNote.getCurrentTime() * self.getBeatDuration(tempo) - lastCurrentTimeBeforePaused);
+							}, currentNote.getCurrentTime() * self.getBeatDuration(tempo) - playFrom);
 						})(currentNote, realIndex, i, j);
 						realIndex++;
 					}

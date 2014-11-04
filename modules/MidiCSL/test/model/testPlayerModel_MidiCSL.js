@@ -22,7 +22,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/model/PlayerModel_Mid
 
 					$.subscribe('PlayerModel_MidiCSL-onload', function(e) {
 						console.log('play');
-						//player.play(midiSongModel, 120);
+						// player.play(midiSongModel, 120);
 					});
 					var player = new PlayerModel_MidiCSL();
 
