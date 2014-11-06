@@ -1,5 +1,5 @@
 define([
-	'tests/test-songs', 
+	'tests/test-songs',
 	'modules/core/src/SongModel',
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
 	'modules/core/src/TimeSignatureModel'
@@ -7,7 +7,7 @@ define([
 	return {
 		run: function() {
 			test("Song", function(assert) {
-				 var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
+				var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
 
 				//Get Tonality
 				song.getComponent('bars').getBar(5).setTonality("Eb");

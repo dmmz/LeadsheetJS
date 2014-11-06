@@ -30,6 +30,9 @@ define(function(require) {
 
   var Qunit = require('qunit');
 
+  var testUserLog = require('utils/test/testUserlog');
+  var testAjaxUtils = require('utils/test/testAjaxUtils');
+
   var testSongModel = require('modules/core/test/testSongModel');
   var testChordManager = require('modules/core/test/testChordManager');
   var testChordModel = require('modules/core/test/testChordModel');
@@ -53,6 +56,10 @@ define(function(require) {
   var testSongConverterMidi_MidiCSL = require('modules/MidiCSL/test/converters/testSongConverterMidi_MidiCSL');
 
   var testLSViewer = require('modules/LSViewer/test/testLSViewer');
+
+  // Utils
+  testUserLog.run();
+  testAjaxUtils.run();
 
   // Core Module
   testNoteModel.run();
