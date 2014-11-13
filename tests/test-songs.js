@@ -183,9 +183,105 @@ define(function(){
 			}
 		]
 	};
+	var allNoteFigures = {
+		composer:"Random Composer",
+		title: "All notes",
+		time: "4/4",
+		changes:[
+			{
+				id:0,
+				name:"A",
+				bars:
+				[
+					{
+						chords:[{p:"A",ch:"M7",beat:1}],
+						melody:
+						[
+								/*{ keys: ["g/4"], duration: "64" },
+								{ keys: ["g/4"], duration: "32", dot:1 },
+								{ keys: ["g/4"], duration: "32"},
+								{ keys: ["g/4"], duration: "16", dot:1 },
+								{ keys: ["g/4"], duration: "16"},
+								{ keys: ["g/4"], duration: "64" },
+								{ keys: ["g/4"], duration: "32", dot:1 },
+								{ keys: ["g/4"], duration: "32"},
+								{ keys: ["g/4"], duration: "16", dot:1 },
+								{ keys: ["g/4"], duration: "16"},
+								{ keys: ["g/4"], duration: "8", dot:1 },
+								{ keys: ["g#/4"], duration: "8" },
+								{ keys: ["g/4"], duration: "q", dot:1 },
+								{ keys: ["g/4"], duration: "q", dot:1 },
+								{ keys: ["g/4"], duration: "16" },
+								{ keys: ["a/4"], duration: "16" },
+								{ keys: ["b/4"], duration: "16" },
+								{ keys: ["c/4"], duration: "16" },
+								{ keys: ["d/4"], duration: "q" },
+								
+								{ keys: ["a/4"], duration: "8" },
+								{ keys: ["b/4"], duration: "8" },
+								{ keys: ["d/4"], duration: "q" }*/
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" }
+								
+								
+						]
+					},
+					{
+						melody:
+						[
+								{ keys: ["a/4"], duration: "q" },
+								{ keys: ["f/4"], duration: "q" },
+								{ keys: ["g/4"], duration: "q" },
+								{ keys: ["e/4"], duration: "q" }
+						]
+				}]
+			}
+		]
+	};
 	return {
 		simpleLeadSheet: simpleLeadSheet,
-		leadSheetTimeSigChanges: leadSheetTimeSigChanges
+		leadSheetTimeSigChanges: leadSheetTimeSigChanges,
+		allNoteFigures: allNoteFigures
+
 	};
 
 });

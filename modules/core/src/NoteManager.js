@@ -189,7 +189,19 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 		}
 		return undefined;
 	};
+	/**
+	 * tells if global beat is the same as the one from the previous note 
+	 * @param  {Number}  indexNote global index of the note to compare to previous one
+	 * @return {Boolean}           
+	 */
+	NoteManager.prototype.isSameBeatAsPreviousNote = function(indexNote) {
 
+		if (indexNote === 0)	return false;
+		var beat = this.getNoteBeat(indexNote);
+		var beatAnt = this.getNoteBeat(indexNote - 1);
+		return Math.floor(beat) == Math.floor(beatAnt);
+
+	};
 	NoteManager.prototype.getNotesAtBarNumber = function(barNumber, song) {
 		if (!song) {
 			throw "getNotesAtBarNumber: incorrect song parameter";

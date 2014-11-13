@@ -84,7 +84,7 @@ define(function(require) {
 
   //LSViewer Module
   //console.log(Vex);
-  //testLSViewer.run(Vex);
+  testLSViewer.run(Vex);
 
   // Midi sound model Module
   testPlayerModel_MidiCSL.run();
