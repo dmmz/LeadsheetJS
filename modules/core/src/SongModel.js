@@ -169,13 +169,12 @@ define([
 	};
 
 	/**
-	 * The function returns the beats unit from the timeSig arguments or by default on current timeSignature
-	 * @param  {string} timeSig, optionnal
+	 * The function returns the beats unit from the current time signature
 	 * @return {int} beat unit in a measure. E.g.: for 6/8 -> 0.5, for 4/4 -> 1 for 2/2 -> 2
 	 */
 	// TODO rename function
-	SongModel.prototype.getBeatUnitFromTimeSignature = function(timeSig) {
-		return timeSig.getBeatUnitQuarter();
+	SongModel.prototype.getBeatUnitFromTimeSignature = function() {
+		return this.timeSignature.getBeatUnitQuarter();
 	};
 
 	/**
