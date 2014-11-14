@@ -25,7 +25,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordManager', 'modules/
 				for (var i = 0, c = chordsInBar.length; i < c; i++) {
 					numberOfChord++;
 					chordIndex = chordManager.getChordIndex(chordsInBar[i]);
-					duration = chordManager.getChordDuration(songModel, chordIndex);
+					duration = chordManager.getChordDuration(songModel, chordIndex) * songModel.getBeatUnitFromTimeSignature();
 					midiNotes = ChordConverterMidi_MidiCSL.exportToMidiCSL(chordsInBar[i]);
 					//console.log(chordsInBar[ i ], chordIndex, duration)
 					var msm = new NoteModel_midiCSL({
