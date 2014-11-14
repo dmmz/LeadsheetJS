@@ -1,10 +1,18 @@
-define(['vexflow', 'modules/LSViewer/src/LSNoteView','modules/LSViewer/src/BeamsManager'], function(Vex, LSNoteView,BeamsManager) {
+define(['vexflow', 
+		'modules/LSViewer/src/LSNoteView', 
+		'modules/LSViewer/src/BeamManager',
+		'modules/LSViewer/src/TieManager',
+		'modules/LSViewer/src/TupletManager'
+		], 
+		function(Vex, LSNoteView, BeamManager,TieManager,TupletManager) {
+
 	function LSViewer(ctx, params) {
 		this.ctx = ctx;
 		this.init(params);
 	}
 	LSViewer.prototype.init = function(params) {
 		this.SCALE = 0.85;
+		this.NOTE_WIDTH = 10; /* estimated note width in order to be more flexible */
 		this.totalWidth = 1160;
 		this.marginLeft = 10;
 		this.marginTop = 100;
@@ -42,40 +50,50 @@ define(['vexflow', 'modules/LSViewer/src/LSNoteView','modules/LSViewer/src/Beams
 		var numBar = 0,
 			self = this,
 			nm = song.getComponent("notes"),
-			barNotes, 
+			barNotes,
+			beamMng,
+			tupletMng,
+			bar,
 			noteView,
 			iNote = 0,
 			stave,
-			vxfBeams;
+			vxfBeams,
+			vxfNote,
+			vxfNotes = [],
+			tieMng = new TieManager();
 
 		song.getSections().forEach(function(section) {
 
 			for (var i = 0; i < section.numberOfBars; i++) {
+
+				beamMng = new BeamManager();
+				tupletMng = new TupletManager();
 				bar = [];
-				beamMng = new BeamsManager();
+
 				barNotes = nm.getNotesAtBarNumber(i, song);
 
 				for (var j = 0; j < barNotes.length; j++) {
-
+					tieMng.checkTie(barNotes[j],iNote);
+					tupletMng.checkTuplet(barNotes[j],iNote);
 					noteView = new LSNoteView(barNotes[j]);
-					bar.push(noteView.getVexflowNote());
-					beamMng.checkBeam(nm,iNote,noteView);
+					vxfNote = noteView.getVexflowNote();
+					bar.push(vxfNote);
+					vxfNotes.push(vxfNote);
+					beamMng.checkBeam(nm, iNote, noteView);
 					iNote++;
 				}
-				
-				stave = new Vex.Flow.Stave(i*200, 0 , 200);
+				stave = new Vex.Flow.Stave(i * 200, 0, 200);
 				stave.setContext(self.ctx).draw();
-				vxfBeams = beamMng.getVexflowBeams();
-				//stave.drawVerticalBar(100);
-				Vex.Flow.Formatter.FormatAndDraw(self.ctx, stave, bar, false); //autobeam false	
-				beamMng.draw(self.ctx,vxfBeams);
-				console.log(bar[i].getWidth());
+				vxfBeams = beamMng.getVexflowBeams(); // we need to do getVexflowBeams before drawing notes
+				Vex.Flow.Formatter.FormatAndDraw(self.ctx, stave, bar, {
+					autobeam: false
+				});
+				beamMng.draw(self.ctx, vxfBeams); // and draw beams needs to be done after drawing notes
+				tupletMng.draw(self.ctx,vxfNotes)
 			}
 		});
-		//console.log(bar[0]);
+		tieMng.draw(self.ctx,vxfNotes);
 
-		
-		
 	};
 	return LSViewer;
 });

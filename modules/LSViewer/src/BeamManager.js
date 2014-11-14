@@ -1,9 +1,15 @@
 define(['vexflow'], function(Vex) {
-	function BeamsManager() {
+	function BeamManager() {
 		this.beams = [];
 		this.counter = -1;		
 	}
-	BeamsManager.prototype.checkBeam = function(noteMng,iNote,noteView) {
+	/**
+	 * saves information for later drawing beams
+	 * @param  {NoteManagerModel} noteMng  
+	 * @param  {Number} iNote    index of note
+	 * @param  {LSNoteView} noteView 
+	 */
+	BeamManager.prototype.checkBeam = function(noteMng,iNote,noteView) {
 		// body.console.log(noteView.isBeamable());
 		if (!noteMng.isSameBeatAsPreviousNote(iNote)) {
 			this.counter++;
@@ -13,8 +19,10 @@ define(['vexflow'], function(Vex) {
 			this.beams[this.counter].push(noteView.getVexflowNote());
 		}
 	};
-
-	BeamsManager.prototype.getVexflowBeams = function() {
+	/**
+	 * 	@return {Array} Array of Vex.Flow.Beam (generate from information in array this.beams) needed to draw
+	 */
+	BeamManager.prototype.getVexflowBeams = function() {
 		var vexflowBeams = [];
 		for (var j = 0; j < this.beams.length; j++) {
 			if (this.beams[j] && this.beams[j].length > 1)
@@ -24,11 +32,16 @@ define(['vexflow'], function(Vex) {
 		return vexflowBeams;
 	};
 
-	BeamsManager.prototype.draw = function(ctx,vxfBeams) {
-		
+	/**
+	 * 	draws beams
+	 * @param  {Context} ctx     
+	 * @param  {Array} vxfBeams  Array of Vex.Flow.Beam
+	 */
+	BeamManager.prototype.draw = function(ctx,vxfBeams) {
 		for (var j = 0; j < vxfBeams.length; j++) {
 			if (vxfBeams[j] !== null) vxfBeams[j].setContext(ctx).draw();
 		}
 	};
-	return BeamsManager;
+
+	return BeamManager;
 });
