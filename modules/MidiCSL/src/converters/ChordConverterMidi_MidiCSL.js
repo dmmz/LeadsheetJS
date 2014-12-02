@@ -9,12 +9,16 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordManager', 'modules/
 			}
 			var midiNotes = ChordConverterMidi_MidiCSL.getAllMidiNotes(chordModel);
 			return midiNotes;
-		}
+		};
 
 		ChordConverterMidi_MidiCSL.getAllMidiNotes = function(chordModel, callback) {
 			// case notes and midinotes are unknown
 			var chordTypesNotes = ChordConverterMidi_MidiCSL.getChordTypesNotes(chordModel);
 			if (typeof chordTypesNotes !== "undefined") {
+				// playing bass chord
+				if(chordModel.isEmptyBase() === false) {
+					chordTypesNotes.unshift(chordModel.getBase().getNote() + "3");
+				}
 				// case chordTypeNotes in C are known
 				var midiNotes = MidiHelper.convertNotesToMidi(chordTypesNotes);
 				var decal = NoteUtils.pitch2Number(chordModel.getNote());
@@ -43,7 +47,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordManager', 'modules/
 			}
 			console.warn('ChordConverterMidi_MidiCSL: Unknown chord ' + chordModel.toString());
 			return [];
-		}
+		};
 
 
 		ChordConverterMidi_MidiCSL.convertNotesToMidi = function(chordModel) {

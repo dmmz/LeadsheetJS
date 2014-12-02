@@ -1,11 +1,11 @@
 define(['modules/MidiCSL/src/model/NoteModel_MidiCSL'], function(NoteModel_midiCSL) {
 	function SongModel_MidiCSL(option) {
 		this.song = (typeof(option) !== "undefined" && typeof(option.song) !== "undefined") ? option.song : [];
-	};
+	}
 
 	SongModel_MidiCSL.prototype.getSong = function() {
 		return this.song;
-	}
+	};
 
 	SongModel_MidiCSL.prototype.setSong = function(song, replaceBool) {
 		if (typeof replaceBool !== "undefined" && replaceBool) {
@@ -13,7 +13,7 @@ define(['modules/MidiCSL/src/model/NoteModel_MidiCSL'], function(NoteModel_midiC
 		} else {
 			this.song = this.song.concat(song);
 		}
-	}
+	};
 
 	SongModel_MidiCSL.prototype.setFromType = function(song, type) {
 		if (typeof type === "undefined") {
@@ -26,19 +26,19 @@ define(['modules/MidiCSL/src/model/NoteModel_MidiCSL'], function(NoteModel_midiC
 		}
 		this.song = this.song.concat(song);
 		/*console.log(this.song);*/
-	}
+	};
 
 	SongModel_MidiCSL.prototype.getFromType = function(type) {
 		var elements = [];
 		if (typeof type !== "undefined") {
 			for (var i = 0, c = this.song.length; i < c; i++) {
 				if (this.song[i].getType() === type) {
-					elements.push(this.song[i])
+					elements.push(this.song[i]);
 				}
 			}
 		}
 		return elements;
-	}
+	};
 
 	SongModel_MidiCSL.prototype.removeFromType = function(type) {
 		if (typeof type === "undefined") {
@@ -49,7 +49,7 @@ define(['modules/MidiCSL/src/model/NoteModel_MidiCSL'], function(NoteModel_midiC
 				this.song.splice(i, 1);
 			}
 		}
-	}
+	};
 
 	SongModel_MidiCSL.prototype.getLastNote = function() {
 		// Looking for last note
@@ -67,7 +67,7 @@ define(['modules/MidiCSL/src/model/NoteModel_MidiCSL'], function(NoteModel_midiC
 			}
 		}
 		return lastNote;
-	}
+	};
 
 	SongModel_MidiCSL.prototype.getMidiSoundModelIndex = function(midiSoundModel) {
 		if (typeof midiSoundModel !== "undefined" && midiSoundModel instanceof SongModel_MidiCSL) {
@@ -79,7 +79,7 @@ define(['modules/MidiCSL/src/model/NoteModel_MidiCSL'], function(NoteModel_midiC
 			}
 		}
 		return -1;
-	}
+	};
 
 	SongModel_MidiCSL.prototype.serialize = function() {
 		var songModel_midiCSL = {};
