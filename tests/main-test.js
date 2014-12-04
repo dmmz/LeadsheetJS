@@ -57,6 +57,8 @@ define(function(require) {
 
   var testLSViewer = require('modules/LSViewer/test/testLSViewer');
 
+  var testHarmonizerController = require('modules/Harmonizer/test/testHarmonizerController');
+
   // Utils
   testUserLog.run();
   testAjaxUtils.run();
@@ -92,6 +94,8 @@ define(function(require) {
   testNoteModel_midiCSL.run();
 
   testSongConverterMidi_MidiCSL.run();
+
+  testHarmonizerController.run();
 
   QUnit.load();
   QUnit.start();

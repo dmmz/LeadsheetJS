@@ -106,7 +106,7 @@ define(function() {
 			number = pitch2NumberArray[pitch];
 		}
 		return number;
-	}
+	};
 
 	NoteUtils.number2Pitch = function(number) {
 		number2PitchArray = {
@@ -144,7 +144,7 @@ define(function() {
 			}
 		}
 		return chordArray;
-	}
+	};
 
 	return NoteUtils;
 });

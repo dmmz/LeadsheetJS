@@ -13,7 +13,6 @@ define(['jquery'], function($) {
 	AjaxUtils.request = function(request, callback) {
 		if (typeof request === "undefined") {
 			throw 'AjaxUtils - ajaxRequest - request argument is undefined ' + request;
-			return;
 		}
 		if (typeof request.url === "undefined") {
 			throw 'AjaxUtils - ajaxRequest - url argument is undefined ' + url;
@@ -50,7 +49,7 @@ define(['jquery'], function($) {
 				}
 			}
 		});
-	}
+	};
 
 	/**
 	 * Direct link to the servlet ajax request with predefined ajax options
@@ -62,7 +61,6 @@ define(['jquery'], function($) {
 	AjaxUtils.servletRequest = function(servletRoot, servletName, data, callback) {
 		if (typeof servletRoot === "undefined") {
 			throw 'AjaxUtils - servletRequest - servletRoot argument is undefined ' + servletRoot;
-			return;
 		}
 		if (typeof servletName === "undefined") {
 			throw 'AjaxUtils - servletRequest - servletName argument is undefined ' + servletName;
@@ -71,11 +69,11 @@ define(['jquery'], function($) {
 			url: 'http://apijava.flow-machines.com:8080/' + servletRoot + '/' + servletName,
 			type: 'POST',
 			data: data,
-			dataType: 'json', 
+			dataType: 'json',
 			withCredentialsBool: true
-		}
+		};
 		AjaxUtils.request(request, callback);
-	}
+	};
 
 
 	return AjaxUtils;

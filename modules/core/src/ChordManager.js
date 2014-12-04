@@ -1,7 +1,7 @@
 define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(SongModel, ChordModel) {
 	function ChordManager(chords) {
 		this.chords = chords ? chords : []; // array of chordModel
-	};
+	}
 
 	/**
 	 * Interface functions (this functions are also in NoteManagerModel  )
@@ -12,7 +12,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 	};
 
 	ChordManager.prototype.isEmpty = function() {
-		return this.chords.length == 0;
+		return this.chords.length === 0;
 	};
 
 	ChordManager.prototype.getChords = function(from, to) {
@@ -21,7 +21,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 
 	ChordManager.prototype.setAllChords = function(chords) {
 		this.chords = chords;
-	}
+	};
 
 	ChordManager.prototype.getChord = function(index) {
 		if (typeof index !== "undefined" && !isNaN(index)) {
@@ -30,7 +30,8 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 			}
 		}
 		return undefined;
-	}
+	};
+
 	ChordManager.prototype.getChordIndex = function(chord) {
 		if (typeof chord === "undefined" || !(chord instanceof ChordModel)) {
 			throw 'Chord must be a ChordModel';
@@ -41,7 +42,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 			}
 		}
 		return undefined;
-	}
+	};
 
 	/**
 	 * Set a new chord to a specific index, if chords[index] already have a chord it will replace it
