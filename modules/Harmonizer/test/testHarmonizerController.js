@@ -1,6 +1,7 @@
 define([
 	'modules/core/src/SongModel',
 	'modules/Harmonizer/src/HarmonizerController',
+	'modules/Harmonizer/src/HarmonizeAPI',
 	'utils/AjaxUtils',
 	'utils/UserLog',
 	'pubsub'
