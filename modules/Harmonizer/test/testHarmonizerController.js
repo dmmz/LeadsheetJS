@@ -5,7 +5,7 @@ define([
 	'utils/AjaxUtils',
 	'utils/UserLog',
 	'pubsub'
-], function(SongModel, HarmonizerController, AjaxUtils, UserLog, pubsub) {
+], function(SongModel, HarmonizerController, HarmonizeAPI, AjaxUtils, UserLog, pubsub) {
 	return {
 		run: function() {
 			test("HarmonizerController", function(assert) {
