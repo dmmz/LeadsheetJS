@@ -38,7 +38,6 @@ define([
 		});
 	};
 
-
 	HarmonizerController.prototype.updateHarmonizeView = function(leadsheet) {
 		if (typeof leadsheet !== "undefined") {
 			var songModel = new SongModel(leadsheet);

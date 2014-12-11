@@ -8,13 +8,17 @@ define([
 	/**
 	 * MainMenuController is the model containing a set of modules, each module contain a menu, each module contain at least a title
 	 */
-	function MainMenuController(option) {
+	function MainMenuController(model) {
+		this.mainMenu = (model) ? model : new MainMenuModel();
 		this.initEventSubscriber();
-		this.mainMenu = (option && option.model) ? option.model : new MainMenuModel();
 	}
 
 	MainMenuController.prototype.initEventSubscriber = function() {
-
+		for (var i = 0, c = this.mainMenu.modules.length; i < c; i++) {
+			if (typeof this.mainMenu.modules[i].initEventSubscriber === "function") {
+				this.mainMenu.modules[i].initEventSubscriber();
+			}
+		}
 	};
 
 	MainMenuController.prototype.hideAllMenus = function() {
@@ -36,8 +40,10 @@ define([
 	};
 
 	MainMenuController.prototype.initModule = function(id) {
+		var index = this.mainMenu.searchModuleIndex(id);
+		var currentModule = this.mainMenu.getModule(index);
 		if (typeof currentModule.init !== "function") {
-			throw "Trying to load a menu who does not have a init function";
+			throw 'MainMenuController - initModule - Trying to load a menu who does not have an init function';
 		}
 		// call module init function
 		currentModule.init();
@@ -49,9 +55,7 @@ define([
 		this.showMenu(id);
 
 		// update model
-		this.mainMenu.setCurrentMenu(id);
-		var index = this.mainMenu.searchModuleIndex(id);
-		var currentModule = this.mainMenu.getModule(index);
+		this.mainMenu.setCurrentMenu(currentModule);
 
 		pushStateTab(id);
 

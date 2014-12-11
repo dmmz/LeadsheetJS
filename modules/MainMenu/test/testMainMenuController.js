@@ -9,8 +9,15 @@ define([
 	return {
 		run: function() {
 			test("MainMenuController", function(assert) {
-				var mmc = new MainMenuController();
+				var menu = new MainMenuModel();
+				menu.addModule({title:'menu1'});
+
+				var mmc = new MainMenuController(menu);
 				assert.ok(mmc instanceof MainMenuController);
+
+				assert.throws(function() {
+					mmc.initModule('menu1');
+				});
 			});
 		}
 	};

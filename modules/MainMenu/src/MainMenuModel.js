@@ -18,7 +18,7 @@ define([
 	};
 
 	MainMenuModel.prototype.getModule = function(index) {
-		if (typeof index === "undefined" || isNaN(index) || typeof this.modules[index]) {
+		if (isNaN(index) || typeof this.modules[index] === "undefined") {
 			throw 'MainMenuModel - getModule - index is undefined or is not a number or doesnt exist';
 		}
 		return this.modules[index];
