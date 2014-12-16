@@ -1,0 +1,35 @@
+{
+  "name": "LeadsjeetJS",
+  "version": "1.0.0",
+  "description": "Help you to create a Leadsheet",
+  "main": "tests/main-test.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "main-test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "gitadmin@ns2292021.ovh.net:LeadsheetJS.git"
+  },
+  "keywords": [
+    "Leadsheet",
+    "javascript",
+    "audio",
+    "composer",
+    "composition tools",
+    "Sony CSL"
+  ],
+  "author": "Neullas, Martin",
+  "license": "Sony CSL",
+  "private": true,
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-qunit": "^0.5.2",
+    "grunt-contrib-requirejs": "^0.4.4",
+    "grunt-contrib-uglify": "^0.6.0",
+    "grunt-contrib-watch": "^0.6.1"
+  }
+}

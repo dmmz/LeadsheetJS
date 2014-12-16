@@ -8,6 +8,7 @@ require.config({
     vexflow: 'external-libs/vexflow-min',
     Midijs: 'external-libs/Midijs/midijs.min',
     pubsub: 'external-libs/tiny-pubsub.min',
+    mustache: 'external-libs/mustache',
   },
   shim: {
     'qunit': {
@@ -58,6 +59,7 @@ define(function(require) {
   var testLSViewer = require('modules/LSViewer/test/testLSViewer');
 
   var testHarmonizerController = require('modules/Harmonizer/test/testHarmonizerController');
+  var testModuleManager = require('modules/ModuleManager/test/testModuleManager');
   var testMainMenuModel = require('modules/MainMenu/test/testMainMenuModel');
   var testMainMenuController = require('modules/MainMenu/test/testMainMenuController');
 
@@ -99,6 +101,7 @@ define(function(require) {
 
   testHarmonizerController.run();
 
+  testModuleManager.run();
   testMainMenuModel.run();
   testMainMenuController.run();
 

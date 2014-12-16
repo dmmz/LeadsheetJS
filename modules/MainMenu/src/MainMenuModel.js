@@ -1,68 +1,68 @@
 define([
-	'modules/core/src/SongModel',
-	'utils/AjaxUtils',
-	'utils/UserLog',
-	'pubsub'
-], function(SongModel, AjaxUtils, UserLog, pubsub) {
+	'pubsub',
+], function(pubsub) {
 
 	/**
-	 * MainMenuModel is the model containing a set of modules, each module contain a menu, each module contain at least a title
+	 * MainMenuModel is the model containing a set of menuList, each menuList contain a menu, each menu contain at least a title
 	 */
 	function MainMenuModel() {
-		this.modules = []; // array of menus
-		this.currentMenu = this.modules[0]; // Current menu represent the current selected module
+		this.menuList = []; // array of menus
+		this.currentMenu = this.menuList[0]; // Current menu represent the current selected menu
 	}
 
-	MainMenuModel.prototype.getModuleLength = function(module) {
-		return this.modules.length;
+
+	MainMenuModel.prototype.getMenuLength = function() {
+		return this.menuList.length;
 	};
 
-	MainMenuModel.prototype.getModule = function(index) {
-		if (isNaN(index) || typeof this.modules[index] === "undefined") {
-			throw 'MainMenuModel - getModule - index is undefined or is not a number or doesnt exist';
+	MainMenuModel.prototype.getMenu = function(index) {
+		if (isNaN(index) || typeof this.menuList[index] === "undefined") {
+			throw 'MainMenuModel - getMenu - index is undefined or is not a number or doesnt exist';
 		}
-		return this.modules[index];
+		return this.menuList[index];
 	};
 
-	MainMenuModel.prototype.addModule = function(module) {
-		if (typeof module === "undefined" || module.title == "undefined") {
-			throw 'MainMenuModel - addModule - module is undefined';
+	MainMenuModel.prototype.addMenu = function(menu) {
+		if (typeof menu === "undefined" || menu.title == "undefined") {
+			throw 'MainMenuModel - addMenu - menu is undefined';
 		}
-		if (this.hasModule(module.title) === false) {
-			this.modules.push(module);
+		if (this.hasMenu(menu.title) === false) {
+			this.menuList.push(menu);
+			$.publish('MainMenuModel-addMenu', menu);
 		} else {
-			console.warn('MainMenuModel - addModule - module ' + module + ' already exist');
+			console.warn('MainMenuModel - addMenu - menu ' + menu.title + ' already exist');
 		}
 	};
 
-	MainMenuModel.prototype.hasModule = function(moduleTitle) {
-		if (typeof moduleTitle === "") {
-			throw "MainMenuModel - hasModule - moduleTitle can't be equal to an empty string";
+	MainMenuModel.prototype.hasMenu = function(menuTitle) {
+		if (typeof menuTitle === "") {
+			throw "MainMenuModel - hasModule - menuTitle can't be equal to an empty string";
 		}
-		for (var i = 0, c = this.modules.length; i < c; i++) {
-			if (this.modules[i].title === moduleTitle) {
+		for (var i = 0, c = this.menuList.length; i < c; i++) {
+			if (this.menuList[i].title === menuTitle) {
 				return true;
 			}
 		}
 		return false;
 	};
 
-	MainMenuModel.prototype.searchModuleIndex = function(moduleTitle) {
-		if (typeof moduleTitle === "") {
-			throw "MainMenuModel - searchModuleIndex - moduleTitle can't be equal to an empty string";
+	MainMenuModel.prototype.searchMenuIndex = function(menuTitle) {
+		if (typeof menuTitle === "") {
+			throw "MainMenuModel - searchMenuIndex - menuTitle can't be equal to an empty string";
 		}
-		for (var i = 0, c = this.modules.length; i < c; i++) {
-			if (this.modules[i].title === moduleTitle) {
+		for (var i = 0, c = this.menuList.length; i < c; i++) {
+			if (this.menuList[i].title === menuTitle) {
 				return i;
 			}
 		}
 		return -1;
 	};
 
-	MainMenuModel.prototype.removeModule = function(moduleTitle) {
-		var index = this.searchModuleIndex(moduleTitle);
+	MainMenuModel.prototype.removeMenu = function(menuTitle) {
+		var index = this.searchMenuIndex(menuTitle);
 		if (index !== -1) {
-			this.modules.splice(index, 1);
+			this.menuList.splice(index, 1);
+			$.publish('MainMenuModel-removeMenu', menuTitle);
 			return true;
 		}
 		return false;
@@ -77,6 +77,7 @@ define([
 			return;
 		}
 		this.currentMenu = currentMenu;
+		$.publish('MainMenuModel-setCurrentMenu', this.currentMenu);
 	};
 
 	return MainMenuModel;

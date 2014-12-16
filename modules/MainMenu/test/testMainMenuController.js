@@ -1,23 +1,26 @@
 define([
-	'modules/core/src/SongModel',
 	'modules/MainMenu/src/MainMenuModel',
 	'modules/MainMenu/src/MainMenuController',
-	'utils/AjaxUtils',
-	'utils/UserLog',
-	'pubsub'
-], function(SongModel, MainMenuModel, MainMenuController, AjaxUtils, UserLog, pubsub) {
+	'modules/MainMenu/src/MainMenuView',
+	'modules/Harmonizer/src/HarmonizerController',
+	'modules/Harmonizer/src/HarmonizerView',
+], function(MainMenuModel, MainMenuController, MainMenuView, HarmonizerController, HarmonizerView) {
 	return {
 		run: function() {
 			test("MainMenuController", function(assert) {
 				var menu = new MainMenuModel();
-				menu.addModule({title:'menu1'});
+				
+				var menuView = new MainMenuView(menu, document.getElementsByTagName('body')[0]);
 
-				var mmc = new MainMenuController(menu);
+				var mmc = new MainMenuController(menu, menuView);
 				assert.ok(mmc instanceof MainMenuController);
 
-				assert.throws(function() {
-					mmc.initModule('menu1');
+				$.subscribe('MainMenuView-ready', function(el) {
+					var hv = new HarmonizerView($('#main_menu_second_level')[0]);
+					var hc = new HarmonizerController(undefined,hv);
+					menu.addMenu({title:'Harmonizer', view: hv});
 				});
+				
 			});
 		}
 	};

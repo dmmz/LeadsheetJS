@@ -1,9 +1,6 @@
 define([
-	'modules/core/src/SongModel',
 	'utils/AjaxUtils',
-	'utils/UserLog',
-	'pubsub'
-], function(SongModel, AjaxUtils, UserLog, pubsub) {
+], function(AjaxUtils) {
 
 	function HarmonizeAPI() {}
 
