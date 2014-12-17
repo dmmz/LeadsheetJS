@@ -1,11 +1,6 @@
 define([
-	'modules/core/src/SongModel',
 	'modules/Harmonizer/src/HarmonizerController',
-	'modules/Harmonizer/src/HarmonizeAPI',
-	'utils/AjaxUtils',
-	'utils/UserLog',
-	'pubsub'
-], function(SongModel, HarmonizerController, HarmonizeAPI, AjaxUtils, UserLog, pubsub) {
+], function(HarmonizerController) {
 	return {
 		run: function() {
 			test("HarmonizerController", function(assert) {

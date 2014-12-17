@@ -1,0 +1,84 @@
+/* VIEW MAIN MENU */
+
+/* Main menu is set as absolute on affix-top also so the score container will not scroll down too when position will be fixed */
+#view_main_menu{
+	position: absolute;
+	right: 0;
+	left: 0;
+	height: 128px;
+}
+
+#content > .affix{
+	z-index: 1000;
+	top: 0 !important;
+	position: fixed !important;
+	-o-box-shadow: 0px 3px 5px #888;
+	-moz-box-shadow: 0px 3px 5px #888;
+	-webkit-box-shadow: 0px 3px 5px #888;
+	box-shadow: 0px 3px 5px #888;
+}
+
+#main_menu_first_level {
+	color: white;
+	background-color: #777777;
+}
+
+#main_menu_first_level > div {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	display: inline-block;
+	width: 150px;
+	text-align: center;
+	margin: 0;
+	cursor: pointer;
+	line-height: 2em;
+}
+
+#main_menu_first_level > div:hover{
+	background-color: #888;
+}
+.main_menu_first_level_selected {
+	color: black;
+	border-bottom: none !important;
+	background-color: #A4C7D8 !important;
+}
+
+#main_menu_second_level {
+	background-color: #A4C7D8;
+}
+#main_menu_second_level > div {
+	height: 100px;
+	overflow: hidden;
+}
+
+#main_menu_second_level > div > div {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	display: inline-block;
+	height: 100%;
+	vertical-align: top;
+	text-align: center;
+}
+
+#harmonization_button_container{
+	line-height: 100px;
+	padding: 0px;
+	padding-left: 1em;
+}
+
+#harmonization_constraint_container{
+	padding: 20px 15px;
+}
+#harmonization_style_container{
+    padding: 2.5em 1em;
+}
+
+#harmonization_style_select{
+	margin: 0;
+	width: auto !important;
+}
+#harmonization_display_constraint_container{
+	position: absolute;
+}

@@ -1,28 +1,49 @@
 define([
 	'mustache',
 	'modules/core/src/SongModel',
-	'modules/Harmonizer/src/HarmonizeAPI',
 	'utils/UserLog',
 	'pubsub'
-], function(Mustache, SongModel, HarmonizeAPI, UserLog, pubsub) {
+], function(Mustache, SongModel, UserLog, pubsub) {
 
 	function HarmonizerView(parentHTML) {
 		this.el = undefined;
 		var self = this;
-		if (typeof parentHTML !== "undefined") {
+		/*this.initView(parentHTML, function() {
+			self.initController();
+			$.publish('HarmonizerView-render', self);
+		});*/
+	}
+
+	HarmonizerView.prototype.render = function(parentHTML, force, callback) {
+		force = force || false;
+		// case el has never been rendered
+		var self = this;
+		if(typeof this.el === "undefined" || (typeof this.el !== "undefined" && force === true)) {
 			this.initView(parentHTML, function() {
 				self.initController();
-				$.publish('HarmonizerView-ready');
+				$.publish('HarmonizerView-render');
+				if (typeof callback === "function") {
+					callback();
+				}
+				return;
 			});
 		}
-	}
+		else{
+			if (typeof callback === "function") {
+				callback();
+			}
+			return;
+		}
+	};
 
 	HarmonizerView.prototype.initView = function(parentHTML, callback) {
 		var self = this;
 		$.get('/modules/Harmonizer/src/HarmonizerTemplate.html', function(template) {
 			var rendered = Mustache.render(template);
-			parentHTML.innerHTML = rendered;
-			self.el = parentHTML;
+			if (typeof parentHTML !== "undefined") {
+				parentHTML.innerHTML = rendered;
+			}
+			self.el = rendered;
 			if (typeof callback === "function") {
 				callback();
 			}

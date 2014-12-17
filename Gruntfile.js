@@ -7,8 +7,8 @@ module.exports = function(grunt) {
         banner: '/*! <%= pkg.name %>, <%= pkg.description %> <%= grunt.template.today("yyyy-mm-dd") %> - Sony CSL */\n'
       },
       build: {
-        src: 'modules/**/*.js',
-        dest: 'build/<%= pkg.name %>.min.js'
+        src: ['modules/**/*.js', '!modules/core/src/SongModel.old.js'],
+        dest: 'build/<%= pkg.name %>-<%= pkg.version %>.min.js'
       }
     },
     qunit: {
@@ -40,7 +40,7 @@ module.exports = function(grunt) {
     }*/
     watch: {
       scripts: {
-        files: ['modules/**/*.js'],
+        files: ['modules/**/*.js', '!modules/core/src/SongModel.old.js'],
         tasks: 'default',
         options: {
           spawn: false,

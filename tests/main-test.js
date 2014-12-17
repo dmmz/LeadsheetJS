@@ -28,7 +28,6 @@ require.config({
 });
 
 define(function(require) {
-
   var Qunit = require('qunit');
 
   var testUserLog = require('utils/test/testUserlog');

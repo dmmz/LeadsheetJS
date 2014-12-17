@@ -9,18 +9,19 @@ define([
 	function MainMenuController(model, view) {
 		this.model = model || new MainMenuModel();
 		this.view = view;
-
-		$.subscribe('MainMenuView-active_menu', function(el, id) {
-			self.activeMenu(id);
+		var self = this;
+		$.subscribe('MainMenuView-active_menu', function(el, menuTitle) {
+			self.activeMenu(menuTitle);
 		});
 	}
 
-	MainMenuController.prototype.activeMenu = function(id) {
-		var index = this.mainMenu.searchMenuIndex(id);
-		// TODO display error in case there is one
-		var currentMenu = this.mainMenu.getMenu(index);
-		this.model.setCurrentMenu(currentMenu);
-		this.pushStateTab(id);
+	MainMenuController.prototype.activeMenu = function(menuTitle) {
+		var index = this.model.searchMenuIndex(menuTitle);
+		if(index !== -1){
+			var currentMenu = this.model.getMenu(index);
+			this.model.setCurrentMenu(currentMenu);
+			this.pushStateTab(menuTitle);
+		}
 	};
 
 	MainMenuController.prototype.pushStateTab = function(tabName) {

@@ -15,12 +15,13 @@ define([
 				var mmc = new MainMenuController(menu, menuView);
 				assert.ok(mmc instanceof MainMenuController);
 
-				/*$.subscribe('MainMenuView-ready', function(el) {
+				/*
+				$.subscribe('MainMenuView-ready', function(el) {
 					var hv = new HarmonizerView($('#main_menu_second_level')[0]);
 					var hc = new HarmonizerController(undefined,hv);
 					menu.addMenu({title:'Harmonizer', view: hv});
-				});*/
-				
+				});
+				*/
 			});
 		}
 	};

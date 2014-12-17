@@ -3,13 +3,12 @@ define([
 	'modules/core/src/SongModel',
 	'modules/Harmonizer/src/HarmonizeAPI',
 	'utils/UserLog',
-	'pubsub'
+	'pubsub',
 ], function(Mustache, SongModel, HarmonizeAPI, UserLog, pubsub) {
 
-	function HarmonizerController(model, view) {
-		this.model = model || new SongModel();
+	function HarmonizerController(view) {
 		this.view = view;
-
+		var self = this;
 		$.subscribe('HarmonizerView-compute', function(el, idSong, style) {
 			self.computeHarmonize(idSong, style);
 		});

@@ -9,12 +9,13 @@ define([
 	function MainMenuView(model, parentHTML) {
 		this.model = (model) ? model : new MainMenuModel();
 		this.el = undefined;
+		this.selectedClassName = 'main_menu_first_level_selected';
 		var self = this;
 		if (typeof parentHTML !== "undefined") {
 			this.initView(parentHTML, function() {
 				self.initSubscribe();
 				self.initController();
-				$.publish('MainMenuView-ready');
+				$.publish('MainMenuView-render');
 			});
 		}
 	}
@@ -39,23 +40,40 @@ define([
 		$.subscribe('MainMenuModel-removeMenu', function(el, menu) {
 			self.removeMenu(menu);
 		});
-		$.subscribe('MainMenuModel-setCurrentMenu', function(el, menuTitle) {
-			self.setCurrentMenu(menuTitle);
+		$.subscribe('MainMenuModel-setCurrentMenu', function(el, menu) {
+			self.setCurrentMenu(menu);
 		});
 	};
 
 	MainMenuView.prototype.initController = function() {
 		var self = this;
-		$('.main_menu_item').show(0, function() {
-			var id = $(this).attr('data-id');
-			self.showMenu(id);
-			$.publish('MainMenuView-active_menu', id);
+		$('body').on('click', '.main_menu_item', function() {
+			var menuTitle = $(this).attr('data-menuTitle');
+			$.publish('MainMenuView-active_menu', menuTitle);
 		});
 	};
 
+	MainMenuView.prototype.buildMenu = function() {
+		var first_level = '';
+		var second_level = '';
+		$('#main_menu_first_level').html();
+		$('#main_menu_second_level').html();
+		var currentMenu = this.model.getCurrentMenu();
+		var className = '';
+		var menu;
+		for (var i = 0, c = this.model.getMenuLength(); i < c; i++) {
+			menu = this.model.getMenu(i);
+			if (i === currentMenu) {
+				className = 'class="' + this.selectedClassName;
+			}
+			first_level += '<div id="' + menu.title + '_first_level" ' + className + ' data-menuTitle="' + menu.title + '" class="main_menu_item">' + menu.title + '</div>';
+			second_level += '<div id="' + menu.title + '_second_level" data-menuTitle="' + menu.title + '">' + menu.view.el + '</div>';
+		}
+	};
+
 	MainMenuView.prototype.addMenu = function(menu) {
-		$('#main_menu_first_level').append(menu.title);
-		$('#main_menu_second_level').append(menu.view.el);
+		$('#main_menu_first_level').append('<div id="' + menu.title + '_first_level" data-menuTitle="' + menu.title + '" class="main_menu_item">' + menu.title + '</div>');
+		$('#main_menu_second_level').append('<div id="' + menu.title + '_second_level" data-menuTitle="' + menu.title + '" style="display:none">' + menu.view.el + '</div>');
 	};
 
 	MainMenuView.prototype.removeMenu = function(menu) {
@@ -65,32 +83,32 @@ define([
 		}
 	};
 
-	MainMenuView.prototype.setCurrentMenu = function(menuTitle) {
+	MainMenuView.prototype.setCurrentMenu = function(menu) {
 		// update view
 		this.hideAllMenus();
-		this.showMenu(menuTitle);
+		this.showMenu(menu);
 	};
 
 	MainMenuView.prototype.hideAllMenus = function() {
 		$('#main_menu_second_level > div').each(function() {
 			$(this).hide();
 		});
+		var self = this;
 		// remove active class
-		$('.main_menu_first_level_selected').each(function() {
-			$(this).removeClass('main_menu_first_level_selected');
+		$('.' + this.selectedClassName).each(function() {
+			$(this).removeClass(self.selectedClassName);
 		});
 	};
 
-	MainMenuView.prototype.showMenu = function(menuTitle) {
-		$('#' + menuTitle + '_second_level').show(0, function() {
-			self.initController(menuTitle);
-			//menu.initView('main_menu_second_level');
-		});
-		$('.main_menu_first_level_selected').each(function() {
-			$(this).removeClass('main_menu_first_level_selected');
-		});
+	MainMenuView.prototype.showMenu = function(menu) {
+		var self = this;
 		// add active class
-		$('#' + menuTitle).addClass('main_menu_first_level_selected');
+		$('#' + menu.title + '_first_level').addClass(self.selectedClassName);
+
+		$('#' + menu.title + '_second_level').show(0, function() {
+			// self.initController(menuTitle);
+			// menu.initView('main_menu_second_level');
+		});
 	};
 
 	return MainMenuView;

@@ -17,7 +17,7 @@ define([
 
 	MainMenuModel.prototype.getMenu = function(index) {
 		if (isNaN(index) || typeof this.menuList[index] === "undefined") {
-			throw 'MainMenuModel - getMenu - index is undefined or is not a number or doesnt exist';
+			throw 'MainMenuModel - getMenu - index is undefined or is not a number or doesnt exist ' + index;
 		}
 		return this.menuList[index];
 	};
