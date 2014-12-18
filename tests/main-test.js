@@ -4,7 +4,7 @@ require.config({
   paths: {
     jquery: 'external-libs/jquery-2.1.0.min',
     qunit: 'external-libs/qunit/qunit',
-    vexflow_helper: 'external-libs/vexflow_test_helpers',
+    vexflow_helper: 'external-libs/qunit/vexflow_test_helpers',
     vexflow: 'external-libs/vexflow-min',
     Midijs: 'external-libs/Midijs/midijs.min',
     pubsub: 'external-libs/tiny-pubsub.min',
@@ -56,6 +56,7 @@ define(function(require) {
   var testSongConverterMidi_MidiCSL = require('modules/MidiCSL/test/converters/testSongConverterMidi_MidiCSL');
 
   var testLSViewer = require('modules/LSViewer/test/testLSViewer');
+  var testBarWidthManager  = require('modules/LSViewer/test/testBarWidthManager');
 
   var testHarmonizerController = require('modules/Harmonizer/test/testHarmonizerController');
   var testModuleManager = require('modules/ModuleManager/test/testModuleManager');
@@ -87,9 +88,10 @@ define(function(require) {
   testSongView_chordSequence.run();
 
 
-  //LSViewer Module
-  //console.log(Vex);
-  //testLSViewer.run(Vex);
+  // //LSViewer Module
+  console.log(Vex);
+  testLSViewer.run(Vex);
+  testBarWidthManager.run();
 
   // Midi sound model Module
   testPlayerModel_MidiCSL.run();
