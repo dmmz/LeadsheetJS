@@ -17,7 +17,7 @@ define([
 
 	MainMenuController.prototype.activeMenu = function(menuTitle) {
 		var index = this.model.searchMenuIndex(menuTitle);
-		if(index !== -1){
+		if (index !== -1) {
 			var currentMenu = this.model.getMenu(index);
 			this.model.setCurrentMenu(currentMenu);
 			this.pushStateTab(menuTitle);

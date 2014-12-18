@@ -24,7 +24,7 @@ define([
 
 	MainMenuModel.prototype.addMenu = function(menu) {
 		if (typeof menu === "undefined" || menu.title == "undefined") {
-			throw 'MainMenuModel - addMenu - menu is undefined';
+			throw 'MainMenuModel - addMenu - menu is undefined' + menu;
 		}
 		if (this.hasMenu(menu.title) === false) {
 			this.menuList.push(menu);
@@ -61,6 +61,7 @@ define([
 	MainMenuModel.prototype.removeMenu = function(menuTitle) {
 		var index = this.searchMenuIndex(menuTitle);
 		if (index !== -1) {
+			this.menuList[index] = undefined;
 			this.menuList.splice(index, 1);
 			$.publish('MainMenuModel-removeMenu', menuTitle);
 			return true;

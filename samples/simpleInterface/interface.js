@@ -66,11 +66,10 @@ define(function(require) {
 
   
   $.subscribe('MainMenuView-render', function(el) {
-
     var hV = new HarmonizerView();
     var hC = new HarmonizerController(hV);
     hV.render(undefined, true, function(){
-      menuM.addMenu({title:'Harmonizer', view: hV});      
+      menuM.addMenu({title:'Harmonizer', view: hV});
       menuC.activeMenu('Harmonizer');
     });
 
@@ -79,8 +78,6 @@ define(function(require) {
     hV2.render(undefined, true, function(){
       menuM.addMenu({title:'Constraint', view: hV2});
     });
-
-
   });
   
 });

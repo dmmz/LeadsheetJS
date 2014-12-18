@@ -76,11 +76,9 @@ define([
 		$('#main_menu_second_level').append('<div id="' + menu.title + '_second_level" data-menuTitle="' + menu.title + '" style="display:none">' + menu.view.el + '</div>');
 	};
 
-	MainMenuView.prototype.removeMenu = function(menu) {
-		if ($('#' + menu.title).length > 0) {
-			$('#main_menu_first_level').removeChild($('#' + menu.title + '_first_level')[0]);
-			$('#main_menu_second_level').removeChild(menu.view.el);
-		}
+	MainMenuView.prototype.removeMenu = function(menuTitle) {
+		$('#' + menuTitle + '_first_level').remove();
+		$('#' + menuTitle + '_second_level').remove();
 	};
 
 	MainMenuView.prototype.setCurrentMenu = function(menu) {

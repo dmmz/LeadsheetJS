@@ -18,7 +18,7 @@ define([
 		force = force || false;
 		// case el has never been rendered
 		var self = this;
-		if(typeof this.el === "undefined" || (typeof this.el !== "undefined" && force === true)) {
+		if (typeof this.el === "undefined" || (typeof this.el !== "undefined" && force === true)) {
 			this.initView(parentHTML, function() {
 				self.initController();
 				$.publish('HarmonizerView-render');
@@ -27,8 +27,7 @@ define([
 				}
 				return;
 			});
-		}
-		else{
+		} else {
 			if (typeof callback === "function") {
 				callback();
 			}
