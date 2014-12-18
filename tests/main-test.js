@@ -56,6 +56,7 @@ define(function(require) {
   var testSongConverterMidi_MidiCSL = require('modules/MidiCSL/test/converters/testSongConverterMidi_MidiCSL');
 
   var testLSViewer = require('modules/LSViewer/test/testLSViewer');
+  var testBarWidthManager  = require('modules/LSViewer/test/testBarWidthManager');
 
   // Utils
   testUserLog.run();
@@ -82,9 +83,10 @@ define(function(require) {
   testSongView_chordSequence.run();
 
 
-  //LSViewer Module
-  //console.log(Vex);
+  // //LSViewer Module
+  // //console.log(Vex);
   testLSViewer.run(Vex);
+  testBarWidthManager.run();
 
   // Midi sound model Module
   testPlayerModel_MidiCSL.run();

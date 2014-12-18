@@ -8,9 +8,10 @@ define(['vexflow_helper',
 	return {
 		run: function() {
 
-			VexFlowTest.runTest("hola", function(options, contextBuilder) {
+			VexFlowTest.runTest("ViewerDraw", function(options, contextBuilder) {
 				var ctx = new contextBuilder(options.canvas_sel, 1100, 1150);
 				var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.allNoteFigures, new SongModel());
+
 				var viewer = new LSViewer(ctx);
 				viewer.draw(song);
 				ok(true, "all pass");

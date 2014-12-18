@@ -30,7 +30,7 @@ define(['vexflow'], function(Vex) {
 	 */
 	TupletManager.prototype.draw = function(ctx, vexflowNotes) {
 		var vexflowTuplet,
-		vxfTupletNotes;
+		tupletNotes;
 		for (var i in this.tuplets) {
 			tupletNotes = vexflowNotes.slice(this.tuplets[i][0], this.tuplets[i][1] + 1);
 			vexflowTuplet = new Vex.Flow.Tuplet(tupletNotes);

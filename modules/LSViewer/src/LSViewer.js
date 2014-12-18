@@ -2,9 +2,10 @@ define(['vexflow',
 		'modules/LSViewer/src/LSNoteView', 
 		'modules/LSViewer/src/BeamManager',
 		'modules/LSViewer/src/TieManager',
-		'modules/LSViewer/src/TupletManager'
+		'modules/LSViewer/src/TupletManager',
+		'modules/LSViewer/src/BarWidthManager'
 		], 
-		function(Vex, LSNoteView, BeamManager,TieManager,TupletManager) {
+		function(Vex, LSNoteView, BeamManager,TieManager,TupletManager,BarWidthManager) {
 
 	function LSViewer(ctx, params) {
 		this.ctx = ctx;
@@ -12,17 +13,20 @@ define(['vexflow',
 	}
 	LSViewer.prototype.init = function(params) {
 		this.SCALE = 0.85;
-		this.NOTE_WIDTH = 10; /* estimated note width in order to be more flexible */
-		this.totalWidth = 1160;
+		this.NOTE_WIDTH = 20; /* estimated note width in order to be more flexible */
+		this.LINE_HEIGHT = 150;
+		this.LINE_WIDTH = 1160;
+		this.BARS_PER_LINE = 4;
+
+		/*
 		this.marginLeft = 10;
 		this.marginTop = 100;
-		this.lineHeight = 150;
 		this.chordsPosY = 40; //distance from stave
 		this.endingsY = 20; //0 -> thisChordsPosY==40, the greater the closer to stave
 		this.labelsY = 0; //like this.endingsY
-		this.barsPerLine = 4;
 		this.barWidth = this.totalWidth / this.barsPerLine;
-		this.clef = "treble";
+		this.clef = "treble";*/
+
 
 	};
 	/*	LSViewer.prototype.drawStave = function(section,i) {
@@ -60,18 +64,23 @@ define(['vexflow',
 			vxfBeams,
 			vxfNote,
 			vxfNotes = [],
+			barDimensions,
 			tieMng = new TieManager();
+
+		var barWidthMng = new BarWidthManager(this.LINE_HEIGHT, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE);
+		barWidthMng.setBarsStructure(song,nm);
 
 		song.getSections().forEach(function(section) {
 
-			for (var i = 0; i < section.numberOfBars; i++) {
+			// for each bar
+			for (var iBar = 0; iBar < section.numberOfBars; iBar++) {
 
 				beamMng = new BeamManager();
 				tupletMng = new TupletManager();
 				bar = [];
-
-				barNotes = nm.getNotesAtBarNumber(i, song);
-
+				
+				barNotes = nm.getNotesAtBarNumber(iBar, song);
+				// for each note of bar
 				for (var j = 0; j < barNotes.length; j++) {
 					tieMng.checkTie(barNotes[j],iNote);
 					tupletMng.checkTuplet(barNotes[j],iNote);
@@ -82,14 +91,21 @@ define(['vexflow',
 					beamMng.checkBeam(nm, iNote, noteView);
 					iNote++;
 				}
-				stave = new Vex.Flow.Stave(i * 200, 0, 200);
+			
+				barDimensions = barWidthMng.getDimensions(iBar);
+				//stave = new Vex.Flow.Stave(barDimensions.left, barDimensions.height, barDimensions.width);
+				stave = new Vex.Flow.Stave(barDimensions.left, barDimensions.top, barDimensions.width);
+				
+				//stave = new Vex.Flow.Stave(iBar * 200, 0, 200);
 				stave.setContext(self.ctx).draw();
 				vxfBeams = beamMng.getVexflowBeams(); // we need to do getVexflowBeams before drawing notes
 				Vex.Flow.Formatter.FormatAndDraw(self.ctx, stave, bar, {
 					autobeam: false
 				});
+
 				beamMng.draw(self.ctx, vxfBeams); // and draw beams needs to be done after drawing notes
-				tupletMng.draw(self.ctx,vxfNotes)
+				tupletMng.draw(self.ctx,vxfNotes);
+				
 			}
 		});
 		tieMng.draw(self.ctx,vxfNotes);

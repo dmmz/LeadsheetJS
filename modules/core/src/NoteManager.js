@@ -23,7 +23,7 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 		notes.forEach(function(note) {
 			totalDur += note.getDuration();
 		});
-		return totalDur;
+		return roundBeat(totalDur);
 	};
 
 	NoteManager.prototype.addNote = function(note, pos) {
@@ -206,6 +206,9 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 		if (!song) {
 			throw "getNotesAtBarNumber: incorrect song parameter";
 		}
+		
+		
+
 		function getBarBeats(numBar, defaultBeats) {
 			var timeSig = song.getBar(i).timeSignature;
 			return (timeSig) ? timeSig.getBeats() : defaultBeats;
@@ -217,7 +220,10 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 			startBeat += getBarBeats(i, beats);
 		}
 		endBeat = startBeat + getBarBeats(i, beats);
-
+		
+		if (this.getTotalDuration()+1 < endBeat){
+			throw "notes on bar "+barNumber+" do not fill the total bar duration";
+		}
 		return this.getNotes(
 			this.getNextIndexNoteByBeat(startBeat),
 			this.getNextIndexNoteByBeat(endBeat)
