@@ -68,7 +68,7 @@ define(['vexflow',
 			tieMng = new TieManager();
 
 		var barWidthMng = new BarWidthManager(this.LINE_HEIGHT, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE);
-		barWidthMng.setBarsStructure(song,nm);
+		barWidthMng.calculateBarsStructure(song,nm);
 
 		song.getSections().forEach(function(section) {
 
@@ -108,7 +108,7 @@ define(['vexflow',
 				
 			}
 		});
-		tieMng.draw(self.ctx,vxfNotes);
+		tieMng.draw(self.ctx,vxfNotes,nm,barWidthMng,song);
 
 	};
 	return LSViewer;

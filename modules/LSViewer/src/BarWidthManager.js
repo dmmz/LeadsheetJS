@@ -6,7 +6,7 @@ define(function() {
 			if (!barsPerLine) throw "barsPerLine not defined";
 
 			this.WIDTH_FACTOR = 1.25; // factor by witch we multiply the minimum width so that notes are not so crammed (always > 1)
-			this.widthList = [];
+			this.barsStruct = [];
 
 			this.lineHeight = Number(lineHeight);
 			this.lineWidth = Number(lineWidth);
@@ -177,19 +177,24 @@ define(function() {
 		}
 		return finalWidths;
 	};
-
+	BarWidthManager.prototype.setBarsStruct = function(barsStruct) {
+		this.barsStruct = barsStruct;
+	};
 	/**
 	 * Decides which bar goes into which line depending on its width, and sets the final width depending on the distribution of bars among lines
 	 * @param {SongMoel} song
 	 * @param {NoteManagerModel} noteMng [description]
 	 */
-	BarWidthManager.prototype.setBarsStructure = function(song, noteMng) {
+	
+	BarWidthManager.prototype.calculateBarsStructure = function(song, noteMng) {
 
 		var minWidthList = this.getMinWidthList(song, noteMng);
 		var minWidthPerLineList = this.assignBarsToLines(minWidthList);
-		this.widthList = this.getWidths(minWidthPerLineList);
+		this.setBarsStruct(this.getWidths(minWidthPerLineList));
 
 	};
+
+
 
 	/**
 	 * returns top,left and width of a given bar. Used when drawing
@@ -205,22 +210,37 @@ define(function() {
 			currentNumBar = 0,
 			currentLine = 0,
 			left = 0;
-		for (i = 0; i < this.widthList.length; i++) {
-			for (j = 0; j < this.widthList[i].length; j++) {
+		for (i = 0; i < this.barsStruct.length; i++) {
+			for (j = 0; j < this.barsStruct[i].length; j++) {
 				if (currentNumBar == numBar) {
 					return {
 						left: left,
-						width: this.widthList[i][j],
+						width: this.barsStruct[i][j],
 						top: currentLine * this.lineHeight
 					};
 				}
 				currentNumBar++;
-				left += this.widthList[i][j];
+				left += this.barsStruct[i][j];
 			}
 			left = 0;
 			currentLine++;
 		}
 	};
 
+	BarWidthManager.prototype.inSameLine = function(iBar1, iBar2) {
+		var numBar = 0,
+		line1 = -1, 
+		line2 = -1;
+		labelMainFor: for (var line = 0; line < this.barsStruct.length; line++) {
+			for (var j = 0; j < this.barsStruct[line].length; j++) {
+				if (numBar == iBar1)	line1 = line;
+				if (numBar == iBar2)	line2 = line;
+				if (line1 != -1 && line2 != -1)	break labelMainFor;
+				numBar++;
+			};
+		}
+		return line1 == line2;
+		
+	};
 	return BarWidthManager;
 });

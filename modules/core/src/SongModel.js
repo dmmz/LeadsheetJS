@@ -215,39 +215,25 @@ define([
 		return true;
 	};
 
-	/**
-	 * Function return all components in a given bar number, componentTitle attriubtes is a filter for component title (eg chords, notes...)
-	 * @param  {int} barNumber
-	 * @param  {string} componentTitle will filter all the result depending the type (chords, notes...)
-	 * @return {array} it return an array of the direct object
-	 */
-	SongModel.prototype.getComponentsAtBarNumber = function(barNumber, componentTitle) {
-		var components = [];
-
-		if (!componentTitle || !this.components.hasOwnProperty(componentTitle)) {
-			throw 'the item is matching no known type in getComponentsAtBarNumber';
-		}
-
-		var modelManager = this.components[componentTitle];
-		if (typeof ChordManager !== "undefined" && modelManager instanceof ChordManager) {
-			var chords = modelManager.getChordsByBarNumber(barNumber);
-			for (var i = 0, c = chords.length; i < c; i++) {
-				components.push(chords[i]);
-			}
-		} else if (typeof NoteManager !== "undefined" && modelManager instanceof NoteManager) {
-			var notes = components.concat(this.getNotesByBarNumber(modelManager, barNumber));
-			for (var j = 0, c = notes.length; j < c; j++) {
-				components.push(notes[j]);
-			}
-		}
-		return components;
+	SongModel.prototype.getBar = function(index) {
+		return this.getComponent("bars").getBar(index);
 	};
 
-	SongModel.prototype.getBar = function(index) {
-		if (isNaN(index)) {
-			throw "index is not a number: " + index;
-		}
-		return this.getComponent("bars").getBar(index);
+	/**
+	 * Function has to be called inside an iteration, it checks if there is a timesignature change in current bar
+	 * if not, it returns the currentBeats (calculated previously and sent as parameter		)
+	 * @param  {Number} index
+	 * @param  {Number}
+	 * @return {Number}
+	 */
+	SongModel.prototype.getBarNumBeats = function(numBar, currentBeats) {
+		
+		var barTimeSig = this.getBar(numBar).timeSignature,
+		timeSig = barTimeSig || this.getTimeSignature();
+
+		if (!timeSig && !currentBeats) throw "bad use: either song is not well formatted, either currentBeats is not sent";
+
+		return (timeSig) ? timeSig.getBeats() : currentBeats;
 	};
 
 	SongModel.prototype.getBars = function() {

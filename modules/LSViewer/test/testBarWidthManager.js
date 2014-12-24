@@ -35,6 +35,11 @@ define(['modules/LSViewer/src/BarWidthManager'], function(BarWidthManager) {
 				swResult = barWidthMng.getWidths(abtlResult);
 				assert.deepEqual(swResult, swExpectedResult);
 
+				barWidthMng.setBarsStruct(swResult);
+				assert.ok(barWidthMng.inSameLine(0,3));
+				assert.ok(!barWidthMng.inSameLine(3,4));
+				assert.ok(barWidthMng.inSameLine(4,7));
+
 				//Test2: in first line last bar is too wide
 				minWidths = [100, 100, 100, 470,
 					500, 300, 100, 100
@@ -54,6 +59,11 @@ define(['modules/LSViewer/src/BarWidthManager'], function(BarWidthManager) {
 				swResult = barWidthMng.getWidths(abtlResult);
 				assert.deepEqual(swResult, swExpectedResult);
 
+				barWidthMng.setBarsStruct(swResult);
+				assert.ok(barWidthMng.inSameLine(0,3));
+				assert.ok(!barWidthMng.inSameLine(3,4));
+				assert.ok(barWidthMng.inSameLine(4,7));
+
 				//Test3: all bars in first line almost fit, but last one does not
 				minWidths = [290, 290, 290, 300,
 					100, 100, 100, 100
@@ -72,6 +82,11 @@ define(['modules/LSViewer/src/BarWidthManager'], function(BarWidthManager) {
 				swResult = barWidthMng.getWidths(abtlResult);
 				assert.deepEqual(swResult, swExpectedResult);
 
+				barWidthMng.setBarsStruct(swResult);
+				assert.ok(barWidthMng.inSameLine(0,2));
+				assert.ok(!barWidthMng.inSameLine(2,3));
+				assert.ok(barWidthMng.inSameLine(3,7));
+
 				//Test4: first bar is already wider that one line
 				minWidths = [1290, 290, 290, 300,
 					100, 100, 100, 100
@@ -83,7 +98,19 @@ define(['modules/LSViewer/src/BarWidthManager'], function(BarWidthManager) {
 				];
 				abtlResult = barWidthMng.assignBarsToLines(minWidths);
 				assert.deepEqual(abtlResult, abtlExpectedResult);
-				barWidthMng.getWidths(abtlResult);
+				swResult = barWidthMng.getWidths(abtlResult);
+				
+				swExpectedResult = [
+					[lineWidth],
+					[290, 290, 300, 140, 140],
+					[580, 580]
+				];
+				assert.deepEqual(swResult, swExpectedResult);
+				
+				barWidthMng.setBarsStruct(swResult);
+				assert.ok(!barWidthMng.inSameLine(0,1));
+				assert.ok(barWidthMng.inSameLine(1,5));
+				assert.ok(!barWidthMng.inSameLine(5,6));
 
 				//Test5: 3rd and 4th bars are wider than one line
 				minWidths = [290, 290, 1300, 1300,
@@ -107,6 +134,10 @@ define(['modules/LSViewer/src/BarWidthManager'], function(BarWidthManager) {
 				swResult = barWidthMng.getWidths(abtlResult);
 				assert.deepEqual(swResult, swExpectedResult);
 
+				barWidthMng.setBarsStruct(swResult);
+				assert.ok(barWidthMng.inSameLine(0,1));
+				assert.ok(!barWidthMng.inSameLine(1,2));
+				assert.ok(!barWidthMng.inSameLine(2,3));
 			});
 		}
 	};

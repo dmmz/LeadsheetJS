@@ -30,8 +30,8 @@ define(function(require) {
 
   var Qunit = require('qunit');
 
-  var testUserLog = require('utils/test/testUserlog');
-  var testAjaxUtils = require('utils/test/testAjaxUtils');
+  // var testUserLog = require('utils/test/testUserlog');
+  // var testAjaxUtils = require('utils/test/testAjaxUtils');
 
   var testSongModel = require('modules/core/test/testSongModel');
   var testChordManager = require('modules/core/test/testChordManager');
@@ -57,10 +57,9 @@ define(function(require) {
 
   var testLSViewer = require('modules/LSViewer/test/testLSViewer');
   var testBarWidthManager  = require('modules/LSViewer/test/testBarWidthManager');
-
   // Utils
-  testUserLog.run();
-  testAjaxUtils.run();
+  //testUserLog.run();
+  //testAjaxUtils.run();
 
   // Core Module
   testNoteModel.run();
@@ -83,9 +82,8 @@ define(function(require) {
   testSongView_chordSequence.run();
 
 
-  // //LSViewer Module
   // //console.log(Vex);
-  testLSViewer.run(Vex);
+  // //LSViewer Module
   testBarWidthManager.run();
 
   // Midi sound model Module

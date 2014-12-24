@@ -1,14 +1,14 @@
 define(['vexflow'], function(Vex) {
 	function TieManager() {
-		this.ties = [];
-		this.numTies = 0;
-		this.prevTieType = null;
-	}
-	/**
-	 * saves information for drawing ties
-	 * @param  {NoteModel} note  
-	 * @param  {Number} iNote index of note
-	 */
+			this.ties = [];
+			this.numTies = 0;
+			this.prevTieType = null;
+		}
+		/**
+		 * saves information for drawing ties
+		 * @param  {NoteModel} note
+		 * @param  {Number} iNote index of note
+		 */
 	TieManager.prototype.checkTie = function(note, iNote) {
 		var tieType;
 
@@ -38,10 +38,11 @@ define(['vexflow'], function(Vex) {
 
 	};
 	/**
-	 * @param  {Context} ctx          
+	 * @param  {Context} ctx
 	 * @param  {Array} vexflowNotes of Vex.Flow.StaveNote
+	 * @param  {NoteManagerModel} nm
 	 */
-	TieManager.prototype.draw = function(ctx, vexflowNotes) {
+	TieManager.prototype.draw = function(ctx, vexflowNotes, nm, barWidthMng, song) {
 
 		function drawTie(note1, note2) {
 			var vxTie = new Vex.Flow.StaveTie({
@@ -51,21 +52,27 @@ define(['vexflow'], function(Vex) {
 			vxTie.setContext(ctx);
 			vxTie.draw();
 		}
-		var tieStartNote, 
-		tieEndNote, 
-		auxStartNote;
-		
+		var tieStartNote,
+			tieEndNote,
+			tieStartBar,
+			tieEndBar,
+			auxStartNote;
+
 		for (var i in this.ties) {
-			tieStartNote = this.ties[i][0];
-			tieEndNote = this.ties[i][1];
-			auxStartNote = vexflowNotes[tieStartNote];
-			//TODO: treat measures that are not in same line
-			// if (tieStartNote != null && tieEndNote != null && !this.measuresSameLine(notes[tieStartNote].getMeasure(), notes[tieEndNote].getMeasure())) {
-			// 	this.drawTie(vexflowNotes[tieStartNote], null);
-			// 	auxStartNote = null;
-			// }
-			
-			drawTie(auxStartNote, vexflowNotes[tieEndNote]);
+			iNoteTieStart = this.ties[i][0];
+			iNoteTieEnd = this.ties[i][1];
+
+			auxStartNote = vexflowNotes[iNoteTieStart];
+
+			iTieStartBar = nm.getNoteBarNumber(iNoteTieStart, song);
+			iTieEndBar = nm.getNoteBarNumber(iNoteTieEnd, song);
+
+			if (!barWidthMng.inSameLine(iTieStartBar, iTieEndBar)) {
+				drawTie(auxStartNote, null);
+				auxStartNote = null;
+			}
+			drawTie(auxStartNote, vexflowNotes[iNoteTieEnd]);
+
 		}
 	};
 

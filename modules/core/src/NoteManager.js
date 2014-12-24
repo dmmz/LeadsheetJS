@@ -207,19 +207,13 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 			throw "getNotesAtBarNumber: incorrect song parameter";
 		}
 		
-		
-
-		function getBarBeats(numBar, defaultBeats) {
-			var timeSig = song.getBar(i).timeSignature;
-			return (timeSig) ? timeSig.getBeats() : defaultBeats;
-		}
 		var startBeat = 1,
 			endBeat,
 			beats = song.timeSignature.getBeats();
 		for (var i = 0; i < barNumber; i++) {
-			startBeat += getBarBeats(i, beats);
+			startBeat += song.getBarNumBeats(i, beats);
 		}
-		endBeat = startBeat + getBarBeats(i, beats);
+		endBeat = startBeat + song.getBarNumBeats(i, beats);
 		
 		if (this.getTotalDuration()+1 < endBeat){
 			throw "notes on bar "+barNumber+" do not fill the total bar duration";
@@ -228,6 +222,22 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 			this.getNextIndexNoteByBeat(startBeat),
 			this.getNextIndexNoteByBeat(endBeat)
 		);
+	};
+	NoteManager.prototype.getNoteBarNumber = function(index,song) {
+		var numBar = 0,
+		duration = 0;
+
+		var barNumBeats = song.getBarNumBeats(numBar,null);
+		for (var i = 0; i <= index; i++) {
+			if(roundBeat(duration) == barNumBeats){
+				numBar++;
+				duration = 0;
+				barNumBeats = song.getBarNumBeats(numBar,barNumBeats);
+			}
+			duration += this.notes[i].getDuration();
+		}
+		return numBar;
+		
 	};
 
 	/**
