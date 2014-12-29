@@ -125,6 +125,71 @@ define(function(){
 						]
 					},
 					{
+						melody:[
+							{ keys: ["b/4"], duration: "wr" }
+						]
+					},
+					{
+						melody:[
+							{ keys: ["b/4"], duration: "hr" },
+							{ keys: ["b/4"], duration: "hr" }
+						]
+					},
+					{
+						melody:[
+							{ keys: ["b/4"], duration: "hr" },
+							{ keys: ["b/4"], duration: "qr" },
+							{ keys: ["b/4"], duration: "8r" },
+							{ keys: ["b/4"], duration: "8" }
+
+						]
+					},
+					{
+						melody:[
+							{ keys: ["b/4"], duration: "qr", dot: 1 },
+							{ keys: ["b/4"], duration: "8r" },
+							{ keys: ["c/4"], duration: "8" },
+							{ keys: ["a/4"], duration: "8" },
+							{ keys: ["c/4"], duration: "8", dot:1 },
+							{ keys: ["a/4"], duration: "16" }
+
+						]
+					},
+					{
+						melody:[
+							{ keys: ["b/4"], duration: "qr", dot: 1 },
+							{ keys: ["b/4"], duration: "8r" },
+							{ keys: ["c/4"], duration: "8" },
+							{ keys: ["a/4"], duration: "8" },
+							{ keys: ["c/4"], duration: "8", dot:1 },
+							{ keys: ["a/4"], duration: "16" }
+
+						]
+					},
+					{
+						melody:[
+							{ keys: ["d/4"], duration: "h", dot: 2 },
+							{ keys: ["d/4"], duration: "8" }
+						]
+					},
+					{
+						melody:[
+							{ keys: ["e/4"], duration: "h", dot: 2 },
+							{ keys: ["e/4"], duration: "8" }
+						]
+					},{
+						melody:[
+							{ keys: ["d/4"], duration: "h", dot: 2 },
+							{ keys: ["d/4"], duration: "8" }
+						]
+					},
+					{
+						melody:[
+							{ keys: ["e/4"], duration: "h", dot: 2 },
+							{ keys: ["e/4"], duration: "8" }
+						]
+					},
+					{
 						melody:
 						[
 						//bar4

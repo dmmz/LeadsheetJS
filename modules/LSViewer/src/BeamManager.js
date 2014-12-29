@@ -15,6 +15,7 @@ define(['vexflow'], function(Vex) {
 			this.counter++;
 			this.beams[this.counter] = [];
 		}
+
 		if (noteView.isBeamable()) {
 			this.beams[this.counter].push(noteView.getVexflowNote());
 		}

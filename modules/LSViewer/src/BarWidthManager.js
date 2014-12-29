@@ -85,11 +85,11 @@ define(function() {
 				} else {
 					//if not, we take out iteratively last one and put as carry for the next line 
 					if (lastBarIncluded > 0) {
-						carryBars.unshift(lineMinWidths[lastBarIncluded]);
+						carryBars.unshift(lineMinWidths.pop());
 						lastBarIncluded--;
 					} else {
 						// except if there are no widths left to take out. In that case it means that one width is already higher than lineWidth, 
-						// in this case we save it as //lineWidth (we'll may see crammed bar notes, but we can't make lines wideer than linWidth,  this is an exceptional case)
+						// in this case we save it as lineWidth (we'll may see crammed bar notes, but we can't make lines wider than linWidth,  this is an exceptional case)
 						lineWidthList.push(this.lineWidth);
 						exceedsTotal = false;
 					}

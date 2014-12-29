@@ -54,10 +54,11 @@ define(function() {
 		return this.chordType;
 	};
 
+	/**
+	 * 
+	 * @param {String} chordType, could be undefined, e.g. in "NC" (no chord)
+	 */
 	ChordModel.prototype.setChordType = function(chordType) {
-		if (typeof chordType === "undefined") {
-			throw 'Undefined Chordtype';
-		}
 		this.chordType = chordType;
 	};
 

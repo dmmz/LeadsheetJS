@@ -1,7 +1,7 @@
 define(['vexflow', 'modules/converters/MusicCSLJson/src/NoteModel_CSLJson'], function(Vex, NoteModel_CSLJson) {
 	function LSNoteView(note) {
 		this.vexflowNote = createVexflowNote(note);
-		//this.position = setPosition(this.vexflowNote);
+		this.note = note;
 
 
 		/**
@@ -39,7 +39,7 @@ define(['vexflow', 'modules/converters/MusicCSLJson/src/NoteModel_CSLJson'], fun
 		return this.vexflowNote;
 	};
 	LSNoteView.prototype.isBeamable = function() {
-		return (/^\d+$/).test(this.vexflowNote.duration);
+		return (/^\d+$/).test(this.vexflowNote.duration) && !this.note.isRest;
 	};
 	return LSNoteView;
 });
