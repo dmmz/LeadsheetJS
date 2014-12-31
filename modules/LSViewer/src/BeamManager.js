@@ -10,7 +10,7 @@ define(['vexflow'], function(Vex) {
 	 * @param  {LSNoteView} noteView 
 	 */
 	BeamManager.prototype.checkBeam = function(noteMng,iNote,noteView) {
-		// body.console.log(noteView.isBeamable());
+
 		if (!noteMng.isSameBeatAsPreviousNote(iNote)) {
 			this.counter++;
 			this.beams[this.counter] = [];

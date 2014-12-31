@@ -64,16 +64,16 @@ define(function() {
 		var widthsByLine = [],
 			lineWidthList,
 			barWidth = this.lineWidth / this.barsPerLine,
-			i, carryBars = [];
+			i,
+			barsToGet,
+			numCarriedBars = 0;
 
-		while (numBarsProcessed < minWidthList.length || carryBars.length !== 0) {
+		while (numBarsProcessed < minWidthList.length || numCarriedBars !== 0) {
 			lineWidthList = [];
-			//we get the next 4 ( = barsPerLine) widths
-			lineMinWidths = minWidthList.slice(numBarsProcessed, numBarsProcessed + this.barsPerLine);
-			//we prepend any width we couldn't include in the previous line
-			lineMinWidths = carryBars.concat(lineMinWidths);
+			barsToGet = this.barsPerLine + numCarriedBars;
+			lineMinWidths = minWidthList.slice(numBarsProcessed, numBarsProcessed + barsToGet);
+			numCarriedBars = 0;
 
-			carryBars = [];
 			var lastBarIncluded = lineMinWidths.length - 1;
 			var exceedsTotal = true;
 			while (exceedsTotal && lastBarIncluded >= 0) {
@@ -85,7 +85,8 @@ define(function() {
 				} else {
 					//if not, we take out iteratively last one and put as carry for the next line 
 					if (lastBarIncluded > 0) {
-						carryBars.unshift(lineMinWidths.pop());
+						numCarriedBars++;
+						lineMinWidths.pop();
 						lastBarIncluded--;
 					} else {
 						// except if there are no widths left to take out. In that case it means that one width is already higher than lineWidth, 
@@ -185,7 +186,7 @@ define(function() {
 	 * @param {SongMoel} song
 	 * @param {NoteManagerModel} noteMng [description]
 	 */
-	
+
 	BarWidthManager.prototype.calculateBarsStructure = function(song, noteMng) {
 
 		var minWidthList = this.getMinWidthList(song, noteMng);
@@ -229,18 +230,18 @@ define(function() {
 
 	BarWidthManager.prototype.inSameLine = function(iBar1, iBar2) {
 		var numBar = 0,
-		line1 = -1, 
-		line2 = -1;
+			line1 = -1,
+			line2 = -1;
 		labelMainFor: for (var line = 0; line < this.barsStruct.length; line++) {
 			for (var j = 0; j < this.barsStruct[line].length; j++) {
-				if (numBar == iBar1)	line1 = line;
-				if (numBar == iBar2)	line2 = line;
-				if (line1 != -1 && line2 != -1)	break labelMainFor;
+				if (numBar == iBar1) line1 = line;
+				if (numBar == iBar2) line2 = line;
+				if (line1 != -1 && line2 != -1) break labelMainFor;
 				numBar++;
 			};
 		}
 		return line1 == line2;
-		
+
 	};
 	return BarWidthManager;
 });
