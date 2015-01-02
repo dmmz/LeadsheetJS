@@ -88,16 +88,19 @@ define(['vexflow',
 					vxfNote = noteView.getVexflowNote();
 					bar.push(vxfNote);
 					vxfNotes.push(vxfNote);
+					if (iNote == 90){
+						var stop=1;
+					}
 					beamMng.checkBeam(nm, iNote, noteView);
+
 					iNote++;
 				}
-			
+				
 				barDimensions = barWidthMng.getDimensions(iBar);
 				//stave = new Vex.Flow.Stave(barDimensions.left, barDimensions.height, barDimensions.width);
 				stave = new Vex.Flow.Stave(barDimensions.left, barDimensions.top, barDimensions.width);
-				
-				//stave = new Vex.Flow.Stave(iBar * 200, 0, 200);
 				stave.setContext(self.ctx).draw();
+				console.log(beamMng.beams);
 				vxfBeams = beamMng.getVexflowBeams(); // we need to do getVexflowBeams before drawing notes
 				Vex.Flow.Formatter.FormatAndDraw(self.ctx, stave, bar, {
 					autobeam: false

@@ -52,10 +52,10 @@ define(['vexflow'], function(Vex) {
 			vxTie.setContext(ctx);
 			vxTie.draw();
 		}
-		var tieStartNote,
-			tieEndNote,
-			tieStartBar,
-			tieEndBar,
+		var iNoteTieStart,
+			iNoteTieEnd,
+			iTieStartBar,
+			iTieEndBar,
 			auxStartNote;
 
 		for (var i in this.ties) {

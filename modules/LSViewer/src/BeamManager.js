@@ -1,25 +1,45 @@
 define(['vexflow'], function(Vex) {
 	function BeamManager() {
 		this.beams = [];
-		this.counter = -1;		
+		this.counter = 0;
+		this.lastNoteBeat = -1;
 	}
+
 	/**
 	 * saves information for later drawing beams
-	 * @param  {NoteManagerModel} noteMng  
+	 * @param  {NoteManagerModel} noteMng
 	 * @param  {Number} iNote    index of note
-	 * @param  {LSNoteView} noteView 
+	 * @param  {LSNoteView} noteView
 	 */
-	BeamManager.prototype.checkBeam = function(noteMng,iNote,noteView) {
-
-		if (!noteMng.isSameBeatAsPreviousNote(iNote)) {
-			this.counter++;
-			this.beams[this.counter] = [];
+	BeamManager.prototype.checkBeam = function(noteMng, iNote, noteView) {
+		
+		/**
+		 * isSameBeat: for now we just consider beaming at quarter beat level (in the future we may decide beaming level dependign on time signature )
+		 * @param  {Number}  beat1 
+		 * @param  {Number}  beat2 
+		 * @return {Boolean}       
+		 */
+		function isSameBeat(beat1, beat2) {
+			return Math.floor(beat1) == Math.floor(beat2);
 		}
 
+		var noteBeat;
 		if (noteView.isBeamable()) {
+			noteBeat = noteMng.getNoteBeat(iNote);
+			//new position for beaming when they are not in same beat
+			if (!isSameBeat(noteBeat, this.lastNoteBeat)) {
+				//if length is not > 1, it means that we had a lonely beamable note, so we won't beam it
+				//thus, we don't increment counter -> we overwrite position
+				if (this.beams[this.counter] && this.beams[this.counter].length > 1){
+					this.counter++;	
+				}
+				this.beams[this.counter] = [];
+			}
 			this.beams[this.counter].push(noteView.getVexflowNote());
+			this.lastNoteBeat = noteBeat;
 		}
 	};
+
 	/**
 	 * 	@return {Array} Array of Vex.Flow.Beam (generate from information in array this.beams) needed to draw
 	 */
@@ -35,10 +55,10 @@ define(['vexflow'], function(Vex) {
 
 	/**
 	 * 	draws beams
-	 * @param  {Context} ctx     
+	 * @param  {Context} ctx
 	 * @param  {Array} vxfBeams  Array of Vex.Flow.Beam
 	 */
-	BeamManager.prototype.draw = function(ctx,vxfBeams) {
+	BeamManager.prototype.draw = function(ctx, vxfBeams) {
 		for (var j = 0; j < vxfBeams.length; j++) {
 			if (vxfBeams[j] !== null) vxfBeams[j].setContext(ctx).draw();
 		}
