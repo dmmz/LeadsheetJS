@@ -1,23 +1,23 @@
 define(['vexflow'], function(Vex) {
 	function BeamManager() {
-		this.beams = [];
+		this.beams = []; //array of arrays of vexflow notes, each array of vxfNotes represents a beam group
 		this.counter = 0;
 		this.lastNoteBeat = -1;
 	}
 
 	/**
-	 * saves information for later drawing beams
+	 * saves information for later drawing beams: it is set in this.beams
 	 * @param  {NoteManagerModel} noteMng
 	 * @param  {Number} iNote    index of note
 	 * @param  {LSNoteView} noteView
 	 */
 	BeamManager.prototype.checkBeam = function(noteMng, iNote, noteView) {
-		
+
 		/**
 		 * isSameBeat: for now we just consider beaming at quarter beat level (in the future we may decide beaming level dependign on time signature )
-		 * @param  {Number}  beat1 
-		 * @param  {Number}  beat2 
-		 * @return {Boolean}       
+		 * @param  {Number}  beat1
+		 * @param  {Number}  beat2
+		 * @return {Boolean}
 		 */
 		function isSameBeat(beat1, beat2) {
 			return Math.floor(beat1) == Math.floor(beat2);
@@ -26,16 +26,18 @@ define(['vexflow'], function(Vex) {
 		var noteBeat;
 		if (noteView.isBeamable()) {
 			noteBeat = noteMng.getNoteBeat(iNote);
-			//new position for beaming when they are not in same beat
+			//new position for beam array when they are not in same beat
 			if (!isSameBeat(noteBeat, this.lastNoteBeat)) {
 				//if length is not > 1, it means that we had a lonely beamable note, so we won't beam it
 				//thus, we don't increment counter -> we overwrite position
-				if (this.beams[this.counter] && this.beams[this.counter].length > 1){
-					this.counter++;	
+				if (this.beams[this.counter] && this.beams[this.counter].length > 1) {
+					this.counter++;
 				}
 				this.beams[this.counter] = [];
 			}
-			this.beams[this.counter].push(noteView.getVexflowNote());
+			var vexflowNote = noteView.getVexflowNote();
+
+			this.beams[this.counter].push(vexflowNote);
 			this.lastNoteBeat = noteBeat;
 		}
 	};

@@ -1,8 +1,8 @@
 define(['modules/core/src/NoteModel'], function(NoteModel) {
 	function NoteManager() {
-		this.notes = [];
-	}
-	//Interface functions (this functions are also in ChordManagerModel  )
+			this.notes = [];
+		}
+		//Interface functions (this functions are also in ChordManagerModel  )
 
 	/**
 	 * @interface
@@ -90,7 +90,7 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 	NoteManager.prototype.getNoteBeat = function(index) {
 		if (typeof index === "undefined" || isNaN(index) ||
 			index >= this.notes.length || index < 0) {
-			throw "problem with index " + index;
+			throw "NoteManager - getNoteBeat: problem with index " + index;
 		}
 		var noteBeat = 1, // because beats are based on 1
 			i;
@@ -108,7 +108,7 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 	NoteManager.prototype.getBeatIntervalByIndexes = function(start, end) {
 		if (typeof start === "undefined" || isNaN(start) ||
 			start >= this.notes.length || start < 0) {
-			throw "problem with start " + start;
+			throw "NoteManager - getBeatIntervalByIndexes:  problem with start " + start;
 		}
 		if (typeof end === "undefined" || isNaN(end) ||
 			end >= this.notes.length || end < 0) {
@@ -194,7 +194,7 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 		if (!song) {
 			throw "getNotesAtBarNumber: incorrect song parameter";
 		}
-		
+
 		var startBeat = 1,
 			endBeat,
 			beats = song.timeSignature.getBeats();
@@ -202,30 +202,30 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 			startBeat += song.getBarNumBeats(i, beats);
 		}
 		endBeat = startBeat + song.getBarNumBeats(i, beats);
-		
-		if (this.getTotalDuration()+1 < endBeat){
-			throw "notes on bar "+barNumber+" do not fill the total bar duration";
+
+		if (this.getTotalDuration() + 1 < endBeat) {
+			throw "notes on bar " + barNumber + " do not fill the total bar duration";
 		}
 		return this.getNotes(
 			this.getNextIndexNoteByBeat(startBeat),
 			this.getNextIndexNoteByBeat(endBeat)
 		);
 	};
-	NoteManager.prototype.getNoteBarNumber = function(index,song) {
+	NoteManager.prototype.getNoteBarNumber = function(index, song) {
 		var numBar = 0,
-		duration = 0;
+			duration = 0;
 
-		var barNumBeats = song.getBarNumBeats(numBar,null);
+		var barNumBeats = song.getBarNumBeats(numBar, null);
 		for (var i = 0; i <= index; i++) {
-			if(roundBeat(duration) == barNumBeats){
+			if (roundBeat(duration) == barNumBeats) {
 				numBar++;
 				duration = 0;
-				barNumBeats = song.getBarNumBeats(numBar,barNumBeats);
+				barNumBeats = song.getBarNumBeats(numBar, barNumBeats);
 			}
 			duration += this.notes[i].getDuration();
 		}
 		return numBar;
-		
+
 	};
 
 	/**

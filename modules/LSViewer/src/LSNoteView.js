@@ -10,11 +10,12 @@ define(['vexflow', 'modules/converters/MusicCSLJson/src/NoteModel_CSLJson'], fun
 		 */
 		function createVexflowNote(note) {
 			var vexflowNote = new Vex.Flow.StaveNote(NoteModel_CSLJson.exportToMusicCSLJSON(note));
+
 			var i;
 			//var vexflowNote = new Vex.Flow.StaveNote({keys: ["c/4", "e/4", "g/4"], duration: "q" });
 			//control stem direction
 			if (parseInt(vexflowNote.keyProps[0].octave, null) >= 5) {
-				vexflowNote.stem_direction = -1;
+				vexflowNote.setStemDirection(-1);
 			}
 
 			var accidental = [];

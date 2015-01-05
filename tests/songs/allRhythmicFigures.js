@@ -96,8 +96,8 @@ define(function(){
 								{ keys: ["g/4"], duration: "32", tie:'stop' },{ keys: ["a/4"], duration: "32" },{ keys: ["b/4"], duration: "32",  },{ keys: ["b/4"], duration: "32" },
 								{ keys: ["g/4"], duration: "32" },{ keys: ["a/4"], duration: "32" },{ keys: ["b/4"], duration: "32",  },{ keys: ["b/4"], duration: "32" },
 								{ keys: ["g/4"], duration: "32" },{ keys: ["a/4"], duration: "32" },{ keys: ["b/4"], duration: "32",  },{ keys: ["b/4"], duration: "32" },
-								{ keys: ["g/4"], duration: "32" },{ keys: ["a/4"], duration: "32" },{ keys: ["b/4"], duration: "32",  },{ keys: ["b/4"], duration: "32" },
-								{ keys: ["g/4"], duration: "32" },{ keys: ["a/4"], duration: "32" },{ keys: ["b/4"], duration: "32",  },{ keys: ["b/4"], duration: "32" },
+								{ keys: ["g/4"], duration: "32" },{ keys: ["a/4"], duration: "32" },{ keys: ["b/4"], duration: "32",  },{ keys: ["d/5"], duration: "32" },
+								{ keys: ["e/5"], duration: "32" },{ keys: ["c/5"], duration: "32" },{ keys: ["b/4"], duration: "32",  },{ keys: ["b/4"], duration: "32" },
 								{ keys: ["g/4"], duration: "32" },{ keys: ["a/4"], duration: "32" },{ keys: ["b/4"], duration: "32",  },{ keys: ["b/4"], duration: "32" },
 								{ keys: ["g/4"], duration: "32" },{ keys: ["a/4"], duration: "32" },{ keys: ["b/4"], duration: "32",  },{ keys: ["b/4"], duration: "32" },
 								{ keys: ["g/4"], duration: "32" },{ keys: ["a/4"], duration: "32" },{ keys: ["b/4"], duration: "32",  },{ keys: ["b/4"], duration: "32" }
@@ -133,6 +133,18 @@ define(function(){
 						melody:[
 							{ keys: ["b/4"], duration: "hr" },
 							{ keys: ["b/4"], duration: "hr" }
+						]
+					},
+					{
+						melody:[
+							{ keys: ["d/5"], duration: "8" },
+							{ keys: ["eb/5"], duration: "8" },
+							{ keys: ["a/4"], duration: "8" },
+							{ keys: ["g/4"], duration: "8" },
+							{ keys: ["f/4"], duration: "8" },
+							{ keys: ["e/5"], duration: "8" },
+							{ keys: ["d/5"], duration: "8" },
+							{ keys: ["e/4"], duration: "8" }
 						]
 					},
 					{
@@ -174,8 +186,12 @@ define(function(){
 					},
 					{
 						melody:[
-							{ keys: ["e/4"], duration: "h", dot: 2 },
-							{ keys: ["e/4"], duration: "8" }
+							{ keys: ["e/5"], duration: "q", dot: 2 },
+							{ keys: ["b/4"], duration: "16r" },
+							{ keys: ["d/5"], duration: "8" },
+							{ keys: ["b/4"], duration: "8r" },
+							{ keys: ["b/4"], duration: "8r" },
+							{ keys: ["c/5"], duration: "8" }
 						]
 					},{
 						melody:[
