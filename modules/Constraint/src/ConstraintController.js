@@ -50,7 +50,6 @@ define([
 			};
 			$.extend(true, request, comp);
 		}
-		console.log(request);
 		return request;
 	};
 

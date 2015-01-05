@@ -61,7 +61,6 @@ define(['jquery'], function($) {
 			element = $('body')[0];
 		}
 		var className = '';
-		console.log(type, title, element);
 		switch (type) {
 			case 'info':
 				className = 'alert alert-info';
@@ -73,7 +72,6 @@ define(['jquery'], function($) {
 				className = 'alert alert-warning';
 				break;
 			case 'error':
-				console.log('error');
 				className = 'alert alert-error';
 				break;
 			default:

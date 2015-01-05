@@ -105,7 +105,6 @@ define([
 	ConstraintView.prototype.initController = function() {
 		var self = this;
 		$('#constraint_compute').click(function() {
-			console.log('click');
 			var songset = $('#constraint_select_songsets').val();
 			if (songset == "none") {
 				songset = null;
