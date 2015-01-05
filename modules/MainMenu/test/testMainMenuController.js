@@ -8,11 +8,11 @@ define([
 	return {
 		run: function() {
 			test("MainMenuController", function(assert) {
-				var menu = new MainMenuModel();
+				//var menu = new MainMenuModel();
 				
-				var menuView = new MainMenuView(menu, document.getElementsByTagName('body')[0]);
+				//var menuView = new MainMenuView(menu, document.getElementsByTagName('body')[0]);
 
-				var mmc = new MainMenuController(menu, menuView);
+				var mmc = new MainMenuController();
 				assert.ok(mmc instanceof MainMenuController);
 
 				/*

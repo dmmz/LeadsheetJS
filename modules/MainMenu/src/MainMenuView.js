@@ -66,14 +66,16 @@ define([
 			if (i === currentMenu) {
 				className = 'class="' + this.selectedClassName;
 			}
-			first_level += '<div id="' + menu.title + '_first_level" ' + className + ' data-menuTitle="' + menu.title + '" class="main_menu_item">' + menu.title + '</div>';
-			second_level += '<div id="' + menu.title + '_second_level" data-menuTitle="' + menu.title + '">' + menu.view.el + '</div>';
+			first_level += '<div id="' + menu.title + '_first_level" class="first_level main_menu_item" ' + className + ' data-menuTitle="' + menu.title + '">' + menu.title + '</div>';
+			second_level += '<div id="' + menu.title + '_second_level" class="second_level" data-menuTitle="' + menu.title + '">' + menu.view.el + '</div>';
 		}
 	};
 
 	MainMenuView.prototype.addMenu = function(menu) {
-		$('#main_menu_first_level').append('<div id="' + menu.title + '_first_level" data-menuTitle="' + menu.title + '" class="main_menu_item">' + menu.title + '</div>');
-		$('#main_menu_second_level').append('<div id="' + menu.title + '_second_level" data-menuTitle="' + menu.title + '" style="display:none">' + menu.view.el + '</div>');
+		$('#main_menu_first_level').append('<div id="' + menu.title + '_first_level" class="first_level main_menu_item" data-menuTitle="' + menu.title + '">' + menu.title + '</div>');
+		var secondLevelItem = '<div id="' + menu.title + '_second_level" class="second_level" data-menuTitle="' + menu.title + '" style="display:none">' + menu.view.el + '</div>';
+		$('#main_menu_second_level').append(secondLevelItem);
+		menu.view.initController();
 	};
 
 	MainMenuView.prototype.removeMenu = function(menuTitle) {

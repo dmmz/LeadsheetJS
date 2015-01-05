@@ -26,13 +26,13 @@ define(['jquery'], function($) {
 				className = 'alert alert-info';
 				break;
 			case 'success':
-				className = 'alert alert-sucess';
+				className = 'alert alert-success';
 				break;
 			case 'warn':
 				className = 'alert alert-warning';
 				break;
 			case 'error':
-				className = 'alert alert-sucess';
+				className = 'alert alert-error';
 				break;
 			default:
 				className = 'alert alert-info';
@@ -61,18 +61,20 @@ define(['jquery'], function($) {
 			element = $('body')[0];
 		}
 		var className = '';
+		console.log(type, title, element);
 		switch (type) {
 			case 'info':
 				className = 'alert alert-info';
 				break;
 			case 'success':
-				className = 'alert alert-sucess';
+				className = 'alert alert-success';
 				break;
 			case 'warn':
 				className = 'alert alert-warning';
 				break;
 			case 'error':
-				className = 'alert alert-sucess';
+				console.log('error');
+				className = 'alert alert-error';
 				break;
 			default:
 				className = 'alert alert-info';

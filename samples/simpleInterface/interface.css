@@ -23,7 +23,7 @@
 	background-color: #777777;
 }
 
-#main_menu_first_level > div {
+.first_level {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
@@ -35,7 +35,7 @@
 	line-height: 2em;
 }
 
-#main_menu_first_level > div:hover{
+.first_level:hover{
 	background-color: #888;
 }
 .main_menu_first_level_selected {
@@ -52,7 +52,7 @@
 	overflow: hidden;
 }
 
-#main_menu_second_level > div > div {
+.second_level > div > div {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
@@ -81,4 +81,30 @@
 }
 #harmonization_display_constraint_container{
 	position: absolute;
+}
+
+
+#constraint_compute_button_container{
+	line-height: 100px;
+	padding: 0 0 0 1em;
+}
+#constraint_compute_button input{
+	height: 2em;
+}
+
+#constraint_input_container{
+	vertical-align: top;
+	display: inline-block;
+}
+
+#constraint_songsets_container, #constraint_composer_container, #constraint_timeSignature_container, #constraint_source_container{
+	padding: 2.5em 1em;
+}
+#constraint_source{
+	width: 200px;
+}
+#constraint_select_songsets, #constraint_select_composer, #constraint_select_source, #constraint_select_timeSignature{
+	margin: 0;
+	padding-bottom: 0.5em;
+	width: auto !important;
 }
