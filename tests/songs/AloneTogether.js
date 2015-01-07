@@ -3,7 +3,7 @@ define(function(){
   "changes": [
   {
    "id": "3",
-   "name": "Intro",
+   "name": "Pickup",
    "numBars": "1",
    "repeat": "0",
    "endingNumBars": "0",

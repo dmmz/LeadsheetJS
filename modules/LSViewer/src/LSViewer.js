@@ -69,11 +69,11 @@ define(['vexflow',
 
 			var barWidthMng = new BarWidthManager(this.LINE_HEIGHT, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE);
 			barWidthMng.calculateBarsStructure(song, nm);
-			var numSection = 0;
+			var numSection = 0,iBar = 0;
 			song.getSections().forEach(function(section) {
 
 				// for each bar
-				for (var iBar = 0; iBar < section.numberOfBars; iBar++) {
+				for (var iSectionBar = 0; iSectionBar < section.numberOfBars; iSectionBar++) {
 
 					beamMng = new BeamManager();
 					tupletMng = new TupletManager();
@@ -96,6 +96,9 @@ define(['vexflow',
 					barDimensions = barWidthMng.getDimensions(iBar);
 					//stave = new Vex.Flow.Stave(barDimensions.left, barDimensions.height, barDimensions.width);
 					stave = new Vex.Flow.Stave(barDimensions.left, barDimensions.top, barDimensions.width);
+					if (iBar == 0){
+						stave.addClef("treble").setContext(self.ctx).draw();	
+					}
 					stave.setContext(self.ctx).draw();
 
 					vxfBeams = beamMng.getVexflowBeams(); // we need to do getVexflowBeams before drawing notes
@@ -105,7 +108,7 @@ define(['vexflow',
 
 					beamMng.draw(self.ctx, vxfBeams); // and draw beams needs to be done after drawing notes
 					tupletMng.draw(self.ctx, vxfNotes);
-
+					iBar++;
 				}
 
 				numSection++;

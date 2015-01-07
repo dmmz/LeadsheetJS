@@ -44,7 +44,7 @@ define(function() {
 	 * and the width for each bar fitting in the line. e.g. (being the line width 1160) [	[200,200,500],		( sum of widths is < 1160)
 	 *																						[500,300,100,100,100]	(< 1160)
 	 */
-	BarWidthManager.prototype.assignBarsToLines = function(minWidthList) {
+	BarWidthManager.prototype.assignBarsToLines = function(minWidthList, pickupAtStart) {
 
 		/**
 		 * @param  {Array} bars
@@ -66,11 +66,18 @@ define(function() {
 			barWidth = this.lineWidth / this.barsPerLine,
 			i,
 			barsToGet,
-			numCarriedBars = 0;
+			numCarriedBars = 0,
+			numCurrLastBar;
 
 		while (numBarsProcessed < minWidthList.length || numCarriedBars !== 0) {
 			lineWidthList = [];
 			barsToGet = this.barsPerLine + numCarriedBars;
+			if (pickupAtStart && numBarsProcessed == 0){
+				barsToGet++;
+			}
+
+			numCurrLastBar = numBarsProcessed + barsToGet;
+
 			lineMinWidths = minWidthList.slice(numBarsProcessed, numBarsProcessed + barsToGet);
 			numCarriedBars = 0;
 
@@ -190,7 +197,8 @@ define(function() {
 	BarWidthManager.prototype.calculateBarsStructure = function(song, noteMng) {
 
 		var minWidthList = this.getMinWidthList(song, noteMng);
-		var minWidthPerLineList = this.assignBarsToLines(minWidthList);
+		var pickupAtStart = song.getSection(0).getNumberOfBars()==1;
+		var minWidthPerLineList = this.assignBarsToLines(minWidthList,pickupAtStart);
 		this.setBarsStruct(this.getWidths(minWidthPerLineList));
 
 	};
