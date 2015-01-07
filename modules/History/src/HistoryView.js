@@ -53,7 +53,7 @@ define([
 	};
 
 	/**
-	 * Subscribe to model publish
+	 * Subscribe to model events
 	 */
 	HistoryView.prototype.initSubscribe = function() {
 		var self = this;
