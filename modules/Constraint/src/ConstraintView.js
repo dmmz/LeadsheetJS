@@ -127,13 +127,6 @@ define([
 		});
 
 
-		$('#rightPanel').on('click', ".history_ul li", function() {
-			var indexItem = $(this).attr('data-history');
-			self.constraintsManager.loadHistory(indexItem - self.constraintsManager.currentPositionHistory);
-			self.displayHistory();
-		});
-
-
 		// TODO use songsets
 		// this.buildSongsetSelectInterface('constraint_select_songsets', globalVariables.username);
 		/*
@@ -143,18 +136,12 @@ define([
 		*/
 	};
 
-	ConstraintView.prototype.displayHistory = function(idElement) {
-		var history = '<h3>History</h3>';
-		history += '<ul class="history_ul">';
-		for (var i = 0, c = this.model.scoreHistory.length; i < c; i++) {
-			var classCurrent = "";
-			if (i == this.model.currentPositionHistory) {
-				classCurrent = "current_history";
-			}
-			history += '<li class="' + classCurrent + '" data-history="' + i + '">' + this.model.scoreHistory[i]['time'] + '</li>';
-		}
-		history += '</ul>';
-		$('#rightPanel').html(history);
+	ConstraintView.prototype.unactiveView = function(idElement) {
+		myApp.historyV.unactiveView();
+	};
+
+	ConstraintView.prototype.activeView = function(idElement) {
+		myApp.historyV.activeView();
 	};
 
 	return ConstraintView;

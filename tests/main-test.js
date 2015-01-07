@@ -57,6 +57,8 @@ define(function(require) {
 
   var testLSViewer = require('modules/LSViewer/test/testLSViewer');
 
+  var testHistoryModel = require('modules/History/test/testHistoryModel');
+
   var testHarmonizerController = require('modules/Harmonizer/test/testHarmonizerController');
   var testModuleManager = require('modules/ModuleManager/test/testModuleManager');
   var testMainMenuModel = require('modules/MainMenu/test/testMainMenuModel');
@@ -99,6 +101,8 @@ define(function(require) {
   testSongConverterMidi_MidiCSL.run();
 
   testHarmonizerController.run();
+
+  testHistoryModel.run();
 
   testModuleManager.run();
   testMainMenuModel.run();

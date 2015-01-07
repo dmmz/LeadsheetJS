@@ -50,6 +50,7 @@ define([
 		$('body').on('click', '.main_menu_item', function() {
 			var menuTitle = $(this).attr('data-menuTitle');
 			$.publish('MainMenuView-active_menu', menuTitle);
+
 		});
 	};
 
@@ -85,15 +86,22 @@ define([
 
 	MainMenuView.prototype.setCurrentMenu = function(menu) {
 		// update view
-		this.hideAllMenus();
+		this.hideAllMenus(menu);
 		this.showMenu(menu);
 	};
 
-	MainMenuView.prototype.hideAllMenus = function() {
+	MainMenuView.prototype.hideAllMenus = function(menu) {
 		$('#main_menu_second_level > div').each(function() {
 			$(this).hide();
 		});
 		var self = this;
+		for (var i = 0, c = this.model.menuList.length; i < c; i++) {
+			if (this.model.menuList[i] !== menu) {
+				if (this.model.menuList[i].view && typeof this.model.menuList[i].view.unactiveView === "function") {
+					this.model.menuList[i].view.unactiveView();
+				}
+			}
+		}
 		// remove active class
 		$('.' + this.selectedClassName).each(function() {
 			$(this).removeClass(self.selectedClassName);
@@ -102,6 +110,9 @@ define([
 
 	MainMenuView.prototype.showMenu = function(menu) {
 		var self = this;
+		if (menu.view && typeof menu.view.activeView === "function") {
+			menu.view.activeView();
+		}
 		// add active class
 		$('#' + menu.title + '_first_level').addClass(self.selectedClassName);
 

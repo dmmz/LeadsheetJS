@@ -103,10 +103,8 @@ define([
 				}
 				UserLog.logAutoFade('error', message);
 			}
-
-
-
 		});
+
 	};
 
 	ConstraintController.prototype.loadHistory = function(indexDiff) {

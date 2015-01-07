@@ -11,31 +11,12 @@ define([
 	 */
 	var ConstraintModel = function(songModel, options) {
 		this.songModel = (typeof songModel !== "undefined") ? songModel : undefined;
-		this.scoreHistory = [];
-		this.currentPositionHistory = 0;
 		this.init();
 	};
 
 	ConstraintModel.prototype.init = function() {
 		this.constraints = [];
 	};
-
-	ConstraintModel.prototype.setCurrentPositionHistory = function(position) {
-		if (!isNaN(position) && position >= 0 && position < this.scoreHistory.length) {
-			this.currentPositionHistory = position;
-		}
-	};
-
-	ConstraintModel.prototype.addToHistory = function(leadsheet) {
-		this.scoreHistory = this.scoreHistory.slice(0, this.currentPositionHistory + 1);
-		var time = (new Date()).toLocaleString();
-		var newHistorical = {
-			'leadsheet': leadsheet,
-			'time': time
-		};
-		this.scoreHistory.push(newHistorical);
-	};
-
 
 	ConstraintModel.prototype.addMusicCSLJSON = function(request) {
 		if (typeof editor === "undefined") {
@@ -49,7 +30,12 @@ define([
 		return request;
 	};
 
-
+	/**
+	 * Function compare two leadsheets and add a color "colorDiff" to item that change
+	 * @param  {[type]} obj1 [description]
+	 * @param  {[type]} obj2 [description]
+	 * @return {[type]}      [description]
+	 */
 	ConstraintModel.prototype.compareObj2 = function(obj1, obj2) {
 		var same = true;
 		var sameChord = true;

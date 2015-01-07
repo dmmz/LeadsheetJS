@@ -4,7 +4,7 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
     uglify: {
       options: {
-        banner: '/*! <%= pkg.name %>, <%= pkg.description %> <%= grunt.template.today("yyyy-mm-dd") %> - Sony CSL */\n'
+        banner: '/*! <%= pkg.name %>, <%= pkg.version %> <%= pkg.description %> <%= grunt.template.today("yyyy-mm-dd") %> - Sony CSL */\n'
       },
       build: {
         src: ['modules/**/*.js', '!modules/core/src/SongModel.old.js'],

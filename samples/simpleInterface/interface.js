@@ -64,10 +64,23 @@ define(function(require) {
   var MainMenuController = require('modules/MainMenu/src/MainMenuController');
   var MainMenuView = require('modules/MainMenu/src/MainMenuView');
 
+  var HistoryModel = require('modules/History/src/HistoryModel');
+  var HistoryController = require('modules/History/src/HistoryController');
+  var HistoryView = require('modules/History/src/HistoryView');
+
+  var myApp = {};
+
   var menuM = new MainMenuModel();
-  var menuV = new MainMenuView(menuM, document.getElementsByTagName('body')[0]);
+  var menuV = new MainMenuView(menuM, document.getElementById('main-container'));
   var menuC = new MainMenuController(menuM, menuV);
 
+  myApp.historyM = new HistoryModel();
+  myApp.historyV = new HistoryView(myApp.historyM);
+  myApp.historyC = new HistoryController(myApp.historyM, myApp.historyV);
+  /*myApp.historyV.activeView();
+  myApp.historyM.addToHistory({},'Edit notes');
+  myApp.historyM.addToHistory({});
+  myApp.historyM.setCurrentPosition(1);*/
   
   $.subscribe('MainMenuView-render', function(el) {
     var hV = new HarmonizerView();
@@ -85,4 +98,5 @@ define(function(require) {
     });
   });
   
+  window.myApp = myApp;
 });
