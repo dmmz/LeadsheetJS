@@ -12,6 +12,10 @@ define([
 		this.initSubscribe();
 	}
 
+	/**
+	 * Render will build and display a new dom in parentHTML using model historyList
+	 * @return {[type]} [description]
+	 */
 	HistoryView.prototype.render = function() {
 		if (typeof this.parentHTML === "undefined") {
 			return;
@@ -19,6 +23,7 @@ define([
 		var history = '<h3>History</h3>';
 		history += '<ul class="history_ul">';
 		var text = '', classCurrent = "";
+		// loop through each history state
 		for (var i = 0, c = this.model.historyList.length; i < c; i++) {
 			classCurrent = "";
 			if (i == this.model.currentPosition) {
@@ -36,6 +41,9 @@ define([
 		$.publish('HistoryView-render');
 	};
 
+	/**
+	 * Publish event after receiving dom events
+	 */
 	HistoryView.prototype.initController = function() {
 		var self = this;
 		this.parentHTML.on('click', ".history_ul li", function() {
@@ -44,6 +52,9 @@ define([
 		});
 	};
 
+	/**
+	 * Subscribe to model publish
+	 */
 	HistoryView.prototype.initSubscribe = function() {
 		var self = this;
 		$.subscribe('HistoryModel-setCurrentPosition', function() {

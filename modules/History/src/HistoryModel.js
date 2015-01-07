@@ -32,6 +32,12 @@ define([
 		}
 	};
 
+	/**
+	 * Add a state to History
+	 * @param {Object} leadsheet contain a state, it's often a leadsheet
+	 * @param {string} title     state name, view can display this message to user.
+	 * A date paramateres will automatically be added to history
+	 */
 	HistoryModel.prototype.addToHistory = function(leadsheet, title) {
 		this.historyList = this.historyList.slice(0, this.currentPosition + 1);
 		var time = (new Date()).toLocaleString();
