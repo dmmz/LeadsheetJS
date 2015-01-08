@@ -1,11 +1,12 @@
 define(['vexflow',
 		'modules/LSViewer/src/LSNoteView',
+		'modules/LSViewer/src/LSBarView',
 		'modules/LSViewer/src/BeamManager',
 		'modules/LSViewer/src/TieManager',
 		'modules/LSViewer/src/TupletManager',
 		'modules/LSViewer/src/BarWidthManager'
 	],
-	function(Vex, LSNoteView, BeamManager, TieManager, TupletManager, BarWidthManager) {
+	function(Vex, LSNoteView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager) {
 
 		function LSViewer(ctx, params) {
 			this.ctx = ctx;
@@ -69,7 +70,8 @@ define(['vexflow',
 
 			var barWidthMng = new BarWidthManager(this.LINE_HEIGHT, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE);
 			barWidthMng.calculateBarsStructure(song, nm);
-			var numSection = 0,iBar = 0;
+			var numSection = 0,
+				iBar = 0;
 			song.getSections().forEach(function(section) {
 
 				// for each bar
@@ -95,14 +97,12 @@ define(['vexflow',
 
 					barDimensions = barWidthMng.getDimensions(iBar);
 					//stave = new Vex.Flow.Stave(barDimensions.left, barDimensions.height, barDimensions.width);
-					stave = new Vex.Flow.Stave(barDimensions.left, barDimensions.top, barDimensions.width);
-					if (iBar == 0){
-						stave.addClef("treble").setContext(self.ctx).draw();	
-					}
-					stave.setContext(self.ctx).draw();
+					var barView = new LSBarView(barDimensions, iBar);
+					barView.draw(self.ctx);
+
 
 					vxfBeams = beamMng.getVexflowBeams(); // we need to do getVexflowBeams before drawing notes
-					Vex.Flow.Formatter.FormatAndDraw(self.ctx, stave, bar, {
+					Vex.Flow.Formatter.FormatAndDraw(self.ctx, barView.getVexflowStave(), bar, {
 						autobeam: false
 					});
 
