@@ -14,14 +14,6 @@ define([
 		});
 	}
 
-	HarmonizerController.prototype.initController = function() {
-		var self = this;
-		$('#harmonize').click(function() {
-			self.computeHarmonize(idSong, style);
-			return false;
-		});
-	};
-
 	HarmonizerController.prototype.computeHarmonize = function(idSong, style) {
 		var self = this;
 		if (!style) {

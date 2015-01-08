@@ -55,29 +55,48 @@ define(function(require) {
 
   var HarmonizerController = require('modules/Harmonizer/src/HarmonizerController');
   var HarmonizerView = require('modules/Harmonizer/src/HarmonizerView');
+  var ConstraintModel = require('modules/Constraint/src/ConstraintModel');
+  var ConstraintView = require('modules/Constraint/src/ConstraintView');
+  var ConstraintController = require('modules/Constraint/src/ConstraintController');
+  
   var ModuleManager = require('modules/ModuleManager/src/ModuleManager');
   var MainMenuModel = require('modules/MainMenu/src/MainMenuModel');
   var MainMenuController = require('modules/MainMenu/src/MainMenuController');
   var MainMenuView = require('modules/MainMenu/src/MainMenuView');
 
+  var HistoryModel = require('modules/History/src/HistoryModel');
+  var HistoryController = require('modules/History/src/HistoryController');
+  var HistoryView = require('modules/History/src/HistoryView');
+
+  var myApp = {};
+
   var menuM = new MainMenuModel();
-  var menuV = new MainMenuView(menuM, document.getElementsByTagName('body')[0]);
+  var menuV = new MainMenuView(menuM, document.getElementById('main-container'));
   var menuC = new MainMenuController(menuM, menuV);
 
+  myApp.historyM = new HistoryModel();
+  myApp.historyV = new HistoryView(myApp.historyM);
+  myApp.historyC = new HistoryController(myApp.historyM, myApp.historyV);
+  /*myApp.historyV.activeView();
+  myApp.historyM.addToHistory({},'Edit notes');
+  myApp.historyM.addToHistory({});
+  myApp.historyM.setCurrentPosition(1);*/
   
   $.subscribe('MainMenuView-render', function(el) {
     var hV = new HarmonizerView();
     var hC = new HarmonizerController(hV);
     hV.render(undefined, true, function(){
       menuM.addMenu({title:'Harmonizer', view: hV});
-      menuC.activeMenu('Harmonizer');
     });
 
-    var hV2 = new HarmonizerView();
-    var hC2 = new HarmonizerController(hV2);
-    hV2.render(undefined, true, function(){
-      menuM.addMenu({title:'Constraint', view: hV2});
+    var cM = new ConstraintModel();
+    var cV = new ConstraintView(cM);
+    var cC = new ConstraintController(cM, cV);
+    cV.render(undefined, false, function(){
+      menuM.addMenu({title:'Constraint', view: cV});
+      menuC.activeMenu('Constraint');
     });
   });
   
+  window.myApp = myApp;
 });
