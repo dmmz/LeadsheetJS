@@ -4,9 +4,11 @@ define(['vexflow',
 		'modules/LSViewer/src/BeamManager',
 		'modules/LSViewer/src/TieManager',
 		'modules/LSViewer/src/TupletManager',
-		'modules/LSViewer/src/BarWidthManager'
+		'modules/LSViewer/src/BarWidthManager',
+		'modules/core/src/SectionBarsIterator',
+		'modules/core/src/SongBarsIterator'
 	],
-	function(Vex, LSNoteView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager) {
+	function(Vex, LSNoteView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator) {
 
 		function LSViewer(ctx, params) {
 			this.ctx = ctx;
@@ -70,18 +72,20 @@ define(['vexflow',
 
 			var barWidthMng = new BarWidthManager(this.LINE_HEIGHT, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE);
 			barWidthMng.calculateBarsStructure(song, nm);
-			var numSection = 0,
-				iBar = 0;
+			var numSection = 0;
+
+			var songIt = new SongBarsIterator(song);
 			song.getSections().forEach(function(section) {
 
 				// for each bar
-				for (var iSectionBar = 0; iSectionBar < section.numberOfBars; iSectionBar++) {
-
+				var sectionIt = new SectionBarsIterator(section);
+				while (sectionIt.hasNext()) {
+					
 					beamMng = new BeamManager();
 					tupletMng = new TupletManager();
 					bar = [];
 
-					barNotes = nm.getNotesAtBarNumber(iBar, song);
+					barNotes = nm.getNotesAtBarNumber(songIt.getBarIndex(), song);
 					// for each note of bar
 					for (var j = 0; j < barNotes.length; j++) {
 						tieMng.checkTie(barNotes[j], iNote);
@@ -95,11 +99,11 @@ define(['vexflow',
 						iNote++;
 					}
 
-					barDimensions = barWidthMng.getDimensions(iBar);
+					barDimensions = barWidthMng.getDimensions(songIt.getBarIndex());
 					//stave = new Vex.Flow.Stave(barDimensions.left, barDimensions.height, barDimensions.width);
-					var barView = new LSBarView(barDimensions, iBar);
-					barView.draw(self.ctx);
-
+					var barView = new LSBarView(barDimensions);
+					//barView.setKeySignature(this.keySig);
+					barView.draw(self.ctx, songIt);
 
 					vxfBeams = beamMng.getVexflowBeams(); // we need to do getVexflowBeams before drawing notes
 					Vex.Flow.Formatter.FormatAndDraw(self.ctx, barView.getVexflowStave(), bar, {
@@ -108,9 +112,9 @@ define(['vexflow',
 
 					beamMng.draw(self.ctx, vxfBeams); // and draw beams needs to be done after drawing notes
 					tupletMng.draw(self.ctx, vxfNotes);
-					iBar++;
+					songIt.next();
+					sectionIt.next();
 				}
-
 				numSection++;
 			});
 			tieMng.draw(self.ctx, vxfNotes, nm, barWidthMng, song);
