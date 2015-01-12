@@ -129,7 +129,7 @@ define(function(require) {
 		});
 
 		var player = new PlayerModel_MidiCSL();
-		var pV = new PlayerView(player, $('#player_test')[0]);
+		var pV = new PlayerView(player, $('#player_test')[0], {displayMetronome:true, displayLoop:true, displayTempo:true, changeInstrument:true});
 		var pC = new PlayerController(player, pV);
 	}
 
