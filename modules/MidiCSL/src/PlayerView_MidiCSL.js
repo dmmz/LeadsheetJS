@@ -8,8 +8,8 @@ define([
 
 	function PlayerView(model, parentHTML, option) {
 		this.displayMetronome = (typeof (option) !== "undefined" && typeof (option.displayMetronome) !== "undefined") ? option.displayMetronome : false;
-		this.displayLoop = (typeof (option) !== "undefined" && typeof (option.doLoop) !== "undefined") ? option.doLoop : false;
-		this.displayTempo = (typeof (option) !== "undefined" && typeof (option.doTempo) !== "undefined") ? option.doTempo : false;
+		this.displayLoop = (typeof (option) !== "undefined" && typeof (option.displayLoop) !== "undefined") ? option.displayLoop : false;
+		this.displayTempo = (typeof (option) !== "undefined" && typeof (option.displayTempo) !== "undefined") ? option.displayTempo : false;
 		this.changeInstrument = (typeof (option) !== "undefined" && typeof (option.changeInstrument) !== "undefined") ? option.changeInstrument : false;
 		this.model = (model) ? model : new PlayerModel_MidiCSL();
 		this.el = undefined;

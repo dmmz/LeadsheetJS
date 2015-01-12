@@ -9,7 +9,11 @@
  * PlayerModel_MidiCSL-onvolumechange
  */
 
-define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], function(SongModel_MidiCSL, MIDI, pubsub) {
+	//var NoteModel_MidiCSL = require('modules/MidiCSL/src/model/NoteModel_MidiCSL');
+		
+
+define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConverterMidi_MidiCSL', 'modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'],
+ function(SongModel, SongConverterMidi_MidiCSL, SongModel_MidiCSL, MIDI, pubsub) {
 	/* option contain
 		editor 				// Score Editor Object, it is use mainly for viewer to display cursor
 		chordsInstrument
@@ -18,10 +22,12 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 		activeMetronome		// Boolean that indicates whether the metronome is active or not
 		volume 				// Float Main volume for all instruments it vary between 0 and 1
 	*/
-	function PlayerModel_MidiCSL(option) {
+	function PlayerModel_MidiCSL(songModel, option) {
 		this.isReady = false; // boolean that indicates if player is ready to be played
 		this.indexPosition = 0; // represent which notes have been lastly played
 		this.playState = false; // playState indicate if the player is currently playing or not, (paused player will return false)
+
+		this.songModel = songModel;
 
 		var initVolume = (typeof option !== "undefined" && typeof(option.volume) !== "undefined") ? option.volume : 1;
 		this.chords = {
@@ -51,6 +57,13 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 		}
 		this._startTime = 0; // it contain the start timestamp  (when play is pressed), (it change only if player is in pause)
 	}
+
+	PlayerModel_MidiCSL.prototype.setSong = function(songModel) {
+		if(typeof songModel === "undefined" || !(songModel instanceof SongModel)){
+			throw "PlayerModel_MidiCSL- setSong, song model shouldn't be empty and should be a SongModel instance", songModel;
+		}
+		this.songModel = songModel;
+	};
 
 	PlayerModel_MidiCSL.prototype.load = function() {
 		if (typeof MIDI !== "undefined") {
@@ -228,22 +241,22 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 
 	/**
 	 * Launch midi.noteon and noteoff instructions, this function is the main play function
-	 * @param  {SongModel_MidiCSL} songModel_MidiCSL is the model that the player will read
 	 * @param  {int} tempo in bpm, it influence how fast the song will be played
 	 * @param  {float} playFrom is an optionnal attributes, if it's filled then player will start to play the note after playFrom, in sec
 	 */
-	PlayerModel_MidiCSL.prototype.play = function(songModel_MidiCSL, tempo, playFrom) {
-		if (typeof songModel_MidiCSL === "undefined" || !(songModel_MidiCSL instanceof SongModel_MidiCSL)) {
-			throw 'PlayerModel_MidiCSL - play - songModel_MidiCSL must be an instance of SongModel_MidiCSL ' + songModel_MidiCSL;
-		}
+	PlayerModel_MidiCSL.prototype.play = function(tempo, playFrom) {
 		if (typeof tempo === "undefined" || isNaN(tempo)) {
 			throw 'PlayerModel_MidiCSL - play - tempo must be a number ' + tempo;
 		}
-
-		var song = songModel_MidiCSL.getSong();
+		// Convert songmodel to a readable model that we can insert in SongModel_MidiCSL
+		var midiSong = SongConverterMidi_MidiCSL.exportToMidiCSL(this.songModel);
+		var midiSongModel = new SongModel_MidiCSL({
+			'song': midiSong
+		});
+		var song = midiSongModel.getSong();
 		if (song.length !== 0 && this.getReady() === true) {
 			var self = this;
-			var lastNote = songModel_MidiCSL.getLastNote(); // Looking for last note
+			var lastNote = midiSongModel.getLastNote(); // Looking for last note
 			var beatDuration = this.getBeatDuration(tempo);
 			this.noteTimeOut = []; // Keep every setTimeout so we can clear them on pause/stop
 

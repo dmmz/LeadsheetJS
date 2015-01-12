@@ -50,7 +50,7 @@ define([
 	};
 
 	PlayerController.prototype.play = function(tempo) {
-		this.model.play(myApp.midiSongModel, tempo);
+		this.model.play(tempo);
 	};
 
 	PlayerController.prototype.stop = function() {

@@ -71,15 +71,12 @@ define(function(require) {
 	var HistoryView = require('modules/History/src/HistoryView');
 
 	var SongModel = require('modules/core/src/SongModel');
-	var SongModel_MidiCSL = require('modules/MidiCSL/src/model/SongModel_MidiCSL');
-	var NoteModel_MidiCSL = require('modules/MidiCSL/src/model/NoteModel_MidiCSL');
-	var SongConverterMidi_MidiCSL = require('modules/MidiCSL/src/converters/SongConverterMidi_MidiCSL');
 	var SongModel_CSLJson = require('modules/converters/MusicCSLJson/src/SongModel_CSLJson');
 	var testSongs = require('tests/test-songs');
 	var PlayerModel_MidiCSL = require('modules/MidiCSL/src/model/PlayerModel_MidiCSL');
 	var PlayerController = require('modules/MidiCSL/src/PlayerController_MidiCSL');
 	var PlayerView = require('modules/MidiCSL/src/PlayerView_MidiCSL');
-
+	
 	var myApp = {};
 
 	var menuM = new MainMenuModel();
@@ -122,13 +119,7 @@ define(function(require) {
 		// Create a song from testSong
 		var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
 
-		// Convert songmodel to a readable model that we can insert in SongModel_MidiCSL
-		var midiSong = SongConverterMidi_MidiCSL.exportToMidiCSL(songModel);
-		myApp.midiSongModel = new SongModel_MidiCSL({
-			'song': midiSong
-		});
-
-		var player = new PlayerModel_MidiCSL();
+		var player = new PlayerModel_MidiCSL(songModel);
 		var pV = new PlayerView(player, $('#player_test')[0], {displayMetronome:true, displayLoop:true, displayTempo:true, changeInstrument:true});
 		var pC = new PlayerController(player, pV);
 	}
