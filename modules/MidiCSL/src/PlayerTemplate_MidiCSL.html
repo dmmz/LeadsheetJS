@@ -1,0 +1,145 @@
+<div id="playerview">
+	<!--<div id="switch_player" class="current_button">Player</div>-->
+	<div id="player_buttons_container">
+		<div id="stop_button_container" class="player_button">
+			<div id="stop_button">
+				<img src="/modules/MidiCSL/img/stop.png" alt="stop" title="Stop" />
+			</div>
+			<div class="player_text">
+				Stop
+			</div>
+		</div>
+
+		<div id="play_button_container" class="player_button">
+			<div id="play_button">
+				<img src="/modules/MidiCSL/img/play_grey.png" alt="play" title="Play" />
+			</div>
+			<div class="player_text">
+				Loading
+			</div>
+		</div>
+
+		<div id="pause_button_container" class="player_button">
+			<div id="pause_button">
+				<img src="/modules/MidiCSL/img/pause.png" alt="pause" title="Pause" />
+			</div>
+			<div class="player_text">
+				Pause
+			</div>
+		</div>
+
+		{{#displayLoop}}
+		<div id="loop_button_container" class="player_button">
+			<div id="loop_button">
+				<img src="/modules/MidiCSL/img/loop_grey.png" alt="loop" title="Loop is off" />
+			</div>
+			<div class="player_text">
+				Loop
+			</div>
+		</div>
+		{{/displayLoop}}
+
+		<div id="volume_container" class="player_button">
+			<span id="all-sound">
+				<img src="/modules/MidiCSL/img/sound_on.png" class="sound_on" alt="sound_on" title="Mute" /><img src="/modules/MidiCSL/img/sound_off.png" class="sound_off" alt="sound_off" title="Unmute" />
+			</span>
+			<div class="player_text">
+				Volume
+			</div>
+		</div>
+		<div id="volume_slider_container">
+			<input type="text" class="volume_slider" value="100" data-slider-min="100" data-slider-max="0.0" data-slider-step="1" data-slider-value="100" data-slider-orientation="vertical" />
+		</div>
+		
+		{{#displayTempo}}
+		<div id="tempo_container" style="margin-left:20px">
+			<input type="number" value="120" min="20" max="300" id="tempo" name="tempo" />
+			<div class="player_text">
+				Tempo
+			</div>
+		</div>
+		{{/displayTempo}}
+
+		{{#displayMetronome}}
+		<div id="metronome_container" class="player_button">
+			<span id="all-metronome">
+				<img src="/modules/MidiCSL/img/metronome_on.png" class="metronome_on" alt="metronome_on" title="Active Metronome" /><img src="/modules/MidiCSL/img/metronome_off.png" class="metronome_off" alt="metronome_off" title="Mute Metronome" />
+			</span>
+			<div class="player_text">
+				Metronome
+			</div>
+		</div>
+		{{/displayMetronome}}
+
+	</div>
+	{{#changeInstrument}}
+	<div id="player_instrument_container">
+		<div id="player_chords">
+			<div id="chords_instrument_container">
+				<select>
+					<option>--None--</option>
+					<option value="basic_rhythm">Basic rhythm</option>
+					<option value="syncopated_variation">Syncopated variation</option>
+					<option value="toquinho_variation">Toquinho variation</option>
+					<option value="percussive_rhythm">Percussive rhythm</option>
+					<optgroup label="Midi instrument">
+						<option value="0" selected>acoustic_grand_piano</option>
+	<!-- 						<option value="1">electric_guitar_clean</option>
+								
+						<option value="1">acoustic_guitar_nylon</option>
+						<option value="1">electric_guitar_jazz</option>
+						<option value="2">acoustic_guitar_steel</option>
+						<option value="3">electric_guitar_jazz</option>
+						<option value="4">distortion_guitar</option>
+						<option value="5">electric_bass_finger</option>
+						<option value="6">electric_bass_pick</option>
+						<option value="7">trumpet</option>
+						<option value="8">brass_section</option>
+						<option value="9">soprano_sax</option> -->
+						<option value="1">alto_sax</option>
+	<!-- 								<option value="11">tenor_sax</option>
+						<option value="12">baritone_sax</option>
+						<option value="13">flute</option>
+						<option value="14">synth_drum</option> -->
+					</optgroup>
+				</select>
+				<div class="player_text">
+					Chords
+				</div>
+			</div>
+
+		</div>
+
+
+		<div id="player_melody">
+			<div id="melody_instrument_container">
+				<select>
+					<option>--None--</option>
+					<optgroup label="Midi instrument">
+						<option value="0" selected>acoustic_grand_piano</option>
+	<!--					<option value="1">electric_guitar_clean</option>
+	 								<option value="1">electric_guitar_jazz</option>
+						<option value="1">acoustic_guitar_nylon</option>
+						<option value="2">acoustic_guitar_steel</option>
+						<option value="4">distortion_guitar</option>
+						<option value="5">electric_bass_finger</option>
+						<option value="6">electric_bass_pick</option>
+						<option value="7">trumpet</option>
+						<option value="8">brass_section</option>
+						<option value="9">soprano_sax</option> -->
+						<option value="1">alto_sax</option>
+	<!-- 								<option value="11">tenor_sax</option>
+						<option value="12">baritone_sax</option>
+						<option value="13">flute</option> -->
+						<!-- <option value="2">taiko_drum</option> -->
+					</optgroup>
+				</select>
+				<div class="player_text">
+					Melody
+				</div>
+			</div>
+		</div>
+		
+	</div>
+	{{/changeInstrument}}
+</div>

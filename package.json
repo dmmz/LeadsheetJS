@@ -1,7 +1,7 @@
 {
   "name": "LeadsheetJS",
   "version": "1.0.0",
-  "description": "Help you to create a Leadsheet",
+  "description": "Helps you to create a Leadsheet",
   "main": "tests/main-test.js",
   "directories": {
     "test": "tests"

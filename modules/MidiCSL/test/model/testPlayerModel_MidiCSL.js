@@ -24,10 +24,8 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/model/PlayerModel_Mid
 						console.log('play');
 						// player.play(midiSongModel, 120);
 					});
-					var player = new PlayerModel_MidiCSL();
-
 				});
 			}
-		}
+		};
 	}
 );

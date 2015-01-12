@@ -50,7 +50,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 			this.load();
 		}
 		this._startTime = 0; // it contain the start timestamp  (when play is pressed), (it change only if player is in pause)
-	};
+	}
 
 	PlayerModel_MidiCSL.prototype.load = function() {
 		if (typeof MIDI !== "undefined") {
@@ -63,63 +63,64 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 
 	PlayerModel_MidiCSL.prototype.getReady = function() {
 		return this.isReady;
-	}
+	};
 
 	PlayerModel_MidiCSL.prototype.setReady = function(isReady) {
 		if (typeof isReady !== "undefined") {
 			this.isReady = isReady;
 		}
-	}
+	};
 
 	PlayerModel_MidiCSL.prototype.getPlayState = function() {
 		return this.playState;
-	}
+	};
 
 	PlayerModel_MidiCSL.prototype.doLoop = function() {
 		return this.loop;
-	}
+	};
 
 	PlayerModel_MidiCSL.prototype.setLoop = function(loop) {
 		if (typeof loop !== "undefined") {
 			this.loop = !!loop;
+			$.publish('PlayerModel_MidiCSL-toggleLoop', loop);
 			return true;
 		} else {
 			return false;
 		}
-	}
+	};
 
 	PlayerModel_MidiCSL.prototype.toggleLoop = function(loop) {
 		if (this.loop === true) {
-			this.loop = false;
+			this.setLoop(false);
 		} else {
-			this.loop = true;
+			this.setLoop(true);
 		}
 		return this.loop;
-	}
+	};
 
 	PlayerModel_MidiCSL.prototype.mute = function() {
 		this.chords.tmpVolume = this.getChordsVolume();
 		this.melody.tmpVolume = this.getMelodyVolume();
-		this.setChordsVolume(0);
-		this.setMelodyVolume(0);
-	}
+		this.setVolume(0);
+	};
 
 	PlayerModel_MidiCSL.prototype.unmute = function() {
-		this.setChordsVolume(this.chords.tmpVolume);
-		this.setMelodyVolume(this.melody.tmpVolume);
-	}
+		this.setVolume(this.chords.tmpVolume);
+	};
 
 	PlayerModel_MidiCSL.prototype.doMetronome = function() {
 		return this.activeMetronome;
-	}
+	};
 
 	PlayerModel_MidiCSL.prototype.muteMetronome = function() {
 		this.activeMetronome = false;
-	}
+		$.publish('PlayerModel_MidiCSL-toggleMetronome', false);
+	};
 
 	PlayerModel_MidiCSL.prototype.unmuteMetronome = function() {
 		this.activeMetronome = true;
-	}
+		$.publish('PlayerModel_MidiCSL-toggleMetronome', true);
+	};
 
 	PlayerModel_MidiCSL.prototype.setVolume = function(volume) {
 		if (typeof volume === "undefined" || isNaN(volume)) {
@@ -132,7 +133,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 
 	PlayerModel_MidiCSL.prototype.getChordsVolume = function() {
 		return this.chords.volume;
-	}
+	};
 
 	PlayerModel_MidiCSL.prototype.setChordsVolume = function(volume) {
 		if (typeof volume === "undefined" || isNaN(volume)) {
@@ -140,7 +141,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 		}
 		/*MIDI.setVolume(1, volume * 127);*/
 		this.chords.volume = volume;
-	}
+	};
 
 	PlayerModel_MidiCSL.prototype.getMelodyVolume = function() {
 		return this.melody.volume;
@@ -152,7 +153,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 		}
 		/*MIDI.setVolume(0, volume * 127);*/
 		this.melody.volume = volume;
-	}
+	};
 
 	PlayerModel_MidiCSL.prototype.getChordsInstrument = function() {
 		return this.chords.instrument;
@@ -161,35 +162,37 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 	PlayerModel_MidiCSL.prototype.setChordsInstrument = function(instrument) {
 		if (typeof instrument !== "undefined") {
 			this.chords.instrument = instrument;
+			$.publish('PlayerModel_MidiCSL-onChordsInstrument', instrument);
 			return true;
 		} else {
 			return false;
 		}
-	}
+	};
 
 	PlayerModel_MidiCSL.prototype.getMelodyInstrument = function() {
 		return this.melody.instrument;
-	}
+	};
 
 	PlayerModel_MidiCSL.prototype.setMelodyInstrument = function(instrument) {
 		if (typeof instrument !== "undefined") {
 			this.melody.instrument = instrument;
+			$.publish('PlayerModel_MidiCSL-onMelodyInstrument', instrument);
 			return true;
 		} else {
 			return false;
 		}
-	}
+	};
 
 	PlayerModel_MidiCSL.prototype.getPositionIndex = function() {
 		return this.indexPosition;
-	}
+	};
 
 	PlayerModel_MidiCSL.prototype.setPositionIndex = function(indexPosition) {
 		if (typeof indexPosition === "undefined" || isNaN(indexPosition)) {
 			throw 'PlayerModel_MidiCSL - setPositionIndex - indexPosition must be a number ' + indexPosition;
 		}
 		this.indexPosition = indexPosition;
-	}
+	};
 
 	/*PlayerModel_MidiCSL.prototype.setPositionInPercent = function(positionInPercent) {
 		console.log(positionInPercent);
@@ -212,7 +215,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 			position = 1;
 		}
 		return position;
-	}
+	};
 
 
 
@@ -221,7 +224,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 			throw 'PlayerModel_MidiCSL - getBeatDuration - tempo must be a number ' + tempo;
 		}
 		return 1000 * (60 / tempo);
-	}
+	};
 
 	/**
 	 * Launch midi.noteon and noteoff instructions, this function is the main play function
@@ -230,12 +233,13 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 	 * @param  {float} playFrom is an optionnal attributes, if it's filled then player will start to play the note after playFrom, in sec
 	 */
 	PlayerModel_MidiCSL.prototype.play = function(songModel_MidiCSL, tempo, playFrom) {
-		if (typeof tempo === "undefined" || isNaN(tempo)) {
-			throw 'PlayerModel_MidiCSL - play - tempo must be a number ' + tempo;
-		}
 		if (typeof songModel_MidiCSL === "undefined" || !(songModel_MidiCSL instanceof SongModel_MidiCSL)) {
 			throw 'PlayerModel_MidiCSL - play - songModel_MidiCSL must be an instance of SongModel_MidiCSL ' + songModel_MidiCSL;
 		}
+		if (typeof tempo === "undefined" || isNaN(tempo)) {
+			throw 'PlayerModel_MidiCSL - play - tempo must be a number ' + tempo;
+		}
+
 		var song = songModel_MidiCSL.getSong();
 		if (song.length !== 0 && this.getReady() === true) {
 			var self = this;
@@ -327,7 +331,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 				}
 			}
 		}
-	}
+	};
 
 
 	PlayerModel_MidiCSL.prototype.pause = function() {
@@ -340,7 +344,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 			window.clearTimeout(this.noteTimeOut[i]);
 		}
 		$.publish('PlayerModel_MidiCSL-onpause');
-	}
+	};
 
 	PlayerModel_MidiCSL.prototype.stop = function() {
 		this.playState = false;
@@ -352,7 +356,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 		}
 		this.setPositionIndex(0);
 		$.publish('PlayerModel_MidiCSL-onstop');
-	}
+	};
 
 
 	PlayerModel_MidiCSL.prototype.getAllInstruments = function() {
@@ -376,7 +380,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 			116: "taiko_drum"
 		};
 		return instruments;
-	}
+	};
 
 	PlayerModel_MidiCSL.prototype.getAllInstrumentsIndex = function() {
 		var instruments = this.getAllInstruments();
@@ -385,7 +389,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 			instrumentsIndex.push(instru);
 		}
 		return instrumentsIndex;
-	}
+	};
 
 	PlayerModel_MidiCSL.prototype.getAllInstrumentsName = function() {
 		var instruments = this.getAllInstruments();
@@ -394,7 +398,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 			instrumentsName.push(instruments[instru]);
 		}
 		return instrumentsName;
-	}
+	};
 
 	PlayerModel_MidiCSL.prototype.initMidiChannels = function(instruments) {
 		if (typeof instruments === "undefined") {
@@ -420,7 +424,7 @@ define(['modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'], func
 			solo: false
 		};
 		MIDI.channels = channels;
-	}
+	};
 
 	PlayerModel_MidiCSL.prototype.initMidiPlugin = function(instruments) {
 		if (typeof instruments === "undefined") {

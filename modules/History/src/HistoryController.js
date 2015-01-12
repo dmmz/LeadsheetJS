@@ -13,7 +13,7 @@ define([
 	/**
 	 * Subscribe to view events
 	 */
-	HistoryView.prototype.initSubscribe = function() {
+	HistoryController.prototype.initSubscribe = function() {
 		var self = this;
 		$.subscribe('HistoryView-selectHistory', function(el, indexItem) {
 			self.loadHistory(indexItem);
@@ -30,7 +30,6 @@ define([
 			return;
 		}
 		this.model.setCurrentPosition(currentHistory);
-		this.view.render();
 	};
 
 	return HistoryController;
