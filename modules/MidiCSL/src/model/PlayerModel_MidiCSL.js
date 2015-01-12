@@ -60,7 +60,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 
 	PlayerModel_MidiCSL.prototype.setSong = function(songModel) {
 		if(typeof songModel === "undefined" || !(songModel instanceof SongModel)){
-			throw "PlayerModel_MidiCSL- setSong, song model shouldn't be empty and should be a SongModel instance", songModel;
+			throw "PlayerModel_MidiCSL- setSong, song model shouldn't be empty and should be a SongModel instance" + songModel;
 		}
 		this.songModel = songModel;
 	};

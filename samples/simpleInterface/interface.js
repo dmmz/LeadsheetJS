@@ -70,13 +70,16 @@ define(function(require) {
 	var HistoryController = require('modules/History/src/HistoryController');
 	var HistoryView = require('modules/History/src/HistoryView');
 
+	var NoteEditionView = require('modules/NoteEdition/src/NoteEditionView');
+	var NoteEditionController = require('modules/NoteEdition/src/NoteEditionController');
+
 	var SongModel = require('modules/core/src/SongModel');
 	var SongModel_CSLJson = require('modules/converters/MusicCSLJson/src/SongModel_CSLJson');
 	var testSongs = require('tests/test-songs');
 	var PlayerModel_MidiCSL = require('modules/MidiCSL/src/model/PlayerModel_MidiCSL');
 	var PlayerController = require('modules/MidiCSL/src/PlayerController_MidiCSL');
 	var PlayerView = require('modules/MidiCSL/src/PlayerView_MidiCSL');
-	
+
 	var myApp = {};
 
 	var menuM = new MainMenuModel();
@@ -93,6 +96,17 @@ define(function(require) {
 	myApp.historyM.setCurrentPosition(1);*/
 
 	$.subscribe('MainMenuView-render', function(el) {
+
+		var neV = new NoteEditionView();
+		var neC = new NoteEditionController(neV);
+		neV.render(undefined, true, function() {
+			menuM.addMenu({
+				title: 'Notes',
+				view: neV
+			});
+			menuC.activeMenu('Notes');
+		});
+
 		var hV = new HarmonizerView();
 		var hC = new HarmonizerController(hV);
 		hV.render(undefined, true, function() {
@@ -110,7 +124,7 @@ define(function(require) {
 				title: 'Constraint',
 				view: cV
 			});
-			menuC.activeMenu('Constraint');
+			//menuC.activeMenu('Constraint');
 		});
 	});
 
