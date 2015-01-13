@@ -402,10 +402,6 @@ define([
 		return components;
 	};
 
-	SongModel.prototype.setDuration = function(duration) {
-		$.publish('DurationChange');
-		$.publish('songChange');
-	}
 
 	/*SongModel.prototype.getNotesAtBarNumberOld = function(barNumber) {
 		//noteManager
