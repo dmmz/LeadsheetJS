@@ -32,5 +32,9 @@ define(function() {
 		return (4 / this.beatUnit) * this.numBeats;
 	};
 
+	TimeSignatureModel.prototype.toString = function() {
+		return this.numBeats+"/"+this.beatUnit;
+	};
+
 	return TimeSignatureModel;
 });

@@ -21,6 +21,8 @@ define(['vexflow',
 			this.LINE_WIDTH = 1160;
 			this.BARS_PER_LINE = 4;
 
+			this.ENDINGS_Y = 20; 
+
 			/*
 			this.marginLeft = 10;
 			this.marginTop = 100;
@@ -103,7 +105,7 @@ define(['vexflow',
 					//stave = new Vex.Flow.Stave(barDimensions.left, barDimensions.height, barDimensions.width);
 					var barView = new LSBarView(barDimensions);
 					//barView.setKeySignature(this.keySig);
-					barView.draw(self.ctx, songIt);
+					barView.draw(self.ctx, songIt, sectionIt, self.ENDINGS_Y);
 
 					vxfBeams = beamMng.getVexflowBeams(); // we need to do getVexflowBeams before drawing notes
 					Vex.Flow.Formatter.FormatAndDraw(self.ctx, barView.getVexflowStave(), bar, {

@@ -5,10 +5,13 @@ define(function() {
 	}
 	SectionBarsIterator.prototype = {
 		hasNext: function(){
-			return this.index < this.section.getNumberOfBars() ;
+			return this.index < this.section.getNumberOfBars();
 		},
 		next: function(){
 			this.index++;
+		},
+		isLastBar: function(){
+			return this.index == this.section.getNumberOfBars()-1;
 		}
 	};
 

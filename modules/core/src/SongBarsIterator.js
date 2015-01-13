@@ -5,6 +5,7 @@ define(function() {
 
 		this.prevTimeSig = null;
 		this.prevKeySig = null;
+		this.endingState = null;
 	}
 	SongBarsIterator.prototype = {
 		hasNext: function(){
@@ -12,7 +13,7 @@ define(function() {
 		},
 		next: function(){
 			var bar = this.song.getBar(this.index);
-			this.prevKeySig = this.getBarTonality();
+			this.prevKeySig = this.getBarKeySignature();
 			this.prevTimeSig = bar.getTimeSignature();
 			this.index++;
 		},
@@ -22,8 +23,20 @@ define(function() {
 		getBar: function(){
 			return this.song.getBar(this.index);
 		},
-		getBarTonality: function(){
-			return this.getBar().getTonality() || this.song.getTonality();
+		getFollowingBar: function(){
+			return this.song.getBar(this.index+1);
+		},
+		getBarKeySignature: function(){		
+			return this.getBar().getTonality() || (this.index == 0) ? this.song.getTonality() : this.prevKeySig;  
+		},
+		getBarTimeSignature: function(){		
+			return this.getBar().getTimeSignature() || (this.index == 0) ? this.song.getTimeSignature() : this.prevTimeSig;  
+		},
+		getEndingState: function(){
+			return this.endingState;
+		},
+		setEndingState: function(endingState){
+			return this.endingState = endingState;
 		}
 
 	}
