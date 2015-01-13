@@ -129,12 +129,18 @@ define(function(require) {
 	});
 
 	initPlayerModule();
+
 	function initPlayerModule() {
 		// Create a song from testSong
 		var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
 
 		var player = new PlayerModel_MidiCSL(songModel);
-		var pV = new PlayerView($('#player_test')[0], {displayMetronome:true, displayLoop:true, displayTempo:true, changeInstrument:true});
+		var pV = new PlayerView($('#player_test')[0], {
+			displayMetronome: true,
+			displayLoop: true,
+			displayTempo: true,
+			changeInstrument: true
+		});
 		var pC = new PlayerController(player, pV);
 	}
 

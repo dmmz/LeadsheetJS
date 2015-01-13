@@ -20,13 +20,13 @@ define([
 			self.setCurrKey(decal);
 		});
 		$.subscribe('NoteEditionView-addAccidental', function(el, accidental) {
-			self.addAccidental();
+			self.addAccidental(accidental);
 		});
 		$.subscribe('NoteEditionView-setCurrDuration', function(el, duration) {
-			self.setCurrDuration();
+			self.setCurrDuration(duration);
 		});
-		$.subscribe('NoteEditionView-setDot', function(el) {
-			self.setDot();
+		$.subscribe('NoteEditionView-setDot', function(el, doubleDot) {
+			self.setDot(doubleDot);
 		});
 		$.subscribe('NoteEditionView-setTie', function(el) {
 			self.setTie();
@@ -51,20 +51,24 @@ define([
 		});
 	};
 
-	NoteEditionController.prototype.setCurrKey = function(decal) {
-		console.log('setCurrKey');
+	/**
+	 * Set selected notes to a key
+	 * @param {int|letter} If decal is a int, than it will be a decal between current note and wanted note in semi tons, if decal is a letter then current note is the letter
+	 */
+	NoteEditionController.prototype.setCurrKey = function(decalOrNote) {
+		console.log('setCurrKey', decalOrNote);
 		// editor.interactor.run('setCurrKey', 1);
 		// editor.interactor.run('setCurrKey', -1);
 		// editor.interactor.run('setCurrKey', 'B');
 	};
 	NoteEditionController.prototype.addAccidental = function(accidental) {
-		console.log('addAccidental');
+		console.log('addAccidental', accidental);
 		// editor.interactor.run('addAccidental', 'b');
 		// editor.interactor.run('addAccidental', 'n');
 		// editor.interactor.run('addAccidental', '#');
 	};
 	NoteEditionController.prototype.setCurrDuration = function(duration) {
-		console.log('setCurrDuration');
+		console.log('setCurrDuration', duration);
 		// editor.interactor.run('setCurrDuration', 7);
 		// editor.interactor.run('setCurrDuration', 6);
 		// editor.interactor.run('setCurrDuration', 5);
@@ -73,8 +77,8 @@ define([
 		// editor.interactor.run('setCurrDuration', 2);
 		// editor.interactor.run('setCurrDuration', 1);
 	};
-	NoteEditionController.prototype.setDot = function() {
-		console.log('setDot');
+	NoteEditionController.prototype.setDot = function(doubleDot) {
+		console.log('setDot', doubleDot);
 		// editor.interactor.run('setDot', '', true);
 	};
 	NoteEditionController.prototype.setTie = function() {

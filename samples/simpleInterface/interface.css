@@ -75,6 +75,9 @@
 	user-select: none;
 }
 
+.current_button:hover {
+	background: white;
+}
 /********* HARMONIZATION ***********/
 #harmonization_button_container{
 	line-height: 100px;
@@ -184,6 +187,7 @@
 	display: inline-block;
 	text-align: center;
 }
+
 #volume_slider_container .slider{
 	height: 45px;
 	margin-bottom: 5px;
@@ -193,6 +197,7 @@
 #play_button_container{
 	color: gray;
 }
+
 .player_button {
 	cursor: pointer;
 	margin: 4px;
