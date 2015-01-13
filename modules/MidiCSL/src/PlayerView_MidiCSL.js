@@ -6,12 +6,11 @@ define([
 	'external-libs/bootstrap/bootstrap-slider',
 ], function(Mustache, UserLog, pubsub, bootstrap, slider) {
 
-	function PlayerView(model, parentHTML, option) {
+	function PlayerView(parentHTML, option) {
 		this.displayMetronome = (typeof (option) !== "undefined" && typeof (option.displayMetronome) !== "undefined") ? option.displayMetronome : false;
 		this.displayLoop = (typeof (option) !== "undefined" && typeof (option.displayLoop) !== "undefined") ? option.displayLoop : false;
 		this.displayTempo = (typeof (option) !== "undefined" && typeof (option.displayTempo) !== "undefined") ? option.displayTempo : false;
 		this.changeInstrument = (typeof (option) !== "undefined" && typeof (option.changeInstrument) !== "undefined") ? option.changeInstrument : false;
-		this.model = (model) ? model : new PlayerModel_MidiCSL();
 		this.el = undefined;
 		this.initSubscribe();
 		var self = this;
@@ -63,10 +62,8 @@ define([
 
 	PlayerView.prototype.initTemplate = function() {
 		// init tempo
-		var tempo = $('#tempo_container #tempo').val();
-		if(typeof tempo === "undefined") {
-			tempo = 120;
-		}
+		var tempo = this.getTempo();
+
 		if (typeof globalVariables !== "undefined" && globalVariables.tempo !== "undefined" && globalVariables.tempo !== null) {
 			var minTempo = parseInt(globalVariables.tempo['minTempo'], 10);
 			var maxTempo = parseInt(globalVariables.tempo['maxTempo'], 10);
@@ -82,10 +79,7 @@ define([
 	PlayerView.prototype.initController = function() {
 		var self = this;
 		$('#play_button_container').click(function() {
-			var tempo = $('#tempo_container #tempo').val();
-			if(typeof tempo === "undefined") {
-				tempo = 120;
-			}
+			var tempo = self.getTempo();
 			$.publish('PlayerView-play', tempo);
 		});
 		$('#stop_button_container').click(function() {
@@ -120,11 +114,9 @@ define([
 
 		$('#volume_container').click(function() {
 			if ($('#volume_container .sound_on').is(":visible")) {
-				$('.volume_slider').slider('setValue', 0);
 				$.publish('PlayerView-onToggleMute', 0);
 			} else {
-				$('.volume_slider').slider('setValue', Math.round(self.model.melody.tmpVolume * 100));
-				$.publish('PlayerView-onToggleMute', self.model.melody.tmpVolume);
+				$.publish('PlayerView-onToggleMute');
 			}
 		});
 
@@ -144,12 +136,8 @@ define([
 			if (evt.keyCode == 32) { //barPressed
 				var d = evt.srcElement || evt.target;
 				if (!(d.tagName.toUpperCase() === 'TEXTAREA' || (d.tagName.toUpperCase() === 'INPUT' && (d.type.toUpperCase() === 'TEXT' || d.type.toUpperCase() === 'PASSWORD' || d.type.toUpperCase() === 'FILE')))) {
-					if (self.model.playState) {
-						pause();
-					} else {
-						play();
-					}
-
+					var tempo = self.getTempo();
+					$.publish('PlayerView-play-pause', tempo);
 					evt.preventDefault();
 				}
 			}
@@ -252,7 +240,7 @@ define([
 		} else {
 			this.unmuteSoundButton();
 		}
-		//$('.volume_slider').slider('setValue', Math.round(volume * 100));
+		$('.volume_slider').slider('setValue', Math.round(volume * 100));
 	};
 
 	// metronome
@@ -278,6 +266,14 @@ define([
 			$('#volume_container .sound_off').hide();
 			$('#volume_container .sound_on').show();
 		}
+	};
+
+	PlayerView.prototype.getTempo = function() {
+		var tempo = $('#tempo_container #tempo').val();
+		if(typeof tempo === "undefined") {
+			tempo = 120;
+		}
+		return tempo;
 	};
 
 	return PlayerView;

@@ -28,6 +28,10 @@ define([
 			self.pause();
 		});
 
+		$.subscribe('PlayerView-playPause', function(el, tempo) {
+			self.pause();
+		});
+
 		$.subscribe('PlayerView-onToggleMute', function(el, volume) {
 			self.toggleMute(volume);
 		});
@@ -49,6 +53,17 @@ define([
 		});
 	};
 
+	/**
+	 * Function playpause call play if player is in pause, and call pause if player is in play state
+	 * @param  {int} tempo in BPM
+	 */
+	PlayerController.prototype.playPause = function(tempo) {
+		if (this.model.playState) {
+			this.model.pause();
+		} else {
+			this.model.play(tempo);
+		}
+	};
 	PlayerController.prototype.play = function(tempo) {
 		this.model.play(tempo);
 	};
