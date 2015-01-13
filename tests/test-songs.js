@@ -183,9 +183,11 @@ define(function(){
 			}
 		]
 	};
+
 	return {
 		simpleLeadSheet: simpleLeadSheet,
 		leadSheetTimeSigChanges: leadSheetTimeSigChanges
+
 	};
 
 });

@@ -33,7 +33,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 
 	NoteModel.prototype.toString = function(string, index) {
 		return this.pitchClass[0] + this.accidental[0] + this.octave[0];
-	}
+	};
 	
 	NoteModel.prototype.setNoteFromString = function(string, index) {
 		index = index || 0;
@@ -58,7 +58,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 			}
 
 		} else {
-			var re = /[w|h|q|8|16|32|64](r)?/;
+			re = /[w|h|q|8|16|32|64](r)?/;
 			if (!string.match(re)) {
 				throw "Creating pitch " + string + ". Should be in de form [pitch][acc]/[octave]. e.g. Ab/4 or [duration] if you want a rest eg. '8'";
 			}
@@ -70,7 +70,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 			}
 			this.isRest = true;
 		}
-	}
+	};
 
 	NoteModel.prototype.getNumPitches = function() {
 		return this.pitchClass.length;
@@ -310,7 +310,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 	 * @return {NoteModel}
 	 */
 	NoteModel.prototype.clone = function(complete) {
-		return new NoteModel(this.serialize());
+		return new NoteModel(this.serialize(complete));
 	};
 
 	return NoteModel;

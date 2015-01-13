@@ -4,7 +4,7 @@ require.config({
   paths: {
     jquery: 'external-libs/jquery-2.1.0.min',
     qunit: 'external-libs/qunit/qunit',
-    vexflow_helper: 'external-libs/vexflow_test_helpers',
+    vexflow_helper: 'external-libs/qunit/vexflow_test_helpers',
     vexflow: 'external-libs/vexflow-min',
     Midijs: 'external-libs/Midijs/midijs.min',
     pubsub: 'external-libs/tiny-pubsub.min',
@@ -30,8 +30,8 @@ require.config({
 define(function(require) {
   var Qunit = require('qunit');
 
-  var testUserLog = require('utils/test/testUserlog');
-  var testAjaxUtils = require('utils/test/testAjaxUtils');
+  // var testUserLog = require('utils/test/testUserlog');
+  // var testAjaxUtils = require('utils/test/testAjaxUtils');
 
   var testSongModel = require('modules/core/test/testSongModel');
   var testChordManager = require('modules/core/test/testChordManager');
@@ -57,6 +57,7 @@ define(function(require) {
 
   var testLSViewer = require('modules/LSViewer/test/testLSViewer');
 
+
   var testHistoryModel = require('modules/History/test/testHistoryModel');
 
   var testHarmonizerController = require('modules/Harmonizer/test/testHarmonizerController');
@@ -64,9 +65,11 @@ define(function(require) {
   var testMainMenuModel = require('modules/MainMenu/test/testMainMenuModel');
   var testMainMenuController = require('modules/MainMenu/test/testMainMenuController');
 
+  var testBarWidthManager  = require('modules/LSViewer/test/testBarWidthManager');
+
   // Utils
-  testUserLog.run();
-  testAjaxUtils.run();
+  //testUserLog.run();
+  //testAjaxUtils.run();
 
   // Core Module
   testNoteModel.run();
@@ -89,9 +92,9 @@ define(function(require) {
   testSongView_chordSequence.run();
 
 
-  //LSViewer Module
-  //console.log(Vex);
-  //testLSViewer.run(Vex);
+  // //console.log(Vex);
+  // //LSViewer Module
+  testBarWidthManager.run();
 
   // Midi sound model Module
   testPlayerModel_MidiCSL.run();

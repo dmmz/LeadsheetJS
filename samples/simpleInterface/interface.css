@@ -1,8 +1,8 @@
-/* VIEW MAIN MENU */
 
+/* VIEW MAIN MENU */
 /* Main menu is set as absolute on affix-top also so the score container will not scroll down too when position will be fixed */
 #view_main_menu{
-	position: absolute;
+	/*position: absolute;*/
 	right: 0;
 	left: 0;
 	height: 128px;

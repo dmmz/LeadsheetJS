@@ -222,7 +222,22 @@ define(['modules/core/src/NoteManager',
 				assert.equal(notes[1].getPitch(),"F/4");
 				assert.equal(notes[2].getPitch(),"G/4");
 				assert.equal(notes[3].getPitch(),"E/4");
+				
+				assert.equal(noteMng.getNoteBarNumber(0,song),0);
+				assert.equal(noteMng.getNoteBarNumber(1,song),0);
+				assert.equal(noteMng.getNoteBarNumber(2,song),0);
+				assert.equal(noteMng.getNoteBarNumber(3,song),0);
+				assert.equal(noteMng.getNoteBarNumber(4,song),0);
+				assert.equal(noteMng.getNoteBarNumber(5,song),1);
+				assert.equal(noteMng.getNoteBarNumber(6,song),1);
+				assert.equal(noteMng.getNoteBarNumber(7,song),1);
+				assert.equal(noteMng.getNoteBarNumber(8,song),1);
+				assert.equal(noteMng.getNoteBarNumber(9,song),2);
+				assert.equal(noteMng.getNoteBarNumber(10,song),2);
+
 				// TODO: add tests for time signature changes
+
+
 
 			});
 

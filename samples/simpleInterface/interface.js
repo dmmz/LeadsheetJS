@@ -76,6 +76,10 @@ define(function(require) {
 	var SongModel = require('modules/core/src/SongModel');
 	var SongModel_CSLJson = require('modules/converters/MusicCSLJson/src/SongModel_CSLJson');
 	var testSongs = require('tests/test-songs');
+
+	var LSViewer = require('modules/LSViewer/src/LSViewer');
+	var SongView_chordSequence = require('modules/chordSequence/src/SongView_chordSequence');
+
 	var PlayerModel_MidiCSL = require('modules/MidiCSL/src/model/PlayerModel_MidiCSL');
 	var PlayerController = require('modules/MidiCSL/src/PlayerController_MidiCSL');
 	var PlayerView = require('modules/MidiCSL/src/PlayerView_MidiCSL');
@@ -83,7 +87,7 @@ define(function(require) {
 	var myApp = {};
 
 	var menuM = new MainMenuModel();
-	var menuV = new MainMenuView(menuM, document.getElementById('main-container'));
+	var menuV = new MainMenuView(menuM, document.getElementById('menu-container'));
 	var menuC = new MainMenuController(menuM, menuV);
 
 	myApp.historyM = new HistoryModel();
@@ -126,14 +130,32 @@ define(function(require) {
 			});
 			//menuC.activeMenu('Constraint');
 		});
+
+		var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
+		initPlayerModule(songModel);
+		initChordSequenceModule(songModel);
+		initViewerModule(songModel);
 	});
 
-	initPlayerModule();
 
-	function initPlayerModule() {
+	function initChordSequenceModule(songModel) {
+		var option = {
+			displayTitle: true,
+			displayComposer: true,
+			displaySection: true,
+			displayBar: true,
+			delimiterBar: "|",
+			unfoldSong: false,//TODO unfoldSong is not working yet
+			fillEmptyBar: true,
+			fillEmptyBarCharacter: "%",
+		};
+		var chordSequence = new SongView_chordSequence(songModel, option);
+		var txt = chordSequence.display();
+		$('#main-container').prepend(txt);
+	}
+
+	function initPlayerModule(songModel) {
 		// Create a song from testSong
-		var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
-
 		var player = new PlayerModel_MidiCSL(songModel);
 		var pV = new PlayerView($('#player_test')[0], {
 			displayMetronome: true,
@@ -142,6 +164,14 @@ define(function(require) {
 			changeInstrument: true
 		});
 		var pC = new PlayerController(player, pV);
+	}
+
+	function initViewerModule(songModel) {
+		var renderer = new Vex.Flow.Renderer($('#score')[0], Vex.Flow.Renderer.Backends.CANVAS);
+		var ctx = renderer.getContext("2d");
+		console.log(ctx);
+		var viewer = new LSViewer(ctx);
+		viewer.draw(songModel);
 	}
 
 	window.myApp = myApp;

@@ -25,7 +25,7 @@ define([
 		$.get('/modules/MainMenu/src/MainMenuTemplate.html', function(template) {
 			var rendered = Mustache.render(template);
 			parentHTML.innerHTML += rendered;
-			self.el = parentHTML;
+			self.el = rendered;
 			if (typeof callback === "function") {
 				callback();
 			}

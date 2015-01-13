@@ -30,10 +30,6 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 		noteModel.setTie(noteStruct.tie);
 		noteModel.setTuplet(noteStruct.tuplet, noteStruct.time_modification);
 
-		if (typeof noteStruct.num_measure !== "undefined") {
-			noteModel.setMeasure(noteStruct.num_measure);
-		}
-
 		function string2Obj(strPitch) {
 			var re = /[a-g|A-G](#{1,2}|b{1,2}|n)?\/\d/;
 			if (!strPitch.match(re)) throw "Error creating pitch " + strPitch + ". Should be in the form [pitch][acc]/[octave]. e.g. Ab/4";
@@ -52,26 +48,27 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 		}
 	};
 
-	NoteModel_CSLJson.exportToMusicCSLJSON = function(noteModel, complete, withNumMeasure) {
+	NoteModel_CSLJson.exportToMusicCSLJSON = function(note, complete, withNumMeasure) {
+		if (!note){
+			throw "note sent is not correct";
+		}
 		if (complete === undefined) complete = true;
 		if (withNumMeasure === undefined) withNumMeasure = false;
 
 		var noteObj = {};
-		if (typeof noteModel !== "undefined" && noteModel instanceof NoteModel) {
-			noteObj.keys = [];
-			for (var i = 0, c = noteModel.getNumPitches(); i < c; i++) {
-				noteObj.keys.push(noteModel.getPitch(i));
-			}
-			noteObj.duration = noteModel.duration;
-			//important only set property if not null, 
-			if (noteModel.dot != null) noteObj.dot = noteModel.dot;
-			if (noteModel.tie != null && complete) noteObj.tie = noteModel.tie;
-			if (noteModel.tuplet != null && complete) noteObj.tuplet = noteModel.tuplet;
-			if (noteModel.time_modification != null && complete) noteObj.time_modification = noteModel.time_modification;
-			if (noteModel.isRest) noteObj.duration += "r";
-
-			if (noteModel.measure != null && withNumMeasure) noteObj.num_measure = noteModel.measure;
+		noteObj.keys = [];
+		for (var i = 0, c = note.getNumPitches(); i < c; i++) {
+			noteObj.keys.push(note.getPitch(i));
 		}
+		noteObj.duration = note.duration;
+		//important only set property if not null, 
+		if (note.dot != null) noteObj.dot = note.dot;
+		if (note.tie != null && complete) noteObj.tie = note.tie;
+		if (note.tuplet != null && complete) noteObj.tuplet = note.tuplet;
+		if (note.time_modification != null && complete) noteObj.time_modification = note.time_modification;
+		if (note.isRest) noteObj.duration += "r";
+
+		if (note.measure != null && withNumMeasure) noteObj.num_measure = note.measure;
 		return noteObj;
 	};
 

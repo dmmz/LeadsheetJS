@@ -10,7 +10,7 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 		this.setNotesBarNum(song);
 		return this;
 	};
-
+	/*  TODO: test does not exist */
 	NoteManager_CSLJson.exportToMusicCSLJSON = function(noteManager, from, to) {
 		var notes = [];
 		noteManager.getNotes(from, to + 1).forEach(function(note) {
