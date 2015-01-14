@@ -12,8 +12,8 @@ define(['vexflow'], function(Vex) {
 		var keySignature = songIt.getBarTonality();
 		
 		if (keySignature != songIt.prevKeySig) {
-			console.log("keySignature "+keySignature);
-			console.log("songIt.prevKeySig "+songIt.prevKeySig);
+			// console.log("keySignature "+keySignature);
+			// console.log("songIt.prevKeySig "+songIt.prevKeySig);
 
 			this.vexflowStave.addKeySignature(keySignature);
 		}

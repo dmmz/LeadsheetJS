@@ -297,4 +297,53 @@
 }
 
 
+/********* Chord edition ***********/
+#edit_chords_second_level > div {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	display: inline-block;
+	height: 100px;
+	vertical-align: top;
+	padding-left: 1em;
+	padding-right: 1em;
+	padding-top: 2em;
+	border-right: 1px solid black;
+}
+#edit_chords_second_level .current_button{
+	min-width: 20px;
+	height: 30px;
+	text-align: center;
+}
+#hide_chord{
+	display: none;
+}
+#beat_chord{
+	display: inline-block;
+}
+
+#select_beat_chord, #select_beat_chord_step{
+	margin: 0;
+	width: auto !important;
+}
+#move_each_chords_container{
+	/*comment margin*/
+	margin-bottom: 10px;
+	margin-top: 4px;
+}
+.acResults{
+	z-index: 100;
+}
+#chord_helper_container{
+	padding:0 !important;
+	background: white;
+}
+#chord_helper_container_chordName{
+	float: left;
+	line-height: 100px;
+	text-align: center;
+	min-width: 3em;
+	font-size: 1.2em;
+}
+
 /*********  ***********/

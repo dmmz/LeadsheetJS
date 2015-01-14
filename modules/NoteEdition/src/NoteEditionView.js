@@ -141,17 +141,17 @@ define([
 			var key = String.fromCharCode(keyCode).toLowerCase();
 
 			//prevent backspace
-			var doPrevent = false;
 			if (keyCode === 8) {
+				var doPrevent = false;
 				var d = evt.srcElement || evt.target;
 				if (d.tagName.toUpperCase() === 'TEXTAREA' || (d.tagName.toUpperCase() === 'INPUT' && (d.type.toUpperCase() === 'TEXT' || d.type.toUpperCase() === 'PASSWORD' || d.type.toUpperCase() === 'FILE'))) {
 					doPrevent = d.readOnly || d.disabled;
 				} else {
 					doPrevent = true;
 				}
-			}
-			if (doPrevent) {
-				stopEvent(evt);
+				if (doPrevent) {
+					stopEvent(evt);
+				}
 			}
 
 			//Functions for Notes

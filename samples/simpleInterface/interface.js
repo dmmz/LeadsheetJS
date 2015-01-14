@@ -73,6 +73,9 @@ define(function(require) {
 	var NoteEditionView = require('modules/NoteEdition/src/NoteEditionView');
 	var NoteEditionController = require('modules/NoteEdition/src/NoteEditionController');
 
+	var ChordEditionView = require('modules/ChordEdition/src/ChordEditionView');
+	var ChordEditionController = require('modules/ChordEdition/src/ChordEditionController');
+
 	var SongModel = require('modules/core/src/SongModel');
 	var SongModel_CSLJson = require('modules/converters/MusicCSLJson/src/SongModel_CSLJson');
 	var testSongs = require('tests/test-songs');
@@ -103,32 +106,47 @@ define(function(require) {
 
 		var neV = new NoteEditionView();
 		var neC = new NoteEditionController(neV);
+
+
+		var ceV = new ChordEditionView();
+		var ceC = new ChordEditionController(neV);
+
+
+		var hV = new HarmonizerView();
+		var hC = new HarmonizerController(hV);
+
+
+		var cM = new ConstraintModel();
+		var cV = new ConstraintView(cM);
+		var cC = new ConstraintController(cM, cV);
+
+
+
 		neV.render(undefined, true, function() {
 			menuM.addMenu({
 				title: 'Notes',
 				view: neV
 			});
-			menuC.activeMenu('Notes');
-		});
-
-		var hV = new HarmonizerView();
-		var hC = new HarmonizerController(hV);
-		hV.render(undefined, true, function() {
-			menuM.addMenu({
-				title: 'Harmonizer',
-				view: hV
+			ceV.render(undefined, true, function() {
+				menuM.addMenu({
+					title: 'Chords',
+					view: ceV
+				});
+				menuC.activeMenu('Notes');
+				cV.render(undefined, false, function() {
+					menuM.addMenu({
+						title: 'Constraint',
+						view: cV
+					});
+					//menuC.activeMenu('Constraint');
+					hV.render(undefined, true, function() {
+						menuM.addMenu({
+							title: 'Harmonizer',
+							view: hV
+						});
+					});
+				});
 			});
-		});
-
-		var cM = new ConstraintModel();
-		var cV = new ConstraintView(cM);
-		var cC = new ConstraintController(cM, cV);
-		cV.render(undefined, false, function() {
-			menuM.addMenu({
-				title: 'Constraint',
-				view: cV
-			});
-			//menuC.activeMenu('Constraint');
 		});
 
 		var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
@@ -145,7 +163,7 @@ define(function(require) {
 			displaySection: true,
 			displayBar: true,
 			delimiterBar: "|",
-			unfoldSong: false,//TODO unfoldSong is not working yet
+			unfoldSong: false, //TODO unfoldSong is not working yet
 			fillEmptyBar: true,
 			fillEmptyBarCharacter: "%",
 		};
@@ -169,7 +187,6 @@ define(function(require) {
 	function initViewerModule(songModel) {
 		var renderer = new Vex.Flow.Renderer($('#score')[0], Vex.Flow.Renderer.Backends.CANVAS);
 		var ctx = renderer.getContext("2d");
-		console.log(ctx);
 		var viewer = new LSViewer(ctx);
 		viewer.draw(songModel);
 	}
