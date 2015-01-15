@@ -16,10 +16,14 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 				var midiSongModel = new SongModel_midiCSL({'song': midiSong});
 
 				var fakeSong = [];
-				fakeSong.push(new NoteModel_midiCSL({currentTime:0, duration:8, midiNote:[69,73,76,80], type:'chord'}));
-				fakeSong.push(new NoteModel_midiCSL({currentTime:8, duration:8, midiNote:[71,75,78,81], type:'chord'}));
-				fakeSong.push(new NoteModel_midiCSL({currentTime:16, duration:8, midiNote:[64,67,71], type:'chord'}));
+				fakeSong.push(new NoteModel_midiCSL({currentTime:0, duration:4, midiNote:[69,73,76,80], type:'chord'}));
+				fakeSong.push(new NoteModel_midiCSL({currentTime:4, duration:4, midiNote:[69,73,76,80], type:'chord'}));
+				fakeSong.push(new NoteModel_midiCSL({currentTime:8, duration:4, midiNote:[71,75,78,81], type:'chord'}));
+				fakeSong.push(new NoteModel_midiCSL({currentTime:12, duration:4, midiNote:[71,75,78,81], type:'chord'}));
+				fakeSong.push(new NoteModel_midiCSL({currentTime:16, duration:4, midiNote:[64,67,71], type:'chord'}));
+				fakeSong.push(new NoteModel_midiCSL({currentTime:20, duration:4, midiNote:[64,67,71], type:'chord'}));
 				fakeSong.push(new NoteModel_midiCSL({currentTime:24, duration:4, midiNote:[65,69,72,75], type:'chord'}));
+				fakeSong.push(new NoteModel_midiCSL({currentTime:28, duration:4, midiNote:[65,69,72,75], type:'chord'}));
 				assert.deepEqual(midiSongModel.getFromType('chord'), fakeSong);
 
 				var fakeNote = new NoteModel_midiCSL({currentTime:0, duration:1, midiNote:[69], type:'melody'});

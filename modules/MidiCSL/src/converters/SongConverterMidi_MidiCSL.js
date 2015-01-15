@@ -19,7 +19,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/model/SongModel_midiC
 
 		SongConverterMidi_MidiCSL.exportNoteToMidiCSL = function(songModel) {
 			var song = [];
-			if (typeof songModel === "undefined" || typeof MidiHelper === "undefined" ) {
+			if (typeof songModel === "undefined" || typeof MidiHelper === "undefined") {
 				return song;
 			}
 			var key = "C";
@@ -42,7 +42,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/model/SongModel_midiC
 
 			var midiSoundModel, notesInBar, currentNote;
 
-			
+
 			// We could also use songModel.getUnfoldedSongComponents('notes'), in case of unfolded song structure doesnt work with numBars
 
 			var barsIndex = songModel.getUnfoldedSongStructure();
@@ -317,7 +317,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/model/SongModel_midiC
 				}
 				return alteredNote;
 			}
-		}
+		};
 
 		return SongConverterMidi_MidiCSL;
 	});

@@ -120,8 +120,6 @@ define(function(require) {
 		var cV = new ConstraintView(cM);
 		var cC = new ConstraintController(cM, cV);
 
-
-
 		neV.render(undefined, true, function() {
 			menuM.addMenu({
 				title: 'Notes',

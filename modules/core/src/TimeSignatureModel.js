@@ -32,5 +32,12 @@ define(function() {
 		return (4 / this.beatUnit) * this.numBeats;
 	};
 
+	/**
+	 * @return {string} return a string of the timesignature in the type 3/4
+	 */
+	TimeSignatureModel.prototype.toString = function() {
+		return this.numBeats + '/' + this.beatUnit;
+	};
+
 	return TimeSignatureModel;
 });

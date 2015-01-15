@@ -11,7 +11,7 @@ define([
 		this.source = (typeof param !== "undefined" && param.source) ? param.source : '';
 		this.tempo = (typeof param !== "undefined" && param.tempo) ? param.tempo : 120;
 		this.tonality = (typeof param !== "undefined" && param.tonality) ? param.tonality : "C";
-		this.timeSignature = (typeof param !== "undefined" && param.timeSignature) ? param.timeSignature : "4/4";
+		this.timeSignature = (typeof param !== "undefined" && param.timeSignature) ? param.timeSignature : new TimeSignatureModel('4/4');
 		this.sections = (typeof param !== "undefined" && param.sections) ? param.sections : [];
 		this.components = (typeof param !== "undefined" && param.components) ? param.components : [];
 
@@ -129,7 +129,7 @@ define([
 	/**
 	 * GetTimeSignatureAt returns the time signature at one precise moment defined by the barNumber
 	 * @param  {int} barNumber
-	 * @return {string} currentTimeSignature like 3/4
+	 * @return {timeSignatureModel} currentTimeSignature like 3/4
 	 */
 	SongModel.prototype.getTimeSignatureAt = function(barNumber) {
 		var currentTimeSignature = this.getTimeSignature();
@@ -313,6 +313,9 @@ define([
 				for (var barNumber = startBar; barNumber < endBar; barNumber++) {
 					if (alreadyAddedbars.indexOf(barNumber) === -1) { // excluding first part if there is one
 						endingBar = this.getBar(barNumber).getEnding();
+						if (endingBar == '1') {
+							repeat--;
+						}
 						pointerbarNumberStructure.push(barNumber);
 
 						// Case bars after the 1 start
@@ -358,6 +361,21 @@ define([
 			barNumber += this.getSection(i).getNumberOfBars();
 		}
 		return barNumber;
+	};
+
+	/**
+	 * Function return the number of beat before a bar number in a folded song
+	 * @param  {int} barNumber is the number of bar you want to have the first beat
+	 * @return {int} number of beat to reach realBarNumber
+	 */
+	SongModel.prototype.getStartBeatFromBarNumber = function(barNumber) {
+		var numberOfBeats = 1;
+		if (typeof barNumber !== "undefined" && !isNaN(barNumber) && barNumber >= 0) {
+			for (var i = 0; i < barNumber; i++) {
+				numberOfBeats += this.getBeatsFromTimeSignatureAt(i);
+			}
+		}
+		return numberOfBeats;
 	};
 
 	/**
