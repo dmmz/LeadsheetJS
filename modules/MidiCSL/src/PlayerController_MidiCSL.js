@@ -19,6 +19,9 @@ define([
 		$.subscribe('PlayerView-play', function(el, tempo) {
 			self.play(tempo);
 		});
+		$.subscribe('PlayerView-playFromPercent', function(el, obj) {
+			self.playFromPercent(obj.tempo, obj.percent);
+		});
 
 		$.subscribe('PlayerView-stop', function(el) {
 			self.stop();
@@ -64,8 +67,14 @@ define([
 			this.model.play(tempo);
 		}
 	};
-	PlayerController.prototype.play = function(tempo) {
-		this.model.play(tempo);
+
+	PlayerController.prototype.playFromPercent = function(tempo, percent) {
+		var timeSec = this.model.getSongDuration() * percent;
+		this.model.play(tempo, timeSec);
+	};
+
+	PlayerController.prototype.play = function(tempo, playFrom) {
+		this.model.play(tempo, playFrom);
 	};
 
 	PlayerController.prototype.stop = function() {

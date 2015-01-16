@@ -2,15 +2,16 @@ define([
 	'mustache',
 	'utils/UserLog',
 	'pubsub',
-	'external-libs/bootstrap/bootstrap.min',
+	'bootstrap',
 	'external-libs/bootstrap/bootstrap-slider',
 ], function(Mustache, UserLog, pubsub, bootstrap, slider) {
 
 	function PlayerView(parentHTML, option) {
-		this.displayMetronome = (typeof (option) !== "undefined" && typeof (option.displayMetronome) !== "undefined") ? option.displayMetronome : false;
-		this.displayLoop = (typeof (option) !== "undefined" && typeof (option.displayLoop) !== "undefined") ? option.displayLoop : false;
-		this.displayTempo = (typeof (option) !== "undefined" && typeof (option.displayTempo) !== "undefined") ? option.displayTempo : false;
-		this.changeInstrument = (typeof (option) !== "undefined" && typeof (option.changeInstrument) !== "undefined") ? option.changeInstrument : false;
+		this.displayMetronome = (typeof(option) !== "undefined" && typeof(option.displayMetronome) !== "undefined") ? option.displayMetronome : false;
+		this.displayLoop = (typeof(option) !== "undefined" && typeof(option.displayLoop) !== "undefined") ? option.displayLoop : false;
+		this.displayTempo = (typeof(option) !== "undefined" && typeof(option.displayTempo) !== "undefined") ? option.displayTempo : false;
+		this.changeInstrument = (typeof(option) !== "undefined" && typeof(option.changeInstrument) !== "undefined") ? option.changeInstrument : false;
+		this.progressBar = (typeof(option) !== "undefined" && typeof(option.progressBar) !== "undefined") ? option.progressBar : false;
 		this.el = undefined;
 		this.initSubscribe();
 		var self = this;
@@ -42,14 +43,13 @@ define([
 	PlayerView.prototype.initView = function(parentHTML, callback) {
 		var self = this;
 		$.get('/modules/MidiCSL/src/PlayerTemplate_MidiCSL.html', function(template) {
-			var rendered = Mustache.render(template,
-				{
-					displayLoop: self.displayLoop,
-					displayMetronome: self.displayMetronome,
-					displayTempo: self.displayTempo,
-					changeInstrument: self.changeInstrument,
-				}
-			);
+			var rendered = Mustache.render(template, {
+				displayLoop: self.displayLoop,
+				displayMetronome: self.displayMetronome,
+				displayTempo: self.displayTempo,
+				changeInstrument: self.changeInstrument,
+				progressBar: self.progressBar,
+			});
 			if (typeof parentHTML !== "undefined") {
 				parentHTML.innerHTML = rendered;
 			}
@@ -132,6 +132,18 @@ define([
 			$.publish('PlayerView-onMelodyInstrumentChange', $(this).val());
 		});
 
+		$('.progress_bar_player').click(function(e) {
+			var width = $(this).width();
+			var relX = e.pageX - $(this).parent().offset().left;
+			var tempo = self.getTempo();
+			$.publish('PlayerView-playFromPercent', {
+				'tempo': tempo,
+				'percent': relX/width
+			});
+
+			e.preventDefault();
+		});
+
 		$(document).keydown(function(evt) {
 			if (evt.keyCode == 32) { //barPressed
 				var d = evt.srcElement || evt.target;
@@ -189,6 +201,9 @@ define([
 			} else {
 				self.unmuteMetronome();
 			}
+		});
+		$.subscribe('PlayerModel_MidiCSL-onPosition', function(el, obj) {
+			self.updateProgressbar(obj.positionInPercent * 100, obj.songDuration);
 		});
 	};
 
@@ -270,10 +285,34 @@ define([
 
 	PlayerView.prototype.getTempo = function() {
 		var tempo = $('#tempo_container #tempo').val();
-		if(typeof tempo === "undefined") {
+		if (typeof tempo === "undefined") {
 			tempo = 120;
 		}
 		return tempo;
+	};
+
+
+	PlayerView.prototype._convertSecondToPrintableTime = function(seconds) {
+		if(isNaN(seconds)){
+			throw 'PlayerView - _convertSecondToPrintableTime, seconds is not a number ' + seconds;
+		}
+		var date = new Date(null);
+        date.setSeconds(seconds); // specify value for SECONDS here
+        return date.toISOString().substr(14, 5);
+    };
+
+	PlayerView.prototype.updateProgressbar = function(value, duration) {
+		var $div = $('.progress_bar_player').find('div');
+		$div.attr('aria-valuenow', value);
+		$div.css('width', value + '%');
+		var $span = $div.find('span');
+		
+		var currentTime = value / 100 * duration / 1000;
+		var durationTime = duration/ 1000;
+
+		var ct = this._convertSecondToPrintableTime(currentTime);
+		var dt = this._convertSecondToPrintableTime(durationTime);
+		$span.text( ct + ' / ' + dt);
 	};
 
 	return PlayerView;

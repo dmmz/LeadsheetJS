@@ -10,6 +10,7 @@ require.config({
 		pubsub: 'external-libs/tiny-pubsub.min',
 		mustache: 'external-libs/mustache',
 		bootstrap: 'external-libs/bootstrap/bootstrap.min',
+		//bootstrap: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min',
 		slider: 'external-libs/bootstrap/bootstrap-slider',
 		LeadsheetJS: 'build/LeadsheetJS-1.0.0.min',
 	},
@@ -177,7 +178,8 @@ define(function(require) {
 			displayMetronome: true,
 			displayLoop: true,
 			displayTempo: true,
-			changeInstrument: true
+			changeInstrument: true,
+			progressBar: true
 		});
 		var pC = new PlayerController(player, pV);
 	}
