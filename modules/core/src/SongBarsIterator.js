@@ -14,7 +14,7 @@ define(function() {
 		next: function(){
 			var bar = this.song.getBar(this.index);
 			this.prevKeySig = this.getBarKeySignature();
-			this.prevTimeSig = bar.getTimeSignature();
+			this.prevTimeSig = this.getBarTimeSignature();
 			this.index++;
 		},
 		getBarIndex: function(){

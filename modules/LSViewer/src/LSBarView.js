@@ -2,9 +2,14 @@ define(['vexflow'], function(Vex) {
 	function LSBarView(barDimensions) {
 		this.vexflowStave = new Vex.Flow.Stave(barDimensions.left, barDimensions.top, barDimensions.width);
 	}
-	LSBarView.prototype.draw = function(ctx, songIt, sectionIt, endingsY) {
+	LSBarView.prototype.draw = function(ctx, songIt, sectionIt, endingsY, labelsY) {
 		if (songIt.getBarIndex() == 0) {
 			this.vexflowStave.addClef("treble").setContext(ctx).draw();
+		}
+		//name section
+		if (sectionIt.getBarIndex()==0){
+			var nameSection = sectionIt.getSection().getName();
+			this.vexflowStave.setSection(nameSection, 9);	
 		}
 
 		var keySignature = songIt.getBarKeySignature();
@@ -20,7 +25,7 @@ define(['vexflow'], function(Vex) {
 		var bar = songIt.getBar(),
 			followingBar = songIt.getFollowingBar(),
 			ending = bar.getEnding();
-
+		//endings
 		if (ending) {
 			songIt.setEndingState(followingBar.getEnding() ? 'BEGIN_END' : 'BEGIN');
 			this.vexflowStave.setVoltaType(Vex.Flow.Volta.type[songIt.getEndingState()], ending + ".", endingsY);
@@ -39,6 +44,18 @@ define(['vexflow'], function(Vex) {
 					this.vexflowStave.setVoltaType(Vex.Flow.Volta.type[songIt.getEndingState()], ending + ".", endingsY);
 				}
 			}
+		}
+		
+		var label = bar.getLabel();
+		if (label === 'coda' || label === 'coda2') {
+			this.vexflowStave.setRepetitionTypeRight(Vex.Flow.Repetition.type.CODA_RIGHT, labelsY);
+		}
+		if (label === 'segno' || label === 'segno2') {
+			this.vexflowStave.setRepetitionTypeRight(Vex.Flow.Repetition.type.SEGNO_RIGHT, labelsY);
+		}
+		var sublabel = bar.getSublabel(true);
+		if (sublabel != null) {
+			this.vexflowStave.setRepetitionTypeRight(Vex.Flow.Repetition.type[sublabel], labelsY);
 		}
 		if (sectionIt.isLastBar()) {
 			this.vexflowStave.setEndBarType(Vex.Flow.Barline.type.END);

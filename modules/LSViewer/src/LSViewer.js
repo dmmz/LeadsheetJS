@@ -1,5 +1,6 @@
 define(['vexflow',
 		'modules/LSViewer/src/LSNoteView',
+		'modules/LSViewer/src/LSChordView',
 		'modules/LSViewer/src/LSBarView',
 		'modules/LSViewer/src/BeamManager',
 		'modules/LSViewer/src/TieManager',
@@ -8,7 +9,7 @@ define(['vexflow',
 		'modules/core/src/SectionBarsIterator',
 		'modules/core/src/SongBarsIterator'
 	],
-	function(Vex, LSNoteView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator) {
+	function(Vex, LSNoteView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator) {
 
 		function LSViewer(ctx, params) {
 			this.ctx = ctx;
@@ -21,17 +22,13 @@ define(['vexflow',
 			this.LINE_WIDTH = 1160;
 			this.BARS_PER_LINE = 4;
 
-			this.ENDINGS_Y = 20; 
-
+			this.ENDINGS_Y = 20; //0 -> thisChordsPosY==40, the greater the closer to stave 
+			this.LABELS_Y = 0;    //like this.ENDINGS_Y
+			this.MARGIN_TOP = 100;
+			this.CHORDS_DISTANCE_STAVE = 20; //distance from stave
 			/*
 			this.marginLeft = 10;
-			this.marginTop = 100;
-			this.chordsPosY = 40; //distance from stave
-			this.endingsY = 20; //0 -> thisChordsPosY==40, the greater the closer to stave
-			this.labelsY = 0; //like this.endingsY
-			this.barWidth = this.totalWidth / this.barsPerLine;
-			this.clef = "treble";*/
-
+	*/
 
 		};
 		/*	LSViewer.prototype.drawStave = function(section,i) {
@@ -48,22 +45,21 @@ define(['vexflow',
 		};*/
 
 		LSViewer.prototype.draw = function(song) {
-			this.currTimeSig = null;
-
-			this.keySig = song.getTonality();
-			this.timeSig = song.getTimeSignature();
-
+	
 			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 			this.ctx.scale(this.SCALE, this.SCALE);
 
 			var numBar = 0,
 				self = this,
 				nm = song.getComponent("notes"),
+				cm = song.getComponent("chords"),
 				barNotes,
+				barChords,
 				beamMng,
 				tupletMng,
 				bar,
 				noteView,
+				chordView,
 				iNote = 0,
 				stave,
 				vxfBeams,
@@ -72,7 +68,7 @@ define(['vexflow',
 				barDimensions,
 				tieMng = new TieManager();
 
-			var barWidthMng = new BarWidthManager(this.LINE_HEIGHT, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE);
+			var barWidthMng = new BarWidthManager(this.LINE_HEIGHT, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE, this.MARGIN_TOP);
 			barWidthMng.calculateBarsStructure(song, nm);
 			var numSection = 0;
 
@@ -97,15 +93,21 @@ define(['vexflow',
 						vxfNote = noteView.getVexflowNote();
 						bar.push(vxfNote);
 						vxfNotes.push(vxfNote);
-
 						iNote++;
 					}
 
 					barDimensions = barWidthMng.getDimensions(songIt.getBarIndex());
-					//stave = new Vex.Flow.Stave(barDimensions.left, barDimensions.height, barDimensions.width);
 					var barView = new LSBarView(barDimensions);
-					//barView.setKeySignature(this.keySig);
-					barView.draw(self.ctx, songIt, sectionIt, self.ENDINGS_Y);
+					barView.draw(self.ctx, songIt, sectionIt, self.ENDINGS_Y, self.LABELS_Y);
+					
+					barChords = cm.getChordsByBarNumber(songIt.getBarIndex());
+					for (var i = 0; i < barChords.length; i++) {
+						chordView = new LSChordView(barChords[i]).draw(
+							self.ctx,
+							barDimensions, 
+							songIt.getBarTimeSignature(), 
+							self.CHORDS_DISTANCE_STAVE);
+					};
 
 					vxfBeams = beamMng.getVexflowBeams(); // we need to do getVexflowBeams before drawing notes
 					Vex.Flow.Formatter.FormatAndDraw(self.ctx, barView.getVexflowStave(), bar, {

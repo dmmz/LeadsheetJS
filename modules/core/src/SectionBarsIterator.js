@@ -7,6 +7,12 @@ define(function() {
 		hasNext: function(){
 			return this.index < this.section.getNumberOfBars();
 		},
+		getBarIndex: function(){
+			return this.index;
+		},
+		getSection: function(){
+			return this.section;
+		},
 		next: function(){
 			this.index++;
 		},

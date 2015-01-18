@@ -1,9 +1,10 @@
 define(function() {
-	function BarWidthManager(lineHeight, lineWidth, noteWidth, barsPerLine) {
+	function BarWidthManager(lineHeight, lineWidth, noteWidth, barsPerLine, marginTop) {
 			if (!lineHeight) throw "lineHeight not defined";
 			if (!lineWidth) throw "lineWidth not defined";
 			if (!noteWidth) throw "noteWidth not defined";
 			if (!barsPerLine) throw "barsPerLine not defined";
+			if (!marginTop) throw "marginTop not defined";
 
 			this.WIDTH_FACTOR = 1.25; // factor by witch we multiply the minimum width so that notes are not so crammed (always > 1)
 			this.barsStruct = [];
@@ -12,6 +13,7 @@ define(function() {
 			this.lineWidth = Number(lineWidth);
 			this.noteWidth = Number(noteWidth);
 			this.barsPerLine = Number(barsPerLine);
+			this.marginTop = Number(marginTop);
 		}
 		/**
 		 * calculates the minimum width for each bar depending on the number of notes it has
@@ -72,7 +74,7 @@ define(function() {
 		while (numBarsProcessed < minWidthList.length || numCarriedBars !== 0) {
 			lineWidthList = [];
 			barsToGet = this.barsPerLine + numCarriedBars;
-			if (pickupAtStart && numBarsProcessed == 0){
+			if (pickupAtStart && numBarsProcessed == 0) {
 				barsToGet++;
 			}
 
@@ -197,8 +199,8 @@ define(function() {
 	BarWidthManager.prototype.calculateBarsStructure = function(song, noteMng) {
 
 		var minWidthList = this.getMinWidthList(song, noteMng);
-		var pickupAtStart = song.getSection(0).getNumberOfBars()==1;
-		var minWidthPerLineList = this.assignBarsToLines(minWidthList,pickupAtStart);
+		var pickupAtStart = song.getSection(0).getNumberOfBars() == 1;
+		var minWidthPerLineList = this.assignBarsToLines(minWidthList, pickupAtStart);
 		this.setBarsStruct(this.getWidths(minWidthPerLineList));
 
 	};
@@ -225,7 +227,7 @@ define(function() {
 					return {
 						left: left,
 						width: this.barsStruct[i][j],
-						top: currentLine * this.lineHeight
+						top: currentLine * this.lineHeight + this.marginTop
 					};
 				}
 				currentNumBar++;
