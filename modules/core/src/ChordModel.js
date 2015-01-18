@@ -132,8 +132,9 @@ define(function() {
 		}
 
 		var chordType = this.getChordType();
-		if (isFormated) {
-			chordType = this.formatChordType(chordType);
+		if (isFormated ) {
+			if (chordType) 	chordType = this.formatChordType(chordType);
+			else chordType = "";
 		}
 
 		var string = "";

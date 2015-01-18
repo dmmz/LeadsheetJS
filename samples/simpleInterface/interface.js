@@ -29,7 +29,7 @@ require.config({
 
 define(function(require) {
 
-	var UserLog = require('utils/Userlog');
+	var UserLog = require('utils/UserLog');
 	var AjaxUtils = require('utils/AjaxUtils');
 
 	/*var SongModel = require('modules/core/src/SongModel');

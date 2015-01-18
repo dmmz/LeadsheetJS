@@ -25,6 +25,9 @@ define(function() {
 		return 4 / this.beatUnit;
 	};
 
+	TimeSignatureModel.prototype.getBeatUnit = function() {
+		return this.beatUnit;
+	};
 	/**
 	 * @return {int} number of quarter beats in a measure, e.g. for 6/8 -> 3, for 4/4 -> 4, for 2/2 -> 4
 	 */
