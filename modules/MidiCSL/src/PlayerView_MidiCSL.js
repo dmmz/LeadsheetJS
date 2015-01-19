@@ -3,8 +3,7 @@ define([
 	'utils/UserLog',
 	'pubsub',
 	'bootstrap',
-	'external-libs/bootstrap/bootstrap-slider',
-], function(Mustache, UserLog, pubsub, bootstrap, slider) {
+], function(Mustache, UserLog, pubsub, bootstrap) {
 
 	function PlayerView(parentHTML, option) {
 		this.displayMetronome = (typeof(option) !== "undefined" && typeof(option.displayMetronome) !== "undefined") ? option.displayMetronome : false;
@@ -112,6 +111,7 @@ define([
 			}
 		});
 
+		// volume - toggle mute icons
 		$('#volume_container').click(function() {
 			if ($('#volume_container .sound_on').is(":visible")) {
 				$.publish('PlayerView-onToggleMute', 0);
@@ -120,10 +120,44 @@ define([
 			}
 		});
 
-		$('.volume_slider').slider().on('slide', function(evt) {
-			$.publish('PlayerView-onVolume', evt.value / 100);
+		// volume slider
+		var dragStart = false;
+		$('#volume_controller_barre').bind('dragstart', function(e) {
+			e.preventDefault();
+			return false;
+		});
+		$('#volume_controller').bind('dragstart', function(e) {
+			e.preventDefault();
+			return false;
+		});
+		$('#volume_controller_barre').mousedown(function() {
+			dragStart = true;
+		});
+		$('#volume_controller_barre').mouseup(function() {
+			dragStart = false;
+		});
+		$('body').mouseup(function() {
+			dragStart = false;
+		});
+		$('#volume_controller').mousemove(function(evt) {
+			if (dragStart) {
+				self._dragVolumeController(evt);
+			}
+		});
+		$('#volume_controller').mousedown(function(evt) {
+			self._dragVolumeController(evt);
+			dragStart = true;
+		});
+		$('#volume_controller').mouseup(function() {
+			dragStart = false;
+		});
+		$('#volume_controller_barre').mousemove(function(evt) {
+			if (dragStart) {
+				self._dragVolumeController(evt);
+			}
 		});
 
+		// instument selection
 		$('#chords_instrument_container select').change(function() {
 			$.publish('PlayerView-onChordInstrumentChange', $(this).val());
 		});
@@ -138,7 +172,7 @@ define([
 			var tempo = self.getTempo();
 			$.publish('PlayerView-playFromPercent', {
 				'tempo': tempo,
-				'percent': relX/width
+				'percent': relX / width
 			});
 
 			e.preventDefault();
@@ -255,7 +289,7 @@ define([
 		} else {
 			this.unmuteSoundButton();
 		}
-		$('.volume_slider').slider('setValue', Math.round(volume * 100));
+		this.setControllerPosition(1-volume);
 	};
 
 	// metronome
@@ -293,26 +327,67 @@ define([
 
 
 	PlayerView.prototype._convertSecondToPrintableTime = function(seconds) {
-		if(isNaN(seconds)){
+		if (isNaN(seconds)) {
 			throw 'PlayerView - _convertSecondToPrintableTime, seconds is not a number ' + seconds;
 		}
 		var date = new Date(null);
-        date.setSeconds(seconds); // specify value for SECONDS here
-        return date.toISOString().substr(14, 5);
-    };
+		date.setSeconds(seconds); // specify value for SECONDS here
+		return date.toISOString().substr(14, 5);
+	};
 
 	PlayerView.prototype.updateProgressbar = function(value, duration) {
 		var $div = $('.progress_bar_player').find('div');
 		$div.attr('aria-valuenow', value);
 		$div.css('width', value + '%');
 		var $span = $div.find('span');
-		
+
 		var currentTime = value / 100 * duration / 1000;
-		var durationTime = duration/ 1000;
+		var durationTime = duration / 1000;
 
 		var ct = this._convertSecondToPrintableTime(currentTime);
 		var dt = this._convertSecondToPrintableTime(durationTime);
-		$span.text( ct + ' / ' + dt);
+		$span.text(ct + ' / ' + dt);
+	};
+
+
+	PlayerView.prototype._dragVolumeController = function(evt) {
+		var heightParent = $('#volume_controller').height();
+		var topPositionParent = $('#volume_controller').offset().top;
+		var topPosition = evt.pageY;
+		var decal = 5; // shadow of barre at the top/bottom
+
+		var realHeight = heightParent - (2 * decal);
+		var relativePosition = topPosition - topPositionParent;
+		if (relativePosition < decal) {
+			relativePosition = decal;
+		}
+		if (relativePosition > heightParent - decal) {
+			relativePosition = heightParent - decal;
+		}
+		var volume = 1 - ((relativePosition - decal) / realHeight);
+		//this.setControllerPosition((relativePosition - decal) / realHeight);
+		$.publish('PlayerView-onVolume', volume);
+	};
+
+	/**
+	 * Set position of volume controller
+	 * @param {float} position of controller as a float. 0(volume = 1) <= position <= 1(volume = 0)
+	 */
+	PlayerView.prototype.setControllerPosition = function(position) {
+		var decal = 5; // shadow of barre at the top/bottom
+		var heightParent = 68; // $('#volume_controller').height()
+		var realHeight = heightParent - (2 * decal);
+		var relativePosition = position * realHeight;
+		if (relativePosition < decal) {
+			relativePosition = decal;
+		}
+		if (relativePosition > heightParent - decal) {
+			relativePosition = heightParent;
+		}
+		var middleController = $('#volume_controller_barre').height() / 2; // to be at the center of controller
+		$('#volume_controller_barre').css({
+			top: (relativePosition - middleController) + 'px'
+		});
 	};
 
 	return PlayerView;

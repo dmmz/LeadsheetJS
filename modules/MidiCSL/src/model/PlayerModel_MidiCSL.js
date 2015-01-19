@@ -29,7 +29,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 
 			this.songModel = songModel;
 
-			var initVolume = (typeof option !== "undefined" && typeof(option.volume) !== "undefined") ? option.volume : 1;
+			var initVolume = (typeof option !== "undefined" && typeof(option.volume) !== "undefined") ? option.volume : 0.7;
 			this.chords = {
 				volume: initVolume,
 				tmpVolume: initVolume,

@@ -188,10 +188,19 @@
 	text-align: center;
 }
 
-#volume_slider_container .slider{
-	height: 45px;
-	margin-bottom: 5px;
-	vertical-align: bottom;
+#volume_slider_container {
+	z-index: 1;
+	position: relative;
+	cursor: pointer;
+}
+#volume_controller {
+	vertical-align: bottom !important;
+}
+#volume_controller_barre {
+	position: absolute;
+	z-index: 2;
+	right: 2px;
+	top: 20px;
 }
 
 #play_button_container{
