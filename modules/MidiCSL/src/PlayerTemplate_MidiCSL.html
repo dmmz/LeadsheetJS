@@ -1,4 +1,11 @@
 <div id="playerview">
+	{{#progressBar}}
+	<div class="progress progress_bar_player">
+		<div class="progress bar warning" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+			<span>00:00 - 00:00</span>
+		</div>
+	</div>
+	{{/progressBar}}
 	<!--<div id="switch_player" class="current_button">Player</div>-->
 	<div id="player_buttons_container">
 		<div id="stop_button_container" class="player_button">
@@ -144,11 +151,4 @@
 	</div>
 	{{/changeInstrument}}
 
-	{{#progressBar}}
-	<div class="progress progress_bar_player">
-		<div class="progress bar warning" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
-			<span>00:00 - 00:00</span>
-		</div>
-	</div>
-	{{/progressBar}}
 </div>

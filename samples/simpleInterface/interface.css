@@ -281,7 +281,17 @@
 }
 
 .progress_bar_player{
+	margin-bottom: 0 !important;
+	-webkit-box-shadow: none !important;
+	-moz-box-shadow: none !important;
+	box-shadow: none !important;
+	border-radius: 0;
 	cursor: pointer;
+	height: 15px !important;
+}
+.progress_bar_player span {
+	line-height: 16px;
+	vertical-align: top;
 }
 
 /********* Note edition ***********/
