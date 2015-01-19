@@ -280,18 +280,28 @@
 	margin: 3px 0 0;
 }
 
-.progress_bar_player{
+.progress_bar_player {
 	margin-bottom: 0 !important;
 	-webkit-box-shadow: none !important;
 	-moz-box-shadow: none !important;
 	box-shadow: none !important;
+	height: 15px !important;
 	border-radius: 0;
 	cursor: pointer;
-	height: 15px !important;
 }
+
 .progress_bar_player span {
 	line-height: 16px;
 	vertical-align: top;
+}
+
+@media screen and (max-width: 860px) {
+	#playerview img{
+		width: 20px;
+	}
+	.player_button{
+		min-width: 20px;
+	}
 }
 
 /********* Note edition ***********/

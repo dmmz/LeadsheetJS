@@ -289,7 +289,7 @@ define([
 		} else {
 			this.unmuteSoundButton();
 		}
-		this.setControllerPosition(1-volume);
+		this.setControllerPosition(1 - volume);
 	};
 
 	// metronome
@@ -375,7 +375,10 @@ define([
 	 */
 	PlayerView.prototype.setControllerPosition = function(position) {
 		var decal = 5; // shadow of barre at the top/bottom
-		var heightParent = 68; // $('#volume_controller').height()
+		var heightParent = $('#volume_controller').height();
+		if (heightParent === null) {
+			heightParent = 68;
+		}
 		var realHeight = heightParent - (2 * decal);
 		var relativePosition = position * realHeight;
 		if (relativePosition < decal) {
