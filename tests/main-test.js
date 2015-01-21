@@ -67,6 +67,8 @@ define(function(require) {
 
   var testBarWidthManager  = require('modules/LSViewer/test/testBarWidthManager');
 
+  var testCursorModel  = require('modules/Cursor/test/testCursorModel');
+
   // Utils
   //testUserLog.run();
   //testAjaxUtils.run();
@@ -110,6 +112,8 @@ define(function(require) {
   testModuleManager.run();
   testMainMenuModel.run();
   testMainMenuController.run();
+  
+  testCursorModel.run();
 
   QUnit.load();
   QUnit.start();
