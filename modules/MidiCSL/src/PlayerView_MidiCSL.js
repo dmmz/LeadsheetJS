@@ -113,10 +113,10 @@ define([
 
 		// volume - toggle mute icons
 		$('#volume_container').click(function() {
-			if ($('#volume_container .sound_on').is(":visible")) {
-				$.publish('PlayerView-onToggleMute', 0);
-			} else {
+			if ($('#volume_container .sound_off').is(":visible")) {
 				$.publish('PlayerView-onToggleMute');
+			} else {
+				$.publish('PlayerView-onToggleMute', 0);
 			}
 		});
 
@@ -284,11 +284,7 @@ define([
 		if (isNaN(volume) || volume < 0) {
 			return;
 		}
-		if (volume === 0) {
-			this.muteSoundButton();
-		} else {
-			this.unmuteSoundButton();
-		}
+		this.adaptSoundButton(volume);
 		this.setControllerPosition(1 - volume);
 	};
 
@@ -304,16 +300,26 @@ define([
 	};
 
 
-	// mute
-	PlayerView.prototype.muteSoundButton = function() {
-		$('#volume_container .sound_off').show();
-		$('#volume_container .sound_on').hide();
-	};
 
-	PlayerView.prototype.unmuteSoundButton = function() {
-		if ($('#volume_container .sound_off').is(":visible")) {
+	PlayerView.prototype.adaptSoundButton = function(volume) {
+		if(volume < 0.33 ){
+			pic = 'sound_off';
+		}
+		if( 0 < volume && volume <= 0.33 ){
+			pic = 'sound_1';
+		}
+		else if( 0.33 < volume && volume <= 0.66 ){
+			pic = 'sound_2';
+		}
+		else if( 0.66 < volume){
+			pic = 'sound_on';
+		}
+		if (!$('#volume_container .' + pic).is(":visible")) {
 			$('#volume_container .sound_off').hide();
-			$('#volume_container .sound_on').show();
+			$('#volume_container .sound_on').hide();
+			$('#volume_container .sound_1').hide();
+			$('#volume_container .sound_2').hide();
+			$('#volume_container .' + pic).show();
 		}
 	};
 

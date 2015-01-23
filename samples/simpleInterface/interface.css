@@ -1,11 +1,20 @@
 
+@font-face {
+	font-family: "lato";
+	src: url(../simpleInterface/lato/Lato-Regular.ttf) format("truetype");
+}
+body {
+	font-family: "lato";
+	color: #666;
+}
+
 /* VIEW MAIN MENU */
 /* Main menu is set as absolute on affix-top also so the score container will not scroll down too when position will be fixed */
 #view_main_menu{
 	/*position: absolute;*/
-	right: 0;
+	/*right: 0;
 	left: 0;
-	height: 128px;
+	height: 128px;*/
 }
 
 #content > .affix{
@@ -19,37 +28,43 @@
 }
 
 #main_menu_first_level {
-	color: white;
-	background-color: #777777;
+	background-color: white;
+	text-align: center;
+	padding-top: 5px;
 }
 
 .first_level {
+	background-color: #ebebeb;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
+	-moz-border-radius: 10px 10px 0 0;
+	-webkit-border-radius: 10px 10px 0 0;
+	-o-border-radius: 10px 10px 0 0;
+	border-radius: 10px 10px 0 0;
 	display: inline-block;
-	width: 150px;
+	width: 130px;
 	text-align: center;
-	margin: 0;
+	margin: 0 0.3em;
 	cursor: pointer;
 	line-height: 2em;
 }
 
 .first_level:hover{
-	background-color: #888;
+	background-color: #ccc;
 }
 .main_menu_first_level_selected {
-	color: black;
 	border-bottom: none !important;
-	background-color: #A4C7D8 !important;
+	background-color: #c1e0ea !important;
 }
 
 #main_menu_second_level {
-	background-color: #A4C7D8;
+	background-color: #c1e0ea;
 }
 #main_menu_second_level > div {
 	height: 100px;
 	overflow: hidden;
+	text-align: center;
 }
 
 .second_level > div > div {
@@ -104,7 +119,7 @@
 #rightPanel{
 	width: 14em;
 	padding: 0 1em;
-	background-color: #eee;
+	background-color: #c1e0ea;
 	border: thin solid #ccc;
 	min-height: 12em;
 	max-height: 22em;
@@ -154,7 +169,7 @@
 
 /********* PLAYER ***********/
 #playerview{
-	background: #A4C7D8;
+	background: #c1e0ea;
 	text-align: center;
 	position: fixed;
 	bottom: 0;
@@ -311,12 +326,12 @@
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	display: inline-block;
-	height: 100px;
 	vertical-align: top;
 	padding-left: 1em;
 	padding-right: 1em;
-	padding-top: 2em;
-	border-right: 1px solid black;
+	padding-top: 1em;
+	margin-top: 1em;
+	border-right: 1px solid #bbb;
 }
 
 #edit_each_pitch_container, #edit_each_alteration_container, #edit_each_rhythm_container, #edit_each_note_container, #edit_each_symbol_container {
@@ -346,12 +361,12 @@
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	display: inline-block;
-	height: 100px;
 	vertical-align: top;
 	padding-left: 1em;
 	padding-right: 1em;
-	padding-top: 2em;
-	border-right: 1px solid black;
+	padding-top: 1em;
+	margin-top: 1em;
+	border-right: 1px solid #bbb;
 }
 #edit_chords_second_level .current_button{
 	min-width: 20px;
@@ -390,3 +405,7 @@
 }
 
 /*********  ***********/
+
+#canvas_container{
+	text-align: center;
+}
