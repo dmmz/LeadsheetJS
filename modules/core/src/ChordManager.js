@@ -147,6 +147,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 
 	/**
 	 * Return the duration of a chord in beat
+	 * @param  {songModel} current songModel in which the chord is
 	 * @param  {int} index of chord in this.chords
 	 * @return {int} number of beat the chord last
 	 */
@@ -158,13 +159,14 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 			var currentBn = this.chords[index].getBarNumber();
 			var currentBeat = this.chords[index].getBeat();
 			var beats = songModel.getBeatsFromTimeSignature(songModel.getTimeSignatureAt(currentBn));
+			var nextBn, nextBeat;
 			if (typeof this.chords[index + 1] !== "undefined") {
-				var nextBn = this.chords[index + 1].getBarNumber();
-				var nextBeat = this.chords[index + 1].getBeat();
+				nextBn = this.chords[index + 1].getBarNumber();
+				nextBeat = this.chords[index + 1].getBeat();
 			} else {
-				/*var nextChord = 0; // case last chords, we set next to the end*/
-				var nextBn = currentBn + 1;
-				var nextBeat = 1;
+				// case last chords, we set next to the end
+				nextBn = currentBn + 1;
+				nextBeat = 1;
 			}
 			var duration = 0;
 			if (nextBn === currentBn) { // if chord are on the same bar
@@ -175,28 +177,71 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 			return duration;
 		}
 		return undefined;
-	}
+	};
+
+	/**
+	 * Return the duration of a chord in beat in one bar,
+	 * if the chord last less than one bar, function is the same as getChordDuration otherwise it truncate
+	 * @param  {songModel} current songModel in which the chord is
+	 * @param  {int} index of chord in this.chords
+	 * @return {int} number of beat the chord last
+	 */
+	ChordManager.prototype.getChordDurationFromBarNumber = function(songModel, index, barNumber) {
+		if (typeof songModel === "undefined" || isNaN(index) || isNaN(barNumber)) {
+			throw "ChordManager - getChordDurationFromBarNumber - wrong arguments";
+		}
+		if (typeof this.chords[index] !== "undefined") {
+			var currentBn = this.chords[index].getBarNumber();
+			var currentBeat = this.chords[index].getBeat();
+			var beats = songModel.getBeatsFromTimeSignature(songModel.getTimeSignatureAt(currentBn));
+			var nextBn, nextBeat;
+			if (typeof this.chords[index + 1] !== "undefined") {
+				nextBn = this.chords[index + 1].getBarNumber();
+				nextBeat = this.chords[index + 1].getBeat();
+			} else {
+				// case last chords, we set next to the end
+				nextBn = barNumber + 1;
+				nextBeat = 1;
+			}
+			var duration = 0;
+			// console.log(this.chords[index].toString());
+			if (nextBn === currentBn) { // if chord are on the same bar
+				duration = nextBeat - currentBeat;
+			} else if (nextBn > currentBn) {
+				if (currentBn === barNumber) {
+					duration = beats - currentBeat + 1;
+				} else if (barNumber < nextBn) {
+					duration = songModel.getBeatsFromTimeSignature(songModel.getTimeSignatureAt(barNumber));
+				} else if (barNumber === nextBn) {
+					duration = nextBeat - 1;
+				}
+			}
+			// console.log(duration);
+			return duration;
+		}
+		return undefined;
+	};
 
 	/**
 	 * returns the index of the chord in the demanded position. If there is no chord with that exact position , it returns the closest previous one (or the following one, depending on 'next' param)
 	 * returns also if it found the exact one or not
 	 * @param  {Object} pos {	numBar: valNumBar,
-	 *                      	numBeat: valNumBeat}
-	 * @param  {boolean} next 	if true, when there is no chord found at the exact position we get the next one, if false or undefined, we get the previous one
+	 *	                     	numBeat: valNumBeat}
+	 * @param  {boolean} next if true, when there is no chord found at the exact position we get the next one, if false or undefined, we get the previous one
 	 * @return {Object}     {
 	 *         					index: number
-	 *         					exact: boolean
-	 *         					}
+	 *			exact: boolean
+	 * 	       				}
 	 */
 	ChordManager.prototype.getChordIndexByPosition = function(pos, next) {
 		function equalPosition(pos, chord) {
-			return pos.numBar == chord.getBarNumber() && pos.numBeat == chord.getBeat();
-		}
-		//greater than
+				return pos.numBar == chord.getBarNumber() && pos.numBeat == chord.getBeat();
+			}
+			//greater than
 		function posGtChordPos(pos, chord) {
-			return pos.numBar > chord.getBarNumber() || (pos.numBar == chord.getBarNumber() && pos.numBeat > chord.getBeat());
-		}
-		//less than
+				return pos.numBar > chord.getBarNumber() || (pos.numBar == chord.getBarNumber() && pos.numBeat > chord.getBeat());
+			}
+			//less than
 		function posLtChordPos(pos, chord) {
 			return pos.numBar < chord.getBarNumber() || (pos.numBar == chord.getBarNumber() && pos.numBeat < chord.getBeat());
 		}

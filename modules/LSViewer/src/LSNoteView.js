@@ -1,7 +1,7 @@
 define(['vexflow', 'modules/converters/MusicCSLJson/src/NoteModel_CSLJson'], function(Vex, NoteModel_CSLJson) {
 	function LSNoteView(note) {
 		this.vexflowNote = createVexflowNote(note);
-		//this.position = setPosition(this.vexflowNote);
+		this.note = note;
 
 
 		/**
@@ -10,11 +10,12 @@ define(['vexflow', 'modules/converters/MusicCSLJson/src/NoteModel_CSLJson'], fun
 		 */
 		function createVexflowNote(note) {
 			var vexflowNote = new Vex.Flow.StaveNote(NoteModel_CSLJson.exportToMusicCSLJSON(note));
+
 			var i;
 			//var vexflowNote = new Vex.Flow.StaveNote({keys: ["c/4", "e/4", "g/4"], duration: "q" });
 			//control stem direction
 			if (parseInt(vexflowNote.keyProps[0].octave, null) >= 5) {
-				vexflowNote.stem_direction = -1;
+				vexflowNote.setStemDirection(-1);
 			}
 
 			var accidental = [];
@@ -39,7 +40,7 @@ define(['vexflow', 'modules/converters/MusicCSLJson/src/NoteModel_CSLJson'], fun
 		return this.vexflowNote;
 	};
 	LSNoteView.prototype.isBeamable = function() {
-		return (/^\d+$/).test(this.vexflowNote.duration);
+		return (/^\d+$/).test(this.vexflowNote.duration) && !this.note.isRest;
 	};
 	return LSNoteView;
 });

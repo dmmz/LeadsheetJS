@@ -131,7 +131,6 @@ define(function() {
 		return pitch;
 	};
 
-
 	NoteUtils.transformStringNote2ArrayNote = function(chordString) {
 		var chordArray = [];
 		if (typeof chordString !== "undefined") {
@@ -146,5 +145,17 @@ define(function() {
 		return chordArray;
 	};
 
+	NoteUtils.getValidPitch = function(value) {
+		var re = /[a-g|A-G]/;
+		if (typeof value === "number") {
+			return -1;
+		} else {
+			if (!value.match(re))
+				return -1;
+			else
+				return value.toUpperCase();
+		}
+
+	};
 	return NoteUtils;
 });

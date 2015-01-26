@@ -22,12 +22,9 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordManager', 'modules/
 			// first we create midisoundmodel for each chord
 			for (var barNum = 0, v = bars.length; barNum < v; barNum++) {
 				chordsInBar = bars[barNum];
-				for (var i = 0, c = chordsInBar.length; i < c; i++) {
-					numberOfChord++;
-					chordIndex = chordManager.getChordIndex(chordsInBar[i]);
-					duration = chordManager.getChordDuration(songModel, chordIndex) * songModel.getBeatUnitFromTimeSignature();
-					midiNotes = ChordConverterMidi_MidiCSL.exportToMidiCSL(chordsInBar[i]);
-					//console.log(chordsInBar[ i ], chordIndex, duration)
+				if (chordsInBar.length === 0) {
+					// case there is no chord in bar, we repeat previous one
+					duration = chordManager.getChordDurationFromBarNumber(songModel, chordIndex, barNum) * songModel.getBeatUnitFromTimeSignature();
 					var msm = new NoteModel_midiCSL({
 						'currentTime': currentTime,
 						'duration': duration,
@@ -36,6 +33,21 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordManager', 'modules/
 					});
 					currentTime += duration;
 					chords.push(msm);
+				} else {
+					for (var i = 0, c = chordsInBar.length; i < c; i++) {
+						chordIndex = chordManager.getChordIndex(chordsInBar[i]);
+						duration = chordManager.getChordDurationFromBarNumber(songModel, chordIndex, barNum) * songModel.getBeatUnitFromTimeSignature();
+						midiNotes = ChordConverterMidi_MidiCSL.exportToMidiCSL(chordsInBar[i]);
+						//console.log(chordsInBar[ i ], chordIndex, duration)
+						var msm = new NoteModel_midiCSL({
+							'currentTime': currentTime,
+							'duration': duration,
+							'midiNote': midiNotes,
+							'type': 'chord'
+						});
+						currentTime += duration;
+						chords.push(msm);
+					}
 				}
 			}
 			return chords;

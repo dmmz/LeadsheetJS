@@ -25,11 +25,21 @@ define(function() {
 		return 4 / this.beatUnit;
 	};
 
+	TimeSignatureModel.prototype.getBeatUnit = function() {
+		return this.beatUnit;
+	};
 	/**
 	 * @return {int} number of quarter beats in a measure, e.g. for 6/8 -> 3, for 4/4 -> 4, for 2/2 -> 4
 	 */
 	TimeSignatureModel.prototype.getQuarterBeats = function() {
 		return (4 / this.beatUnit) * this.numBeats;
+	};
+
+	/**
+	 * @return {string} return a string of the timesignature in the type 3/4
+	 */
+	TimeSignatureModel.prototype.toString = function() {
+		return this.numBeats + '/' + this.beatUnit;
 	};
 
 	return TimeSignatureModel;

@@ -30,8 +30,8 @@ require.config({
 define(function(require) {
   var Qunit = require('qunit');
 
-  var testUserLog = require('utils/test/testUserlog');
-  var testAjaxUtils = require('utils/test/testAjaxUtils');
+  // var testUserLog = require('utils/test/testUserlog');
+  // var testAjaxUtils = require('utils/test/testAjaxUtils');
 
   var testSongModel = require('modules/core/test/testSongModel');
   var testChordManager = require('modules/core/test/testChordManager');
@@ -56,7 +56,7 @@ define(function(require) {
   var testSongConverterMidi_MidiCSL = require('modules/MidiCSL/test/converters/testSongConverterMidi_MidiCSL');
 
   var testLSViewer = require('modules/LSViewer/test/testLSViewer');
-  var testBarWidthManager  = require('modules/LSViewer/test/testBarWidthManager');
+
 
   var testHistoryModel = require('modules/History/test/testHistoryModel');
 
@@ -65,9 +65,11 @@ define(function(require) {
   var testMainMenuModel = require('modules/MainMenu/test/testMainMenuModel');
   var testMainMenuController = require('modules/MainMenu/test/testMainMenuController');
 
+  var testBarWidthManager  = require('modules/LSViewer/test/testBarWidthManager');
+
   // Utils
-  testUserLog.run();
-  testAjaxUtils.run();
+  //testUserLog.run();
+  //testAjaxUtils.run();
 
   // Core Module
   testNoteModel.run();
@@ -90,9 +92,9 @@ define(function(require) {
   testSongView_chordSequence.run();
 
 
+
   // //LSViewer Module
-  console.log(Vex);
-  testLSViewer.run(Vex);
+  // //console.log(
   testBarWidthManager.run();
 
   // Midi sound model Module

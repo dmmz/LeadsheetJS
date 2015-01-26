@@ -11,7 +11,7 @@ define([
 		this.source = (typeof param !== "undefined" && param.source) ? param.source : '';
 		this.tempo = (typeof param !== "undefined" && param.tempo) ? param.tempo : 120;
 		this.tonality = (typeof param !== "undefined" && param.tonality) ? param.tonality : "C";
-		this.timeSignature = (typeof param !== "undefined" && param.timeSignature) ? param.timeSignature : "4/4";
+		this.timeSignature = (typeof param !== "undefined" && param.timeSignature) ? param.timeSignature : new TimeSignatureModel('4/4');
 		this.sections = (typeof param !== "undefined" && param.sections) ? param.sections : [];
 		this.components = (typeof param !== "undefined" && param.components) ? param.components : [];
 
@@ -129,7 +129,7 @@ define([
 	/**
 	 * GetTimeSignatureAt returns the time signature at one precise moment defined by the barNumber
 	 * @param  {int} barNumber
-	 * @return {string} currentTimeSignature like 3/4
+	 * @return {timeSignatureModel} currentTimeSignature like 3/4
 	 */
 	SongModel.prototype.getTimeSignatureAt = function(barNumber) {
 		var currentTimeSignature = this.getTimeSignature();
@@ -214,39 +214,25 @@ define([
 		return true;
 	};
 
-	/**
-	 * Function return all components in a given bar number, componentTitle attriubtes is a filter for component title (eg chords, notes...)
-	 * @param  {int} barNumber
-	 * @param  {string} componentTitle will filter all the result depending the type (chords, notes...)
-	 * @return {array} it return an array of the direct object
-	 */
-	SongModel.prototype.getComponentsAtBarNumber = function(barNumber, componentTitle) {
-		var components = [];
-
-		if (!componentTitle || !this.components.hasOwnProperty(componentTitle)) {
-			throw 'the item is matching no known type in getComponentsAtBarNumber';
-		}
-
-		var modelManager = this.components[componentTitle];
-		if (typeof ChordManager !== "undefined" && modelManager instanceof ChordManager) {
-			var chords = modelManager.getChordsByBarNumber(barNumber);
-			for (var i = 0, c = chords.length; i < c; i++) {
-				components.push(chords[i]);
-			}
-		} else if (typeof NoteManager !== "undefined" && modelManager instanceof NoteManager) {
-			var notes = components.concat(this.getNotesByBarNumber(modelManager, barNumber));
-			for (var j = 0, c = notes.length; j < c; j++) {
-				components.push(notes[j]);
-			}
-		}
-		return components;
+	SongModel.prototype.getBar = function(index) {
+		return this.getComponent("bars").getBar(index);
 	};
 
-	SongModel.prototype.getBar = function(index) {
-		if (isNaN(index)) {
-			throw "index is not a number: " + index;
-		}
-		return this.getComponent("bars").getBar(index);
+	/**
+	 * Function has to be called inside an iteration, it checks if there is a timesignature change in current bar
+	 * if not, it returns the currentBeats (calculated previously and sent as parameter		)
+	 * @param  {Number} index
+	 * @param  {Number}
+	 * @return {Number}
+	 */
+	SongModel.prototype.getBarNumBeats = function(numBar, currentBeats) {
+		
+		var barTimeSig = this.getBar(numBar).timeSignature,
+		timeSig = barTimeSig || this.getTimeSignature();
+
+		if (!timeSig && !currentBeats) throw "bad use: either song is not well formatted, either currentBeats is not sent";
+
+		return (timeSig) ? timeSig.getBeats() : currentBeats;
 	};
 
 	SongModel.prototype.getBars = function() {
@@ -327,6 +313,9 @@ define([
 				for (var barNumber = startBar; barNumber < endBar; barNumber++) {
 					if (alreadyAddedbars.indexOf(barNumber) === -1) { // excluding first part if there is one
 						endingBar = this.getBar(barNumber).getEnding();
+						if (endingBar == '1') {
+							repeat--;
+						}
 						pointerbarNumberStructure.push(barNumber);
 
 						// Case bars after the 1 start
@@ -372,6 +361,21 @@ define([
 			barNumber += this.getSection(i).getNumberOfBars();
 		}
 		return barNumber;
+	};
+
+	/**
+	 * Function return the number of beat before a bar number in a folded song
+	 * @param  {int} barNumber is the number of bar you want to have the first beat
+	 * @return {int} number of beat to reach realBarNumber
+	 */
+	SongModel.prototype.getStartBeatFromBarNumber = function(barNumber) {
+		var numberOfBeats = 1;
+		if (typeof barNumber !== "undefined" && !isNaN(barNumber) && barNumber >= 0) {
+			for (var i = 0; i < barNumber; i++) {
+				numberOfBeats += this.getBeatsFromTimeSignatureAt(i);
+			}
+		}
+		return numberOfBeats;
 	};
 
 	/**

@@ -54,10 +54,11 @@ define(function() {
 		return this.chordType;
 	};
 
+	/**
+	 * 
+	 * @param {String} chordType, could be undefined, e.g. in "NC" (no chord)
+	 */
 	ChordModel.prototype.setChordType = function(chordType) {
-		if (typeof chordType === "undefined") {
-			throw 'Undefined Chordtype';
-		}
 		this.chordType = chordType;
 	};
 
@@ -131,8 +132,9 @@ define(function() {
 		}
 
 		var chordType = this.getChordType();
-		if (isFormated) {
-			chordType = this.formatChordType(chordType);
+		if (isFormated ) {
+			if (chordType) 	chordType = this.formatChordType(chordType);
+			else chordType = "";
 		}
 
 		var string = "";

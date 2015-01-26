@@ -1,120 +1,131 @@
-define(['vexflow', 
-		'modules/LSViewer/src/LSNoteView', 
+define([
+		'vexflow',
+		'modules/LSViewer/src/LSNoteView',
+		'modules/LSViewer/src/LSChordView',
+		'modules/LSViewer/src/LSBarView',
 		'modules/LSViewer/src/BeamManager',
 		'modules/LSViewer/src/TieManager',
 		'modules/LSViewer/src/TupletManager',
-		'modules/LSViewer/src/BarWidthManager'
-		], 
-		function(Vex, LSNoteView, BeamManager,TieManager,TupletManager,BarWidthManager) {
+		'modules/LSViewer/src/BarWidthManager',
+		'modules/core/src/SectionBarsIterator',
+		'modules/core/src/SongBarsIterator'
+	],
+	function(Vex, LSNoteView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator) {
 
-	function LSViewer(ctx, params) {
-		this.ctx = ctx;
-		this.init(params);
-	}
-	LSViewer.prototype.init = function(params) {
-		this.SCALE = 0.85;
-		this.NOTE_WIDTH = 20; /* estimated note width in order to be more flexible */
-		this.LINE_HEIGHT = 150;
-		this.LINE_WIDTH = 1160;
-		this.BARS_PER_LINE = 4;
+		function LSViewer(ctx, params) {
+			this.ctx = ctx;
+			this.init(params);
+		}
 
-		/*
-		this.marginLeft = 10;
-		this.marginTop = 100;
-		this.chordsPosY = 40; //distance from stave
-		this.endingsY = 20; //0 -> thisChordsPosY==40, the greater the closer to stave
-		this.labelsY = 0; //like this.endingsY
-		this.barWidth = this.totalWidth / this.barsPerLine;
+		LSViewer.prototype.init = function(params) {
+			this.SCALE = 0.85;
+			this.NOTE_WIDTH = 20; /* estimated note width in order to be more flexible */
+			this.LINE_HEIGHT = 150;
+			this.LINE_WIDTH = 1160;
+			this.BARS_PER_LINE = 4;
 
-		this.clef = "treble";*/
+			this.ENDINGS_Y = 20; //0 -> thisChordsPosY==40, the greater the closer to stave 
+			this.LABELS_Y = 0;    //like this.ENDINGS_Y
+			this.MARGIN_TOP = 100;
+			this.CHORDS_DISTANCE_STAVE = 20; //distance from stave
+			/*
+			this.marginLeft = 10;
+	*/
 
+		};
+		/*	LSViewer.prototype.drawStave = function(section,i) {
+			var left = this.marginLeft + this.barWidth * this.xMeasure;
+			var top = this.marginTop + this.yMeasure * this.lineHeight;
+			console.log(left+" "+top+" "+this.barWidth);
+			var stave = new Vex.Flow.Stave(0, 0, this.totalWidth);
+			stave.setContext(this.ctx).draw();
+			stave.drawVerticalBar(this.barWidth);
+		};
+		LSViewer.prototype.drawSection = function(section) {
+			stave = this.drawStave(section,0);
 
-	};
-	/*	LSViewer.prototype.drawStave = function(section,i) {
+		};*/
 
-		var left = this.marginLeft + this.barWidth * this.xMeasure;
-		var top = this.marginTop + this.yMeasure * this.lineHeight;
-		console.log(left+" "+top+" "+this.barWidth);
-		var stave = new Vex.Flow.Stave(0, 0, this.totalWidth);
-		stave.setContext(this.ctx).draw();
-		stave.drawVerticalBar(this.barWidth);
-	};
+		LSViewer.prototype.draw = function(song) {
+	
+			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+			this.ctx.scale(this.SCALE, this.SCALE);
 
-	LSViewer.prototype.drawSection = function(section) {
-		stave = this.drawStave(section,0);
+			var numBar = 0,
+				self = this,
+				nm = song.getComponent("notes"),
+				cm = song.getComponent("chords"),
+				barNotes,
+				barChords,
+				beamMng,
+				tupletMng,
+				bar,
+				noteView,
+				chordView,
+				iNote = 0,
+				stave,
+				vxfBeams,
+				vxfNote,
+				vxfNotes = [],
+				barDimensions,
+				tieMng = new TieManager();
 
+			var barWidthMng = new BarWidthManager(this.LINE_HEIGHT, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE, this.MARGIN_TOP);
+			barWidthMng.calculateBarsStructure(song, nm);
+			var numSection = 0;
 
-	};*/
+			var songIt = new SongBarsIterator(song);
+			song.getSections().forEach(function(section) {
 
-	LSViewer.prototype.draw = function(song) {
-		this.currTimeSig = null;
+				// for each bar
+				var sectionIt = new SectionBarsIterator(section);
+				while (sectionIt.hasNext()) {
 
-		this.keySig = song.getTonality();
-		this.timeSig = song.getTimeSignature();
+					beamMng = new BeamManager();
+					tupletMng = new TupletManager();
+					bar = [];
 
-		this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-		this.ctx.scale(this.SCALE, this.SCALE);
+					barNotes = nm.getNotesAtBarNumber(songIt.getBarIndex(), song);
+					// for each note of bar
+					for (var j = 0; j < barNotes.length; j++) {
+						tieMng.checkTie(barNotes[j], iNote);
+						tupletMng.checkTuplet(barNotes[j], iNote);
+						noteView = new LSNoteView(barNotes[j]);
+						beamMng.checkBeam(nm, iNote, noteView);
+						vxfNote = noteView.getVexflowNote();
+						bar.push(vxfNote);
+						vxfNotes.push(vxfNote);
+						iNote++;
+					}
 
-		var numBar = 0,
-			self = this,
-			nm = song.getComponent("notes"),
-			barNotes,
-			beamMng,
-			tupletMng,
-			bar,
-			noteView,
-			iNote = 0,
-			stave,
-			vxfBeams,
-			vxfNote,
-			vxfNotes = [],
-			barDimensions,
-			tieMng = new TieManager();
+					barDimensions = barWidthMng.getDimensions(songIt.getBarIndex());
+					var barView = new LSBarView(barDimensions);
+					barView.draw(self.ctx, songIt, sectionIt, self.ENDINGS_Y, self.LABELS_Y);
+					
+					barChords = cm.getChordsByBarNumber(songIt.getBarIndex());
+					for (var i = 0; i < barChords.length; i++) {
+						chordView = new LSChordView(barChords[i]).draw(
+							self.ctx,
+							barDimensions, 
+							songIt.getBarTimeSignature(), 
+							self.CHORDS_DISTANCE_STAVE);
+					};
 
-		var barWidthMng = new BarWidthManager(this.LINE_HEIGHT, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE);
-		barWidthMng.setBarsStructure(song,nm);
+					vxfBeams = beamMng.getVexflowBeams(); // we need to do getVexflowBeams before drawing notes
+					Vex.Flow.Formatter.FormatAndDraw(self.ctx, barView.getVexflowStave(), bar, {
+						autobeam: false
+					});
 
-		song.getSections().forEach(function(section) {
-
-			// for each bar
-			for (var iBar = 0; iBar < section.numberOfBars; iBar++) {
-
-				beamMng = new BeamManager();
-				tupletMng = new TupletManager();
-				bar = [];
-				
-				barNotes = nm.getNotesAtBarNumber(iBar, song);
-				// for each note of bar
-				for (var j = 0; j < barNotes.length; j++) {
-					tieMng.checkTie(barNotes[j],iNote);
-					tupletMng.checkTuplet(barNotes[j],iNote);
-					noteView = new LSNoteView(barNotes[j]);
-					vxfNote = noteView.getVexflowNote();
-					bar.push(vxfNote);
-					vxfNotes.push(vxfNote);
-					beamMng.checkBeam(nm, iNote, noteView);
-					iNote++;
+					beamMng.draw(self.ctx, vxfBeams); // and draw beams needs to be done after drawing notes
+					tupletMng.draw(self.ctx, vxfNotes);
+					songIt.next();
+					sectionIt.next();
 				}
-			
-				barDimensions = barWidthMng.getDimensions(iBar);
-				//stave = new Vex.Flow.Stave(barDimensions.left, barDimensions.height, barDimensions.width);
-				stave = new Vex.Flow.Stave(barDimensions.left, barDimensions.top, barDimensions.width);
-				
-				//stave = new Vex.Flow.Stave(iBar * 200, 0, 200);
-				stave.setContext(self.ctx).draw();
-				vxfBeams = beamMng.getVexflowBeams(); // we need to do getVexflowBeams before drawing notes
-				Vex.Flow.Formatter.FormatAndDraw(self.ctx, stave, bar, {
-					autobeam: false
-				});
+				numSection++;
+			});
+			tieMng.draw(self.ctx, vxfNotes, nm, barWidthMng, song);
 
-				beamMng.draw(self.ctx, vxfBeams); // and draw beams needs to be done after drawing notes
-				tupletMng.draw(self.ctx,vxfNotes);
-				
-			}
-		});
-		tieMng.draw(self.ctx,vxfNotes);
+		};
+		return LSViewer;
 
-
-	};
-	return LSViewer;
-});
+	});

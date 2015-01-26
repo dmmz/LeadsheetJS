@@ -27,6 +27,11 @@ define([
 				assert.deepEqual(song.getTimeSignatureAt(5).getBeats(), new TimeSignatureModel("3/4").getBeats());
 				assert.deepEqual(song.getTimeSignatureAt(6).getBeats(), new TimeSignatureModel("3/4").getBeats());
 
+				assert.equal(song.getBarNumBeats(0),4);
+				
+				assert.equal(song.getStartBeatFromBarNumber(0),1);
+				assert.equal(song.getStartBeatFromBarNumber(2),9);
+
 				/* MISSING TESTS: 
 					Song with no notes
 					Song with no chords

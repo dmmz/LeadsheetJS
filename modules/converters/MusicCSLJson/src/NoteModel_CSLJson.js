@@ -30,10 +30,6 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 		noteModel.setTie(noteStruct.tie);
 		noteModel.setTuplet(noteStruct.tuplet, noteStruct.time_modification);
 
-		if (typeof noteStruct.num_measure !== "undefined") {
-			noteModel.setMeasure(noteStruct.num_measure);
-		}
-
 		function string2Obj(strPitch) {
 			var re = /[a-g|A-G](#{1,2}|b{1,2}|n)?\/\d/;
 			if (!strPitch.match(re)) throw "Error creating pitch " + strPitch + ". Should be in the form [pitch][acc]/[octave]. e.g. Ab/4";

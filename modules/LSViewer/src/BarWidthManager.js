@@ -1,17 +1,19 @@
 define(function() {
-	function BarWidthManager(lineHeight, lineWidth, noteWidth, barsPerLine) {
+	function BarWidthManager(lineHeight, lineWidth, noteWidth, barsPerLine, marginTop) {
 			if (!lineHeight) throw "lineHeight not defined";
 			if (!lineWidth) throw "lineWidth not defined";
 			if (!noteWidth) throw "noteWidth not defined";
 			if (!barsPerLine) throw "barsPerLine not defined";
+			if (!marginTop) throw "marginTop not defined";
 
 			this.WIDTH_FACTOR = 1.25; // factor by witch we multiply the minimum width so that notes are not so crammed (always > 1)
-			this.widthList = [];
+			this.barsStruct = [];
 
 			this.lineHeight = Number(lineHeight);
 			this.lineWidth = Number(lineWidth);
 			this.noteWidth = Number(noteWidth);
 			this.barsPerLine = Number(barsPerLine);
+			this.marginTop = Number(marginTop);
 		}
 		/**
 		 * calculates the minimum width for each bar depending on the number of notes it has
@@ -44,7 +46,7 @@ define(function() {
 	 * and the width for each bar fitting in the line. e.g. (being the line width 1160) [	[200,200,500],		( sum of widths is < 1160)
 	 *																						[500,300,100,100,100]	(< 1160)
 	 */
-	BarWidthManager.prototype.assignBarsToLines = function(minWidthList) {
+	BarWidthManager.prototype.assignBarsToLines = function(minWidthList, pickupAtStart) {
 
 		/**
 		 * @param  {Array} bars
@@ -64,16 +66,23 @@ define(function() {
 		var widthsByLine = [],
 			lineWidthList,
 			barWidth = this.lineWidth / this.barsPerLine,
-			i, carryBars = [];
+			i,
+			barsToGet,
+			numCarriedBars = 0,
+			numCurrLastBar;
 
-		while (numBarsProcessed < minWidthList.length || carryBars.length !== 0) {
+		while (numBarsProcessed < minWidthList.length || numCarriedBars !== 0) {
 			lineWidthList = [];
-			//we get the next 4 ( = barsPerLine) widths
-			lineMinWidths = minWidthList.slice(numBarsProcessed, numBarsProcessed + this.barsPerLine);
-			//we prepend any width we couldn't include in the previous line
-			lineMinWidths = carryBars.concat(lineMinWidths);
+			barsToGet = this.barsPerLine + numCarriedBars;
+			if (pickupAtStart && numBarsProcessed == 0) {
+				barsToGet++;
+			}
 
-			carryBars = [];
+			numCurrLastBar = numBarsProcessed + barsToGet;
+
+			lineMinWidths = minWidthList.slice(numBarsProcessed, numBarsProcessed + barsToGet);
+			numCarriedBars = 0;
+
 			var lastBarIncluded = lineMinWidths.length - 1;
 			var exceedsTotal = true;
 			while (exceedsTotal && lastBarIncluded >= 0) {
@@ -85,11 +94,12 @@ define(function() {
 				} else {
 					//if not, we take out iteratively last one and put as carry for the next line 
 					if (lastBarIncluded > 0) {
-						carryBars.unshift(lineMinWidths[lastBarIncluded]);
+						numCarriedBars++;
+						lineMinWidths.pop();
 						lastBarIncluded--;
 					} else {
 						// except if there are no widths left to take out. In that case it means that one width is already higher than lineWidth, 
-						// in this case we save it as //lineWidth (we'll may see crammed bar notes, but we can't make lines wideer than linWidth,  this is an exceptional case)
+						// in this case we save it as lineWidth (we'll may see crammed bar notes, but we can't make lines wider than linWidth,  this is an exceptional case)
 						lineWidthList.push(this.lineWidth);
 						exceedsTotal = false;
 					}
@@ -177,19 +187,25 @@ define(function() {
 		}
 		return finalWidths;
 	};
-
+	BarWidthManager.prototype.setBarsStruct = function(barsStruct) {
+		this.barsStruct = barsStruct;
+	};
 	/**
 	 * Decides which bar goes into which line depending on its width, and sets the final width depending on the distribution of bars among lines
 	 * @param {SongMoel} song
 	 * @param {NoteManagerModel} noteMng [description]
 	 */
-	BarWidthManager.prototype.setBarsStructure = function(song, noteMng) {
+
+	BarWidthManager.prototype.calculateBarsStructure = function(song, noteMng) {
 
 		var minWidthList = this.getMinWidthList(song, noteMng);
-		var minWidthPerLineList = this.assignBarsToLines(minWidthList);
-		this.widthList = this.getWidths(minWidthPerLineList);
+		var pickupAtStart = song.getSection(0).getNumberOfBars() == 1;
+		var minWidthPerLineList = this.assignBarsToLines(minWidthList, pickupAtStart);
+		this.setBarsStruct(this.getWidths(minWidthPerLineList));
 
 	};
+
+
 
 	/**
 	 * returns top,left and width of a given bar. Used when drawing
@@ -205,22 +221,37 @@ define(function() {
 			currentNumBar = 0,
 			currentLine = 0,
 			left = 0;
-		for (i = 0; i < this.widthList.length; i++) {
-			for (j = 0; j < this.widthList[i].length; j++) {
+		for (i = 0; i < this.barsStruct.length; i++) {
+			for (j = 0; j < this.barsStruct[i].length; j++) {
 				if (currentNumBar == numBar) {
 					return {
 						left: left,
-						width: this.widthList[i][j],
-						top: currentLine * this.lineHeight
+						width: this.barsStruct[i][j],
+						top: currentLine * this.lineHeight + this.marginTop
 					};
 				}
 				currentNumBar++;
-				left += this.widthList[i][j];
+				left += this.barsStruct[i][j];
 			}
 			left = 0;
 			currentLine++;
 		}
 	};
 
+	BarWidthManager.prototype.inSameLine = function(iBar1, iBar2) {
+		var numBar = 0,
+			line1 = -1,
+			line2 = -1;
+		labelMainFor: for (var line = 0; line < this.barsStruct.length; line++) {
+			for (var j = 0; j < this.barsStruct[line].length; j++) {
+				if (numBar == iBar1) line1 = line;
+				if (numBar == iBar2) line2 = line;
+				if (line1 != -1 && line2 != -1) break labelMainFor;
+				numBar++;
+			};
+		}
+		return line1 == line2;
+
+	};
 	return BarWidthManager;
 });

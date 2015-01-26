@@ -91,10 +91,6 @@ define(['modules/MidiCSL/src/model/NoteModel_MidiCSL'], function(NoteModel_midiC
 		return new SongModel_MidiCSL(this.serialize());
 	};
 
-	return SongModel_MidiCSL;
-});
-
-/*
 	SongModel_MidiCSL.prototype.generateMetronome = function( songModel ) {
 		var note, duration;
 		var noteObject = {};
@@ -125,5 +121,7 @@ define(['modules/MidiCSL/src/model/NoteModel_MidiCSL'], function(NoteModel_midiC
 			metronome.push(noteObject);
 		}
 		return metronome;
-	}
-*/
+	};
+
+	return SongModel_MidiCSL;
+});
