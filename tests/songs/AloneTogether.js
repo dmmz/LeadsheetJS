@@ -40,7 +40,8 @@ define(function(){
        "keys": [
         "D\/4"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"A -"
       }
      ]
     }
@@ -69,13 +70,15 @@ define(function(){
         "F\/4"
        ],
        "duration": "h",
-       "dot": 2
+       "dot": 2,
+       "lyr":"lone"
       },
       {
        "keys": [
         "D\/4"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"To - "
       }
      ]
     },
@@ -97,7 +100,8 @@ define(function(){
        "keys": [
         "E\/4"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"geth -"
       },
       {
        "keys": [
@@ -105,7 +109,8 @@ define(function(){
        ],
        "duration": "q",
        "tie": "start",
-       "dot": 1
+       "dot": 1,
+       "lyr":"er"
       },
       {
        "keys": [
@@ -142,20 +147,23 @@ define(function(){
        "keys": [
         "D\/4"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr": "Be -"
       },
       {
        "keys": [
         "E\/4"
        ],
        "duration": "q",
-       "dot": 1
+       "dot": 1,
+       "lyr": "yond"
       },
       {
        "keys": [
         "F\/4"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr": "the"
       }
      ]
     },
@@ -178,7 +186,8 @@ define(function(){
         "A\/4"
        ],
        "duration": "w",
-       "tie": "start"
+       "tie": "start",
+       "lyr": "crowd"
       }
      ]
     },
@@ -208,20 +217,23 @@ define(function(){
        "keys": [
         "D\/4"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"A -"
       },
       {
        "keys": [
         "E\/4"
        ],
        "duration": "q",
-       "dot": 1
+       "dot": 1,
+       "lyr":"bove"
       },
       {
        "keys": [
         "F\/4"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"the"
       }
      ]
     },
@@ -244,7 +256,8 @@ define(function(){
         "A\/4"
        ],
        "duration": "w",
-       "tie": "start"
+       "tie": "start",
+       "lyr":"world"
       }
      ]
     },
@@ -274,20 +287,23 @@ define(function(){
        "keys": [
         "G\/4"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"We're"
       },
       {
        "keys": [
         "A\/4"
        ],
        "duration": "q",
-       "dot": 1
+       "dot": 1,
+       "lyr":"not"
       },
       {
        "keys": [
         "B\/4"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"too"
       }
      ]
     },
@@ -305,13 +321,15 @@ define(function(){
         "D\/5"
        ],
        "duration": "h",
-       "dot": 2
+       "dot": 2,
+       "lyr":"proud"
       },
       {
        "keys": [
         "D\/5"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"to"
       }
      ]
     },
@@ -334,13 +352,15 @@ define(function(){
         "E\/5"
        ],
        "duration": "h",
-       "dot": 2
+       "dot": 2,
+       "lyr":"cling"
       },
       {
        "keys": [
         "D\/5"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"to -"
       }
      ]
     },
@@ -362,7 +382,9 @@ define(function(){
        "keys": [
         "C\/5"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"geth -"
+
       },
       {
        "keys": [
@@ -370,7 +392,8 @@ define(function(){
        ],
        "duration": "q",
        "tie": "start",
-       "dot": 1
+       "dot": 1,
+       "lyr":"er"
       },
       {
        "keys": [
@@ -384,7 +407,8 @@ define(function(){
        "keys": [
         "B\/4"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr": "We're"
       }
      ]
     },
@@ -406,26 +430,30 @@ define(function(){
         "A\/4"
        ],
        "duration": "q",
-       "dot": 1
+       "dot": 1,
+       "lyr":"strong"
       },
       {
        "keys": [
         "G\/4"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"as"
       },
       {
        "keys": [
         "A\/4"
        ],
        "duration": "q",
-       "dot": 1
+       "dot": 1,
+       "lyr":"long"
       },
       {
        "keys": [
         "G\/4"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"as"
       }
      ]
     },
@@ -448,13 +476,15 @@ define(function(){
         "A\/4"
        ],
        "duration": "h",
-       "dot": 2
+       "dot": 2,
+       "lyr":"We're"
       },
       {
        "keys": [
         "G\/4"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"to -"
       }
      ]
     },
@@ -472,7 +502,8 @@ define(function(){
        "keys": [
         "F#\/4"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"geth -"
       },
       {
        "keys": [
@@ -480,7 +511,8 @@ define(function(){
        ],
        "duration": "q",
        "tie": "start",
-       "dot": 1
+       "dot": 1,
+       "lyr":"er"
       },
       {
        "keys": [
@@ -523,7 +555,8 @@ define(function(){
        "keys": [
         "D\/4"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"A -"
       }
      ]
     },
@@ -581,7 +614,8 @@ define(function(){
        "keys": [
         "D\/4"
        ],
-       "duration": "q"
+       "duration": "q",
+       "lyr":"Our"
       }
      ]
     }
@@ -610,7 +644,8 @@ define(function(){
         "C\/5"
        ],
        "duration": "w",
-       "tie": "start"
+       "tie": "start",
+       "lyr":"love"
       }
      ]
     },
@@ -637,7 +672,8 @@ define(function(){
         "A\/4"
        ],
        "duration": "q",
-       "time_modification": "3\/2"
+       "time_modification": "3\/2",
+       "lyr":"is"
       },
       {
        "keys": [
@@ -645,7 +681,8 @@ define(function(){
        ],
        "duration": "q",
        "tuplet": "stop",
-       "time_modification": "3\/2"
+       "time_modification": "3\/2",
+       "lyr":"as"
       },
       {
        "keys": [
@@ -653,14 +690,16 @@ define(function(){
        ],
        "duration": "q",
        "tuplet": "start",
-       "time_modification": "3\/2"
+       "time_modification": "3\/2",
+       "lyr":"deep"
       },
       {
        "keys": [
         "Eb\/5"
        ],
        "duration": "q",
-       "time_modification": "3\/2"
+       "time_modification": "3\/2",
+       "lyr":"as"
       },
       {
        "keys": [
@@ -668,7 +707,8 @@ define(function(){
        ],
        "duration": "q",
        "tuplet": "stop",
-       "time_modification": "3\/2"
+       "time_modification": "3\/2",
+       "lyr":"the"
       }
      ]
     },
@@ -686,7 +726,8 @@ define(function(){
         "B\/4"
        ],
        "duration": "w",
-       "tie": "start"
+       "tie": "start",
+       "lyr":"sea."
       }
      ]
     },
@@ -711,7 +752,8 @@ define(function(){
        "keys": [
         "D\/4"
        ],
-       "duration": "q"
+       "duration": "q",
+       "lyr":"Our"
       }
      ]
     },
@@ -729,7 +771,8 @@ define(function(){
         "B\/4"
        ],
        "duration": "w",
-       "tie": "start"
+       "tie": "start",
+       "lyr":"love"
       }
      ]
     },
@@ -756,7 +799,8 @@ define(function(){
         "G\/4"
        ],
        "duration": "q",
-       "time_modification": "3\/2"
+       "time_modification": "3\/2",
+       "lyr":"is"
       },
       {
        "keys": [
@@ -764,7 +808,8 @@ define(function(){
        ],
        "duration": "q",
        "tuplet": "stop",
-       "time_modification": "3\/2"
+       "time_modification": "3\/2",
+       "lyr":"as"
       },
       {
        "keys": [
@@ -772,14 +817,16 @@ define(function(){
        ],
        "duration": "q",
        "tuplet": "start",
-       "time_modification": "3\/2"
+       "time_modification": "3\/2",
+       "lyr":"great"
       },
       {
        "keys": [
         "Db\/5"
        ],
        "duration": "q",
-       "time_modification": "3\/2"
+       "time_modification": "3\/2",
+       "lyr":"as"
       },
       {
        "keys": [
@@ -787,7 +834,8 @@ define(function(){
        ],
        "duration": "q",
        "tuplet": "stop",
-       "time_modification": "3\/2"
+       "time_modification": "3\/2",
+       "lyr":"a"
       }
      ]
     },
@@ -809,13 +857,15 @@ define(function(){
         "A\/4"
        ],
        "duration": "h",
-       "dot": 2
+       "dot": 2,
+       "lyr":"love"
       },
       {
        "keys": [
         "F\/4"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"can"
       }
      ]
     },
@@ -838,13 +888,15 @@ define(function(){
         "G\/4"
        ],
        "duration": "h",
-       "dot": 2
+       "dot": 2,
+       "lyr":"be"
       },
       {
        "keys": [
         "D\/4"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"And"
       }
      ]
     }
@@ -873,13 +925,15 @@ define(function(){
         "F\/4"
        ],
        "duration": "h",
-       "dot": 2
+       "dot": 2,
+       "lyr":"we"
       },
       {
        "keys": [
         "D\/4"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"can"
       }
      ]
     },
@@ -901,7 +955,8 @@ define(function(){
        "keys": [
         "E\/4"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"weath -"
       },
       {
        "keys": [
@@ -909,7 +964,8 @@ define(function(){
        ],
        "duration": "q",
        "tie": "start",
-       "dot": 1
+       "dot": 1,
+       "lyr":"er"
       },
       {
        "keys": [
@@ -946,20 +1002,23 @@ define(function(){
        "keys": [
         "D\/4"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"the"
       },
       {
        "keys": [
         "E\/4"
        ],
        "duration": "q",
-       "dot": 1
+       "dot": 1,
+       "lyr":"great"
       },
       {
        "keys": [
         "F\/4"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"un -"
       }
      ]
     },
@@ -982,7 +1041,8 @@ define(function(){
         "A\/4"
        ],
        "duration": "w",
-       "tie": "start"
+       "tie": "start",
+       "lyr":"known"
       }
      ]
     },
@@ -1012,20 +1072,23 @@ define(function(){
        "keys": [
         "A\/4"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"If"
       },
       {
        "keys": [
         "Bn\/4"
        ],
        "duration": "q",
-       "dot": 1
+       "dot": 1,
+       "lyr":"we're"
       },
       {
        "keys": [
         "D\/5"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"a -"
       }
      ]
     },
@@ -1048,13 +1111,15 @@ define(function(){
         "F\/5"
        ],
        "duration": "h",
-       "dot": 2
+       "dot": 2,
+       "lyr":"lone"
       },
       {
        "keys": [
         "C#\/5"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"to -"
       }
      ]
     },
@@ -1071,7 +1136,8 @@ define(function(){
        "keys": [
         "D\/5"
        ],
-       "duration": "8"
+       "duration": "8",
+       "lyr":"geth -"
       },
       {
        "keys": [
@@ -1079,7 +1145,8 @@ define(function(){
        ],
        "duration": "q",
        "tie": "start",
-       "dot": 1
+       "dot": 1,
+       "lyr":"er"
       },
       {
        "keys": [
