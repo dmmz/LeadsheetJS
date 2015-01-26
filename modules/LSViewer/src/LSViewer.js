@@ -18,7 +18,7 @@ define([
 		}
 
 		LSViewer.prototype.init = function(params) {
-			this.SCALE = 0.85;
+
 			this.NOTE_WIDTH = 20; /* estimated note width in order to be more flexible */
 			this.LINE_HEIGHT = 150;
 			this.LINE_WIDTH = 1160;
@@ -29,7 +29,9 @@ define([
 			this.MARGIN_TOP = 100;
 			this.CHORDS_DISTANCE_STAVE = 20; //distance from stave
 
+			
 			// this.marginLeft = 10;
+			this.setWidth(params.width);
 		};
 		/*	LSViewer.prototype.drawStave = function(section,i) {
 			var left = this.marginLeft + this.barWidth * this.xMeasure;
@@ -43,7 +45,12 @@ define([
 			stave = this.drawStave(section,0);
 
 		};*/
-
+		LSViewer.prototype.setWidth = function(width) {
+			
+			var viewerWidth = width || this.LINE_WIDTH;
+			this.SCALE = viewerWidth / this.LINE_WIDTH * 0.85;
+			this.LINE_WIDTH = viewerWidth;
+		};
 		LSViewer.prototype.draw = function(song) {
 
 			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
