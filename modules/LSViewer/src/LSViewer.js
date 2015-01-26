@@ -47,6 +47,7 @@ define([
 		LSViewer.prototype.draw = function(song) {
 
 			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+			this.ctx.translate((this.ctx.canvas.width - (this.ctx.canvas.width * this.SCALE)) / 2, 0);
 			this.ctx.scale(this.SCALE, this.SCALE);
 
 			var numBar = 0,

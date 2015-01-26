@@ -17,7 +17,6 @@ define(['modules/core/src/ChordModel'], function(ChordModel) {
 	};
 
 
-
 	ChordModel_CSLJson.exportToMusicCSLJSON = function(chordModel, withNumMeasure) {
 		if (withNumMeasure === undefined) withNumMeasure = false;
 		var chord = {};
