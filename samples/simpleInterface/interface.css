@@ -236,7 +236,7 @@ body {
 	display: none;
 }
 
-#chords-sound .sound_off, #melody-sound .sound_off, #all-sound .sound_off{
+#all-sound .sound_off, #all-sound .sound_1, #all-sound .sound_2{
 	display: none;
 }
 #pause_button_container{

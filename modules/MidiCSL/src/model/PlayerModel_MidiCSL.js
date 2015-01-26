@@ -260,6 +260,8 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 			var midiSongModel = new SongModel_MidiCSL({
 				'song': midiSong
 			});
+			var metronome = midiSongModel.generateMetronome(this.songModel);
+			midiSongModel.setFromType(metronome, 'metronome');
 			var song = midiSongModel.getSong();
 			if (song.length !== 0 && this.getReady() === true) {
 				var self = this;
@@ -339,7 +341,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 												self.stop();
 											} else {
 												$.publish('PlayerModel_MidiCSL-onloopstart');
-												self.play(song, tempo);
+												self.play(tempo);
 											}
 										}), duration * 1000);
 									}

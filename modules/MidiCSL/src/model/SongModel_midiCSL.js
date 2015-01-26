@@ -1,4 +1,4 @@
-define(['modules/MidiCSL/src/model/NoteModel_MidiCSL'], function(NoteModel_midiCSL) {
+define(['modules/MidiCSL/src/model/NoteModel_MidiCSL'], function(NoteModel_MidiCSL) {
 	function SongModel_MidiCSL(option) {
 		this.song = (typeof(option) !== "undefined" && typeof(option.song) !== "undefined") ? option.song : [];
 	}
@@ -100,7 +100,7 @@ define(['modules/MidiCSL/src/model/NoteModel_MidiCSL'], function(NoteModel_midiC
 		var beatUnit = 4;
 		timeSig = 4;
 		if(typeof songModel !== "undefined"){
-			timeSig = songModel.getBeatsFromTimeSignature();
+			timeSig = songModel.timeSignature.getBeats();
 			beatUnit = songModel.getBeatUnitFromTimeSignature();
 		}
 		for(var i = 0, c = 200; i < c; i++){
@@ -111,7 +111,7 @@ define(['modules/MidiCSL/src/model/NoteModel_MidiCSL'], function(NoteModel_midiC
 				notes = [ 93 ]; // C7
 			}
 			duration = 0.5;
-			noteObject = new MidiSoundModel({
+			noteObject = new NoteModel_MidiCSL({
 				'midiNote' : notes,
 				'type' : 'metronome',
 				'currentTime' : currentTime,
