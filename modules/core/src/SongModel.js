@@ -274,7 +274,7 @@ define([
 			song.push(this.getComponentsAtBarNumber(barsIndex[i], componentTitle));
 		}
 		return song;
-	}
+	};
 
 	/**
 	 * Function return an array containing index of bars in an unfolded song
@@ -287,7 +287,7 @@ define([
 			pointerbarNumberStructure = pointerbarNumberStructure.concat(this.getUnfoldedSongSection(i));
 		}
 		return pointerbarNumberStructure;
-	}
+	};
 
 	/**
 	 * Function return an array containing index of bars in an unfolded song

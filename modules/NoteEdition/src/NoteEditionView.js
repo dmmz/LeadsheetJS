@@ -8,6 +8,7 @@ define([
 
 	function NoteEditionView(parentHTML) {
 		this.el = undefined;
+		this.initSubscribe();
 	}
 
 	NoteEditionView.prototype.render = function(parentHTML, force, callback) {

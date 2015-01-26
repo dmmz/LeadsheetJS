@@ -5,6 +5,7 @@ define(['modules/LSViewer/src/BarWidthManager'], function(BarWidthManager) {
 				lineWidth = 1160,
 				noteWidth = 20,
 				barsPerLine = 4,
+				marginTop = 100,
 				barWidth = lineWidth / barsPerLine, //	1160 / 4 = 290
 				minWidths,
 				abtlResult,
@@ -15,7 +16,7 @@ define(['modules/LSViewer/src/BarWidthManager'], function(BarWidthManager) {
 			test("BarWidthManager", function(assert) {
 
 				//Test1: no bar is too wide
-				var barWidthMng = new BarWidthManager(lineHeight, lineWidth, noteWidth, barsPerLine);
+				var barWidthMng = new BarWidthManager(lineHeight, lineWidth, noteWidth, barsPerLine, marginTop);
 
 				minWidths = [100, 100, 100, 100,
 					100, 100, 100, 100

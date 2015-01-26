@@ -8,6 +8,7 @@ define([
 	function PlayerController(model, view) {
 		this.model = model || new PlayerModel_MidiCSL();
 		this.view = view;
+		this.initView();
 		this.initSubscribe();
 	}
 
@@ -53,6 +54,10 @@ define([
 		});
 		$.subscribe('PlayerView-toggleLoop', function(el) {
 			self.toggleLoop();
+		});
+
+		$.subscribe('PlayerView-render', function(el){
+			self.initView();
 		});
 	};
 
@@ -112,7 +117,12 @@ define([
 	};
 
 	PlayerController.prototype.onVolumeChange = function(volume) {
-		this.model.setVolume(volume);
+		if(volume === 0) {
+			this.model.mute();
+		}
+		else{
+			this.model.setVolume(volume);
+		}
 	};
 
 	PlayerController.prototype.onChordInstrumentChange = function(instrument) {
@@ -123,15 +133,10 @@ define([
 	};
 
 	/**
-	 * Function is call to load the state of one Player
-	 * @param  {int} currentPlayer represent the index of Player that will be loaded
+	 * Function is call to load the state of the player
 	 */
-	PlayerController.prototype.loadPlayer = function(currentPlayer) {
-		if (typeof this.model.PlayerList[currentPlayer] === "undefined") {
-			UserLog.logAutoFade('error', "No Player available");
-			return;
-		}
-		this.model.setCurrentPosition(currentPlayer);
+	PlayerController.prototype.initView = function() {
+		$.publish('PlayerModel_MidiCSL-onvolumechange', this.model.getMelodyVolume());
 	};
 
 	return PlayerController;

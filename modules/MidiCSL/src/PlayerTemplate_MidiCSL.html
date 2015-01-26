@@ -1,4 +1,11 @@
 <div id="playerview">
+	{{#progressBar}}
+	<div class="progress progress_bar_player">
+		<div class="progress bar warning" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+			<span>00:00 - 00:00</span>
+		</div>
+	</div>
+	{{/progressBar}}
 	<!--<div id="switch_player" class="current_button">Player</div>-->
 	<div id="player_buttons_container">
 		<div id="stop_button_container" class="player_button">
@@ -41,14 +48,15 @@
 
 		<div id="volume_container" class="player_button">
 			<span id="all-sound">
-				<img src="/modules/MidiCSL/img/sound_on.png" class="sound_on" alt="sound_on" title="Mute" /><img src="/modules/MidiCSL/img/sound_off.png" class="sound_off" alt="sound_off" title="Unmute" />
+				<img src="/modules/MidiCSL/img/sound_on.png" class="sound_on" alt="sound_on" title="Mute" /><img src="/modules/MidiCSL/img/sound_2.png" class="sound_2" alt="sound_2" title="Mute" /><img src="/modules/MidiCSL/img/sound_1.png" class="sound_1" alt="sound_1" title="Mute" /><img src="/modules/MidiCSL/img/sound_off.png" class="sound_off" alt="sound_off" title="Unmute" />
 			</span>
 			<div class="player_text">
 				Volume
 			</div>
 		</div>
 		<div id="volume_slider_container">
-			<input type="text" class="volume_slider" value="100" data-slider-min="100" data-slider-max="0.0" data-slider-step="1" data-slider-value="100" data-slider-orientation="vertical" />
+			<img id="volume_controller_barre" src="/modules/MidiCSL/img/barre.png" width="33" height="19" alt="" />
+			<img id="volume_controller" src="/modules/MidiCSL/img/control_sansbarre.png" width="28" height="68" alt="" />
 		</div>
 		
 		{{#displayTempo}}
@@ -143,11 +151,4 @@
 	</div>
 	{{/changeInstrument}}
 
-	{{#progressBar}}
-	<div class="progress progress_bar_player">
-		<div class="progress bar warning" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
-			<span>00:00 - 00:00</span>
-		</div>
-	</div>
-	{{/progressBar}}
 </div>

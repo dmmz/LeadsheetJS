@@ -11,7 +11,6 @@ require.config({
 		mustache: 'external-libs/mustache',
 		bootstrap: 'external-libs/bootstrap/bootstrap.min',
 		//bootstrap: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min',
-		slider: 'external-libs/bootstrap/bootstrap-slider',
 		LeadsheetJS: 'build/LeadsheetJS-1.0.0.min',
 	},
 	shim: {
@@ -88,6 +87,10 @@ define(function(require) {
 	var PlayerController = require('modules/MidiCSL/src/PlayerController_MidiCSL');
 	var PlayerView = require('modules/MidiCSL/src/PlayerView_MidiCSL');
 
+	var CursorModel = require('modules/Cursor/src/CursorModel');
+	var CursorController = require('modules/Cursor/src/CursorController');
+	var CursorView = require('modules/Cursor/src/CursorView');
+
 	var myApp = {};
 
 	var menuM = new MainMenuModel();
@@ -152,6 +155,7 @@ define(function(require) {
 		initPlayerModule(songModel);
 		initChordSequenceModule(songModel);
 		initViewerModule(songModel);
+		initCursor();
 	});
 
 
@@ -191,5 +195,10 @@ define(function(require) {
 		viewer.draw(songModel);
 	}
 
+	function initCursor() {
+		var cM = new CursorModel();
+		var cV = new CursorView();
+		var cC = new CursorController(cM, cV);
+	}
 	window.myApp = myApp;
 });

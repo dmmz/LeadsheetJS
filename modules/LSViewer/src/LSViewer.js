@@ -25,13 +25,11 @@ define([
 			this.BARS_PER_LINE = 4;
 
 			this.ENDINGS_Y = 20; //0 -> thisChordsPosY==40, the greater the closer to stave 
-			this.LABELS_Y = 0;    //like this.ENDINGS_Y
+			this.LABELS_Y = 0; //like this.ENDINGS_Y
 			this.MARGIN_TOP = 100;
 			this.CHORDS_DISTANCE_STAVE = 20; //distance from stave
-			/*
-			this.marginLeft = 10;
-	*/
 
+			// this.marginLeft = 10;
 		};
 		/*	LSViewer.prototype.drawStave = function(section,i) {
 			var left = this.marginLeft + this.barWidth * this.xMeasure;
@@ -47,7 +45,7 @@ define([
 		};*/
 
 		LSViewer.prototype.draw = function(song) {
-	
+
 			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 			this.ctx.scale(this.SCALE, this.SCALE);
 
@@ -101,15 +99,15 @@ define([
 					barDimensions = barWidthMng.getDimensions(songIt.getBarIndex());
 					var barView = new LSBarView(barDimensions);
 					barView.draw(self.ctx, songIt, sectionIt, self.ENDINGS_Y, self.LABELS_Y);
-					
+
 					barChords = cm.getChordsByBarNumber(songIt.getBarIndex());
 					for (var i = 0; i < barChords.length; i++) {
 						chordView = new LSChordView(barChords[i]).draw(
 							self.ctx,
-							barDimensions, 
-							songIt.getBarTimeSignature(), 
+							barDimensions,
+							songIt.getBarTimeSignature(),
 							self.CHORDS_DISTANCE_STAVE);
-					};
+					}
 
 					vxfBeams = beamMng.getVexflowBeams(); // we need to do getVexflowBeams before drawing notes
 					Vex.Flow.Formatter.FormatAndDraw(self.ctx, barView.getVexflowStave(), bar, {

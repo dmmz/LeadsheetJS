@@ -8,6 +8,7 @@ define([
 
 	function ChordEditionView(parentHTML) {
 		this.el = undefined;
+		this.initSubscribe();
 	}
 
 	ChordEditionView.prototype.render = function(parentHTML, force, callback) {
