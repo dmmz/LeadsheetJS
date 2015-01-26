@@ -106,22 +106,25 @@ define(function(require) {
 	myApp.historyM.addToHistory({});
 	myApp.historyM.setCurrentPosition(1);*/
 
+	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
+	initPlayerModule(songModel);
+	initChordSequenceModule(songModel);
+	initViewerModule(songModel);
+	initCursor();
+
 	$.subscribe('MainMenuView-render', function(el) {
 
 		var neV = new NoteEditionView();
 		var neC = new NoteEditionController(neV);
 
-
 		var ceV = new ChordEditionView();
 		var ceC = new ChordEditionController(neV);
 
-
 		var hV = new HarmonizerView();
-		var hC = new HarmonizerController(hV);
+		var hC = new HarmonizerController(songModel, hV);
 
-
-		var cM = new ConstraintModel();
-		var cV = new ConstraintView(cM);
+		var cM = new ConstraintModel(songModel);
+		var cV = new ConstraintView();
 		var cC = new ConstraintController(cM, cV);
 
 		neV.render(undefined, true, function() {
@@ -151,11 +154,6 @@ define(function(require) {
 			});
 		});
 
-		var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
-		initPlayerModule(songModel);
-		initChordSequenceModule(songModel);
-		initViewerModule(songModel);
-		initCursor();
 	});
 
 

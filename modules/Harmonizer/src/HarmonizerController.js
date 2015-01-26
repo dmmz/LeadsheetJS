@@ -1,31 +1,37 @@
 define([
 	'mustache',
 	'modules/core/src/SongModel',
+	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
 	'modules/Harmonizer/src/HarmonizeAPI',
 	'utils/UserLog',
 	'pubsub',
-], function(Mustache, SongModel, HarmonizeAPI, UserLog, pubsub) {
+], function(Mustache, SongModel, SongModel_CSLJson, HarmonizeAPI, UserLog, pubsub) {
 
-	function HarmonizerController(view) {
+	function HarmonizerController(songModel, view) {
+		this.model = songModel;
 		this.view = view;
 		var self = this;
-		$.subscribe('HarmonizerView-compute', function(el, idSong, style) {
-			self.computeHarmonize(idSong, style);
+		$.subscribe('HarmonizerView-compute', function(el, style) {
+			self.computeHarmonize(style);
 		});
 	}
 
-	HarmonizerController.prototype.computeHarmonize = function(idSong, style) {
+	HarmonizerController.prototype.computeHarmonize = function(style) {
 		var self = this;
 		if (!style) {
 			style = "Take6";
 		}
+		var idSong = "517cc0c058e3388155000001";
+		// TODO, when servlet will work with a songModel as input
+		// var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.model);
 		$('#harmonize').html('Computing <div id="followingBallsG"><div id="followingBallsG_1" class="followingBallsG"></div><div id="followingBallsG_2" class="followingBallsG"></div><div id="followingBallsG_3" class="followingBallsG"></div><div id="followingBallsG_4" class="followingBallsG"></div></div>');
 		var harm = new HarmonizeAPI();
 		harm.harmonizeAPI(idSong, style, function(data) {
+			console.log(data);
 			$('#harmonize').html('Harmonize');
 			if (data.success === true) {
 				UserLog.logAutoFade('success', 'Harmonization is finished');
-				this.view.updateHarmonizeView(data.sequence);
+				SongModel_CSLJson.importFromMusicCSLJSON(data.sequence, this.model);
 			} else {
 				UserLog.logAutoFade('error', 'Harmonization is finished');
 			}
