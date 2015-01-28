@@ -109,7 +109,7 @@ define([
 			$.publish('NoteEditionView-setSilence');
 		});
 		$('#regular-note').click(function() {
-			$.publish('NoteEditionView-setCurrKey', 'B');
+			$.publish('NoteEditionView-setCurrKey', 0);
 		});
 		$('#delete-note').click(function() {
 			$.publish('NoteEditionView-deleteNote');

@@ -29,7 +29,16 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 
 			this.songModel = songModel;
 
-			var initVolume = (typeof option !== "undefined" && typeof(option.volume) !== "undefined") ? option.volume : 0.7;
+			var initVolume;
+			if ((typeof option !== "undefined" && typeof(option.volume) !== "undefined")) {
+				// case that developper explicitly declared volume
+				initVolume = option.volume;
+			} else {
+				// natural case (it use storage item to get last user volume)
+				initVolume = this.initVolume(0.7);
+			}
+
+
 			this.chords = {
 				volume: initVolume,
 				tmpVolume: initVolume,
@@ -135,6 +144,16 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 			$.publish('PlayerModel_MidiCSL-toggleMetronome', true);
 		};
 
+
+
+		PlayerModel_MidiCSL.prototype.initVolume = function(volume, force) {
+			oldVolume = localStorage.getItem("player-volume");
+			if (oldVolume === null) {
+				return volume;
+			}
+			return oldVolume;
+		};
+
 		PlayerModel_MidiCSL.prototype.setVolume = function(volume) {
 			if (typeof volume === "undefined" || isNaN(volume)) {
 				throw 'PlayerModel_MidiCSL - setVolume - volume must be a number ' + volume;
@@ -142,6 +161,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 			$.publish('PlayerModel_MidiCSL-onvolumechange', volume);
 			this.setMelodyVolume(volume);
 			this.setChordsVolume(volume);
+			localStorage.setItem("player-volume", volume);
 		};
 
 		PlayerModel_MidiCSL.prototype.getChordsVolume = function() {
@@ -216,7 +236,10 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 				throw 'PlayerModel_MidiCSL - setPositionInPercent - positionInPercent must be a float ' + positionInPercent;
 			}
 			this.positionInPercent = positionInPercent;
-			$.publish('PlayerModel_MidiCSL-onPosition', {'positionInPercent': positionInPercent, 'songDuration':this.songDuration});
+			$.publish('PlayerModel_MidiCSL-onPosition', {
+				'positionInPercent': positionInPercent,
+				'songDuration': this.songDuration
+			});
 		};
 
 		/**
@@ -235,7 +258,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 		};
 
 		PlayerModel_MidiCSL.prototype.getSongDuration = function() {
-			return this.songDuration? this.songDuration: 0;
+			return this.songDuration ? this.songDuration : 0;
 		};
 
 		PlayerModel_MidiCSL.prototype.getBeatDuration = function(tempo) {
@@ -396,19 +419,19 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 			var instruments = {
 				0: "acoustic_grand_piano",
 				/*		27 : "electric_guitar_clean",
-	30 : "distortion_guitar",
-	24 : "acoustic_guitar_nylon",
-	25 : "acoustic_guitar_steel",
-	26 : "electric_guitar_jazz",
-	33 : "electric_bass_finger",
-	34 : "electric_bass_pick",
-	56 : "trumpet",
-	61 : "brass_section",
-	64 : "soprano_sax",*/
+				30 : "distortion_guitar",
+				24 : "acoustic_guitar_nylon",
+				25 : "acoustic_guitar_steel",
+				26 : "electric_guitar_jazz",
+				33 : "electric_bass_finger",
+				34 : "electric_bass_pick",
+				56 : "trumpet",
+				61 : "brass_section",
+				64 : "soprano_sax",*/
 				65: "alto_sax",
 				/*		66 : "tenor_sax",
-	67 : "baritone_sax",
-	73 : "flute",*/
+				67 : "baritone_sax",
+				73 : "flute",*/
 				116: "taiko_drum"
 			};
 			return instruments;

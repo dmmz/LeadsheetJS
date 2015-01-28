@@ -110,12 +110,12 @@ define(function(require) {
 	initPlayerModule(songModel);
 	initChordSequenceModule(songModel);
 	initViewerModule(songModel);
-	initCursor();
+	var cursor = initCursor();
 
 	$.subscribe('MainMenuView-render', function(el) {
 
 		var neV = new NoteEditionView();
-		var neC = new NoteEditionController(neV);
+		var neC = new NoteEditionController(songModel, cursor, neV);
 
 		var ceV = new ChordEditionView();
 		var ceC = new ChordEditionController(neV);
@@ -189,14 +189,15 @@ define(function(require) {
 	function initViewerModule(songModel) {
 		var renderer = new Vex.Flow.Renderer($('#score')[0], Vex.Flow.Renderer.Backends.CANVAS);
 		var ctx = renderer.getContext("2d");
-		var viewer = new LSViewer(ctx);
-		viewer.draw(songModel);
+		myApp.viewer = new LSViewer(ctx);
+		myApp.viewer.draw(songModel);
 	}
 
 	function initCursor() {
 		var cM = new CursorModel();
 		var cV = new CursorView();
 		var cC = new CursorController(cM, cV);
+		return cM;
 	}
 	window.myApp = myApp;
 });

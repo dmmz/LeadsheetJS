@@ -28,7 +28,6 @@ define([
 	CursorModel.prototype.setPos = function(pos) {
 		if (!(pos instanceof Array)) pos = [pos, pos];
 		this.pos = pos;
-		console.log('setPos', this.pos);
 		$.publish('CursorModel-setPos', this.pos);
 	};
 
@@ -50,7 +49,6 @@ define([
 			throw 'CursorModel - setIndexPos, arguments not well defined ' + 'index:' + index + ' - pos:' + pos;
 		}
 		this.pos[index] = pos;
-		console.log('setIndexPos', this.pos);
 		$.publish('CursorModel-setPos', this.pos);
 	};
 

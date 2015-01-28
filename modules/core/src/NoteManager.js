@@ -1,8 +1,9 @@
 define(['modules/core/src/NoteModel'], function(NoteModel) {
 	function NoteManager() {
-			this.notes = [];
-		}
-		//Interface functions (this functions are also in ChordManagerModel  )
+		this.notes = [];
+	}
+
+	// Interface functions (this functions are also in ChordManagerModel)
 
 	/**
 	 * @interface
@@ -56,6 +57,9 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 	 * @return {Array}   array of NoteModel
 	 */
 	NoteManager.prototype.getNotes = function(from, to) {
+		if(from === to && typeof this.notes[from] !== "undefined"){
+			return [this.notes[from]];
+		}
 		return this.notes.slice(from, to);
 	};
 
@@ -192,7 +196,7 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 
 	NoteManager.prototype.getNotesAtBarNumber = function(barNumber, song) {
 		if (!song) {
-			throw "getNotesAtBarNumber: incorrect song parameter";
+			throw "NoteManager - getNotesAtBarNumber - incorrect song parameter";
 		}
 
 		var startBeat = 1,
@@ -204,7 +208,7 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 		endBeat = startBeat + song.getBarNumBeats(i, beats);
 
 		if (this.getTotalDuration() + 1 < endBeat) {
-			throw "notes on bar " + barNumber + " do not fill the total bar duration";
+			throw "NoteManager - getNotesAtBarNumber - notes on bar " + barNumber + " do not fill the total bar duration";
 		}
 		return this.getNotes(
 			this.getNextIndexNoteByBeat(startBeat),
