@@ -1,11 +1,12 @@
 define([
 	'mustache',
 	'modules/core/src/SongModel',
+	'modules/core/src/NoteManager',
 	'modules/Cursor/src/CursorModel',
 	'utils/NoteUtils',
 	'utils/UserLog',
 	'pubsub',
-], function(Mustache, SongModel, CursorModel, NoteUtils, UserLog, pubsub) {
+], function(Mustache, SongModel, NoteManager, CursorModel, NoteUtils, UserLog, pubsub) {
 
 	function NoteEditionController(songModel, cursor, view) {
 		this.songModel = songModel || new SongModel();
@@ -293,12 +294,12 @@ define([
 	NoteEditionController.prototype.pasteNotes = function(notesToPaste) {
 		console.log('pasteNotes');
 		notesToPaste = notesToPaste || this.buffer;
-		var tmpNm = new NoteManagerModel();
-		tmpNm.setNotes(this.buffer);
+		var tmpNm = new NoteManager();
+		tmpNm.setNotes(notesToPaste);
 		tmpNm.reviseNotes();
 		this.buffer = tmpNm.getNotes();
 		var noteManager = this.songModel.getComponent('notes');
-		noteManager.notesSplice(this.cursor.getPos(), notesToPaste);
+		noteManager.notesSplice(this.cursor.getPos(), this.buffer);
 		myApp.viewer.draw(this.songModel);
 	};
 

@@ -5,7 +5,8 @@ define([
 	'pubsub',
 ], function(Mustache, SongModel, UserLog, pubsub) {
 
-	function CursorController(model, view) {
+	function CursorController(songModel, model, view) {
+		this.songModel = songModel;
 		this.model = model || new CursorModel();
 		this.view = view;
 		this.initSubscribe();
@@ -33,7 +34,7 @@ define([
 	 * @param {integer} index
 	 * @param {string} editMode "notes" or "chords"
 	 */
-	CursorController.prototype.setCursor = function(index, editMode) {
+	CursorController.prototype.setCursor = function(index) {
 		if (typeof index === "undefined" || isNaN(index)) {
 			throw 'CursorController - setCursor - index is not correct ' + index;
 		}
@@ -49,24 +50,23 @@ define([
 		}
 
 		console.log("CursorController - setCursor " + index);
-		//var manager = this.songModel.getComponent(editMode);
-		//index = controlIndex(index, 0, manager.getTotal());
+		index = controlIndex(index, 0, this.songModel.getComponent('notes').getTotal());
 		this.model.setPos(index);
+		myApp.viewer.draw(this.songModel);
 	};
 
-	CursorController.prototype.expandSelected = function(inc, editMode) {
+	CursorController.prototype.expandSelected = function(inc) {
 		if (typeof inc === "undefined" || isNaN(inc)) {
 			throw 'CursorController - expandSelected - inc is not correct ' + inc;
 		}
 		console.log("CursorController - expandSelected " + inc);
-		/*var manager = this.songModel.getComponent(editMode);
-		this.model.expand(inc, manager.getTotal());*/
-		this.model.expand(inc, 10);
+		this.model.expand(inc, this.songModel.getComponent('notes').getTotal());
+		myApp.viewer.draw(this.songModel);
 	};
 
 	CursorController.prototype.moveCursor = function(inc) {
 		console.log("CursorController - moveCursor " + inc);
-		this.model.setPos(this.model.getEnd() + inc);
+		this.setCursor(this.model.getEnd() + inc);
 	};
 
 

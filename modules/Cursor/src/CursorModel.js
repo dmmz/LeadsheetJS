@@ -73,9 +73,13 @@ define([
 			this.sideSelected = (inc > 0) ? 1 : 0;
 		}
 		var newPos = this.pos[this.sideSelected] + inc;
-		if (newPos >= 0 && newPos < numNotes) {
-			this.setIndexPos(this.sideSelected, newPos);
+		if (newPos < 0) {
+			newPos = 0;
 		}
+		if (newPos >= numNotes) {
+			newPos = numNotes - 1;
+		}
+		this.setIndexPos(this.sideSelected, newPos);
 	};
 
 	CursorModel.prototype.getRelativeCursor = function(index) {

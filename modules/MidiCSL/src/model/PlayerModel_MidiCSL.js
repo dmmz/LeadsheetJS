@@ -147,7 +147,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 
 
 		PlayerModel_MidiCSL.prototype.initVolume = function(volume, force) {
-			oldVolume = localStorage.getItem("player-volume");
+			var oldVolume = localStorage.getItem("player-volume");
 			if (oldVolume === null) {
 				return volume;
 			}

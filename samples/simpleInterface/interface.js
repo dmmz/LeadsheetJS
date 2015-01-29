@@ -110,12 +110,13 @@ define(function(require) {
 	initPlayerModule(songModel);
 	initChordSequenceModule(songModel);
 	initViewerModule(songModel);
-	var cursor = initCursor();
+	var cursorC = initCursor(songModel);
+	myApp.viewer.addDrawableModel(cursorC.view, 11);
 
 	$.subscribe('MainMenuView-render', function(el) {
 
 		var neV = new NoteEditionView();
-		var neC = new NoteEditionController(songModel, cursor, neV);
+		var neC = new NoteEditionController(songModel, cursorC.model, neV);
 
 		var ceV = new ChordEditionView();
 		var ceC = new ChordEditionController(neV);
@@ -193,11 +194,11 @@ define(function(require) {
 		myApp.viewer.draw(songModel);
 	}
 
-	function initCursor() {
+	function initCursor(songModel) {
 		var cM = new CursorModel();
-		var cV = new CursorView();
-		var cC = new CursorController(cM, cV);
-		return cM;
+		var cV = new CursorView(cM);
+		var cC = new CursorController(songModel, cM, cV);
+		return cC;
 	}
 	window.myApp = myApp;
 });
