@@ -53,10 +53,10 @@ define([
 	NoteEditionView.prototype.initController = function() {
 		// pitch
 		$('#aug-note').click(function() {
-			$.publish('NoteEditionView-setCurrKey', 1);
+			$.publish('NoteEditionView-setPitch', 1);
 		});
 		$('#sub-note').click(function() {
-			$.publish('NoteEditionView-setCurrKey', -1);
+			$.publish('NoteEditionView-setPitch', -1);
 		});
 
 		// Alteration
@@ -109,7 +109,7 @@ define([
 			$.publish('NoteEditionView-setSilence');
 		});
 		$('#regular-note').click(function() {
-			$.publish('NoteEditionView-setCurrKey', 0);
+			$.publish('NoteEditionView-setPitch', 0);
 		});
 		$('#delete-note').click(function() {
 			$.publish('NoteEditionView-deleteNote');
@@ -159,10 +159,10 @@ define([
 			if (self.isEditMode("notes")) {
 				if (keyCode == 38 || keyCode == 40) { // up & down arrows
 					var inc = (keyCode == 38) ? 1 : -1;
-					$.publish('NoteEditionView-setCurrKey', inc);
+					$.publish('NoteEditionView-setPitch', inc);
 					stopEvent(evt);
 				} else if (NoteUtils.getValidPitch(key) != -1 && (!evt.ctrlKey)) {
-					$.publish('NoteEditionView-setCurrKey', key.toUpperCase());
+					$.publish('NoteEditionView-setPitch', key.toUpperCase());
 					stopEvent(evt);
 				} else if (ACC_KEYS.hasOwnProperty(key) && (!evt.ctrlKey)) {
 					var acc = ACC_KEYS[key];

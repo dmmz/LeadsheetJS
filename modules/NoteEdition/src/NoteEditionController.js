@@ -20,8 +20,8 @@ define([
 	 */
 	NoteEditionController.prototype.initSubscribe = function() {
 		var self = this;
-		$.subscribe('NoteEditionView-setCurrKey', function(el, decal) {
-			self.setCurrKey(decal);
+		$.subscribe('NoteEditionView-setPitch', function(el, decal) {
+			self.setPitch(decal);
 		});
 		$.subscribe('NoteEditionView-addAccidental', function(el, accidental) {
 			self.addAccidental(accidental);
@@ -59,8 +59,7 @@ define([
 	 * Set selected notes to a key
 	 * @param {int|letter} If decal is a int, than it will be a decal between current note and wanted note in semi tons, if decal is a letter then current note is the letter
 	 */
-	NoteEditionController.prototype.setCurrKey = function(decalOrNote) {
-		console.log('setCurrKey', decalOrNote);
+	NoteEditionController.prototype.setPitch= function(decalOrNote) {
 		var selNotes = this.getSelectedNotes();
 		var note;
 		for (var i = 0, c = selNotes.length; i < c; i++) {
@@ -102,7 +101,6 @@ define([
 	 * @param {String} durKey	represents the duration
 	 */
 	NoteEditionController.prototype.setCurrDuration = function(duration) {
-		console.log('setCurrDuration', duration);
 		var arrDurs = {
 			"1": "64",
 			"2": "32",
@@ -141,10 +139,8 @@ define([
 	};
 
 	NoteEditionController.prototype.setTie = function() {
-		console.log('setTie');
 		var selNotes = this.getSelectedNotes();
-		var note, note2;
-		console.log(selNotes);
+		var note;
 		if (selNotes.length == 2) {
 			for (var i = 0; i < selNotes.length; i++) {
 				note = selNotes[i];
@@ -166,8 +162,6 @@ define([
 
 
 	NoteEditionController.prototype.setTuplet = function() {
-		console.log('setTuplet');
-
 		function getDuration(notes) {
 			var dur = 0;
 			for (var i = 0; i < notes.length; i++) {
@@ -195,8 +189,8 @@ define([
 				tmpNote = firstNote.clone();
 				tmpNote.setDuration(newDuration);
 
-				if (i == 0) tmpNote.setTuplet("start", timeModif)
-				else if (i == 1) tmpNote.setTuplet("middle", timeModif);
+				if (i === 0) tmpNote.setTuplet("start", timeModif);
+				else if (i === 1) tmpNote.setTuplet("middle", timeModif);
 				else tmpNote.setTuplet("stop", timeModif);
 
 				tupletsNote.push(tmpNote);
@@ -247,7 +241,6 @@ define([
 
 
 	NoteEditionController.prototype.setSilence = function() {
-		console.log('setSilence');
 		var selNotes = this.getSelectedNotes();
 		var note;
 		for (var i = 0; i < selNotes.length; i++) {
@@ -264,16 +257,17 @@ define([
 
 
 	NoteEditionController.prototype.deleteNote = function() {
-		console.log('deleteNote');
 		var noteManager = this.songModel.getComponent('notes');
-		noteManager.deleteNote(this.cursor.getPos());
+		var position = this.cursor.getPos();
+		for (var cInit = position[0], cEnd = position[1]; cInit <= cEnd; cInit++) {
+			noteManager.deleteNote(cInit);
+		}
 		var numNotes = noteManager.getTotal();
 		this.cursor.revisePos(numNotes);
 		myApp.viewer.draw(this.songModel);
 	};
 
 	NoteEditionController.prototype.addNote = function() {
-		console.log('addNote');
 		var noteManager = this.songModel.getComponent('notes');
 		var pos = this.cursor.getEnd();
 		var noteToClone = noteManager.getNotes(pos, pos + 1)[0];
@@ -285,28 +279,25 @@ define([
 
 
 	NoteEditionController.prototype.copyNotes = function() {
-		console.log('copyNotes');
 		var noteManager = this.songModel.getComponent('notes');
 		this.buffer = noteManager.cloneElems(this.cursor.getStart(), this.cursor.getEnd() + 1);
 		myApp.viewer.draw(this.songModel);
 	};
 
 	NoteEditionController.prototype.pasteNotes = function(notesToPaste) {
-		console.log('pasteNotes');
 		notesToPaste = notesToPaste || this.buffer;
 		var tmpNm = new NoteManager();
 		tmpNm.setNotes(notesToPaste);
 		tmpNm.reviseNotes();
-		this.buffer = tmpNm.getNotes();
+		notesToPaste = tmpNm.getNotes();
 		var noteManager = this.songModel.getComponent('notes');
-		noteManager.notesSplice(this.cursor.getPos(), this.buffer);
+		noteManager.notesSplice(this.cursor.getPos(), notesToPaste);
 		myApp.viewer.draw(this.songModel);
 	};
 
-
 	NoteEditionController.prototype.getSelectedNotes = function() {
 		var noteManager = this.songModel.getComponent('notes');
-		var selectedNotes = noteManager.getNotes(this.cursor.getStart(), this.cursor.getEnd());
+		var selectedNotes = noteManager.getNotes(this.cursor.getStart(), this.cursor.getEnd() + 1);
 		return selectedNotes;
 	};
 

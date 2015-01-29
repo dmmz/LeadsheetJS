@@ -48,8 +48,6 @@ define([
 			}
 			return index;
 		}
-
-		console.log("CursorController - setCursor " + index);
 		index = controlIndex(index, 0, this.songModel.getComponent('notes').getTotal());
 		this.model.setPos(index);
 		myApp.viewer.draw(this.songModel);
@@ -59,13 +57,11 @@ define([
 		if (typeof inc === "undefined" || isNaN(inc)) {
 			throw 'CursorController - expandSelected - inc is not correct ' + inc;
 		}
-		console.log("CursorController - expandSelected " + inc);
 		this.model.expand(inc, this.songModel.getComponent('notes').getTotal());
 		myApp.viewer.draw(this.songModel);
 	};
 
 	CursorController.prototype.moveCursor = function(inc) {
-		console.log("CursorController - moveCursor " + inc);
 		this.setCursor(this.model.getEnd() + inc);
 	};
 
