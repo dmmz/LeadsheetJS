@@ -5,7 +5,8 @@ define([
 	'pubsub',
 ], function(Mustache, SongModel, UserLog, pubsub) {
 
-	function CursorView(parentHTML) {
+	function CursorView(model, parentHTML) {
+		this.model = model; // Cursor view need information about his model, this is only because draw function is call by an external viewer
 		this.initSubscribe();
 		this.initController();
 		this.initKeyboard();
@@ -48,10 +49,18 @@ define([
 				}
 				stopEvent(evt);
 			} else if (keyCode == 36) { //begin
-				$.publish('CursorView-setCursor', 0);
+				if (evt.shiftKey) {
+					$.publish('CursorView-expandSelected', -10000);
+				} else {
+					$.publish('CursorView-setCursor', 0);
+				}
 				stopEvent(evt);
 			} else if (keyCode == 35) { //end
-				$.publish('CursorView-setCursor', 10000);
+				if (evt.shiftKey) {
+					$.publish('CursorView-expandSelected', 10000);
+				} else {
+					$.publish('CursorView-setCursor', 10000);
+				}
 				stopEvent(evt);
 			}
 		});
@@ -68,13 +77,34 @@ define([
 	 */
 	CursorView.prototype.initSubscribe = function() {
 		var self = this;
-		$.subscribe('CursorModel-setPos', function(el, position) {
-			self.drawCursor(position);
-		});
+		$.subscribe('CursorModel-setPos', function(el, position) {});
 	};
 
-	CursorView.prototype.drawCursor = function(position) {
-		console.log('CursorView-drawCursor-TODO', position);
+	CursorView.prototype.draw = function(viewer) {
+		var position = this.model.getPos();
+		var cursorHeight = 80;
+		var cursorMarginTop = 20;
+		var cursorMarginLeft = 2;
+		var cursorMarginRight = 8;
+
+		var stavePos, pos;
+		var saveFillColor = viewer.ctx.fillStyle;
+		viewer.ctx.fillStyle = "#0099FF";
+		viewer.ctx.globalAlpha = 0.2;
+		for (var cInit = position[0], cEnd = position[1]; cInit <= cEnd; cInit++) {
+			if (viewer.vxfNotes[cInit].voice !== null) {
+				pos = viewer.vxfNotes[cInit].getBoundingBox();
+				stavePos = viewer.vxfNotes[cInit].stave;
+				viewer.ctx.fillRect(
+					pos.x - cursorMarginLeft,
+					stavePos.y + cursorMarginTop,
+					pos.w + cursorMarginLeft + cursorMarginRight,
+					cursorHeight
+				);
+			}
+		}
+		viewer.ctx.fillStyle = saveFillColor;
+		viewer.ctx.globalAlpha = 1;
 	};
 
 

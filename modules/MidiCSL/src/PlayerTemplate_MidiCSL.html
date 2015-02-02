@@ -35,17 +35,6 @@
 			</div>
 		</div>
 
-		{{#displayLoop}}
-		<div id="loop_button_container" class="player_button">
-			<div id="loop_button">
-				<img src="/modules/MidiCSL/img/loop_grey.png" alt="loop" title="Loop is off" />
-			</div>
-			<div class="player_text">
-				Loop
-			</div>
-		</div>
-		{{/displayLoop}}
-
 		<div id="volume_container" class="player_button">
 			<span id="all-sound">
 				<img src="/modules/MidiCSL/img/sound_on.png" class="sound_on" alt="sound_on" title="Mute" /><img src="/modules/MidiCSL/img/sound_2.png" class="sound_2" alt="sound_2" title="Mute" /><img src="/modules/MidiCSL/img/sound_1.png" class="sound_1" alt="sound_1" title="Mute" /><img src="/modules/MidiCSL/img/sound_off.png" class="sound_off" alt="sound_off" title="Unmute" />
@@ -68,6 +57,17 @@
 		</div>
 		{{/displayTempo}}
 
+		{{#displayLoop}}
+		<div id="loop_button_container" class="player_button">
+			<div id="loop_button">
+				<img src="/modules/MidiCSL/img/loop_grey.png" alt="loop" title="Loop is off" />
+			</div>
+			<div class="player_text">
+				Loop
+			</div>
+		</div>
+		{{/displayLoop}}
+
 		{{#displayMetronome}}
 		<div id="metronome_container" class="player_button">
 			<span id="all-metronome">
@@ -86,10 +86,6 @@
 			<div id="chords_instrument_container">
 				<select>
 					<option>--None--</option>
-					<option value="basic_rhythm">Basic rhythm</option>
-					<option value="syncopated_variation">Syncopated variation</option>
-					<option value="toquinho_variation">Toquinho variation</option>
-					<option value="percussive_rhythm">Percussive rhythm</option>
 					<optgroup label="Midi instrument">
 						<option value="0" selected>acoustic_grand_piano</option>
 	<!-- 						<option value="1">electric_guitar_clean</option>

@@ -15,6 +15,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		this.tie = (param && param.tie) ? param.tie : undefined; // contain "start", "stop", "stop_start"
 		this.tuplet = (param && param.tuplet) ? param.tuplet : undefined;
 		this.timeModification = (param && param.timeModification) ? param.timeModification : undefined;
+
 		if (typeof this.tuplet !== "undefined") {
 			this.setTuplet(this.tuplet, this.timeModification);
 		}
@@ -34,7 +35,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 	NoteModel.prototype.toString = function(string, index) {
 		return this.pitchClass[0] + this.accidental[0] + this.octave[0];
 	};
-	
+
 	NoteModel.prototype.setNoteFromString = function(string, index) {
 		index = index || 0;
 		var re = /[a-g|A-G](#{1,2}|b{1,2}|n)?(-[w|h|q|8|16|32|64])?\.{0,2}\/\d/;
@@ -143,6 +144,13 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		return this.tie;
 	};
 
+	NoteModel.prototype.removeTie = function(tieType) {
+		if (this.tie != "stop_start") this.tie = null;
+		else {
+			if (tieType === undefined) throw "tieType not defined";
+			this.tie = (tieType == "start") ? "stop" : "start";
+		}
+	};
 	/**
 	 * if tieType not specified, returns boolean if there is actually a tie (no matter which type)
 	 * if tieType is specified checks in a 'soft' way, that means that for tie "stop_start", both isTie("start")
@@ -242,30 +250,11 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 	 */
 	NoteModel.prototype.getDuration = function(numBeats) {
 		var dur = 0.0;
-		switch (this.duration) {
-			case "w":
-				//problem for whole rest can't distinguish if duration is 4 or more on time sigs >= 5/4. For those time sigs, dur=4
-				if (!this.isRest) dur = 4;
-				else dur = (typeof numBeats === "undefined" || numBeats > 4) ? 4 : numBeats;
-				break;
-			case "h":
-				dur = 2;
-				break;
-			case "q":
-				dur = 1;
-				break;
-			case "8":
-				dur = 0.5;
-				break;
-			case "16":
-				dur = 0.25;
-				break;
-			case "32":
-				dur = 0.125;
-				break;
-			case "64":
-				dur = 0.0625;
-				break;
+		dur = NoteUtils.getBeatFromStringDuration(this.duration);
+		if (dur === 4) {
+			if (this.isRest) {
+				dur = (typeof numBeats === "undefined" || numBeats > 4) ? 4 : numBeats;
+			}
 		}
 		if (this.timeModification != null) {
 			var nums = this.timeModification.split("/");
@@ -277,6 +266,13 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 			dur += durTmp;
 		}
 		return dur;
+	};
+
+	NoteModel.prototype.setDuration = function(dur) {
+		if (typeof dur === "number"){
+			dur = NoteUtils.getStringFromBeatDuration(dur);
+		}
+		this.duration = dur;
 	};
 
 

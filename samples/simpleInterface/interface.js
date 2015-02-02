@@ -106,22 +106,26 @@ define(function(require) {
 	myApp.historyM.addToHistory({});
 	myApp.historyM.setCurrentPosition(1);*/
 
+	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
+	initPlayerModule(songModel);
+	initChordSequenceModule(songModel);
+	initViewerModule(songModel);
+	var cursorC = initCursor(songModel);
+	myApp.viewer.addDrawableModel(cursorC.view, 11);
+
 	$.subscribe('MainMenuView-render', function(el) {
 
 		var neV = new NoteEditionView();
-		var neC = new NoteEditionController(neV);
-
+		var neC = new NoteEditionController(songModel, cursorC.model, neV);
 
 		var ceV = new ChordEditionView();
 		var ceC = new ChordEditionController(neV);
 
-
 		var hV = new HarmonizerView();
-		var hC = new HarmonizerController(hV);
+		var hC = new HarmonizerController(songModel, hV);
 
-
-		var cM = new ConstraintModel();
-		var cV = new ConstraintView(cM);
+		var cM = new ConstraintModel(songModel);
+		var cV = new ConstraintView();
 		var cC = new ConstraintController(cM, cV);
 
 		neV.render(undefined, true, function() {
@@ -151,11 +155,6 @@ define(function(require) {
 			});
 		});
 
-		var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
-		initPlayerModule(songModel);
-		initChordSequenceModule(songModel);
-		initViewerModule(songModel);
-		initCursor();
 	});
 
 
@@ -191,14 +190,15 @@ define(function(require) {
 	function initViewerModule(songModel) {
 		var renderer = new Vex.Flow.Renderer($('#score')[0], Vex.Flow.Renderer.Backends.CANVAS);
 		var ctx = renderer.getContext("2d");
-		var viewer = new LSViewer(ctx);
-		viewer.draw(songModel);
+		myApp.viewer = new LSViewer(ctx);
+		myApp.viewer.draw(songModel);
 	}
 
-	function initCursor() {
+	function initCursor(songModel) {
 		var cM = new CursorModel();
-		var cV = new CursorView();
-		var cC = new CursorController(cM, cV);
+		var cV = new CursorView(cM);
+		var cC = new CursorController(songModel, cM, cV);
+		return cC;
 	}
 	window.myApp = myApp;
 });

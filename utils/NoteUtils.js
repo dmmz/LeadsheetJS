@@ -1,6 +1,28 @@
 define(function() {
-
 	var NoteUtils = {};
+	NoteUtils.PITCH_CLASSES = ["C", "D", "E", "F", "G", "A", "B"];
+	NoteUtils.DURATIONS = {
+		4: "w",
+		2: "h",
+		1: "q",
+		0.5: "8",
+		0.25: "16",
+		0.125: "32",
+		0.675: "64"
+	};
+
+	NoteUtils.getStringFromBeatDuration = function(beat) {
+		return NoteUtils.DURATIONS[beat];
+	};
+
+	NoteUtils.getBeatFromStringDuration = function(string) {
+		for (var dur in NoteUtils.DURATIONS) {
+			if (NoteUtils.DURATIONS[dur] === string) {
+				return Number(dur);
+			}
+		}
+	};
+
 	/**
 	 * sorting pitches in case of polyphony because Vexflow adds accidentals in order relating to pitch order,
 	 * not to the actual array order
@@ -157,5 +179,48 @@ define(function() {
 		}
 
 	};
+
+	NoteUtils.getClosestKey = function(pitch, pitchClass2) {
+		var pitchClass = pitch.split('/')[0];
+		var pos1 = this.getKeyPosition(pitchClass);
+		var pos2 = this.getKeyPosition(pitchClass2);
+		var d1 = pos2 - pos1;
+		var d2 = this.PITCH_CLASSES.length - Math.abs(d1);
+		if (d1 > 0) d2 *= -1;
+		var inc = (Math.abs(d2) < Math.abs(d1)) ? d2 : d1;
+
+		return this.getKey(pitch, inc);
+	};
+
+	NoteUtils.getKeyPosition = function(key) {
+		for (var i = 0; i < this.PITCH_CLASSES.length; i++) {
+			if (this.PITCH_CLASSES[i] == key.toUpperCase()) break;
+		}
+		return i;
+	};
+
+
+	NoteUtils.getKey = function(key, inc) {
+		var keyParts = key.split("/");
+		var pitch = keyParts[0];
+		var accidentals = "";
+		if (typeof pitch[1] !== "undefined") {
+			accidentals = pitch[1];
+		}
+		var octave = parseInt(keyParts[1], null);
+
+		var newAbsPos = this.getKeyPosition(pitch[0]) + inc;
+		var newPos = newAbsPos % this.PITCH_CLASSES.length;
+		if (newPos < 0) newPos += this.PITCH_CLASSES.length;
+
+		var octavesInc = Math.floor(newAbsPos / this.PITCH_CLASSES.length);
+
+		var newOctave = octave + octavesInc;
+		//range: from e/3 to f/6
+		if ((newOctave <= 1 && newPos < 2) || (newOctave >= 7 && newPos > 3)) return null;
+		else return this.PITCH_CLASSES[newPos] + accidentals + "/" + newOctave;
+	};
+
+
 	return NoteUtils;
 });

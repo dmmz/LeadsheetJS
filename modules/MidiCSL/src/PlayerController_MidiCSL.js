@@ -47,10 +47,10 @@ define([
 		});
 		$.subscribe('PlayerView-onTempo', function(el, tempo) {});
 		$.subscribe('PlayerView-onChordInstrumentChange', function(el, instrument) {
-			self.chordIntrumentChange(instrument);
+			self.onChordInstrumentChange(instrument);
 		});
 		$.subscribe('PlayerView-onMelodyInstrumentChange', function(el, instrument) {
-			self.melodyInstrumentChange(instrument);
+			self.onMelodyInstrumentChange(instrument);
 		});
 		$.subscribe('PlayerView-toggleLoop', function(el) {
 			self.toggleLoop();

@@ -1,8 +1,9 @@
 define(['modules/core/src/NoteModel'], function(NoteModel) {
 	function NoteManager() {
-			this.notes = [];
-		}
-		//Interface functions (this functions are also in ChordManagerModel  )
+		this.notes = [];
+	}
+
+	// Interface functions (this functions are also in ChordManagerModel)
 
 	/**
 	 * @interface
@@ -66,6 +67,33 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 	NoteManager.prototype.setNotes = function(notes) {
 		if (typeof notes !== "undefined") this.notes = notes;
 	};
+
+
+	NoteManager.prototype.insertNote = function(pos, note) {
+		if (isNaN(pos) || !(note instanceof NoteModel)) {
+			throw 'NoteManager - insertNote - attribute incorrect ' + pos + ' ' + note;
+		}
+		this.notes.splice(pos + 1, 0, note);
+	};
+
+	/**
+	 * @interface
+	 *
+	 * returns a copy of the notes from, pos1, to pos2.
+	 * @param  {Integer} pos1 if not specified, 0
+	 * @param  {Integer} pos2 first note that is not taken, e.g if to = 4, notes will be taken from 'from' to 3.
+	 * @return {Array}  array of cloned NoteModel
+	 */
+	NoteManager.prototype.cloneElems = function(pos1, pos2) {
+		var newNotes = [];
+		var notesToClone = this.getNotes(pos1, pos2);
+		var note;
+		notesToClone.forEach(function(note) {
+			newNotes.push(note.clone());
+		});
+		return newNotes;
+	};
+
 
 	/**
 	 * replace notes from pos1 to pos2+1, by default will always replace one note, if we want to insert notes at 
@@ -192,7 +220,7 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 
 	NoteManager.prototype.getNotesAtBarNumber = function(barNumber, song) {
 		if (!song) {
-			throw "getNotesAtBarNumber: incorrect song parameter";
+			throw "NoteManager - getNotesAtBarNumber - incorrect song parameter";
 		}
 
 		var startBeat = 1,
@@ -204,7 +232,7 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 		endBeat = startBeat + song.getBarNumBeats(i, beats);
 
 		if (this.getTotalDuration() + 1 < endBeat) {
-			throw "notes on bar " + barNumber + " do not fill the total bar duration";
+			throw "NoteManager - getNotesAtBarNumber - notes on bar " + barNumber + " do not fill the total bar duration";
 		}
 		return this.getNotes(
 			this.getNextIndexNoteByBeat(startBeat),
@@ -229,6 +257,112 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 	};
 
 	/**
+	 * this function is called after deleting a notes or copy and pasting notes, to check if there is a malformed tuplet or a malformed tie
+	 * if it does, it deletes the tie or the tuplet
+	 * @return {[type]} [description]
+	 */
+	NoteManager.prototype.reviseNotes = function(from, to) {
+
+		function getRemoveSet(input, i) {
+			var min = i;
+			var max = i;
+			while (min > 0 && input[min - 1] != "no") {
+				min--;
+			}
+			while (max + 1 < input.length && input[max + 1] != "no") {
+				max++;
+			}
+			return {
+				min: min,
+				max: max
+			};
+		}
+
+		/**
+		 * This function parses input controling that all transitions are valid,
+		 * if it finds a problem, removes the property that causes the error
+		 *
+		 * @param  {Array of NoteModel} notes          notes to modify
+		 * @param  {Object} graph          tranistion graph represents valid transitions
+		 * @param  {Array}  input          array of states, taken from notes
+		 * @param  {[type]} removeFunction function to remove property
+		 */
+		function parser(notes, graph, input, removeFunction) {
+			var prevState, currState;
+			var isTie = [];
+			var states = Object.keys(graph);
+			var iToStartRemoving;
+			var intervalsToRemove = [];
+			for (var i = 0; i < input.length; i++) {
+				prevState = (i < 1) ? "no" : input[i - 1];
+				currState = (i == input.length) ? "no" : input[i];
+
+				if ($.inArray(prevState, states) == -1) {
+					throw "value " + prevState + "(position " + i + ") not specified on transitions graph";
+				}
+				if ($.inArray(currState, graph[prevState]) == -1) {
+
+					iToStartRemove = (currState == "no") ? i - 1 : i;
+					intervalsToRemove.push(getRemoveSet(input, iToStartRemove));
+				}
+			};
+
+			var max, min;
+			for (var i in intervalsToRemove) {
+				max = intervalsToRemove[i].max;
+				min = intervalsToRemove[i].min;
+
+				for (var j = min; j <= max; j++) {
+					NoteModel.prototype[removeFunction].call(notes[j], notes[j].tie);
+				}
+			}
+
+		}
+
+		function checkTuplets(notes) {
+			var note;
+			var states = [];
+			var state;
+			for (var i = 0; i < notes.length; i++) {
+				note = notes[i];
+				state = note.getTuplet() || "no";
+				states.push(state);
+			}
+			parser(notes, {
+					"no": ["no", "start"],
+					"start": ["middle"],
+					"middle": ["stop"],
+					"stop": ["start", "no"]
+				}, states,
+				"removeTuplet"
+			);
+		}
+
+		function checkTies(notes) {
+			var note;
+			var states = [];
+			var state;
+			for (var i = 0; i < notes.length; i++) {
+				note = notes[i];
+				state = note.getTie() || "no";
+				states.push(state);
+			}
+			parser(notes, {
+					"no": ["no", "start"],
+					"start": ["stop", "stop_start"],
+					"stop_start": ["stop", "stop_start"],
+					"stop": ["start", "no"]
+				}, states,
+				"removeTie"
+			);
+
+		}
+		checkTuplets(this.notes);
+		checkTies(this.notes);
+	};
+
+
+	/**
 	 * private function for rounding beats
 	 * we round to avoid problems with triplet as 12.9999999 is less than 13 and that would not work
 	 * @return {[type]} [description]
@@ -236,8 +370,6 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 	function roundBeat(beat) {
 		return Math.round(beat * 1000000) / 1000000;
 	}
-
-
 
 	// NoteManager.prototype.incrOffset = function(offset, dur) {
 	// 	offset += dur;

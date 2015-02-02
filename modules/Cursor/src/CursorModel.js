@@ -28,7 +28,6 @@ define([
 	CursorModel.prototype.setPos = function(pos) {
 		if (!(pos instanceof Array)) pos = [pos, pos];
 		this.pos = pos;
-		console.log('setPos', this.pos);
 		$.publish('CursorModel-setPos', this.pos);
 	};
 
@@ -50,7 +49,6 @@ define([
 			throw 'CursorModel - setIndexPos, arguments not well defined ' + 'index:' + index + ' - pos:' + pos;
 		}
 		this.pos[index] = pos;
-		console.log('setIndexPos', this.pos);
 		$.publish('CursorModel-setPos', this.pos);
 	};
 
@@ -75,9 +73,13 @@ define([
 			this.sideSelected = (inc > 0) ? 1 : 0;
 		}
 		var newPos = this.pos[this.sideSelected] + inc;
-		if (newPos >= 0 && newPos < numNotes) {
-			this.setIndexPos(this.sideSelected, newPos);
+		if (newPos < 0) {
+			newPos = 0;
 		}
+		if (newPos >= numNotes) {
+			newPos = numNotes - 1;
+		}
+		this.setIndexPos(this.sideSelected, newPos);
 	};
 
 	CursorModel.prototype.getRelativeCursor = function(index) {
