@@ -24,7 +24,12 @@ define(function(require) {
 
 		//if (!MusicCSLJSON._id && !id)	throw "SongModel: importing from MusicCSL no id specified";
 
-		//there are 3 cases: id by param, _id is 'MongoId' or _id is string
+		//there are 4 cases: id by param, _id is 'MongoId' from php, _id is 'MongoId' from javascript or _id is string
+		if(typeof MusicCSLJSON._id !== "undefined"){
+			if(typeof MusicCSLJSON._id['$oid'] !== "undefined") {
+				MusicCSLJSON._id['$id'] = MusicCSLJSON._id['$oid'];
+			}
+		}
 		songModel._id = (MusicCSLJSON._id) ? MusicCSLJSON._id['$id'] : id;
 		if (!songModel._id)
 			songModel._id = MusicCSLJSON._id;
@@ -100,7 +105,7 @@ define(function(require) {
 		MusicCSLJSON.composer = composer;
 		MusicCSLJSON.title = songModel.getTitle();
 
-		MusicCSLJSON.time = songModel.getTimeSignature();
+		MusicCSLJSON.time = songModel.getTimeSignature().toString();
 
 		MusicCSLJSON.keySignature = songModel.getTonality();
 		MusicCSLJSON.tempo = songModel.getTempo();

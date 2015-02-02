@@ -21,13 +21,11 @@ define([
 		if (!style) {
 			style = "Take6";
 		}
-		var idSong = "517cc0c058e3388155000001";
-		// TODO, when servlet will work with a songModel as input
-		// var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.model);
+		//var idSong = "517cc0c058e3388155000001";
+		var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.model);
 		$('#harmonize').html('Computing <div id="followingBallsG"><div id="followingBallsG_1" class="followingBallsG"></div><div id="followingBallsG_2" class="followingBallsG"></div><div id="followingBallsG_3" class="followingBallsG"></div><div id="followingBallsG_4" class="followingBallsG"></div></div>');
 		var harm = new HarmonizeAPI();
-		harm.harmonizeAPI(idSong, style, function(data) {
-			console.log(data);
+		harm.harmonizeFromLeadsheetAPI(JSON.stringify(JSONSong), style, function(data) {
 			$('#harmonize').html('Harmonize');
 			if (data.success === true) {
 				UserLog.logAutoFade('success', 'Harmonization is finished');

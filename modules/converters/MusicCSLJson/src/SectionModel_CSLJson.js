@@ -21,7 +21,7 @@ define(['modules/core/src/SectionModel'], function(SectionModel) {
 		sectionMusicCSLJSON.name = sectionModel.getName();
 
 		if (sectionModel.getTimeSignature())
-			sectionMusicCSLJSON.timeSig = sectionModel.getTimeSignature();
+			sectionMusicCSLJSON.timeSig = sectionModel.getTimeSignature().toString();
 
 		if (sectionModel.getRepeatTimes())
 			sectionMusicCSLJSON.repeat = sectionModel.getRepeatTimes();
