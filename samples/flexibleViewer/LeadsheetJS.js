@@ -54,12 +54,15 @@ define(function(require) {
 			viewer.draw(songModel);
 
 			$(window).resize(function() { 
+				setInterval(function(){ 
+					var score = $("#score");
+					var canvasEl =  $('#scoreCanvas');
+					canvasEl[0].width =  score.width();
+					viewer.setWidth($('#scoreCanvas')[0].width);
+					viewer.draw(songModel);
+
+				}, 500);
 				
-				var score = $("#score");
-				var canvasEl =  $('#scoreCanvas');
-				canvasEl[0].width =  score.width();
-				viewer.setWidth($('#scoreCanvas')[0].width);
-				viewer.draw(songModel);
 			});
 	});
 

@@ -48,7 +48,7 @@ define([
 		LSViewer.prototype.setWidth = function(width) {
 			
 			var viewerWidth = width || this.LINE_WIDTH;
-			this.SCALE = viewerWidth / this.LINE_WIDTH * 0.85;
+			this.SCALE = viewerWidth / this.LINE_WIDTH * 0.95;
 			this.LINE_WIDTH = viewerWidth;
 		};
 		LSViewer.prototype.draw = function(song) {
