@@ -91,68 +91,44 @@ define([
 		 *                   drawing from the interactiveLayer we do need to (harmonic analysis and annotation)
 		 * @return {Array of Objects}, Object in this form: {area.x, area.y, area.xe, area.ye}
 		 */
-		/*LSViewer.prototype.getAreasFromCursor = function(cursor, notes, scale) {
-			if (scale == null) scale = false;
+		LSViewer.prototype.getAreasFromCursor = function(cursor) {
 			var areas = [];
-
-			var cInit, cEnd;
-			if (cursor instanceof CursorModel) {
-				cInit = cursor.getStart();
-				cEnd = cursor.getEnd();
-			} else {
-				cInit = cursor[0];
-				cEnd = cursor[1];
-			}
-			//var initMeasure=this.mapNotesMeasures[cInit];
-			cInit = parseInt(cInit, null);
-			cEnd = parseInt(cEnd, null);
-			var xi, yi, xe, ye;
-			ye = this.cursorHeight;
-			var firstNoteLine, lastNoteLine;
-			var currY, nextY;
-
-			firstNoteLine = notes[cInit];
-			if (typeof firstNoteLine === "undefined") {
+			var cInit = cursor[0];
+			var cEnd = cursor[1];
+			if (typeof this.vxfNotes[cInit] === "undefined") {
 				return areas;
 			}
-
-			measureFirstNoteLine = notes[cInit].getMeasure();
-
-			var iNote = cInit;
-			while (iNote <= cEnd) {
-				iMeasure = notes[iNote].getMeasure();
-
-				currY = this.staves[iMeasure].y + this.marginCursor;
-
-				//getNextY
-				if (iNote == cEnd) //when there is only one note
-					nextY = currY + this.marginCursor;
-				else
-					nextY = this.staves[notes[iNote + 1].getMeasure()].y + this.marginCursor;
-
-				if (currY != nextY || iNote == cEnd) {
-					lastNoteLine = notes[iNote];
-
-					xi = firstNoteLine.x;
-					xe = lastNoteLine.x - xi + lastNoteLine.width + this.cursorMarginRight;
-
+			var xi, yi, xe, ye;
+			ye = this.LINE_HEIGHT;
+			
+			var currentNote, currentNoteStaveY, nextNoteStaveY;
+			var firstNoteLine, lastNoteLine;
+			firstNoteLine = this.vxfNotes[cInit];
+			while (cInit <= cEnd) {
+				currentNote = this.vxfNotes[cInit];
+				currentNoteStaveY = currentNote.stave.y;
+				if (typeof this.vxfNotes[cInit + 1] !== "undefined") {
+					nextNoteStaveY = this.vxfNotes[cInit + 1].stave.y;
+				}
+				if (currentNoteStaveY != nextNoteStaveY || cInit == cEnd) {
+					lastNoteLine = currentNote.getBoundingBox();
+					xi = firstNoteLine.getBoundingBox().x;
+					xe = lastNoteLine.x - xi + lastNoteLine.w;
 					areas.push({
 						x: xi,
-						y: currY,
+						y: currentNoteStaveY,
 						xe: xe,
 						ye: ye
 					});
-
-					if (iNote != cEnd) {
-						firstNoteLine = notes[iNote + 1];
-						measureFirstNoteLine = notes[iNote + 1].getMeasure();
+					if (cInit != cEnd) {
+						firstNoteLine = this.vxfNotes[cInit + 1];
 					}
 				}
 
-				iNote++;
+				cInit++;
 			}
-			return scale ? this.scaleAreas(areas) : areas;
-		};*/
+			return areas;
+		};
 
 		LSViewer.prototype.draw = function(song) {
 			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
@@ -201,7 +177,7 @@ define([
 					bar = [];
 
 					barNotes = nm.getNotesAtBarNumber(songIt.getBarIndex(), song);
-					
+
 					// for each note of bar
 					for (var j = 0; j < barNotes.length; j++) {
 						tieMng.checkTie(barNotes[j], iNote);
@@ -239,8 +215,9 @@ define([
 				}
 				numSection++;
 			});
-			tieMng.draw(self.ctx, vxfNotes, nm, barWidthMng, song);
-			self.vxfNotes = vxfNotes;
+			tieMng.draw(this.ctx, vxfNotes, nm, barWidthMng, song);
+			this.vxfNotes = vxfNotes;
+			//this.lastDrawnSong = song;
 
 			// call drawable elem with zIndex > 10
 			for (var i = 0, c = this.drawableModel.length; i < c; i++) {

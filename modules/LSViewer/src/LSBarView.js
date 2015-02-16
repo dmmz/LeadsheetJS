@@ -7,11 +7,22 @@ define(['vexflow'], function(Vex) {
 			this.vexflowStave.addClef("treble").setContext(ctx).draw();
 		}
 		//name section
-		if (sectionIt.getBarIndex() == 0){
+		if (sectionIt.getBarIndex() == 0) {
 			var nameSection = sectionIt.getSection().getName();
-			if(nameSection !== "") {
+			if (nameSection !== "") {
 				this.vexflowStave.setSection(nameSection, 9);
 			}
+		}
+
+		//Bar number
+		var drawStavesNumber = true;
+		if (drawStavesNumber === true) {
+			ctx.font = "10px Verdana"; // font for staves number
+			ctx.fillStyle = "#900";
+			var position = this.getVexflowStave();
+			ctx.fillText(songIt.getBarIndex() + 1, position.x + 3, position.y + 37);
+			ctx.fillStyle = "#000";
+			ctx.font = "18px Verdana";
 		}
 
 		var keySignature = songIt.getBarKeySignature();
@@ -36,9 +47,9 @@ define(['vexflow'], function(Vex) {
 			if (songIt.getEndingState() != null) {
 				if (sectionIt.isLastBar() || followingBar.getEnding()) {
 					songIt.setEndingState('END');
-					if (!sectionIt.isLastBar()){
+					if (!sectionIt.isLastBar()) {
 						this.vexflowStave.setEndBarType(Vex.Flow.Barline.type.REPEAT_END);
-					}	
+					}
 					this.vexflowStave.setVoltaType(Vex.Flow.Volta.type[songIt.getEndingState()], ending + ".", endingsY);
 					songIt.setEndingState(null);
 				} else if (songIt.getEndingState() == 'BEGIN' || songIt.getEndingState() == 'MID') {
@@ -47,7 +58,7 @@ define(['vexflow'], function(Vex) {
 				}
 			}
 		}
-		
+
 		var label = bar.getLabel();
 		if (label === 'coda' || label === 'coda2') {
 			this.vexflowStave.setRepetitionTypeRight(Vex.Flow.Repetition.type.CODA_RIGHT, labelsY);

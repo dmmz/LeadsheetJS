@@ -91,6 +91,17 @@ define([
 		var saveFillColor = viewer.ctx.fillStyle;
 		viewer.ctx.fillStyle = "#0099FF";
 		viewer.ctx.globalAlpha = 0.2;
+		var areas = viewer.getAreasFromCursor(position);
+
+		for (var i in areas) {
+			viewer.ctx.fillRect(
+				areas[i].x - cursorMarginLeft,
+				areas[i].y + cursorMarginTop,
+				areas[i].xe + cursorMarginLeft + cursorMarginRight,
+				cursorHeight
+			);
+		}
+		/*
 		for (var cInit = position[0], cEnd = position[1]; cInit <= cEnd; cInit++) {
 			if (viewer.vxfNotes[cInit].voice !== null) {
 				pos = viewer.vxfNotes[cInit].getBoundingBox();
@@ -102,7 +113,7 @@ define([
 					cursorHeight
 				);
 			}
-		}
+		}*/
 		viewer.ctx.fillStyle = saveFillColor;
 		viewer.ctx.globalAlpha = 1;
 	};
