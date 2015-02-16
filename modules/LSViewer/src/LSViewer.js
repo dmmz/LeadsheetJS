@@ -84,11 +84,8 @@ define([
 		};
 
 		/**
-		 *
-		 * @param  {CursorModel  | [Integer, Integer] } cursor can be a CursorModel or an array with initial position and end position
-		 * @param  {Array of NoteModel} notes
-		 * @param  {Boolean} scale  indicates if we have to scale or not (from the viewer we don't need to because the whole view is scaled, but
-		 *                   drawing from the interactiveLayer we do need to (harmonic analysis and annotation)
+		 * Function return several areas to indicate which notes are selected, usefull for cursor or selection
+		 * @param  {[Integer, Integer] } Array with initial position and end position
 		 * @return {Array of Objects}, Object in this form: {area.x, area.y, area.xe, area.ye}
 		 */
 		LSViewer.prototype.getAreasFromCursor = function(cursor) {
@@ -100,7 +97,7 @@ define([
 			}
 			var xi, yi, xe, ye;
 			ye = this.LINE_HEIGHT;
-			
+
 			var currentNote, currentNoteStaveY, nextNoteStaveY;
 			var firstNoteLine, lastNoteLine;
 			firstNoteLine = this.vxfNotes[cInit];
