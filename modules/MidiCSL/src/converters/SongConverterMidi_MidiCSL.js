@@ -173,9 +173,14 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/model/SongModel_midiC
 						accidentalMeasure[pitchClass] = pitchClass + '#';
 					} else if (accidental === "b") {
 						accidentalMeasure[pitchClass] = pitchClass + 'b';
+					} else if (accidental === "##") {
+						accidentalMeasure[pitchClass] = pitchClass + '##';
+					} else if (accidental === "bb") {
+						accidentalMeasure[pitchClass] = pitchClass + 'bb';
 					}
 
 					currentNoteKey = accidentalMeasure[pitchClass] + note.getOctave(i);
+					currentNoteKey = MidiHelper.convertDoubleAccidental(currentNoteKey);
 					currentNoteKey = MidiHelper.convertSharp2Flat(currentNoteKey);
 					currentNoteKey = MidiHelper.detectImpossibleFlat(currentNoteKey);
 					noteKey[i] = currentNoteKey;

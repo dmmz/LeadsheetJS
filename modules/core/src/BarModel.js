@@ -7,7 +7,7 @@ define(['modules/core/src/TimeSignatureModel'],function(TimeSignatureModel) {
 		this.clef = (typeof(option.clef) !== "undefined") ? option.clef : undefined; // empty clef means it doesn't change from previous 
 		this.ending = (typeof(option.ending) !== "undefined") ? option.ending : undefined; // object with repeat, type (BEGIN,END, BEGIN_END, MID) and ending (text)
 		this.style = (typeof(option.style) !== "undefined") ? option.style : '';
-		this.timeSignature = (typeof(option.timeSignature) !== "undefined") ? option.timeSignature : undefined; // empty timeSignature means it doesn't change from previous 
+		this.timeSignature = (typeof(option.timeSignature) !== "undefined") ? option.timeSignature : undefined; // empty timeSignature means it doesn't change from previous
 		this.tonality = (typeof(option.tonality) !== "undefined") ? option.tonality : undefined;
 		this.label = (typeof(option.label) !== "undefined") ? option.label : undefined;
 		this.sublabel = (typeof(option.sublabel) !== "undefined") ? option.sublabel : undefined;

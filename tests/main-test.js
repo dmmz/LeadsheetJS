@@ -48,6 +48,8 @@ define(function(require) {
   var testNoteManager_CSLJson = require('modules/converters/MusicCSLJson/test/testNoteManager_CSLJson');
   var testNoteModel_CSLJson = require('modules/converters/MusicCSLJson/test/testNoteModel_CSLJson');
 
+  var testSongModel_MusicXMl = require('modules/converters/MusicXMl/test/testSongModel_MusicXMl');
+
   var testSongView_chordSequence = require('modules/chordSequence/test/testSongView_chordSequence');
 
   var testSongModel_midiCSL = require('modules/MidiCSL/test/model/testSongModel_midiCSL');
@@ -89,6 +91,9 @@ define(function(require) {
   testChordModel_CSLJson.run();
   testNoteManager_CSLJson.run();
   testNoteModel_CSLJson.run();
+
+  // MusicXML Module
+  testSongModel_MusicXMl.run();
 
   // Chord Sequence Module
   testSongView_chordSequence.run();

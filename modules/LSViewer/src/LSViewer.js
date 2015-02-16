@@ -201,6 +201,7 @@ define([
 					bar = [];
 
 					barNotes = nm.getNotesAtBarNumber(songIt.getBarIndex(), song);
+					
 					// for each note of bar
 					for (var j = 0; j < barNotes.length; j++) {
 						tieMng.checkTie(barNotes[j], iNote);

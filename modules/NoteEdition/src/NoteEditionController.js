@@ -24,7 +24,8 @@ define([
 			self.setPitch(decal);
 		});
 		$.subscribe('NoteEditionView-addAccidental', function(el, accidental) {
-			self.addAccidental(accidental);
+			// Accidental contain as first argument the type of accidental (b,#,n) and as second argument true or false for double accidental
+			self.addAccidental(accidental.acc, accidental.double);
 		});
 		$.subscribe('NoteEditionView-setCurrDuration', function(el, duration) {
 			self.setCurrDuration(duration);
@@ -59,7 +60,7 @@ define([
 	 * Set selected notes to a key
 	 * @param {int|letter} If decal is a int, than it will be a decal between current note and wanted note in semi tons, if decal is a letter then current note is the letter
 	 */
-	NoteEditionController.prototype.setPitch= function(decalOrNote) {
+	NoteEditionController.prototype.setPitch = function(decalOrNote) {
 		var selNotes = this.getSelectedNotes();
 		var note;
 		for (var i = 0, c = selNotes.length; i < c; i++) {
@@ -81,15 +82,20 @@ define([
 
 
 
-	NoteEditionController.prototype.addAccidental = function(accidental) {
+	NoteEditionController.prototype.addAccidental = function(accidental, doubleAccidental) {
 		var selNotes = this.getSelectedNotes();
 		var note;
+		if (typeof doubleAccidental !== "undefined" && doubleAccidental === true && accidental !== "n") {
+			accidental += accidental;
+		}
 		for (var i = 0; i < selNotes.length; i++) {
 			note = selNotes[i];
 			if (note.isRest) continue;
 			if (note.getAccidental() == accidental) {
 				note.removeAccidental();
-			} else note.setAccidental(accidental);
+			} else {
+				note.setAccidental(accidental);
+			}
 		}
 		myApp.viewer.draw(this.songModel);
 	};

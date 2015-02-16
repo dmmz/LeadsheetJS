@@ -180,8 +180,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 			throw "not valid typeTuplet " + typeTuplet;
 		}
 		this.timeModification = timeModification || "3/2";
-
-		//we know typeTuple is a valid type, just check that is not middel
+		//we know typeTuple is a valid type, just check that is not middle
 		if (typeTuplet != "middle") this.tuplet = typeTuplet;
 	};
 	/**
@@ -226,7 +225,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 	 * @param {Number} i   default 0
 	 */
 	NoteModel.prototype.setAccidental = function(acc, i) {
-		var validAccidentals = ["", "#", "b", "n"];
+		var validAccidentals = ["", "#", "b", "n", "##", "bb"];
 		if (validAccidentals.indexOf(acc) == -1) throw "invalid accidental";
 		i = i || 0;
 		this.accidental[i] = acc;

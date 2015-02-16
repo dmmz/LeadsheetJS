@@ -167,7 +167,7 @@ define([
 				} else if (ACC_KEYS.hasOwnProperty(key) && (!evt.ctrlKey)) {
 					var acc = ACC_KEYS[key];
 					// console.log(acc);
-					$.publish('NoteEditionView-addAccidental', acc);
+					$.publish('NoteEditionView-addAccidental', {'acc':acc,'double':evt.shiftKey});
 					stopEvent(evt);
 				} else if (parseInt(key, null) >= 1 && parseInt(key, null) <= 9) {
 					$.publish('NoteEditionView-setCurrDuration', key);

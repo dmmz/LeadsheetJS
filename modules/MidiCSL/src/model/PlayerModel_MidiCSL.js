@@ -272,8 +272,9 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 		 * Launch midi.noteon and noteoff instructions, this function is the main play function
 		 * @param  {int} tempo in bpm, it influence how fast the song will be played
 		 * @param  {float} playFrom is an optionnal attributes, if it's filled then player will start to play the note after playFrom, in sec
+		 * @param  {float} playTo is an optionnal attributes, if it's filled then player will play until playTo in sec, otherwise it play til the end
 		 */
-		PlayerModel_MidiCSL.prototype.play = function(tempo, playFrom) {
+		PlayerModel_MidiCSL.prototype.play = function(tempo, playFrom, playTo) {
 			if (typeof tempo === "undefined" || isNaN(tempo)) {
 				throw 'PlayerModel_MidiCSL - play - tempo must be a number ' + tempo;
 			}
@@ -353,7 +354,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 										self.setPositionInPercent((Date.now() - self._startTime) / self.songDuration);
 									}
 									/*}*/
-									if (currentNote == lastNote) {
+									if (currentNote == lastNote || (currentNote.getCurrentTime() * self.getBeatDuration(tempo) >= playTo)) {
 										self.setPositionIndex(i);
 										self.setPositionInPercent(1);
 										setTimeout((function() {

@@ -7,9 +7,11 @@ define(['vexflow'], function(Vex) {
 			this.vexflowStave.addClef("treble").setContext(ctx).draw();
 		}
 		//name section
-		if (sectionIt.getBarIndex()==0){
+		if (sectionIt.getBarIndex() == 0){
 			var nameSection = sectionIt.getSection().getName();
-			this.vexflowStave.setSection(nameSection, 9);	
+			if(nameSection !== "") {
+				this.vexflowStave.setSection(nameSection, 9);
+			}
 		}
 
 		var keySignature = songIt.getBarKeySignature();
@@ -18,7 +20,7 @@ define(['vexflow'], function(Vex) {
 		}
 
 		var timeSignature = songIt.getBarTimeSignature();
-		if (timeSignature != songIt.prevTimeSig) {
+		if (timeSignature.toString() != songIt.prevTimeSig) {
 			this.vexflowStave.addTimeSignature(timeSignature.toString());
 		}
 
