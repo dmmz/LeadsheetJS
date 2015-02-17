@@ -140,6 +140,7 @@ define([
 			}
 			var keyCode = (evt === null) ? event.keyCode : evt.keyCode;
 			var key = String.fromCharCode(keyCode).toLowerCase();
+			var metaKey = !!evt.metaKey;
 
 			//prevent backspace
 			if (keyCode === 8) {
@@ -191,10 +192,10 @@ define([
 				} else if (keyCode == 13) { //enter
 					$.publish('NoteEditionView-addNote');
 					stopEvent(evt);
-				} else if (keyCode == 67 && evt.ctrlKey) { // Ctrl + c
+				} else if ((keyCode == 67 && evt.ctrlKey) || (keyCode == 67 && metaKey)) { // Ctrl + c or Command + c (mac or windows specific key)
 					$.publish('NoteEditionView-copyNotes');
 					stopEvent(evt);
-				} else if (keyCode == 86 && evt.ctrlKey) { // Ctrl + v
+				} else if ((keyCode == 86 && evt.ctrlKey) || (keyCode == 86 && metaKey)) { // Ctrl + v or Command + v (mac or windows specific key)
 					$.publish('NoteEditionView-pasteNotes');
 					stopEvent(evt);
 				}

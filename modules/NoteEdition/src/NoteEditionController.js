@@ -290,7 +290,7 @@ define([
 		var cloned = noteToClone.clone(false);
 		noteManager.insertNote(pos, cloned);
 		this.checkDuration(0, noteToClone.getDuration());
-		this.cursor.setPos(pos + 1);
+		// this.cursor.setPos(pos + 1);
 		myApp.viewer.draw(this.songModel);
 	};
 
@@ -329,8 +329,8 @@ define([
 				beat = beat * 16;
 				return Math.round(beat) != beat;
 			}
-			var iPrevNote = nm.getNextIndexNote(initBeat);
-			var iNextNote = nm.getNextIndexNote(endBeat);
+			var iPrevNote = nm.getNextIndexNoteByBeat(initBeat);
+			var iNextNote = nm.getNextIndexNoteByBeat(endBeat);
 			return isTupletBeat(nm.getNoteBeat(iPrevNote)) || isTupletBeat(nm.getNoteBeat(iNextNote));
 		}
 
@@ -345,7 +345,7 @@ define([
 				UserLog.logAutoFade('error', "Can't break tuplet");
 				return;
 			}
-			var endIndex = nm.getNextIndexNote(endBeat);
+			var endIndex = nm.getNextIndexNoteByBeat(endBeat);
 			var beatEndNote = nm.getNoteBeat(endIndex);
 
 			if (endBeat < beatEndNote) {
