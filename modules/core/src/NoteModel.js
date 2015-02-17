@@ -32,6 +32,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		}
 	}
 
+
 	NoteModel.prototype.toString = function(string, index) {
 		return this.pitchClass[0] + this.accidental[0] + this.octave[0];
 	};
@@ -63,6 +64,8 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 			if (!string.match(re)) {
 				throw "Creating pitch " + string + ". Should be in de form [pitch][acc]/[octave]. e.g. Ab/4 or [duration] if you want a rest eg. '8'";
 			}
+			this.pitchClass[0] = 'B';
+			this.octave[0] = '4';
 			var restPosition = string.indexOf("r");
 			if (restPosition == -1) {
 				this.duration = string;
@@ -268,7 +271,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 	};
 
 	NoteModel.prototype.setDuration = function(dur) {
-		if (typeof dur === "number"){
+		if (typeof dur === "number") {
 			dur = NoteUtils.getStringFromBeatDuration(dur);
 		}
 		this.duration = dur;

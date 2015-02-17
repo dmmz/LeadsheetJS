@@ -18,7 +18,7 @@ define([
 		this.addComponent('notes', new NoteManager());
 		this.addComponent('bars', new BarManager());
 	}
-
+ 
 	///////////////////////////////
 	// Basic getters and setters //
 	///////////////////////////////
@@ -153,30 +153,22 @@ define([
 		return currentTimeSignature;
 	};
 
+	// USELESS function, use directly timesignature function instead
 	/**
 	 * The function returns the number of beats from the timeSig arguments or by default on current timeSignature
 	 * @param  {TimeSignatureModel} timeSig
 	 * @return {int} number of beats in a measure in the unit of the signature. E.g.: for 6/8 -> 6, for 4/4 -> 4 for 2/2 -> 2
 	 */
-	SongModel.prototype.getBeatsFromTimeSignature = function(timeSig) {
+	/*SongModel.prototype.getBeatsFromTimeSignature = function(timeSig) {
 		if (timeSig !== "undefined") {
 			return timeSig.getBeats();
 		}
-	};
-	
+	};*/
+	/*
 	SongModel.prototype.getBeatsFromTimeSignatureAt = function(barNumber) {
 		return this.getBeatsFromTimeSignature(this.getTimeSignatureAt(barNumber));
 	};
-
-	/**
-	 * The function returns the beats unit from the current time signature
-	 * @return {int} beat unit in a measure. E.g.: for 6/8 -> 0.5, for 4/4 -> 1 for 2/2 -> 2
-	 */
-	// TODO rename function
-	SongModel.prototype.getBeatUnitFromTimeSignature = function() {
-		return this.timeSignature.getBeatUnitQuarter();
-	};
-
+*/
 	/**
 	 * @param  {Integer} index  index of the section
 	 * @return {SectionModel}
@@ -226,7 +218,6 @@ define([
 	 * @return {Number}
 	 */
 	SongModel.prototype.getBarNumBeats = function(numBar, currentBeats) {
-		
 		var barTimeSig = this.getBar(numBar).timeSignature,
 		timeSig = barTimeSig || this.getTimeSignature();
 
@@ -372,7 +363,7 @@ define([
 		var numberOfBeats = 1;
 		if (typeof barNumber !== "undefined" && !isNaN(barNumber) && barNumber >= 0) {
 			for (var i = 0; i < barNumber; i++) {
-				numberOfBeats += this.getBeatsFromTimeSignatureAt(i);
+				numberOfBeats += this.getTimeSignatureAt(i).getBeats();
 			}
 		}
 		return numberOfBeats;

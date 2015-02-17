@@ -51,7 +51,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/model/SongModel_midiC
 			}
 			for (var i = 0, c = barsIndex.length; i < c; i++) {
 				numMeasure = barsIndex[i];
-				numBeats = songModel.getBeatsFromTimeSignatureAt(numMeasure);
+				numBeats = songModel.getTimeSignatureAt(numMeasure).getBeats();
 				notesInBar = songModel.getComponentsAtBarNumber(numMeasure, 'notes');
 				if (inTie === false) {
 					refreshTonalityNote = true;

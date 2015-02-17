@@ -101,10 +101,8 @@ define([
 	};
 
 	/**
-	 * call example: setCurrDuration(this.cursor, this.noteManager, "4")
-	 * but also works like setCurrDuration("4")
-	 *
-	 * @param {String} durKey	represents the duration
+	 * setCurrDuration("4")
+	 * @param {String} duration	represents the duration
 	 */
 	NoteEditionController.prototype.setCurrDuration = function(duration) {
 		var arrDurs = {
@@ -119,20 +117,27 @@ define([
 		};
 		var selNotes = this.getSelectedNotes();
 		var newDur = arrDurs[duration];
-		var note;
-		for (var i = 0; i < selNotes.length; i++) {
-			note = selNotes[i];
-			if (duration < 9) note.setDuration(newDur);
+		if (typeof newDur === "undefined") {
+			throw 'NoteEditionController - setCurrDuration not accepted duration ' + duration;
 		}
+		var durBefore = 0,
+			durAfter = 0;
+		for (var i = 0; i < selNotes.length; i++) {
+			durBefore += selNotes[i].getDuration();
+			selNotes[i].setDuration(newDur);
+			durAfter += selNotes[i].getDuration();
+		}
+		this.checkDuration(durBefore, durAfter);
 		myApp.viewer.draw(this.songModel);
 	};
-
-
 
 	NoteEditionController.prototype.setDot = function() {
 		var selNotes = this.getSelectedNotes();
 		var numberOfDots = 0;
+		var durBefore = 0,
+			durAfter = 0;
 		for (var i = 0, c = selNotes.length; i < c; i++) {
+			durBefore += selNotes[i].getDuration();
 			numberOfDots = selNotes[i].getDot();
 			if (numberOfDots >= 2) {
 				numberOfDots = 0;
@@ -140,7 +145,9 @@ define([
 				numberOfDots++;
 			}
 			selNotes[i].setDot(numberOfDots);
+			durAfter += selNotes[i].getDuration();
 		}
+		this.checkDuration(durBefore, durAfter);
 		myApp.viewer.draw(this.songModel);
 	};
 
@@ -265,9 +272,12 @@ define([
 	NoteEditionController.prototype.deleteNote = function() {
 		var noteManager = this.songModel.getComponent('notes');
 		var position = this.cursor.getPos();
+		var durBefore = 0;
 		for (var cInit = position[0], cEnd = position[1]; cInit <= cEnd; cInit++) {
+			durBefore += noteManager.getNote(cInit).getDuration();
 			noteManager.deleteNote(cInit);
 		}
+		this.checkDuration(durBefore, 0);
 		var numNotes = noteManager.getTotal();
 		this.cursor.revisePos(numNotes);
 		myApp.viewer.draw(this.songModel);
@@ -279,6 +289,7 @@ define([
 		var noteToClone = noteManager.getNotes(pos, pos + 1)[0];
 		var cloned = noteToClone.clone(false);
 		noteManager.insertNote(pos, cloned);
+		this.checkDuration(0, noteToClone.getDuration());
 		this.cursor.setPos(pos + 1);
 		myApp.viewer.draw(this.songModel);
 	};
@@ -297,6 +308,7 @@ define([
 		tmpNm.reviseNotes();
 		notesToPaste = tmpNm.getNotes();
 		var noteManager = this.songModel.getComponent('notes');
+		//this.checkDuration(0, noteManager.getTotalDuration());
 		noteManager.notesSplice(this.cursor.getPos(), notesToPaste);
 		myApp.viewer.draw(this.songModel);
 	};
@@ -305,6 +317,44 @@ define([
 		var noteManager = this.songModel.getComponent('notes');
 		var selectedNotes = noteManager.getNotes(this.cursor.getStart(), this.cursor.getEnd() + 1);
 		return selectedNotes;
+	};
+
+	NoteEditionController.prototype.checkDuration = function(durBefore, durAfter) {
+		function checkIfBreaksTuplet(initBeat, endBeat, nm) {
+			/**
+			 * means that is a 0.33333 or something like that
+			 * @return {Boolean}
+			 */
+			function isTupletBeat(beat) {
+				beat = beat * 16;
+				return Math.round(beat) != beat;
+			}
+			var iPrevNote = nm.getNextIndexNote(initBeat);
+			var iNextNote = nm.getNextIndexNote(endBeat);
+			return isTupletBeat(nm.getNoteBeat(iPrevNote)) || isTupletBeat(nm.getNoteBeat(iNextNote));
+		}
+
+		var nm = this.songModel.getComponent('notes');
+		var initBeat = nm.getNoteBeat(this.cursor.getStart());
+		var endBeat = initBeat + durAfter;
+
+		if (durAfter < durBefore) {
+			nm.fillGapWithRests(durBefore - durAfter, initBeat);
+		} else if (durAfter > durBefore) {
+			if (checkIfBreaksTuplet(initBeat, endBeat, nm)) {
+				UserLog.logAutoFade('error', "Can't break tuplet");
+				return;
+			}
+			var endIndex = nm.getNextIndexNote(endBeat);
+			var beatEndNote = nm.getNoteBeat(endIndex);
+
+			if (endBeat < beatEndNote) {
+				nm.fillGapWithRests(beatEndNote - endBeat, initBeat);
+			}
+			this.cursor.setPos([this.cursor.getStart(), endIndex - 1]);
+		}
+		//nm.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
+		nm.reviseNotes();
 	};
 
 	return NoteEditionController;

@@ -1,4 +1,4 @@
-define(['modules/core/src/NoteModel'], function(NoteModel) {
+define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, NoteUtils) {
 	function NoteManager() {
 		this.notes = [];
 	}
@@ -239,7 +239,11 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 			this.getNextIndexNoteByBeat(endBeat)
 		);
 	};
+
 	NoteManager.prototype.getNoteBarNumber = function(index, song) {
+		if (isNaN(index) || index < 0 || typeof song === "undefined") {
+			throw "NoteManager - getNoteBarNumber - attributes are not what expected, song: " + song + ", index: " + index;
+		}
 		var numBar = 0,
 			duration = 0;
 
@@ -253,7 +257,85 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 			duration += this.notes[i].getDuration();
 		}
 		return numBar;
+	};
 
+
+
+	/**
+	 * Returns the index found at the exact beat, and if not, at the
+	 * closest note just after a given beat
+	 * @param  {float} beat global beat (first beat starts at 1, not 0)
+	 * @return {Integer} index of the note
+	 */
+	NoteManager.prototype.getNextIndexNote = function(beat) {
+		if (isNaN(beat) || beat < 0) {
+			throw 'NoteManager - getNextIndexNote - beat must be a positive integer ' + beat;
+		}
+		var curBeat = 1;
+		var i = 0;
+		//we round to avoid problems with triplet as 12.9999999 is less than 13 and that would not work
+		//we round in the comparison in order to not carry the rounding in curBeat (which is cumulative inside the iteration)
+		while (Math.round(curBeat * 100000) / 100000 < beat) { //to avoid problems with tuplet 
+			curBeat += this.getNote(i).getDuration();
+			i++;
+		}
+		return i;
+	};
+
+	/**
+	 * Similar to previous one (getNextIndexNote()), but if
+	 * exact beat is not found, it returns the closest previous note
+	 * @param  {float} beat global beat (first beat starts at 1, not 0)
+	 * @return {Integer} index of the note
+	 */
+	NoteManager.prototype.getPrevIndexNote = function(beat) {
+		if (isNaN(beat) || beat < 0) {
+			throw 'NoteManager - getPrevIndexNote - beat must be a positive integer ' + beat;
+		}
+		var curBeat = 1;
+		var i = 0;
+		//round just like in getNtextIndexNote
+		while (Math.round(curBeat * 1000000) / 1000000 < beat) {
+			curBeat += this.getNote(i).getDuration();
+			i++;
+		}
+		return i - 1;
+	};
+
+	NoteManager.prototype.getIndexesByBeatInterval = function(startBeat, endBeat) {
+		if (isNaN(startBeat) || startBeat < 0) {
+			startBeat = 1;
+		}
+		if (isNaN(endBeat)) {
+			throw 'NoteManager - getIndexesByBeatInterval - endBeat must be a positive integer ' + endBeat;
+		}
+		var index1 = this.getNextIndexNote(startBeat);
+		var index2 = this.getPrevIndexNote(endBeat);
+		return [index1, index2];
+	};
+
+	/**
+	 * adds silences at the end of array of notes so that they fill the gapDuration
+	 * @param  {integer} gapDuration
+	 * @param  {integer} initBeat
+	 */
+	NoteManager.prototype.fillGapWithRests = function(gapDuration, initBeat) {
+		if (isNaN(gapDuration)) {
+			return;
+		}
+		if (isNaN(initBeat) || initBeat < 0) {
+			initBeat = 1;
+		}
+		gapDuration = Math.round(gapDuration * 1000000) / 1000000;
+		var newNote;
+		var silenceDurs = NoteUtils.durationToNotes(gapDuration, initBeat);
+		var self = this;
+		silenceDurs.forEach(function(dur) {
+			if (typeof dur !== "undefined") {
+				newNote = new NoteModel(dur +'r');
+				self.addNote(newNote);
+			}
+		});
 	};
 
 	/**

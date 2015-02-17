@@ -158,7 +158,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 		if (typeof this.chords[index] !== "undefined") {
 			var currentBn = this.chords[index].getBarNumber();
 			var currentBeat = this.chords[index].getBeat();
-			var beats = songModel.getBeatsFromTimeSignature(songModel.getTimeSignatureAt(currentBn));
+			var beats = songModel.getTimeSignatureAt(currentBn).getBeats();
 			var nextBn, nextBeat;
 			if (typeof this.chords[index + 1] !== "undefined") {
 				nextBn = this.chords[index + 1].getBarNumber();
@@ -193,7 +193,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 		if (typeof this.chords[index] !== "undefined") {
 			var currentBn = this.chords[index].getBarNumber();
 			var currentBeat = this.chords[index].getBeat();
-			var beats = songModel.getBeatsFromTimeSignature(songModel.getTimeSignatureAt(currentBn));
+			var beats = songModel.getTimeSignatureAt(currentBn).getBeats();
 			var nextBn, nextBeat;
 			if (typeof this.chords[index + 1] !== "undefined") {
 				nextBn = this.chords[index + 1].getBarNumber();
@@ -211,7 +211,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 				if (currentBn === barNumber) {
 					duration = beats - currentBeat + 1;
 				} else if (barNumber < nextBn) {
-					duration = songModel.getBeatsFromTimeSignature(songModel.getTimeSignatureAt(barNumber));
+					duration = songModel.getTimeSignatureAt(barNumber).getBeats();
 				} else if (barNumber === nextBn) {
 					duration = nextBeat - 1;
 				}
@@ -281,7 +281,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 		var startChord = this.getChord(start);
 		var endChord = this.getChord(end);
 		var startBeat = song.getBeatsBeforeBarNumber(startChord.getBarNumber()) + startChord.getBeat();
-		var endBeat = song.getBeatsBeforeBarNumber(endChord.getBarNumber()) + 1 + song.getBeatsFromTimeSignatureAt(endChord.getBarNumber());
+		var endBeat = song.getBeatsBeforeBarNumber(endChord.getBarNumber()) + 1 + song.getTimeSignatureAt(endChord.getBarNumber()).getBeats();
 		return [startBeat, endBeat];
 	};
 
