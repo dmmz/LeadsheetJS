@@ -212,7 +212,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	 * @return {Integer} index of the note
 	 */
 	NoteManager.prototype.getNextIndexNoteByBeat = function(beat) {
-		if (isNaN(beat) || beat < 0) {
+		if (isNaN(beat) || beat < 1) {
 			throw 'NoteManager - getNextIndexNoteByBeat - beat must be a positive integer ' + beat;
 		}
 		var curBeat = 1;
