@@ -60,6 +60,9 @@ define([
 		});
 
 		// Alteration
+		$('#double_flat').click(function() {
+			$.publish('NoteEditionView-addAccidental', {'acc':'b','double':true});
+		});
 		$('#flat').click(function() {
 			$.publish('NoteEditionView-addAccidental', 'b');
 		});
@@ -68,6 +71,9 @@ define([
 		});
 		$('#sharp').click(function() {
 			$.publish('NoteEditionView-addAccidental', '#');
+		});
+		$('#double_sharp').click(function() {
+			$.publish('NoteEditionView-addAccidental', {'acc':'#','double':true});
 		});
 
 		// Rhythm

@@ -6,19 +6,29 @@
 body {
 	font-family: "lato";
 	color: #666;
+	background-image:url('img/handmadepaper.png');
+}
+
+
+/* Chord sequence view */
+.song_view-title {
+	font-weight: bold;
+	font-size: 1.2em;
 }
 
 /* VIEW MAIN MENU */
 /* Main menu is set as absolute on affix-top also so the score container will not scroll down too when position will be fixed */
 #view_main_menu{
 	/*position: absolute;*/
-	/*right: 0;
+	right: 0;
 	left: 0;
-	height: 128px;*/
 }
 
 #content > .affix{
 	z-index: 1000;
+	right: 0;
+	left: 0;
+	height: 128px;
 	top: 0 !important;
 	position: fixed !important;
 	-o-box-shadow: 0px 3px 5px #888;

@@ -97,6 +97,7 @@ define(function(require) {
 	var menuV = new MainMenuView(menuM, document.getElementById('menu-container'));
 	var menuC = new MainMenuController(menuM, menuV);
 
+	myApp.menu = menuV;
 	myApp.historyM = new HistoryModel();
 	myApp.historyV = new HistoryView(myApp.historyM);
 	myApp.historyC = new HistoryController(myApp.historyM, myApp.historyV);
@@ -106,9 +107,36 @@ define(function(require) {
 	myApp.historyM.addToHistory({});
 	myApp.historyM.setCurrentPosition(1);*/
 
-	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
+	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.afoxe, new SongModel());
 	initPlayerModule(songModel);
-	initChordSequenceModule(songModel);
+
+	var option = {
+		displayTitle: true,
+		displayComposer: true,
+		displaySection: true,
+		displayBar: true,
+		delimiterBar: "|",
+		unfoldSong: false, //TODO unfoldSong is not working yet
+		fillEmptyBar: true,
+		fillEmptyBarCharacter: "%",
+	};
+	initChordSequenceModule(songModel, option);
+
+	$('#main-container').prepend('<br />');
+	$('#main-container').prepend('<br />');
+	var optionChediak = {
+		displayTitle: true,
+		displayComposer: true,
+		displaySection: true,
+		displayBar: true,
+		delimiterBar: "",
+		delimiterBeat: "/",
+		unfoldSong: false, //TODO unfoldSong is not working yet
+		fillEmptyBar: false,
+		fillEmptyBarCharacter: "%",
+	};
+	initChordSequenceModule(songModel, optionChediak);
+
 	initViewerModule(songModel);
 	var cursorC = initCursor(songModel);
 	myApp.viewer.addDrawableModel(cursorC.view, 11);
@@ -158,17 +186,7 @@ define(function(require) {
 	});
 
 
-	function initChordSequenceModule(songModel) {
-		var option = {
-			displayTitle: true,
-			displayComposer: true,
-			displaySection: true,
-			displayBar: true,
-			delimiterBar: "|",
-			unfoldSong: false, //TODO unfoldSong is not working yet
-			fillEmptyBar: true,
-			fillEmptyBarCharacter: "%",
-		};
+	function initChordSequenceModule(songModel, option) {
 		var chordSequence = new SongView_chordSequence(songModel, option);
 		var txt = chordSequence.display();
 		$('#main-container').prepend(txt);

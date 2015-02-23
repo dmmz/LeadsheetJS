@@ -25,7 +25,19 @@ define([
 		});
 		$.subscribe('NoteEditionView-addAccidental', function(el, accidental) {
 			// Accidental contain as first argument the type of accidental (b,#,n) and as second argument true or false for double accidental
-			self.addAccidental(accidental.acc, accidental.double);
+			// Or it may contain a string
+			var acc = '';
+			if(accidental.hasOwnProperty('acc')){
+				acc = accidental.acc;
+			}
+			else{
+				acc = accidental;
+			}
+			var doubleAccidental = false;
+			if(accidental.hasOwnProperty('double')){
+				doubleAccidental = accidental.double;
+			}
+			self.addAccidental(acc, doubleAccidental);
 		});
 		$.subscribe('NoteEditionView-setCurrDuration', function(el, duration) {
 			self.setCurrDuration(duration);

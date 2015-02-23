@@ -135,6 +135,9 @@ define([
 		var currentTimeSignature = this.getTimeSignature();
 		var timeSig;
 		var sectionNumber = this.getSectionNumberFromBarNumber(barNumber);
+		if (typeof sectionNumber === "undefined") {
+			return currentTimeSignature; // TODO need test on song that have repetitions on last section and a time signature change
+		}
 		var startBarSection = this.getStartBarNumberFromSectionNumber(sectionNumber);
 		// loop in all previous bar in the current section
 		while (barNumber >= startBarSection) {
@@ -232,25 +235,6 @@ define([
 
 
 	/**
-	 *
-	 * @param  {Number} barNumber
-	 * @return {Number} section number
-	 */
-	SongModel.prototype.getSectionNumberFromBarNumber = function(barNumber) {
-		if (isNaN(barNumber)) {
-			throw "barNumber is not a number: " + barNumber;
-		}
-		var sections = this.getSections();
-		var sumBar = 0;
-		for (var i = 0, c = sections.length; i < c; i++) {
-			sumBar += sections[i].getNumberOfBars();
-			if (sumBar > barNumber) {
-				return i;
-			}
-		}
-	};
-
-	/**
 	 * get component using unfolded song structure
 	 * @param  {String} componentTitle must be "chords" or "notes"
 	 * @return {array} array of component (noteModel, chordModel)
@@ -345,13 +329,35 @@ define([
 	 */
 	SongModel.prototype.getStartBarNumberFromSectionNumber = function(sectionNumber) {
 		if (isNaN(sectionNumber)) {
-			throw "sectionNumber is not a number: " + sectionNumber;
+			throw "SongModel - getStartBarNumberFromSectionNumber - sectionNumber is not a number: " + sectionNumber;
 		}
 		var barNumber = 0;
 		for (var i = 0; i < sectionNumber; i++) {
 			barNumber += this.getSection(i).getNumberOfBars();
 		}
 		return barNumber;
+	};
+
+	/**
+	 * Function return the section number in which the bar is
+	 * @param  {int} barNumber
+	 * @return {int} section number (index) start at 0
+	 */
+	SongModel.prototype.getSectionNumberFromBarNumber = function(barNumber) {
+		if (typeof barNumber === "undefined" || isNaN(barNumber) || barNumber < 0) {
+			throw "SongModel - getSectionNumberFromBarNumber - barNumber is not a number: " + barNumber;
+		}
+		var sections = this.getSections();
+		var sumBar = 0;
+		for (var i = 0, c = sections.length; i < c; i++) {
+			if (typeof sections[i] !== "undefined") {
+				sumBar += sections[i].getNumberOfBars();
+				if (sumBar > barNumber) {
+					return i;
+				}
+			}
+		}
+		return undefined;
 	};
 
 	/**
