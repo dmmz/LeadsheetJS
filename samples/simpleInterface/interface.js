@@ -107,7 +107,7 @@ define(function(require) {
 	myApp.historyM.addToHistory({});
 	myApp.historyM.setCurrentPosition(1);*/
 
-	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.afoxe, new SongModel());
+	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
 	initPlayerModule(songModel);
 
 	var option = {
