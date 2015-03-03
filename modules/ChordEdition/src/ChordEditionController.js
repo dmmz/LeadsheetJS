@@ -1,12 +1,14 @@
 define([
 	'mustache',
 	'modules/core/src/SongModel',
+	'modules/Cursor/src/CursorModel',
 	'utils/UserLog',
 	'pubsub',
-], function(Mustache, SongModel, UserLog, pubsub) {
+], function(Mustache, CursorModel, SongModel, UserLog, pubsub) {
 
-	function ChordEditionController(model, view) {
-		this.model = model || new SongModel();
+	function ChordEditionController(songModel, cursor, view) {
+		this.songModel = songModel || new SongModel();
+		this.cursor = cursor || new CursorModel();
 		this.view = view;
 		this.initSubscribe();
 	}
@@ -34,12 +36,18 @@ define([
 		$.subscribe('ChordEditionView-pasteChords', function(el) {
 			self.pasteChords();
 		});
-		$.subscribe('ChordEditionView-chordTabEvent', function(el, way) {
+		/*$.subscribe('ChordEditionView-chordTabEvent', function(el, way) {
 			self.chordTabEvent(way);
+		});*/
+		$.subscribe('ChordEditionView-activeView', function(el) {
+			self.changeEditMode(true);
+			myApp.viewer.draw(self.songModel);
+		});
+		$.subscribe('ChordEditionView-unactiveView', function(el) {
+			self.changeEditMode(false);
 		});
 	};
 
-	
 	ChordEditionController.prototype.toggleChordVisibility = function() {
 		console.log('toggleChordVisibility');
 		// editor.toggleChordVisibility();
@@ -63,8 +71,18 @@ define([
 		console.log('pasteChords');
 		// self.run("pasteChords",'', true);
 	};
-	ChordEditionController.prototype.chordTabEvent = function(way) {
+	/*ChordEditionController.prototype.chordTabEvent = function(way) {
 		console.log('chordTabEvent', way);
+	};*/
+
+	ChordEditionController.prototype.getSelectedChords = function() {
+		var chordManager = this.songModel.getComponent('chords');
+		var selectedChords = chordManager.getChords(this.cursor.getStart(), this.cursor.getEnd() + 1);
+		return selectedChords;
+	};
+
+	ChordEditionController.prototype.changeEditMode = function(isEditable) {
+		this.cursor.setEditable(isEditable);
 	};
 
 	return ChordEditionController;

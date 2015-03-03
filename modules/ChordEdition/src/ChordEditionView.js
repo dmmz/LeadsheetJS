@@ -2,11 +2,11 @@ define([
 	'mustache',
 	'modules/core/src/SongModel',
 	'utils/UserLog',
-	'utils/NoteUtils',
 	'pubsub',
-], function(Mustache, SongModel, UserLog, NoteUtils, pubsub) {
+], function(Mustache, SongModel, UserLog, pubsub) {
 
-	function ChordEditionView(parentHTML) {
+	function ChordEditionView(parentHTML, cursor) {
+		this.cursor = cursor;
 		this.el = undefined;
 		this.initSubscribe();
 	}
@@ -109,14 +109,14 @@ define([
 				} else if (keyCode == 13) { //	enter
 					$.publish('ChordEditionView-toggleEditChord');
 					stopEvent(evt);
-				} else if (keyCode == 9) { // tab
+				} /*else if (keyCode == 9) { // tab
 					if (evt.shiftKey) {
 						$.publish('ChordEditionView-chordTabEvent', -1);
 					} else {
 						$.publish('ChordEditionView-chordTabEvent', 1);
 					}
 					stopEvent(evt);
-				} else if (keyCode == 86) { // V
+				}*/ else if (keyCode == 86) { // V
 					$.publish('ChordEditionView-toggleChordVisibility');
 					stopEvent(evt);
 				} else if (keyCode == 67 && evt.ctrlKey) { // Ctrl + c
@@ -157,10 +157,12 @@ define([
 
 	ChordEditionView.prototype.unactiveView = function(idElement) {
 		this.editMode = '';
+		$.publish('ChordEditionView-unactiveView');
 	};
 
 	ChordEditionView.prototype.activeView = function(idElement) {
 		this.editMode = 'chords';
+		$.publish('ChordEditionView-activeView', 'chords');
 	};
 
 	return ChordEditionView;

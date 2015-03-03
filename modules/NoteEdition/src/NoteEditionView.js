@@ -9,6 +9,7 @@ define([
 	function NoteEditionView(parentHTML) {
 		this.el = undefined;
 		this.initSubscribe();
+		this.initKeyboard();
 	}
 
 	NoteEditionView.prototype.render = function(parentHTML, force, callback) {
@@ -18,7 +19,6 @@ define([
 		if (typeof this.el === "undefined" || (typeof this.el !== "undefined" && force === true)) {
 			this.initView(parentHTML, function() {
 				self.initController();
-				self.initKeyboard();
 				$.publish('NoteEditionView-render');
 				if (typeof callback === "function") {
 					callback();
@@ -235,10 +235,13 @@ define([
 
 	NoteEditionView.prototype.unactiveView = function(idElement) {
 		this.editMode = '';
+		$.publish('NoteEditionView-unactiveView');
 	};
 
 	NoteEditionView.prototype.activeView = function(idElement) {
 		this.editMode = 'notes';
+		$.publish('NoteEditionView-activeView', 'notes');
+		//myApp.viewer.draw(self.songModel);
 	};
 
 	return NoteEditionView;

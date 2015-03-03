@@ -40,7 +40,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordManager', 'modules/
 				return;
 			}
 			var chordType = chordModel.unformatChordType(chordModel.getChordType());
-			var chordTypeToNote = ChordUtils.getAllChords();
+			var chordTypeToNote = ChordUtils.getAllChordTypes();
 			/**
 			 * We first try to know if chordModel chord is already known
 			 */

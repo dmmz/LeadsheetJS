@@ -8,15 +8,43 @@ define([
 		'modules/LSViewer/src/TupletManager',
 		'modules/LSViewer/src/BarWidthManager',
 		'modules/core/src/SectionBarsIterator',
-		'modules/core/src/SongBarsIterator'
+		'modules/core/src/SongBarsIterator',
+		'pubsub',
 	],
-	function(Vex, LSNoteView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator) {
+	function(Vex, LSNoteView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator, pubsub) {
 
-		function LSViewer(ctx, params) {
-			this.ctx = ctx;
+		function LSViewer(canvas, params) {
+			this.canvas = canvas;
+			var renderer = new Vex.Flow.Renderer(this.canvas, Vex.Flow.Renderer.Backends.CANVAS);
+			this.ctx = renderer.getContext("2d");
 			this.init(params);
 			this.drawableModel = [];
+			this.initController();
 		}
+
+		/**
+		 * Publish event after receiving dom events
+		 */
+		LSViewer.prototype.initController = function() {
+			var self = this;
+
+
+			$(this.canvas).click(function(evt) {
+				$.publish('LSViewer-click', getXandY($(self.canvas), evt));
+			});
+			$(this.canvas).mouseover(function(evt) {
+				$.publish('LSViewer-mouseover', getXandY($(self.canvas), evt));
+			});
+
+			function getXandY(element, event) {
+				xpos = event.pageX - element.offset().left;
+				ypos = event.pageY - element.offset().top;
+				return {
+					x: xpos,
+					y: ypos
+				};
+			}
+		};
 
 		LSViewer.prototype.init = function(params) {
 			this.SCALE = 0.85;
@@ -88,7 +116,7 @@ define([
 		 * @param  {[Integer, Integer] } Array with initial position and end position
 		 * @return {Array of Objects}, Object in this form: {area.x, area.y, area.xe, area.ye}
 		 */
-		LSViewer.prototype.getAreasFromCursor = function(cursor) {
+		LSViewer.prototype.getNotesAreasFromCursor = function(cursor) {
 			var areas = [];
 			var cInit = cursor[0];
 			var cEnd = cursor[1];
@@ -127,13 +155,15 @@ define([
 			return areas;
 		};
 
+
 		LSViewer.prototype.draw = function(song) {
 			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
+			var i, j, v, c;
 			// call drawable elem with zIndex < 10
-			for (var i = 0, c = this.drawableModel.length; i < c; i++) {
+			for (i = 0, c = this.drawableModel.length; i < c; i++) {
 				if (this.drawableModel[i].zIndex < 10 && typeof this.drawableModel[i].elem.draw === "function") {
-					this.drawableModel[i].elem.draw();
+					this.drawableModel[i].elem.draw(self);
 				}
 			}
 			// this.ctx.translate((this.ctx.canvas.width - (this.ctx.canvas.width * this.SCALE)) / 2, 0);
@@ -155,6 +185,7 @@ define([
 				vxfBeams,
 				vxfNote,
 				vxfNotes = [],
+				vxfBars = [],
 				barDimensions,
 				tieMng = new TieManager();
 
@@ -163,10 +194,12 @@ define([
 			var numSection = 0;
 
 			var songIt = new SongBarsIterator(song);
+			var barView;
+			var sectionIt;
 			song.getSections().forEach(function(section) {
 
 				// for each bar
-				var sectionIt = new SectionBarsIterator(section);
+				sectionIt = new SectionBarsIterator(section);
 				while (sectionIt.hasNext()) {
 
 					beamMng = new BeamManager();
@@ -176,7 +209,7 @@ define([
 					barNotes = nm.getNotesAtBarNumber(songIt.getBarIndex(), song);
 
 					// for each note of bar
-					for (var j = 0; j < barNotes.length; j++) {
+					for (j = 0, v = barNotes.length; j < v; j++) {
 						tieMng.checkTie(barNotes[j], iNote);
 						tupletMng.checkTuplet(barNotes[j], iNote);
 						noteView = new LSNoteView(barNotes[j]);
@@ -188,16 +221,22 @@ define([
 					}
 
 					barDimensions = barWidthMng.getDimensions(songIt.getBarIndex());
-					var barView = new LSBarView(barDimensions);
+					barView = new LSBarView(barDimensions);
 					barView.draw(self.ctx, songIt, sectionIt, self.ENDINGS_Y, self.LABELS_Y);
 
+					vxfBars.push({
+						'barDimensions': barDimensions,
+						'timeSignature': songIt.getBarTimeSignature(),
+					});
+
 					barChords = cm.getChordsByBarNumber(songIt.getBarIndex());
-					for (var i = 0; i < barChords.length; i++) {
+					for (i = 0, c = barChords.length; i < c; i++) {
 						chordView = new LSChordView(barChords[i]).draw(
 							self.ctx,
 							barDimensions,
 							songIt.getBarTimeSignature(),
-							self.CHORDS_DISTANCE_STAVE);
+							self.CHORDS_DISTANCE_STAVE
+						);
 					}
 
 					vxfBeams = beamMng.getVexflowBeams(); // we need to do getVexflowBeams before drawing notes
@@ -214,14 +253,16 @@ define([
 			});
 			tieMng.draw(this.ctx, vxfNotes, nm, barWidthMng, song);
 			this.vxfNotes = vxfNotes;
+			this.vxfBars = vxfBars;
 			//this.lastDrawnSong = song;
 
 			// call drawable elem with zIndex > 10
-			for (var i = 0, c = this.drawableModel.length; i < c; i++) {
+			for (i = 0, c = this.drawableModel.length; i < c; i++) {
 				if (this.drawableModel[i].zIndex >= 10 && typeof this.drawableModel[i].elem.draw === "function") {
 					this.drawableModel[i].elem.draw(self);
 				}
 			}
+			$.publish('LSViewer-drawEnd', this);
 		};
 		return LSViewer;
 

@@ -104,7 +104,7 @@ define([], function() {
 			return midiNotes;
 		}
 		return undefined;
-	}
+	};
 
 
 	//code taken from MidiJS lib

@@ -3,6 +3,7 @@ require.config({
 	baseUrl: "../../",
 	paths: {
 		jquery: 'external-libs/jquery-2.1.0.min',
+		jquery_autocomplete: 'external-libs/jquery.autocomplete.min',
 		qunit: 'external-libs/qunit/qunit',
 		vexflow_helper: 'external-libs/vexflow_test_helpers',
 		vexflow: 'external-libs/vexflow-min',
@@ -73,6 +74,7 @@ define(function(require) {
 	var NoteEditionView = require('modules/NoteEdition/src/NoteEditionView');
 	var NoteEditionController = require('modules/NoteEdition/src/NoteEditionController');
 
+	var ChordSpaceManager = require('modules/ChordEdition/src/ChordSpaceManager');
 	var ChordEditionView = require('modules/ChordEdition/src/ChordEditionView');
 	var ChordEditionController = require('modules/ChordEdition/src/ChordEditionController');
 
@@ -108,7 +110,7 @@ define(function(require) {
 	myApp.historyM.setCurrentPosition(1);*/
 
 	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
-	initPlayerModule(songModel);
+	//initPlayerModule(songModel);
 
 	var option = {
 		displayTitle: true,
@@ -121,37 +123,45 @@ define(function(require) {
 		fillEmptyBarCharacter: "%",
 	};
 	initChordSequenceModule(songModel, option);
+	/*
+		$('#main-container').prepend('<br />');
+		$('#main-container').prepend('<br />');
+		var optionChediak = {
+			displayTitle: true,
+			displayComposer: true,
+			displaySection: true,
+			displayBar: true,
+			delimiterBar: "",
+			delimiterBeat: "/",
+			unfoldSong: false, //TODO unfoldSong is not working yet
+			fillEmptyBar: false,
+			fillEmptyBarCharacter: "%",
+		};
+		initChordSequenceModule(songModel, optionChediak);*/
 
-	$('#main-container').prepend('<br />');
-	$('#main-container').prepend('<br />');
-	var optionChediak = {
-		displayTitle: true,
-		displayComposer: true,
-		displaySection: true,
-		displayBar: true,
-		delimiterBar: "",
-		delimiterBeat: "/",
-		unfoldSong: false, //TODO unfoldSong is not working yet
-		fillEmptyBar: false,
-		fillEmptyBarCharacter: "%",
-	};
-	initChordSequenceModule(songModel, optionChediak);
-
-	initViewerModule(songModel);
-	var cursorC = initCursor(songModel);
-	myApp.viewer.addDrawableModel(cursorC.view, 11);
+	myApp.viewer = new LSViewer($('#score')[0]);
 
 	$.subscribe('MainMenuView-render', function(el) {
-
+		// Edit notes on view
+		var cursorNoteController = initCursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow');
+		myApp.viewer.addDrawableModel(cursorNoteController.view, 11);
+		// Edit notes menu
 		var neV = new NoteEditionView();
-		var neC = new NoteEditionController(songModel, cursorC.model, neV);
+		var neC = new NoteEditionController(songModel, cursorNoteController.model, neV);
 
-		var ceV = new ChordEditionView();
-		var ceC = new ChordEditionController(neV);
+		// Edit chords on view
+		var cursorChordController = initCursor(songModel.getSongTotalBeats(), songModel, 'chords', 'tab');
+		cursorChordController.model.setEditable(false);
+		var chordSpaceManager = new ChordSpaceManager(songModel, cursorChordController.model);
+		// Edit chords menu
+		var ceV = new ChordEditionView(undefined, cursorChordController.model);
+		var ceC = new ChordEditionController(songModel, cursorChordController.model, ceV);
 
+		// Harmonize menu
 		var hV = new HarmonizerView();
 		var hC = new HarmonizerController(songModel, hV);
 
+		// Constraint menu
 		var cM = new ConstraintModel(songModel);
 		var cV = new ConstraintView();
 		var cC = new ConstraintController(cM, cV);
@@ -182,7 +192,7 @@ define(function(require) {
 				});
 			});
 		});
-
+		myApp.viewer.draw(songModel);
 	});
 
 
@@ -200,21 +210,15 @@ define(function(require) {
 			displayLoop: true,
 			displayTempo: true,
 			changeInstrument: true,
+			autoload: false,
 			progressBar: true
 		});
 		var pC = new PlayerController(player, pV);
 	}
 
-	function initViewerModule(songModel) {
-		var renderer = new Vex.Flow.Renderer($('#score')[0], Vex.Flow.Renderer.Backends.CANVAS);
-		var ctx = renderer.getContext("2d");
-		myApp.viewer = new LSViewer(ctx);
-		myApp.viewer.draw(songModel);
-	}
-
-	function initCursor(songModel) {
-		var cM = new CursorModel();
-		var cV = new CursorView(cM);
+	function initCursor(listElement, songModel, id, keyType) {
+		var cM = new CursorModel(listElement);
+		var cV = new CursorView(cM, id, keyType);
 		var cC = new CursorController(songModel, cM, cV);
 		return cC;
 	}

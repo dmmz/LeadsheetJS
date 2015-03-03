@@ -36,6 +36,8 @@ define([
 				assert.equal(song.getStartBeatFromBarNumber(0),1);
 				assert.equal(song.getStartBeatFromBarNumber(2),9);
 
+				assert.equal(song.getSongTotalBeats(), 29);
+
 				/* MISSING TESTS: 
 					Song with no notes
 					Song with no chords

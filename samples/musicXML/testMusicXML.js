@@ -45,9 +45,7 @@ define(function(require) {
 	var song2 = SongModel_MusicXML.importFromMusicXML(filepath);
 	initViewerModule(song2);*/
 	function initViewerModule(songModel) {
-		var renderer = new Vex.Flow.Renderer($('#score')[0], Vex.Flow.Renderer.Backends.CANVAS);
-		var ctx = renderer.getContext("2d");
-		var viewer = new LSViewer(ctx);
+		var viewer = new LSViewer($('#score')[0]);
 		viewer.draw(songModel);
 	}
 });

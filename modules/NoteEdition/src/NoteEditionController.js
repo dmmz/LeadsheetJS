@@ -66,6 +66,13 @@ define([
 		$.subscribe('NoteEditionView-pasteNotes', function(el) {
 			self.pasteNotes();
 		});
+		$.subscribe('NoteEditionView-activeView', function(el) {
+			self.changeEditMode(true);
+			myApp.viewer.draw(self.songModel);
+		});
+		$.subscribe('NoteEditionView-unactiveView', function(el) {
+			self.changeEditMode(false);
+		});
 	};
 
 	/**
@@ -369,5 +376,9 @@ define([
 		nm.reviseNotes();
 	};
 
+	NoteEditionController.prototype.changeEditMode = function(isEditable) {
+		this.cursor.setEditable(isEditable);
+	};
+	
 	return NoteEditionController;
 });

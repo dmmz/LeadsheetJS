@@ -105,7 +105,6 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 		}
 		if (this.chords[index]) {
 			var deletedChords = this.chords.splice(index, 1);
-			delete deletedChords;
 		}
 	};
 
@@ -125,6 +124,23 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 			}
 		}
 		return chordsByBarNumber;
+	};
+
+	/**
+	 * Return a chord that is matching correct Bar and beat number
+	 * @param  {ChordModel} chord or undefined if no chord match
+	 */
+	ChordManager.prototype.searchChordByBarAndBeat = function(barNumber, beat) {
+		if (!isNaN(barNumber) && barNumber >= 0 && !isNaN(beat) && beat >= 0) {
+			var currentChord;
+			for (var i = 0, c = this.chords.length; i < c; i++) {
+				currentChord = this.chords[i];
+				if (currentChord.getBarNumber() === barNumber && currentChord.getBeat() === beat) {
+					return currentChord;
+				}
+			}
+		}
+		return undefined;
 	};
 
 	/**

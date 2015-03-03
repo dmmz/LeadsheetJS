@@ -5,9 +5,10 @@ define([
 		run: function() {
 			test("CursorModel", function(assert) {
 				
-				var cm = new CursorModel();
+				var cm = new CursorModel(10);
 
 				// test init
+				
 				assert.ok(cm instanceof CursorModel);
 				assert.deepEqual(cm.getPos(), [0, 0]);
 				
@@ -26,6 +27,8 @@ define([
 
 				cm.setIndexPos(0, 4);
 				assert.deepEqual(cm.getPos(), [4, 7]);
+
+				assert.equal(cm.getListLength(), 10, 'length');
 
 				// reset
 				cm.reset();

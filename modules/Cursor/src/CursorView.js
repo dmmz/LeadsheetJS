@@ -5,8 +5,10 @@ define([
 	'pubsub',
 ], function(Mustache, SongModel, UserLog, pubsub) {
 
-	function CursorView(model, parentHTML) {
-		this.model = model; // Cursor view need information about his model, this is only because draw function is call by an external viewer
+	function CursorView(model, id, keyToNext) {
+		this.id = id;
+		this.model = model; // Cursor view need information about its model, this is only because draw function is call by an external viewer
+		this.keyToNext = (typeof keyToNext !== "undefined") ? keyToNext : 'arrow'; // way to go to previous next, 'arrow' or 'tab', by default it's arrow
 		this.initSubscribe();
 		this.initController();
 		this.initKeyboard();
@@ -27,41 +29,49 @@ define([
 			var key = String.fromCharCode(keyCode).toLowerCase();
 
 			//prevent backspace
-			if (keyCode === 8) {
+			if (keyCode === 8 || keyCode === 37 || keyCode === 39 || keyCode === 36 || keyCode === 35) {
 				var doPrevent = false;
 				var d = evt.srcElement || evt.target;
 				if (d.tagName.toUpperCase() === 'TEXTAREA' || (d.tagName.toUpperCase() === 'INPUT' && (d.type.toUpperCase() === 'TEXT' || d.type.toUpperCase() === 'PASSWORD' || d.type.toUpperCase() === 'FILE'))) {
-					doPrevent = d.readOnly || d.disabled;
+					doPrevent = !(d.readOnly || d.disabled);
 				} else {
-					doPrevent = true;
+					doPrevent = false;
 				}
-				if (doPrevent) {
-					stopEvent(evt);
+				if (doPrevent === true) {
+					return;
 				}
 			}
-			if (keyCode == 37 || keyCode == 39) {
-				// left-right arrows
-				inc = (keyCode == 39) ? 1 : -1;
-				if (evt.shiftKey) {
-					$.publish('CursorView-expandSelected', inc);
-				} else {
-					$.publish('CursorView-moveCursor', inc);
+			if (self.keyToNext === 'tab') {
+				if(keyCode==9) {
+					inc = (evt.shiftKey) ? -1 : 1;
+					$.publish('CursorView-moveCursor' + self.id, inc);
+					stopEvent(evt);
 				}
-				stopEvent(evt);
-			} else if (keyCode == 36) { //begin
-				if (evt.shiftKey) {
-					$.publish('CursorView-expandSelected', -10000);
-				} else {
-					$.publish('CursorView-setCursor', 0);
+			} else { // arrow
+				if (keyCode == 37 || keyCode == 39) {
+					// left-right arrows
+					inc = (keyCode == 39) ? 1 : -1;
+					if (evt.shiftKey) {
+						$.publish('CursorView-expandSelected' + self.id, inc);
+					} else {
+						$.publish('CursorView-moveCursor' + self.id, inc);
+					}
+					stopEvent(evt);
+				} else if (keyCode == 36) { //begin
+					if (evt.shiftKey) {
+						$.publish('CursorView-expandSelected' + self.id, -10000);
+					} else {
+						$.publish('CursorView-setCursor' + self.id, 0);
+					}
+					stopEvent(evt);
+				} else if (keyCode == 35) { //end
+					if (evt.shiftKey) {
+						$.publish('CursorView-expandSelected' + self.id, 10000);
+					} else {
+						$.publish('CursorView-setCursor' + self.id, 10000);
+					}
+					stopEvent(evt);
 				}
-				stopEvent(evt);
-			} else if (keyCode == 35) { //end
-				if (evt.shiftKey) {
-					$.publish('CursorView-expandSelected', 10000);
-				} else {
-					$.publish('CursorView-setCursor', 10000);
-				}
-				stopEvent(evt);
 			}
 		});
 
@@ -91,7 +101,7 @@ define([
 		var saveFillColor = viewer.ctx.fillStyle;
 		viewer.ctx.fillStyle = "#0099FF";
 		viewer.ctx.globalAlpha = 0.2;
-		var areas = viewer.getAreasFromCursor(position);
+		var areas = viewer.getNotesAreasFromCursor(position);
 
 		for (var i in areas) {
 			viewer.ctx.fillRect(

@@ -307,7 +307,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 				var randomVelocityRange = 40;
 
 				var realIndex = 0;
-				var metronomeChannel = 2;
+				var metronomeChannel = this.instrumentsIndex.length-1;
 
 				var currentNote, currentMidiNote, duration, velocityNote, channel, volume;
 				var playNote = false;
@@ -429,7 +429,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 				56 : "trumpet",
 				61 : "brass_section",
 				64 : "soprano_sax",*/
-				65: "alto_sax",
+				/*65: "alto_sax",*/
 				/*		66 : "tenor_sax",
 				67 : "baritone_sax",
 				73 : "flute",*/

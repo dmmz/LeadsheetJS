@@ -18,7 +18,7 @@ define([
 		this.addComponent('notes', new NoteManager());
 		this.addComponent('bars', new BarManager());
 	}
- 
+
 	///////////////////////////////
 	// Basic getters and setters //
 	///////////////////////////////
@@ -210,6 +210,7 @@ define([
 	};
 
 	SongModel.prototype.getBar = function(index) {
+		//TODO, remove function, duplicate
 		return this.getComponent("bars").getBar(index);
 	};
 
@@ -222,7 +223,7 @@ define([
 	 */
 	SongModel.prototype.getBarNumBeats = function(numBar, currentBeats) {
 		var barTimeSig = this.getBar(numBar).timeSignature,
-		timeSig = barTimeSig || this.getTimeSignature();
+			timeSig = barTimeSig || this.getTimeSignature();
 
 		if (!timeSig && !currentBeats) throw "bad use: either song is not well formatted, either currentBeats is not sent";
 
@@ -230,6 +231,7 @@ define([
 	};
 
 	SongModel.prototype.getBars = function() {
+		//TODO, remove function, duplicate
 		return this.getComponent("bars").getBars();
 	};
 
@@ -371,6 +373,19 @@ define([
 			for (var i = 0; i < barNumber; i++) {
 				numberOfBeats += this.getTimeSignatureAt(i).getBeats();
 			}
+		}
+		return numberOfBeats;
+	};
+
+	/**
+	 * Function return the number of total beat in the song
+	 * @return {int} number of total beat
+	 */
+	SongModel.prototype.getSongTotalBeats = function() {
+		var numberOfBeats = 0;
+		var bm = this.getComponent('bars');
+		for (var i = 0, c = bm.getTotal(); i < c; i++) {
+			numberOfBeats += this.getTimeSignatureAt(i).getBeats();
 		}
 		return numberOfBeats;
 	};
