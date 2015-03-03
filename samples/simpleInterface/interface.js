@@ -78,6 +78,9 @@ define(function(require) {
 	var ChordEditionView = require('modules/ChordEdition/src/ChordEditionView');
 	var ChordEditionController = require('modules/ChordEdition/src/ChordEditionController');
 
+	var BarEditionView = require('modules/BarEdition/src/BarEditionView');
+	var BarEditionController = require('modules/BarEdition/src/BarEditionController');
+
 	var SongModel = require('modules/core/src/SongModel');
 	var SongModel_CSLJson = require('modules/converters/MusicCSLJson/src/SongModel_CSLJson');
 	var testSongs = require('tests/test-songs');
@@ -166,6 +169,12 @@ define(function(require) {
 		var cV = new ConstraintView();
 		var cC = new ConstraintController(cM, cV);
 
+		// Edit bars menu
+		var beV = new BarEditionView();
+		var beC = new BarEditionController(songModel, cursorNoteController.model, beV);
+
+
+
 		neV.render(undefined, true, function() {
 			menuM.addMenu({
 				title: 'Notes',
@@ -176,17 +185,23 @@ define(function(require) {
 					title: 'Chords',
 					view: ceV
 				});
-				menuC.activeMenu('Notes');
-				cV.render(undefined, false, function() {
+				beV.render(undefined, true, function() {
 					menuM.addMenu({
-						title: 'Constraint',
-						view: cV
+						title: 'Bars',
+						view: beV
 					});
-					//menuC.activeMenu('Constraint');
-					hV.render(undefined, true, function() {
+					menuC.activeMenu('Notes');
+					cV.render(undefined, false, function() {
 						menuM.addMenu({
-							title: 'Harmonizer',
-							view: hV
+							title: 'Constraint',
+							view: cV
+						});
+						//menuC.activeMenu('Constraint');
+						hV.render(undefined, true, function() {
+							menuM.addMenu({
+								title: 'Harmonizer',
+								view: hV
+							});
 						});
 					});
 				});

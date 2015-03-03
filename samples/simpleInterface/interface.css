@@ -416,6 +416,24 @@ body {
 	font-size: 1.2em;
 }
 
+/******* Bar Edition ******/
+#edit_bars_second_level > div {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	display: inline-block;
+	vertical-align: top;
+	padding-left: 1em;
+	padding-right: 1em;
+	padding-top: 1em;
+	margin-top: 1em;
+	border-right: 1px solid #bbb;
+}
+#edit_bars_second_level select {
+	width: auto !important;
+}
+
+
 /*********  ***********/
 
 #canvas_container{

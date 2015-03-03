@@ -39,7 +39,7 @@ define(['modules/core/src/TimeSignatureModel'],function(TimeSignatureModel) {
 
 	BarModel.prototype.setEnding = function(ending) {
 		if (typeof ending === "undefined") {
-			throw 'BarModel - ending should not be undefined';
+			ending = undefined;
 		}
 		this.ending = ending;
 	};
@@ -50,7 +50,7 @@ define(['modules/core/src/TimeSignatureModel'],function(TimeSignatureModel) {
 
 	BarModel.prototype.setStyle = function(style) {
 		if (typeof style === "undefined") {
-			throw 'BarModel - style should not be undefined';
+			style = '';
 		}
 		this.style = style;
 	};
@@ -69,7 +69,7 @@ define(['modules/core/src/TimeSignatureModel'],function(TimeSignatureModel) {
 
 	BarModel.prototype.setTonality = function(tonality) {
 		if (typeof tonality === "undefined") {
-			throw 'BarModel - tonality should not be undefined';
+			tonality = '';
 		}
 		this.tonality = tonality;
 	};
@@ -80,7 +80,7 @@ define(['modules/core/src/TimeSignatureModel'],function(TimeSignatureModel) {
 
 	BarModel.prototype.setLabel = function(label) {
 		if (typeof label === "undefined") {
-			throw 'BarModel - label should not be undefined';
+			label = '';
 		}
 		this.label = label;
 	};
@@ -91,7 +91,7 @@ define(['modules/core/src/TimeSignatureModel'],function(TimeSignatureModel) {
 
 	BarModel.prototype.setSublabel = function(sublabel) {
 		if (typeof sublabel === "undefined") {
-			throw 'BarModel - sublabel should not be undefined';
+			sublabel = '';
 		}
 		this.sublabel = sublabel;
 	};
