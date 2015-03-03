@@ -1,4 +1,4 @@
-define(['modules/core/src/NoteModel'], function(NoteModel) {
+define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, NoteUtils) {
 	function NoteManager() {
 		this.notes = [];
 	}
@@ -129,84 +129,9 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 	};
 
 	/**
-	 * @param  {integer} start
-	 * @param  {integer} end
-	 * @return {Array}
-	 */
-	NoteManager.prototype.getBeatIntervalByIndexes = function(start, end) {
-		if (typeof start === "undefined" || isNaN(start) ||
-			start >= this.notes.length || start < 0) {
-			throw "NoteManager - getBeatIntervalByIndexes:  problem with start " + start;
-		}
-		if (typeof end === "undefined" || isNaN(end) ||
-			end >= this.notes.length || end < 0) {
-			throw "problem with end " + end;
-		}
-
-		var startBeat = this.getNoteBeat(start);
-		var endBeat = this.getNoteBeat(end) + this.getNote(end).getDuration();
-		endBeat = roundBeat(endBeat);
-		return [startBeat, endBeat];
-	};
-
-	/**
-	 * Returns the index found at the exact beat, and if not, at the
-	 * closest note just after a given beat
-	 * @param  {float} beat global beat (first beat starts at 1, not 0)
-	 * @return {Integer} index of the note
-	 */
-	NoteManager.prototype.getNextIndexNoteByBeat = function(beat) {
-		if (!beat || isNaN(beat) || beat < 1) {
-			throw "beat not valid: " + beat;
-		}
-		var curBeat = 1;
-		var i = 0;
-		//we round in the comparison in order to not carry the rounding in curBeat (which is cumulative inside the iteration)
-		while (roundBeat(curBeat) < beat) { //to avoid problems with tuplet 
-			curBeat += this.getNote(i).getDuration();
-			i++;
-		}
-		return i;
-	};
-
-
-	/**
-	 * Similar to previous one (getNextIndexNote()), but if
-	 * exact beat is not found, it returns the closest previous note
-	 * @param  {float} beat global beat (first beat starts at 1, not 0)
-	 * @return {Integer} index of the note
-	 */
-	NoteManager.prototype.getPrevIndexNoteByBeat = function(beat) {
-		if (typeof beat === "undefined" || isNaN(beat) || beat > this.getTotalDuration() + 1) { // +1 because we start at beat 1
-			throw "beat not valid: " + beat;
-		}
-		var curBeat = 1;
-		var i = 0;
-		//round just like in getNtextIndexNote
-		while (roundBeat(curBeat) < beat) {
-			curBeat += this.getNote(i).getDuration();
-			i++;
-		}
-		return i - 1;
-	};
-
-	/**
-	 * @param  {Integer} startBeat
-	 * @param  {Integer} endBeat
-	 * @return {Array}           indexes e.g. [1,2]
-	 */
-
-	NoteManager.prototype.getIndexesStartingBetweenBeatInterval = function(startBeat, endBeat) {
-		var index1 = this.getNextIndexNoteByBeat(startBeat);
-		var index2 = this.getPrevIndexNoteByBeat(endBeat);
-		return [index1, index2];
-	};
-
-	/**
 	 * @param  {NoteModel} note
 	 * @return {Integer}
 	 */
-
 	NoteManager.prototype.getNoteIndex = function(note) {
 		if (typeof note !== "undefined" && note instanceof NoteModel) {
 			for (var i = 0; i < this.notes.length; i++) {
@@ -239,7 +164,11 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 			this.getNextIndexNoteByBeat(endBeat)
 		);
 	};
+
 	NoteManager.prototype.getNoteBarNumber = function(index, song) {
+		if (isNaN(index) || index < 0 || typeof song === "undefined") {
+			throw "NoteManager - getNoteBarNumber - attributes are not what expected, song: " + song + ", index: " + index;
+		}
 		var numBar = 0,
 			duration = 0;
 
@@ -253,7 +182,110 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 			duration += this.notes[i].getDuration();
 		}
 		return numBar;
+	};
 
+	/**
+	 * @param  {integer} start
+	 * @param  {integer} end
+	 * @return {Array}
+	 */
+	NoteManager.prototype.getBeatIntervalByIndexes = function(start, end) {
+		if (typeof start === "undefined" || isNaN(start) ||
+			start >= this.notes.length || start < 0) {
+			throw "NoteManager - getBeatIntervalByIndexes:  problem with start " + start;
+		}
+		if (typeof end === "undefined" || isNaN(end) ||
+			end >= this.notes.length || end < 0) {
+			throw "problem with end " + end;
+		}
+
+		var startBeat = this.getNoteBeat(start);
+		var endBeat = this.getNoteBeat(end) + this.getNote(end).getDuration();
+		endBeat = roundBeat(endBeat);
+		return [startBeat, endBeat];
+	};
+
+	/**
+	 * Returns the index found at the exact beat, and if not, at the
+	 * closest note just after a given beat
+	 * @param  {float} beat global beat (first beat starts at 1, not 0)
+	 * @return {Integer} index of the note
+	 */
+	NoteManager.prototype.getNextIndexNoteByBeat = function(beat) {
+		if (isNaN(beat) || beat < 1) {
+			throw 'NoteManager - getNextIndexNoteByBeat - beat must be a positive integer ' + beat;
+		}
+		var curBeat = 1;
+		var i = 0;
+		//we round in the comparison in order to not carry the rounding in curBeat (which is cumulative inside the iteration)
+		while (roundBeat(curBeat) < beat) { //to avoid problems with tuplet 
+			curBeat += this.getNote(i).getDuration();
+			i++;
+		}
+		return i;
+	};
+
+
+	/**
+	 * Similar to previous one (getNextIndexNote()), but if
+	 * exact beat is not found, it returns the closest previous note
+	 * @param  {float} beat global beat (first beat starts at 1, not 0)
+	 * @return {Integer} index of the note
+	 */
+	NoteManager.prototype.getPrevIndexNoteByBeat = function(beat) {
+		if (isNaN(beat) || beat < 0) {
+			throw 'NoteManager - getPrevIndexNoteByBeat - beat must be a positive integer ' + beat;
+		}
+		var curBeat = 1;
+		var i = 0;
+		//round just like in getNtextIndexNote
+		while (roundBeat(curBeat) < beat) {
+			curBeat += this.getNote(i).getDuration();
+			i++;
+		}
+		return i - 1;
+	};
+
+	/**
+	 * @param  {Integer} startBeat
+	 * @param  {Integer} endBeat
+	 * @return {Array}           indexes e.g. [1,2]
+	 */
+
+	NoteManager.prototype.getIndexesStartingBetweenBeatInterval = function(startBeat, endBeat) {
+		if (isNaN(startBeat) || startBeat < 0) {
+			startBeat = 1;
+		}
+		if (isNaN(endBeat)) {
+			throw 'NoteManager - getIndexesByBeatInterval - endBeat must be a positive integer ' + endBeat;
+		}
+		var index1 = this.getNextIndexNoteByBeat(startBeat);
+		var index2 = this.getPrevIndexNoteByBeat(endBeat);
+		return [index1, index2];
+	};
+
+	/**
+	 * adds silences at the end of array of notes so that they fill the gapDuration
+	 * @param  {integer} gapDuration
+	 * @param  {integer} initBeat
+	 */
+	NoteManager.prototype.fillGapWithRests = function(gapDuration, initBeat) {
+		if (isNaN(gapDuration)) {
+			return;
+		}
+		if (isNaN(initBeat) || initBeat < 0) {
+			initBeat = 1;
+		}
+		gapDuration = Math.round(gapDuration * 1000000) / 1000000;
+		var newNote;
+		var silenceDurs = NoteUtils.durationToNotes(gapDuration, initBeat);
+		var self = this;
+		silenceDurs.forEach(function(dur) {
+			if (typeof dur !== "undefined") {
+				newNote = new NoteModel(dur + 'r');
+				self.addNote(newNote);
+			}
+		});
 	};
 
 	/**

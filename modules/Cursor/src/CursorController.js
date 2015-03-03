@@ -17,13 +17,13 @@ define([
 	 */
 	CursorController.prototype.initSubscribe = function() {
 		var self = this;
-		$.subscribe('CursorView-setCursor', function(el, index) {
+		$.subscribe('CursorView-setCursor' + this.view.id, function(el, index) {
 			self.setCursor(index);
 		});
-		$.subscribe('CursorView-expandSelected', function(el, inc) {
+		$.subscribe('CursorView-expandSelected' + this.view.id, function(el, inc) {
 			self.expandSelected(inc);
 		});
-		$.subscribe('CursorView-moveCursor', function(el, inc) {
+		$.subscribe('CursorView-moveCursor' + this.view.id, function(el, inc) {
 			self.moveCursor(inc);
 		});
 	};
@@ -39,16 +39,6 @@ define([
 			throw 'CursorController - setCursor - index is not correct ' + index;
 		}
 
-		// function check if cursor index is correct
-		function controlIndex(index, min, max) {
-			if (!(index instanceof Array)) index = [index, index];
-			for (var i = 0; i < index.length; i++) {
-				if (index[i] < min) index[i] = min;
-				if (index[i] >= max) index[i] = max - 1;
-			}
-			return index;
-		}
-		index = controlIndex(index, 0, this.songModel.getComponent('notes').getTotal());
 		this.model.setPos(index);
 		myApp.viewer.draw(this.songModel);
 	};
@@ -57,7 +47,7 @@ define([
 		if (typeof inc === "undefined" || isNaN(inc)) {
 			throw 'CursorController - expandSelected - inc is not correct ' + inc;
 		}
-		this.model.expand(inc, this.songModel.getComponent('notes').getTotal());
+		this.model.expand(inc);
 		myApp.viewer.draw(this.songModel);
 	};
 

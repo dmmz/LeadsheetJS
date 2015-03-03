@@ -135,6 +135,9 @@ define([
 		var currentTimeSignature = this.getTimeSignature();
 		var timeSig;
 		var sectionNumber = this.getSectionNumberFromBarNumber(barNumber);
+		if (typeof sectionNumber === "undefined") {
+			return currentTimeSignature; // TODO need test on song that have repetitions on last section and a time signature change
+		}
 		var startBarSection = this.getStartBarNumberFromSectionNumber(sectionNumber);
 		// loop in all previous bar in the current section
 		while (barNumber >= startBarSection) {
@@ -153,30 +156,22 @@ define([
 		return currentTimeSignature;
 	};
 
+	// USELESS function, use directly timesignature function instead
 	/**
 	 * The function returns the number of beats from the timeSig arguments or by default on current timeSignature
 	 * @param  {TimeSignatureModel} timeSig
 	 * @return {int} number of beats in a measure in the unit of the signature. E.g.: for 6/8 -> 6, for 4/4 -> 4 for 2/2 -> 2
 	 */
-	SongModel.prototype.getBeatsFromTimeSignature = function(timeSig) {
+	/*SongModel.prototype.getBeatsFromTimeSignature = function(timeSig) {
 		if (timeSig !== "undefined") {
 			return timeSig.getBeats();
 		}
-	};
-	
+	};*/
+	/*
 	SongModel.prototype.getBeatsFromTimeSignatureAt = function(barNumber) {
 		return this.getBeatsFromTimeSignature(this.getTimeSignatureAt(barNumber));
 	};
-
-	/**
-	 * The function returns the beats unit from the current time signature
-	 * @return {int} beat unit in a measure. E.g.: for 6/8 -> 0.5, for 4/4 -> 1 for 2/2 -> 2
-	 */
-	// TODO rename function
-	SongModel.prototype.getBeatUnitFromTimeSignature = function() {
-		return this.timeSignature.getBeatUnitQuarter();
-	};
-
+*/
 	/**
 	 * @param  {Integer} index  index of the section
 	 * @return {SectionModel}
@@ -215,6 +210,7 @@ define([
 	};
 
 	SongModel.prototype.getBar = function(index) {
+		//TODO, remove function, duplicate
 		return this.getComponent("bars").getBar(index);
 	};
 
@@ -226,9 +222,8 @@ define([
 	 * @return {Number}
 	 */
 	SongModel.prototype.getBarNumBeats = function(numBar, currentBeats) {
-		
 		var barTimeSig = this.getBar(numBar).timeSignature,
-		timeSig = barTimeSig || this.getTimeSignature();
+			timeSig = barTimeSig || this.getTimeSignature();
 
 		if (!timeSig && !currentBeats) throw "bad use: either song is not well formatted, either currentBeats is not sent";
 
@@ -236,28 +231,10 @@ define([
 	};
 
 	SongModel.prototype.getBars = function() {
+		//TODO, remove function, duplicate
 		return this.getComponent("bars").getBars();
 	};
 
-
-	/**
-	 *
-	 * @param  {Number} barNumber
-	 * @return {Number} section number
-	 */
-	SongModel.prototype.getSectionNumberFromBarNumber = function(barNumber) {
-		if (isNaN(barNumber)) {
-			throw "barNumber is not a number: " + barNumber;
-		}
-		var sections = this.getSections();
-		var sumBar = 0;
-		for (var i = 0, c = sections.length; i < c; i++) {
-			sumBar += sections[i].getNumberOfBars();
-			if (sumBar > barNumber) {
-				return i;
-			}
-		}
-	};
 
 	/**
 	 * get component using unfolded song structure
@@ -354,13 +331,35 @@ define([
 	 */
 	SongModel.prototype.getStartBarNumberFromSectionNumber = function(sectionNumber) {
 		if (isNaN(sectionNumber)) {
-			throw "sectionNumber is not a number: " + sectionNumber;
+			throw "SongModel - getStartBarNumberFromSectionNumber - sectionNumber is not a number: " + sectionNumber;
 		}
 		var barNumber = 0;
 		for (var i = 0; i < sectionNumber; i++) {
 			barNumber += this.getSection(i).getNumberOfBars();
 		}
 		return barNumber;
+	};
+
+	/**
+	 * Function return the section number in which the bar is
+	 * @param  {int} barNumber
+	 * @return {int} section number (index) start at 0
+	 */
+	SongModel.prototype.getSectionNumberFromBarNumber = function(barNumber) {
+		if (typeof barNumber === "undefined" || isNaN(barNumber) || barNumber < 0) {
+			throw "SongModel - getSectionNumberFromBarNumber - barNumber is not a number: " + barNumber;
+		}
+		var sections = this.getSections();
+		var sumBar = 0;
+		for (var i = 0, c = sections.length; i < c; i++) {
+			if (typeof sections[i] !== "undefined") {
+				sumBar += sections[i].getNumberOfBars();
+				if (sumBar > barNumber) {
+					return i;
+				}
+			}
+		}
+		return undefined;
 	};
 
 	/**
@@ -372,8 +371,21 @@ define([
 		var numberOfBeats = 1;
 		if (typeof barNumber !== "undefined" && !isNaN(barNumber) && barNumber >= 0) {
 			for (var i = 0; i < barNumber; i++) {
-				numberOfBeats += this.getBeatsFromTimeSignatureAt(i);
+				numberOfBeats += this.getTimeSignatureAt(i).getBeats();
 			}
+		}
+		return numberOfBeats;
+	};
+
+	/**
+	 * Function return the number of total beat in the song
+	 * @return {int} number of total beat
+	 */
+	SongModel.prototype.getSongTotalBeats = function() {
+		var numberOfBeats = 0;
+		var bm = this.getComponent('bars');
+		for (var i = 0, c = bm.getTotal(); i < c; i++) {
+			numberOfBeats += this.getTimeSignatureAt(i).getBeats();
 		}
 		return numberOfBeats;
 	};

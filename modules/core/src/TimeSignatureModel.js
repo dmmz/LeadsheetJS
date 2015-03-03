@@ -21,10 +21,14 @@ define(function() {
 	};
 
 
+	/**
+	 * The function returns the beats unit from the current time signature
+	 * @return {int} beat unit in a measure. E.g.: for 6/8 -> 0.5, for 4/4 -> 1 for 2/2 -> 2
+	 */
 	TimeSignatureModel.prototype.getBeatUnitQuarter = function() {
 		return 4 / this.beatUnit;
 	};
-
+	
 	TimeSignatureModel.prototype.getBeatUnit = function() {
 		return this.beatUnit;
 	};

@@ -7,8 +7,8 @@ define(function() {
 	 *		chordType: "7",			// chordtype is a string indicating a chordtype
 	 *		base: {ChordModel},		// base is a chordModel which represent a base note
 	 *		parenthesis: false,		// booalean indicating if there are parenthesis or not
-	 *		beat: 1, 				// startbeat in the current measure (start at 1)
-	 *		barNumber: 0 			// start bar number (start at 0)
+	 *		beat: 1,				// startbeat in the current measure (start at 1)
+	 *		barNumber: 0			// start bar number (start at 0)
 	 * }
 	 */
 	function ChordModel(param) {
@@ -37,7 +37,7 @@ define(function() {
 			return maps;
 		}
 
-	};
+	}
 
 	/* Basic getter setter */
 	ChordModel.prototype.getNote = function() {
@@ -55,7 +55,7 @@ define(function() {
 	};
 
 	/**
-	 * 
+	 *
 	 * @param {String} chordType, could be undefined, e.g. in "NC" (no chord)
 	 */
 	ChordModel.prototype.setChordType = function(chordType) {
@@ -132,8 +132,8 @@ define(function() {
 		}
 
 		var chordType = this.getChordType();
-		if (isFormated ) {
-			if (chordType) 	chordType = this.formatChordType(chordType);
+		if (isFormated) {
+			if (typeof chordType !== "undefined") chordType = this.formatChordType(chordType);
 			else chordType = "";
 		}
 
@@ -146,7 +146,8 @@ define(function() {
 		if (base instanceof ChordModel && base.getNote() !== "") {
 			var baseChordType = base.getChordType();
 			if (isFormated) {
-				baseChordType = this.formatChordType(baseChordType);
+				if (typeof baseChordType !== "undefined") baseChordType = this.formatChordType(baseChordType);
+				else baseChordType = "";
 			}
 			string += "/" + base.getNote() + delimiter + baseChordType;
 		}
@@ -245,6 +246,9 @@ define(function() {
 	 * Example: halfdim become ø
 	 */
 	ChordModel.prototype.formatChordType = function(chordTypeName) {
+		if (typeof chordTypeName === "undefined") {
+			return '';
+		}
 		for (var props in this.chordSymbolList) {
 			chordTypeName = chordTypeName.replace(props, this.chordSymbolList[props]);
 		}
@@ -252,6 +256,9 @@ define(function() {
 	};
 
 	ChordModel.prototype.unformatChordType = function(chordTypeName) {
+		if (typeof chordTypeName === "undefined") {
+			return '';
+		}
 		for (var props in this.chordSymbolList) {
 			chordTypeName = chordTypeName.replace(this.chordSymbolList[props], props);
 		}

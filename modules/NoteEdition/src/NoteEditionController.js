@@ -24,7 +24,20 @@ define([
 			self.setPitch(decal);
 		});
 		$.subscribe('NoteEditionView-addAccidental', function(el, accidental) {
-			self.addAccidental(accidental);
+			// Accidental contain as first argument the type of accidental (b,#,n) and as second argument true or false for double accidental
+			// Or it may contain a string
+			var acc = '';
+			if(accidental.hasOwnProperty('acc')){
+				acc = accidental.acc;
+			}
+			else{
+				acc = accidental;
+			}
+			var doubleAccidental = false;
+			if(accidental.hasOwnProperty('double')){
+				doubleAccidental = accidental.double;
+			}
+			self.addAccidental(acc, doubleAccidental);
 		});
 		$.subscribe('NoteEditionView-setCurrDuration', function(el, duration) {
 			self.setCurrDuration(duration);
@@ -53,13 +66,20 @@ define([
 		$.subscribe('NoteEditionView-pasteNotes', function(el) {
 			self.pasteNotes();
 		});
+		$.subscribe('NoteEditionView-activeView', function(el) {
+			self.changeEditMode(true);
+			myApp.viewer.draw(self.songModel);
+		});
+		$.subscribe('NoteEditionView-unactiveView', function(el) {
+			self.changeEditMode(false);
+		});
 	};
 
 	/**
 	 * Set selected notes to a key
 	 * @param {int|letter} If decal is a int, than it will be a decal between current note and wanted note in semi tons, if decal is a letter then current note is the letter
 	 */
-	NoteEditionController.prototype.setPitch= function(decalOrNote) {
+	NoteEditionController.prototype.setPitch = function(decalOrNote) {
 		var selNotes = this.getSelectedNotes();
 		var note;
 		for (var i = 0, c = selNotes.length; i < c; i++) {
@@ -81,24 +101,27 @@ define([
 
 
 
-	NoteEditionController.prototype.addAccidental = function(accidental) {
+	NoteEditionController.prototype.addAccidental = function(accidental, doubleAccidental) {
 		var selNotes = this.getSelectedNotes();
 		var note;
+		if (typeof doubleAccidental !== "undefined" && doubleAccidental === true && accidental !== "n") {
+			accidental += accidental;
+		}
 		for (var i = 0; i < selNotes.length; i++) {
 			note = selNotes[i];
 			if (note.isRest) continue;
 			if (note.getAccidental() == accidental) {
 				note.removeAccidental();
-			} else note.setAccidental(accidental);
+			} else {
+				note.setAccidental(accidental);
+			}
 		}
 		myApp.viewer.draw(this.songModel);
 	};
 
 	/**
-	 * call example: setCurrDuration(this.cursor, this.noteManager, "4")
-	 * but also works like setCurrDuration("4")
-	 *
-	 * @param {String} durKey	represents the duration
+	 * setCurrDuration("4")
+	 * @param {String} duration	represents the duration
 	 */
 	NoteEditionController.prototype.setCurrDuration = function(duration) {
 		var arrDurs = {
@@ -113,20 +136,27 @@ define([
 		};
 		var selNotes = this.getSelectedNotes();
 		var newDur = arrDurs[duration];
-		var note;
-		for (var i = 0; i < selNotes.length; i++) {
-			note = selNotes[i];
-			if (duration < 9) note.setDuration(newDur);
+		if (typeof newDur === "undefined") {
+			throw 'NoteEditionController - setCurrDuration not accepted duration ' + duration;
 		}
+		var durBefore = 0,
+			durAfter = 0;
+		for (var i = 0; i < selNotes.length; i++) {
+			durBefore += selNotes[i].getDuration();
+			selNotes[i].setDuration(newDur);
+			durAfter += selNotes[i].getDuration();
+		}
+		this.checkDuration(durBefore, durAfter);
 		myApp.viewer.draw(this.songModel);
 	};
-
-
 
 	NoteEditionController.prototype.setDot = function() {
 		var selNotes = this.getSelectedNotes();
 		var numberOfDots = 0;
+		var durBefore = 0,
+			durAfter = 0;
 		for (var i = 0, c = selNotes.length; i < c; i++) {
+			durBefore += selNotes[i].getDuration();
 			numberOfDots = selNotes[i].getDot();
 			if (numberOfDots >= 2) {
 				numberOfDots = 0;
@@ -134,7 +164,9 @@ define([
 				numberOfDots++;
 			}
 			selNotes[i].setDot(numberOfDots);
+			durAfter += selNotes[i].getDuration();
 		}
+		this.checkDuration(durBefore, durAfter);
 		myApp.viewer.draw(this.songModel);
 	};
 
@@ -259,9 +291,12 @@ define([
 	NoteEditionController.prototype.deleteNote = function() {
 		var noteManager = this.songModel.getComponent('notes');
 		var position = this.cursor.getPos();
+		var durBefore = 0;
 		for (var cInit = position[0], cEnd = position[1]; cInit <= cEnd; cInit++) {
+			durBefore += noteManager.getNote(cInit).getDuration();
 			noteManager.deleteNote(cInit);
 		}
+		this.checkDuration(durBefore, 0);
 		var numNotes = noteManager.getTotal();
 		this.cursor.revisePos(numNotes);
 		myApp.viewer.draw(this.songModel);
@@ -273,7 +308,8 @@ define([
 		var noteToClone = noteManager.getNotes(pos, pos + 1)[0];
 		var cloned = noteToClone.clone(false);
 		noteManager.insertNote(pos, cloned);
-		this.cursor.setPos(pos + 1);
+		this.checkDuration(0, noteToClone.getDuration());
+		// this.cursor.setPos(pos + 1);
 		myApp.viewer.draw(this.songModel);
 	};
 
@@ -291,6 +327,7 @@ define([
 		tmpNm.reviseNotes();
 		notesToPaste = tmpNm.getNotes();
 		var noteManager = this.songModel.getComponent('notes');
+		//this.checkDuration(0, noteManager.getTotalDuration());
 		noteManager.notesSplice(this.cursor.getPos(), notesToPaste);
 		myApp.viewer.draw(this.songModel);
 	};
@@ -301,5 +338,47 @@ define([
 		return selectedNotes;
 	};
 
+	NoteEditionController.prototype.checkDuration = function(durBefore, durAfter) {
+		function checkIfBreaksTuplet(initBeat, endBeat, nm) {
+			/**
+			 * means that is a 0.33333 or something like that
+			 * @return {Boolean}
+			 */
+			function isTupletBeat(beat) {
+				beat = beat * 16;
+				return Math.round(beat) != beat;
+			}
+			var iPrevNote = nm.getNextIndexNoteByBeat(initBeat);
+			var iNextNote = nm.getNextIndexNoteByBeat(endBeat);
+			return isTupletBeat(nm.getNoteBeat(iPrevNote)) || isTupletBeat(nm.getNoteBeat(iNextNote));
+		}
+
+		var nm = this.songModel.getComponent('notes');
+		var initBeat = nm.getNoteBeat(this.cursor.getStart());
+		var endBeat = initBeat + durAfter;
+
+		if (durAfter < durBefore) {
+			nm.fillGapWithRests(durBefore - durAfter, initBeat);
+		} else if (durAfter > durBefore) {
+			if (checkIfBreaksTuplet(initBeat, endBeat, nm)) {
+				UserLog.logAutoFade('error', "Can't break tuplet");
+				return;
+			}
+			var endIndex = nm.getNextIndexNoteByBeat(endBeat);
+			var beatEndNote = nm.getNoteBeat(endIndex);
+
+			if (endBeat < beatEndNote) {
+				nm.fillGapWithRests(beatEndNote - endBeat, initBeat);
+			}
+			this.cursor.setPos([this.cursor.getStart(), endIndex - 1]);
+		}
+		//nm.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
+		nm.reviseNotes();
+	};
+
+	NoteEditionController.prototype.changeEditMode = function(isEditable) {
+		this.cursor.setEditable(isEditable);
+	};
+	
 	return NoteEditionController;
 });

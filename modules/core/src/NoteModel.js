@@ -32,6 +32,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		}
 	}
 
+
 	NoteModel.prototype.toString = function(string, index) {
 		return this.pitchClass[0] + this.accidental[0] + this.octave[0];
 	};
@@ -63,6 +64,8 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 			if (!string.match(re)) {
 				throw "Creating pitch " + string + ". Should be in de form [pitch][acc]/[octave]. e.g. Ab/4 or [duration] if you want a rest eg. '8'";
 			}
+			this.pitchClass[0] = 'B';
+			this.octave[0] = '4';
 			var restPosition = string.indexOf("r");
 			if (restPosition == -1) {
 				this.duration = string;
@@ -180,8 +183,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 			throw "not valid typeTuplet " + typeTuplet;
 		}
 		this.timeModification = timeModification || "3/2";
-
-		//we know typeTuple is a valid type, just check that is not middel
+		//we know typeTuple is a valid type, just check that is not middle
 		if (typeTuplet != "middle") this.tuplet = typeTuplet;
 	};
 	/**
@@ -226,7 +228,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 	 * @param {Number} i   default 0
 	 */
 	NoteModel.prototype.setAccidental = function(acc, i) {
-		var validAccidentals = ["", "#", "b", "n"];
+		var validAccidentals = ["", "#", "b", "n", "##", "bb"];
 		if (validAccidentals.indexOf(acc) == -1) throw "invalid accidental";
 		i = i || 0;
 		this.accidental[i] = acc;
@@ -269,7 +271,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 	};
 
 	NoteModel.prototype.setDuration = function(dur) {
-		if (typeof dur === "number"){
+		if (typeof dur === "number") {
 			dur = NoteUtils.getStringFromBeatDuration(dur);
 		}
 		this.duration = dur;

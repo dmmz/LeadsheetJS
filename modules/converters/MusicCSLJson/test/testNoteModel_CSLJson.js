@@ -6,7 +6,7 @@ define(['modules/converters/MusicCSLJson/src/NoteModel_CSLJson', 'modules/core/s
 				var t = NoteModel_CSLJson.exportToMusicCSLJSON(note);
 				
 				// testing default export
-				assert.deepEqual(t, {'dot':0,'duration':'hr',"keys":[]});
+				assert.deepEqual(t, {'dot':0,'duration':'hr',"keys":["B/4"]});
 				/*
 				// testing export
 				var chord = new NoteModel('h');

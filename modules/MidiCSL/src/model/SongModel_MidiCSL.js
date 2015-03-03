@@ -101,7 +101,7 @@ define(['modules/MidiCSL/src/model/NoteModel_MidiCSL'], function(NoteModel_MidiC
 		timeSig = 4;
 		if(typeof songModel !== "undefined"){
 			timeSig = songModel.timeSignature.getBeats();
-			beatUnit = songModel.getBeatUnitFromTimeSignature();
+			beatUnit = songModel.timeSignature.getBeatUnitQuarter();
 		}
 		for(var i = 0, c = 200; i < c; i++){
 			if( i%timeSig === 0 ){

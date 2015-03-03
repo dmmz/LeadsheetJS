@@ -25,7 +25,7 @@ define([
 		$.get('/modules/MainMenu/src/MainMenuTemplate.html', function(template) {
 			var rendered = Mustache.render(template);
 			parentHTML.innerHTML += rendered;
-			self.el = rendered;
+			self.el = parentHTML;
 			if (typeof callback === "function") {
 				callback();
 			}
@@ -121,6 +121,16 @@ define([
 			// menu.initView('main_menu_second_level');
 		});
 	};
+
+
+	MainMenuView.prototype.hide = function() {
+		this.el.style.display = "none";
+	};
+
+	MainMenuView.prototype.show = function() {
+		this.el.style.display = "block";
+	};
+
 
 	return MainMenuView;
 });

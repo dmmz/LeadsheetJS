@@ -52,7 +52,7 @@ define([
 			if (typeof parentHTML !== "undefined") {
 				parentHTML.innerHTML = rendered;
 			}
-			self.el = rendered;
+			self.el = parentHTML;
 			if (typeof callback === "function") {
 				callback();
 			}
@@ -300,7 +300,6 @@ define([
 	};
 
 
-
 	PlayerView.prototype.adaptSoundButton = function(volume) {
 		if(volume < 0.33 ){
 			pic = 'sound_off';
@@ -398,6 +397,15 @@ define([
 			top: (relativePosition - middleController) + 'px'
 		});
 	};
+
+	PlayerView.prototype.hide = function() {
+		this.el.style.display = "none";
+	};
+
+	PlayerView.prototype.show = function() {
+		this.el.style.display = "inline-block";
+	};
+
 
 	return PlayerView;
 });

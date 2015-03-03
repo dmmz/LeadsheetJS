@@ -8,15 +8,43 @@ define([
 		'modules/LSViewer/src/TupletManager',
 		'modules/LSViewer/src/BarWidthManager',
 		'modules/core/src/SectionBarsIterator',
-		'modules/core/src/SongBarsIterator'
+		'modules/core/src/SongBarsIterator',
+		'pubsub',
 	],
-	function(Vex, LSNoteView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator) {
+	function(Vex, LSNoteView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator, pubsub) {
 
-		function LSViewer(ctx, params) {
-			this.ctx = ctx;
+		function LSViewer(canvas, params) {
+			this.canvas = canvas;
+			var renderer = new Vex.Flow.Renderer(this.canvas, Vex.Flow.Renderer.Backends.CANVAS);
+			this.ctx = renderer.getContext("2d");
 			this.init(params);
 			this.drawableModel = [];
+			this.initController();
 		}
+
+		/**
+		 * Publish event after receiving dom events
+		 */
+		LSViewer.prototype.initController = function() {
+			var self = this;
+
+
+			$(this.canvas).click(function(evt) {
+				$.publish('LSViewer-click', getXandY($(self.canvas), evt));
+			});
+			$(this.canvas).mouseover(function(evt) {
+				$.publish('LSViewer-mouseover', getXandY($(self.canvas), evt));
+			});
+
+			function getXandY(element, event) {
+				xpos = event.pageX - element.offset().left;
+				ypos = event.pageY - element.offset().top;
+				return {
+					x: xpos,
+					y: ypos
+				};
+			}
+		};
 
 		LSViewer.prototype.init = function(params) {
 			this.SCALE = 0.85;
@@ -84,83 +112,58 @@ define([
 		};
 
 		/**
-		 *
-		 * @param  {CursorModel  | [Integer, Integer] } cursor can be a CursorModel or an array with initial position and end position
-		 * @param  {Array of NoteModel} notes
-		 * @param  {Boolean} scale  indicates if we have to scale or not (from the viewer we don't need to because the whole view is scaled, but
-		 *                   drawing from the interactiveLayer we do need to (harmonic analysis and annotation)
+		 * Function return several areas to indicate which notes are selected, usefull for cursor or selection
+		 * @param  {[Integer, Integer] } Array with initial position and end position
 		 * @return {Array of Objects}, Object in this form: {area.x, area.y, area.xe, area.ye}
 		 */
-		/*LSViewer.prototype.getAreasFromCursor = function(cursor, notes, scale) {
-			if (scale == null) scale = false;
+		LSViewer.prototype.getNotesAreasFromCursor = function(cursor) {
 			var areas = [];
-
-			var cInit, cEnd;
-			if (cursor instanceof CursorModel) {
-				cInit = cursor.getStart();
-				cEnd = cursor.getEnd();
-			} else {
-				cInit = cursor[0];
-				cEnd = cursor[1];
-			}
-			//var initMeasure=this.mapNotesMeasures[cInit];
-			cInit = parseInt(cInit, null);
-			cEnd = parseInt(cEnd, null);
-			var xi, yi, xe, ye;
-			ye = this.cursorHeight;
-			var firstNoteLine, lastNoteLine;
-			var currY, nextY;
-
-			firstNoteLine = notes[cInit];
-			if (typeof firstNoteLine === "undefined") {
+			var cInit = cursor[0];
+			var cEnd = cursor[1];
+			if (typeof this.vxfNotes[cInit] === "undefined") {
 				return areas;
 			}
+			var xi, yi, xe, ye;
+			ye = this.LINE_HEIGHT;
 
-			measureFirstNoteLine = notes[cInit].getMeasure();
-
-			var iNote = cInit;
-			while (iNote <= cEnd) {
-				iMeasure = notes[iNote].getMeasure();
-
-				currY = this.staves[iMeasure].y + this.marginCursor;
-
-				//getNextY
-				if (iNote == cEnd) //when there is only one note
-					nextY = currY + this.marginCursor;
-				else
-					nextY = this.staves[notes[iNote + 1].getMeasure()].y + this.marginCursor;
-
-				if (currY != nextY || iNote == cEnd) {
-					lastNoteLine = notes[iNote];
-
-					xi = firstNoteLine.x;
-					xe = lastNoteLine.x - xi + lastNoteLine.width + this.cursorMarginRight;
-
+			var currentNote, currentNoteStaveY, nextNoteStaveY;
+			var firstNoteLine, lastNoteLine;
+			firstNoteLine = this.vxfNotes[cInit];
+			while (cInit <= cEnd) {
+				currentNote = this.vxfNotes[cInit];
+				currentNoteStaveY = currentNote.stave.y;
+				if (typeof this.vxfNotes[cInit + 1] !== "undefined") {
+					nextNoteStaveY = this.vxfNotes[cInit + 1].stave.y;
+				}
+				if (currentNoteStaveY != nextNoteStaveY || cInit == cEnd) {
+					lastNoteLine = currentNote.getBoundingBox();
+					xi = firstNoteLine.getBoundingBox().x;
+					xe = lastNoteLine.x - xi + lastNoteLine.w;
 					areas.push({
 						x: xi,
-						y: currY,
+						y: currentNoteStaveY,
 						xe: xe,
 						ye: ye
 					});
-
-					if (iNote != cEnd) {
-						firstNoteLine = notes[iNote + 1];
-						measureFirstNoteLine = notes[iNote + 1].getMeasure();
+					if (cInit != cEnd) {
+						firstNoteLine = this.vxfNotes[cInit + 1];
 					}
 				}
 
-				iNote++;
+				cInit++;
 			}
-			return scale ? this.scaleAreas(areas) : areas;
-		};*/
+			return areas;
+		};
+
 
 		LSViewer.prototype.draw = function(song) {
 			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
+			var i, j, v, c;
 			// call drawable elem with zIndex < 10
-			for (var i = 0, c = this.drawableModel.length; i < c; i++) {
+			for (i = 0, c = this.drawableModel.length; i < c; i++) {
 				if (this.drawableModel[i].zIndex < 10 && typeof this.drawableModel[i].elem.draw === "function") {
-					this.drawableModel[i].elem.draw();
+					this.drawableModel[i].elem.draw(self);
 				}
 			}
 			// this.ctx.translate((this.ctx.canvas.width - (this.ctx.canvas.width * this.SCALE)) / 2, 0);
@@ -182,6 +185,7 @@ define([
 				vxfBeams,
 				vxfNote,
 				vxfNotes = [],
+				vxfBars = [],
 				barDimensions,
 				tieMng = new TieManager();
 
@@ -190,10 +194,12 @@ define([
 			var numSection = 0;
 
 			var songIt = new SongBarsIterator(song);
+			var barView;
+			var sectionIt;
 			song.getSections().forEach(function(section) {
 
 				// for each bar
-				var sectionIt = new SectionBarsIterator(section);
+				sectionIt = new SectionBarsIterator(section);
 				while (sectionIt.hasNext()) {
 
 					beamMng = new BeamManager();
@@ -201,8 +207,9 @@ define([
 					bar = [];
 
 					barNotes = nm.getNotesAtBarNumber(songIt.getBarIndex(), song);
+
 					// for each note of bar
-					for (var j = 0; j < barNotes.length; j++) {
+					for (j = 0, v = barNotes.length; j < v; j++) {
 						tieMng.checkTie(barNotes[j], iNote);
 						tupletMng.checkTuplet(barNotes[j], iNote);
 						noteView = new LSNoteView(barNotes[j]);
@@ -214,16 +221,22 @@ define([
 					}
 
 					barDimensions = barWidthMng.getDimensions(songIt.getBarIndex());
-					var barView = new LSBarView(barDimensions);
+					barView = new LSBarView(barDimensions);
 					barView.draw(self.ctx, songIt, sectionIt, self.ENDINGS_Y, self.LABELS_Y);
 
+					vxfBars.push({
+						'barDimensions': barDimensions,
+						'timeSignature': songIt.getBarTimeSignature(),
+					});
+
 					barChords = cm.getChordsByBarNumber(songIt.getBarIndex());
-					for (var i = 0; i < barChords.length; i++) {
+					for (i = 0, c = barChords.length; i < c; i++) {
 						chordView = new LSChordView(barChords[i]).draw(
 							self.ctx,
 							barDimensions,
 							songIt.getBarTimeSignature(),
-							self.CHORDS_DISTANCE_STAVE);
+							self.CHORDS_DISTANCE_STAVE
+						);
 					}
 
 					vxfBeams = beamMng.getVexflowBeams(); // we need to do getVexflowBeams before drawing notes
@@ -238,15 +251,18 @@ define([
 				}
 				numSection++;
 			});
-			tieMng.draw(self.ctx, vxfNotes, nm, barWidthMng, song);
-			self.vxfNotes = vxfNotes;
+			tieMng.draw(this.ctx, vxfNotes, nm, barWidthMng, song);
+			this.vxfNotes = vxfNotes;
+			this.vxfBars = vxfBars;
+			//this.lastDrawnSong = song;
 
 			// call drawable elem with zIndex > 10
-			for (var i = 0, c = this.drawableModel.length; i < c; i++) {
+			for (i = 0, c = this.drawableModel.length; i < c; i++) {
 				if (this.drawableModel[i].zIndex >= 10 && typeof this.drawableModel[i].elem.draw === "function") {
 					this.drawableModel[i].elem.draw(self);
 				}
 			}
+			$.publish('LSViewer-drawEnd', this);
 		};
 		return LSViewer;
 

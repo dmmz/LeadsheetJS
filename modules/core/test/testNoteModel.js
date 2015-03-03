@@ -111,6 +111,10 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 				assert.equal(inlineNote.getTimeModification(),null);
 				assert.ok(!inlineNote.isRest);
 				
+				var inlineNote2 = new NoteModel('16r');
+				assert.equal(inlineNote2.getDuration(), 0.25);
+				assert.ok(inlineNote2.isRest, 'is a silence');
+
 				var clonedChord = inlineNote.clone();
 				assert.deepEqual(clonedChord, inlineNote, "clone test");
 

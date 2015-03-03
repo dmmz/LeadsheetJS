@@ -12,9 +12,9 @@ define(['vexflow'], function(Vex) {
 		}
 
 		ctx.font = "18px Verdana"; // font for chords
-		ctx.textBaseline = "middle"; // font for chords
+		ctx.textBaseline = "top"; // font for chords
 		ctx.fillStyle = this.color;
-		var chordX = getChordX(this.chord.getBeat(),barDimensions,timeSig.getBeatUnit())
+		var chordX = getChordX(this.chord.getBeat(),barDimensions,timeSig.getBeatUnit());
 		ctx.fillText(this.chord.toString(), chordX, barDimensions.top - chordsY);
 		ctx.fillStyle = "black";
 		ctx.textBaseline = "alphabetic"; // font for chords

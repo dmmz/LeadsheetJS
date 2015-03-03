@@ -9,6 +9,7 @@ define([
 	function NoteEditionView(parentHTML) {
 		this.el = undefined;
 		this.initSubscribe();
+		this.initKeyboard();
 	}
 
 	NoteEditionView.prototype.render = function(parentHTML, force, callback) {
@@ -18,7 +19,6 @@ define([
 		if (typeof this.el === "undefined" || (typeof this.el !== "undefined" && force === true)) {
 			this.initView(parentHTML, function() {
 				self.initController();
-				self.initKeyboard();
 				$.publish('NoteEditionView-render');
 				if (typeof callback === "function") {
 					callback();
@@ -60,6 +60,9 @@ define([
 		});
 
 		// Alteration
+		$('#double_flat').click(function() {
+			$.publish('NoteEditionView-addAccidental', {'acc':'b','double':true});
+		});
 		$('#flat').click(function() {
 			$.publish('NoteEditionView-addAccidental', 'b');
 		});
@@ -68,6 +71,9 @@ define([
 		});
 		$('#sharp').click(function() {
 			$.publish('NoteEditionView-addAccidental', '#');
+		});
+		$('#double_sharp').click(function() {
+			$.publish('NoteEditionView-addAccidental', {'acc':'#','double':true});
 		});
 
 		// Rhythm
@@ -140,6 +146,7 @@ define([
 			}
 			var keyCode = (evt === null) ? event.keyCode : evt.keyCode;
 			var key = String.fromCharCode(keyCode).toLowerCase();
+			var metaKey = !!evt.metaKey;
 
 			//prevent backspace
 			if (keyCode === 8) {
@@ -167,7 +174,7 @@ define([
 				} else if (ACC_KEYS.hasOwnProperty(key) && (!evt.ctrlKey)) {
 					var acc = ACC_KEYS[key];
 					// console.log(acc);
-					$.publish('NoteEditionView-addAccidental', acc);
+					$.publish('NoteEditionView-addAccidental', {'acc':acc,'double':evt.shiftKey});
 					stopEvent(evt);
 				} else if (parseInt(key, null) >= 1 && parseInt(key, null) <= 9) {
 					$.publish('NoteEditionView-setCurrDuration', key);
@@ -191,10 +198,10 @@ define([
 				} else if (keyCode == 13) { //enter
 					$.publish('NoteEditionView-addNote');
 					stopEvent(evt);
-				} else if (keyCode == 67 && evt.ctrlKey) { // Ctrl + c
+				} else if ((keyCode == 67 && evt.ctrlKey) || (keyCode == 67 && metaKey)) { // Ctrl + c or Command + c (mac or windows specific key)
 					$.publish('NoteEditionView-copyNotes');
 					stopEvent(evt);
-				} else if (keyCode == 86 && evt.ctrlKey) { // Ctrl + v
+				} else if ((keyCode == 86 && evt.ctrlKey) || (keyCode == 86 && metaKey)) { // Ctrl + v or Command + v (mac or windows specific key)
 					$.publish('NoteEditionView-pasteNotes');
 					stopEvent(evt);
 				}
@@ -228,10 +235,13 @@ define([
 
 	NoteEditionView.prototype.unactiveView = function(idElement) {
 		this.editMode = '';
+		$.publish('NoteEditionView-unactiveView');
 	};
 
 	NoteEditionView.prototype.activeView = function(idElement) {
 		this.editMode = 'notes';
+		$.publish('NoteEditionView-activeView', 'notes');
+		//myApp.viewer.draw(self.songModel);
 	};
 
 	return NoteEditionView;
