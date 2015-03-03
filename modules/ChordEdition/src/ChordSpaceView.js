@@ -17,7 +17,7 @@ define([
 	 * Publish event after receiving dom events
 	 */
 	ChordSpaceView.prototype.initController = function() {
-		// input publish is on draw function
+		// there are two controllers, one on input onselect, the other on blur event
 	};
 
 	ChordSpaceView.prototype.initKeyboard = function(evt) {};
@@ -36,12 +36,33 @@ define([
 		return false;
 	};
 
+	ChordSpaceView.prototype.onChange = function(chord, value) {
+		var chordInfos = {
+			'chordString': value,
+			'chordModel': chord,
+			'chordSpace': this,
+		};
+		$.publish('ChordSpaceView-updateChord', chordInfos);
+	};
+
+
 	ChordSpaceView.prototype.draw = function(viewer, songModel, selected) {
 		var cursorHeight = 20;
 		var marginTop = 5;
 		var marginRight = 5;
 		if (!!selected) {
 			var self = this;
+
+			// Get chord value
+			var inputVal = '';
+			if (typeof songModel !== "undefined") {
+				var chord = songModel.getComponent('chords').searchChordByBarAndBeat(this.barNumber, this.beatNumber);
+				if (typeof chord !== "undefined") {
+					inputVal = chord.toString('', false);
+				}
+			}
+
+			// Then we create input
 			var offset = $("#canvas_container canvas").offset();
 			if (typeof offset === "undefined" || isNaN(offset.top) || isNaN(offset.left)) {
 				offset = {
@@ -54,18 +75,13 @@ define([
 			var left = this.position.x + offset.left + window.pageXOffset - 1;
 			var width = this.position.xe - marginRight;
 			var height = cursorHeight + marginTop;
-			var inputVal = '';
-			if (typeof songModel !== "undefined") {
-				var chord = songModel.getComponent('chords').searchChordByBarAndBeat(this.barNumber, this.beatNumber);
-				if (typeof chord !== "undefined") {
-					inputVal = chord.toString('', false);
-				}
-			}
 			var input = $('<input/>').attr({
 				type: 'text',
 				style: "position:absolute; z-index: 11000;left:" + left + "px;top:" + top + "px; width:" + width + "px; height:" + height + "px",
 				'class': 'chordSpaceInput',
 			}).prependTo('#canvas_container');
+
+			// We create auto complete input
 			var chordTypeList = [];
 			if (typeof ChordUtils.allChords !== "undefined") {
 				chordTypeList = ChordUtils.allChords;
@@ -87,21 +103,24 @@ define([
 					return suggestion.value.indexOf(originalQuery) !== -1;
 				},
 				onSelect: function(suggestion) {
-					var chordInfos = {
-						'chordString': suggestion.value,
-						'chordModel': chord,
-						'chordSpace': self,
-					};
 					input.devbridgeAutocomplete('dispose');
-					$.publish('ChordSpaceView-updateChord', chordInfos);
+					self.onChange(chord, suggestion.value);
 				}
 			});
 			input.focus(); // this focus allow setting cursor on end carac
 			input.val(inputVal);
 			input.focus(); // this focus launch autocomplete firectly when value is not empty
+			$('.chordSpaceInput').on('blur', function() {
+				input.devbridgeAutocomplete('dispose');
+				self.onChange(chord, $(this).val());
+			});
+			// We use a filter function to make it easier for user to enter chords
+			$('.chordSpaceInput').on('input propertychange paste', function() {
+				$(this).val(self.filterFunction($(this).val()));
+			});
 		}
 		viewer.ctx.strokeStyle = "#999999";
-		
+
 		viewer.ctx.strokeRect(
 			this.position.x,
 			this.position.y - marginTop,
@@ -110,6 +129,11 @@ define([
 		);
 	};
 
+	/**
+	 * Set to upper case first notes, add a lot of replacement for french or not keyboard
+	 * @param  {String} s input string
+	 * @return {String}   output string
+	 */
 	ChordSpaceView.prototype.filterFunction = function(s) {
 		function indexesOf(source, find) {
 			var result = [];
