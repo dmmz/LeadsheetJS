@@ -24,7 +24,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordManager', 'modules/
 				chordsInBar = bars[barNum];
 				if (chordsInBar.length === 0) {
 					// case there is no chord in bar, we repeat previous one
-					duration = chordManager.getChordDurationFromBarNumber(songModel, chordIndex, barNum) * songModel.getBeatUnitFromTimeSignature();
+					duration = chordManager.getChordDurationFromBarNumber(songModel, chordIndex, barNum) * songModel.timeSignature.getBeatUnitQuarter();
 					var msm = new NoteModel_midiCSL({
 						'currentTime': currentTime,
 						'duration': duration,
@@ -36,7 +36,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordManager', 'modules/
 				} else {
 					for (var i = 0, c = chordsInBar.length; i < c; i++) {
 						chordIndex = chordManager.getChordIndex(chordsInBar[i]);
-						duration = chordManager.getChordDurationFromBarNumber(songModel, chordIndex, barNum) * songModel.getBeatUnitFromTimeSignature();
+						duration = chordManager.getChordDurationFromBarNumber(songModel, chordIndex, barNum) * songModel.timeSignature.getBeatUnitQuarter();
 						midiNotes = ChordConverterMidi_MidiCSL.exportToMidiCSL(chordsInBar[i]);
 						//console.log(chordsInBar[ i ], chordIndex, duration)
 						var msm = new NoteModel_midiCSL({

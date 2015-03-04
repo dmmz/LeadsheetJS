@@ -10,7 +10,7 @@ define(['modules/core/src/ChordModel'], function(ChordModel) {
 				for (var j = 0, v = chordsSection.length; j < v; j++) {
 					for (var k = 0, b = chordsSection[j].length; k < b; k++) {
 						chordModel = new ChordModel();
-						chordModel.importFromMusicCSLJSON(chordsSection[j][k])
+						chordModel.importFromMusicCSLJSON(chordsSection[j][k]);
 						chordModel.setBarNumber(barNumber);
 						this.addChord(chordModel);
 					}
@@ -19,7 +19,7 @@ define(['modules/core/src/ChordModel'], function(ChordModel) {
 			}
 		}
 		return this;
-	}
+	};
 
 	ChordManager_CSLJson.exportToMusicCSLJSON = function(chordModel) {
 		var chords = [];
@@ -48,6 +48,7 @@ define(['modules/core/src/ChordModel'], function(ChordModel) {
 			}
 		}
 		return chords;
-	}
+	};
+
 	return ChordManager_CSLJson;
 });

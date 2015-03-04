@@ -5,8 +5,7 @@ define([
 	'pubsub',
 ], function(Mustache, SongModel, UserLog, pubsub) {
 
-	function ConstraintView(model) {
-		this.model = (model) ? model : new ConstraintModel();
+	function ConstraintView() {
 		this.el = undefined;
 	}
 

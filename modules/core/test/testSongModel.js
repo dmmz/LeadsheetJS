@@ -27,10 +27,16 @@ define([
 				assert.deepEqual(song.getTimeSignatureAt(5).getBeats(), new TimeSignatureModel("3/4").getBeats());
 				assert.deepEqual(song.getTimeSignatureAt(6).getBeats(), new TimeSignatureModel("3/4").getBeats());
 
+				assert.equal(song.getSectionNumberFromBarNumber(0),0);
+				assert.equal(song.getSectionNumberFromBarNumber(6),0);
+				assert.equal(song.getSectionNumberFromBarNumber(10), undefined);
+
 				assert.equal(song.getBarNumBeats(0),4);
 				
 				assert.equal(song.getStartBeatFromBarNumber(0),1);
 				assert.equal(song.getStartBeatFromBarNumber(2),9);
+
+				assert.equal(song.getSongTotalBeats(), 29);
 
 				/* MISSING TESTS: 
 					Song with no notes

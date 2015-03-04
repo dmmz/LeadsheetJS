@@ -4,16 +4,18 @@ define([
 
 	/**
 	 * Cursor consists of a pos array that contain index start and index end of position
+	 * @param {Int|Array|Object} listElement allow to get size of a list, must be an int, or an array, or an object, if it's an object then getTotal function will be call to get list length
 	 * @param {Array} optCursor gets a cursor as an array of two positions [start,end]
-	 * @param {string} color, color in hexadecimal indicates how to draw cursor
 	 */
-	function CursorModel(optCursor, color) {
+	function CursorModel(listElement, optCursor, isEditable) {
+		this.listElement = listElement;
 		optCursor = optCursor || [0, 0];
 		if (!(optCursor instanceof Array)) optCursor = [optCursor, optCursor];
 
 		this.sideSelected = 1;
+		this.isEditable = (typeof isEditable !== "undefined") ? isEditable: true;
 		this.setPos(optCursor);
-		this.color = color || "#0099FF";
+		// this.color = color || "#0099FF";
 	}
 
 
@@ -26,9 +28,12 @@ define([
 	 * or a single value that will be converted to an array [value, value]
 	 */
 	CursorModel.prototype.setPos = function(pos) {
+		if (!this.isEditable) {
+			return;
+		}
 		if (!(pos instanceof Array)) pos = [pos, pos];
+		pos = this._checkPosition(pos);
 		this.pos = pos;
-		console.log('setPos', this.pos);
 		$.publish('CursorModel-setPos', this.pos);
 	};
 
@@ -46,38 +51,57 @@ define([
 	 * @param {int} pos   cursor position
 	 */
 	CursorModel.prototype.setIndexPos = function(index, pos) {
-		if ((index != 0 && index != 1) || isNaN(pos)) {
+		if (!this.isEditable) {
+			return;
+		}
+		if ((index !== 0 && index !== 1) || isNaN(pos)) {
 			throw 'CursorModel - setIndexPos, arguments not well defined ' + 'index:' + index + ' - pos:' + pos;
 		}
+		pos = this._checkPosition(pos)[0];
 		this.pos[index] = pos;
-		console.log('setIndexPos', this.pos);
 		$.publish('CursorModel-setPos', this.pos);
 	};
 
+	/**
+	 * This function check that a position is valid, it means that it's between 0 and listLength
+	 * @param  {Int|Array} position can be a int or an array of two Int
+	 * @return {Array}     A new position array clamped
+	 */
+	CursorModel.prototype._checkPosition = function(position) {
+		if (!(position instanceof Array)) position = [position, position];
+		var numNotes = this.getListLength();
+		for (var i = 0; i < position.length; i++) {
+			if (position[i] < 0) position[i] = 0;
+			if (position[i] >= numNotes) position[i] = numNotes - 1;
+		}
+		return position;
+	};
 
 	/**
 	 * normally after deleting, if cursor points to an unexisting note, it moves to the last one existing
-	 * @param  {int} numNotes number of notes that exist
 	 */
-	CursorModel.prototype.revisePos = function(numNotes) {
+	CursorModel.prototype.revisePos = function() {
 		for (var i in this.pos) {
-			if (this.pos[i] >= numNotes) this.setIndexPos(i, numNotes - 1);
+			if (this.pos[i] >= this.getListLength()) this.setIndexPos(i, this.getListLength() - 1);
 		}
 	};
 
 	/**
 	 * expands (= moves just one side of the cursor)
 	 * @param  {int} inc      -1 or 1, expand to left or right
-	 * @param  {int} numNotes number of maximum position of cursor
 	 */
-	CursorModel.prototype.expand = function(inc, numNotes) {
+	CursorModel.prototype.expand = function(inc) {
 		if (this.pos[1] === this.pos[0]) {
 			this.sideSelected = (inc > 0) ? 1 : 0;
 		}
 		var newPos = this.pos[this.sideSelected] + inc;
-		if (newPos >= 0 && newPos < numNotes) {
-			this.setIndexPos(this.sideSelected, newPos);
+		if (newPos < 0) {
+			newPos = 0;
 		}
+		if (newPos >= this.getListLength()) {
+			newPos = this.getListLength() - 1;
+		}
+		this.setIndexPos(this.sideSelected, newPos);
 	};
 
 	CursorModel.prototype.getRelativeCursor = function(index) {
@@ -93,6 +117,26 @@ define([
 		inc = inc || 1;
 		this.setIndexPos(0, this.pos[0] += inc);
 		this.setIndexPos(1, this.pos[1] += inc);
+	};
+
+	CursorModel.prototype.getListLength = function() {
+		if (typeof this.listElement === 'object') {
+			return this.listElement.getTotal();
+		}
+		if (this.listElement.constructor === Array) {
+			return this.listElement.length;
+		}
+		if (this.listElement.constructor === Number) {
+			return this.listElement;
+		}
+	};
+
+	CursorModel.prototype.setEditable = function(isEditable) {
+		this.isEditable = !!isEditable;
+	};
+
+	CursorModel.prototype.getEditable = function() {
+		return this.isEditable;
 	};
 
 	return CursorModel;

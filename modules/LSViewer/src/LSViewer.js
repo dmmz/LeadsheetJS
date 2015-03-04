@@ -8,14 +8,63 @@ define([
 		'modules/LSViewer/src/TupletManager',
 		'modules/LSViewer/src/BarWidthManager',
 		'modules/core/src/SectionBarsIterator',
-		'modules/core/src/SongBarsIterator'
+		'modules/core/src/SongBarsIterator',
+		'pubsub'
 	],
-	function(Vex, LSNoteView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator) {
+	function(Vex, LSNoteView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator, pubsub) {
 
-		function LSViewer(ctx, params) {
-			this.ctx = ctx;
+		function LSViewer(idDivContainer, params) {
+			params = params || {};
+			this.DEFAULT_HEIGHT = 1000;
+			var idScore = "ls" + ($("canvas").length + 1),
+			divContainer = $("#" + idDivContainer),
+			width = params && params.width ? params.width : divContainer.width(),
+			height = params && params.height ? params.height : this.DEFAULT_HEIGHT;
+
+
+			canvas = $("<canvas id='" + idScore + "'></canvas>");
+
+			canvas[0].width = width;
+			canvas[0].height = height;
+			canvas.appendTo(divContainer);
+
+			if (canvas[0].height > divContainer.height()){
+				divContainer.css({overflow:"scroll"});
+			}	
+
+			this.canvas = canvas;
+			var renderer = new Vex.Flow.Renderer(this.canvas[0], Vex.Flow.Renderer.Backends.CANVAS);
+			this.ctx = renderer.getContext("2d");
+			
+			params.width = width;
 			this.init(params);
+			this.drawableModel = [];
+			this.initController();
 		}
+
+		/**
+		 * Publish event after receiving dom events
+		 */
+		LSViewer.prototype.initController = function() {
+			var self = this;
+
+
+			$(this.canvas).click(function(evt) {
+				$.publish('LSViewer-click', getXandY($(self.canvas), evt));
+			});
+			$(this.canvas).mouseover(function(evt) {
+				$.publish('LSViewer-mouseover', getXandY($(self.canvas), evt));
+			});
+
+			function getXandY(element, event) {
+				xpos = event.pageX - element.offset().left;
+				ypos = event.pageY - element.offset().top;
+				return {
+					x: xpos,
+					y: ypos
+				};
+			}
+		};
 
 		LSViewer.prototype.init = function(params) {
 
@@ -29,9 +78,11 @@ define([
 			this.MARGIN_TOP = 100;
 			this.CHORDS_DISTANCE_STAVE = 20; //distance from stave
 
-			
+
 			// this.marginLeft = 10;
-			this.setWidth(params.width);
+			if (params && params.width) {
+				this.setWidth(params.width);
+			}
 		};
 		/*	LSViewer.prototype.drawStave = function(section,i) {
 			var left = this.marginLeft + this.barWidth * this.xMeasure;
@@ -45,16 +96,110 @@ define([
 			stave = this.drawStave(section,0);
 
 		};*/
+
 		LSViewer.prototype.setWidth = function(width) {
-			
+
 			var viewerWidth = width || this.LINE_WIDTH;
 			this.SCALE = viewerWidth / this.LINE_WIDTH * 0.95;
 			this.LINE_WIDTH = viewerWidth;
 		};
-		LSViewer.prototype.draw = function(song) {
 
+
+		/**
+		 * Add a model that contains a draw function, this function will be called in the draw function
+		 * @param {object} model  should contain a draw function that will be call
+		 * @param {int} zIndex Notes and chords are on zIndex 10, if you want to draw before then use zIndex < 10 or after use z index > 10
+		 */
+		LSViewer.prototype.addDrawableModel = function(model, zIndex) {
+			if (typeof model === "undefined") {
+				return;
+			}
+			if (typeof zIndex === "undefined") {
+				zIndex = 11; // default value
+			}
+			this.drawableModel.push({
+				'elem': model,
+				'zIndex': zIndex
+			});
+			this.sortDrawableModel();
+		};
+
+		LSViewer.prototype.removeDrawableModel = function(model) {
+			for (var i = 0, c = this.drawableModel.length; i < c; i++) {
+				if (this.drawableModel[i].elem === model) {
+					this.drawableModel[i].slice(i, 1);
+					return;
+				}
+			}
+		};
+
+		LSViewer.prototype.sortDrawableModel = function(model, zIndex) {
+			this.drawableModel.sort(function(a, b) {
+				if (a.zIndex < b.zIndex)
+					return -1;
+				if (a.zIndex > b.zIndex)
+					return 1;
+				return 0;
+			});
+		};
+
+		/**
+		 * Function return several areas to indicate which notes are selected, usefull for cursor or selection
+		 * @param  {[Integer, Integer] } Array with initial position and end position
+		 * @return {Array of Objects}, Object in this form: {area.x, area.y, area.xe, area.ye}
+		 */
+		LSViewer.prototype.getNotesAreasFromCursor = function(cursor) {
+			var areas = [];
+			var cInit = cursor[0];
+			var cEnd = cursor[1];
+			if (typeof this.vxfNotes[cInit] === "undefined") {
+				return areas;
+			}
+			var xi, yi, xe, ye;
+			ye = this.LINE_HEIGHT;
+
+			var currentNote, currentNoteStaveY, nextNoteStaveY;
+			var firstNoteLine, lastNoteLine;
+			firstNoteLine = this.vxfNotes[cInit];
+			while (cInit <= cEnd) {
+				currentNote = this.vxfNotes[cInit];
+				currentNoteStaveY = currentNote.stave.y;
+				if (typeof this.vxfNotes[cInit + 1] !== "undefined") {
+					nextNoteStaveY = this.vxfNotes[cInit + 1].stave.y;
+				}
+				if (currentNoteStaveY != nextNoteStaveY || cInit == cEnd) {
+					lastNoteLine = currentNote.getBoundingBox();
+					xi = firstNoteLine.getBoundingBox().x;
+					xe = lastNoteLine.x - xi + lastNoteLine.w;
+					areas.push({
+						x: xi,
+						y: currentNoteStaveY,
+						xe: xe,
+						ye: ye
+					});
+					if (cInit != cEnd) {
+						firstNoteLine = this.vxfNotes[cInit + 1];
+					}
+				}
+
+				cInit++;
+			}
+			return areas;
+		};
+
+
+		LSViewer.prototype.draw = function(song) {
 			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-			this.ctx.scale(this.SCALE, this.SCALE);
+
+			var i, j, v, c;
+			// call drawable elem with zIndex < 10
+			for (i = 0, c = this.drawableModel.length; i < c; i++) {
+				if (this.drawableModel[i].zIndex < 10 && typeof this.drawableModel[i].elem.draw === "function") {
+					this.drawableModel[i].elem.draw(self);
+				}
+			}
+			// this.ctx.translate((this.ctx.canvas.width - (this.ctx.canvas.width * this.SCALE)) / 2, 0);
+			// this.ctx.scale(this.SCALE, this.SCALE);
 
 			var numBar = 0,
 				self = this,
@@ -72,6 +217,7 @@ define([
 				vxfBeams,
 				vxfNote,
 				vxfNotes = [],
+				vxfBars = [],
 				barDimensions,
 				tieMng = new TieManager();
 
@@ -80,10 +226,12 @@ define([
 			var numSection = 0;
 
 			var songIt = new SongBarsIterator(song);
+			var barView;
+			var sectionIt;
 			song.getSections().forEach(function(section) {
 
 				// for each bar
-				var sectionIt = new SectionBarsIterator(section);
+				sectionIt = new SectionBarsIterator(section);
 				while (sectionIt.hasNext()) {
 
 					beamMng = new BeamManager();
@@ -91,8 +239,9 @@ define([
 					bar = [];
 
 					barNotes = nm.getNotesAtBarNumber(songIt.getBarIndex(), song);
+
 					// for each note of bar
-					for (var j = 0; j < barNotes.length; j++) {
+					for (j = 0, v = barNotes.length; j < v; j++) {
 						tieMng.checkTie(barNotes[j], iNote);
 						tupletMng.checkTuplet(barNotes[j], iNote);
 						noteView = new LSNoteView(barNotes[j]);
@@ -104,16 +253,22 @@ define([
 					}
 
 					barDimensions = barWidthMng.getDimensions(songIt.getBarIndex());
-					var barView = new LSBarView(barDimensions);
+					barView = new LSBarView(barDimensions);
 					barView.draw(self.ctx, songIt, sectionIt, self.ENDINGS_Y, self.LABELS_Y);
 
+					vxfBars.push({
+						'barDimensions': barDimensions,
+						'timeSignature': songIt.getBarTimeSignature(),
+					});
+
 					barChords = cm.getChordsByBarNumber(songIt.getBarIndex());
-					for (var i = 0; i < barChords.length; i++) {
+					for (i = 0, c = barChords.length; i < c; i++) {
 						chordView = new LSChordView(barChords[i]).draw(
 							self.ctx,
 							barDimensions,
 							songIt.getBarTimeSignature(),
-							self.CHORDS_DISTANCE_STAVE);
+							self.CHORDS_DISTANCE_STAVE
+						);
 					}
 
 					vxfBeams = beamMng.getVexflowBeams(); // we need to do getVexflowBeams before drawing notes
@@ -128,8 +283,18 @@ define([
 				}
 				numSection++;
 			});
-			tieMng.draw(self.ctx, vxfNotes, nm, barWidthMng, song);
+			tieMng.draw(this.ctx, vxfNotes, nm, barWidthMng, song);
+			this.vxfNotes = vxfNotes;
+			this.vxfBars = vxfBars;
+			//this.lastDrawnSong = song;
 
+			// call drawable elem with zIndex > 10
+			for (i = 0, c = this.drawableModel.length; i < c; i++) {
+				if (this.drawableModel[i].zIndex >= 10 && typeof this.drawableModel[i].elem.draw === "function") {
+					this.drawableModel[i].elem.draw(self);
+				}
+			}
+			$.publish('LSViewer-drawEnd', this);
 		};
 		return LSViewer;
 

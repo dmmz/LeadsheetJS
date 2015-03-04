@@ -105,7 +105,6 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 		}
 		if (this.chords[index]) {
 			var deletedChords = this.chords.splice(index, 1);
-			delete deletedChords;
 		}
 	};
 
@@ -125,6 +124,23 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 			}
 		}
 		return chordsByBarNumber;
+	};
+
+	/**
+	 * Return a chord that is matching correct Bar and beat number
+	 * @param  {ChordModel} chord or undefined if no chord match
+	 */
+	ChordManager.prototype.searchChordByBarAndBeat = function(barNumber, beat) {
+		if (!isNaN(barNumber) && barNumber >= 0 && !isNaN(beat) && beat >= 0) {
+			var currentChord;
+			for (var i = 0, c = this.chords.length; i < c; i++) {
+				currentChord = this.chords[i];
+				if (currentChord.getBarNumber() === barNumber && currentChord.getBeat() === beat) {
+					return currentChord;
+				}
+			}
+		}
+		return undefined;
 	};
 
 	/**
@@ -155,28 +171,33 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 		if (typeof songModel === "undefined" || typeof index === "undefined" || isNaN(index)) {
 			throw "ChordManager - getChordDuration - wrong arguments";
 		}
-		if (typeof this.chords[index] !== "undefined") {
-			var currentBn = this.chords[index].getBarNumber();
-			var currentBeat = this.chords[index].getBeat();
-			var beats = songModel.getBeatsFromTimeSignature(songModel.getTimeSignatureAt(currentBn));
-			var nextBn, nextBeat;
-			if (typeof this.chords[index + 1] !== "undefined") {
-				nextBn = this.chords[index + 1].getBarNumber();
-				nextBeat = this.chords[index + 1].getBeat();
-			} else {
-				// case last chords, we set next to the end
-				nextBn = currentBn + 1;
-				nextBeat = 1;
-			}
-			var duration = 0;
-			if (nextBn === currentBn) { // if chord are on the same bar
-				duration = nextBeat - currentBeat;
-			} else if (nextBn > currentBn) {
-				duration = beats * (nextBn - currentBn) + nextBeat - currentBeat;
-			}
-			return duration;
+		if (typeof this.chords[index] === "undefined") {
+			return undefined;
 		}
-		return undefined;
+
+		var currentBn = this.chords[index].getBarNumber();
+		var currentBeat = this.chords[index].getBeat();
+		var beats = songModel.getTimeSignatureAt(currentBn).getBeats();
+		var nextBn, nextBeat;
+		if (typeof this.chords[index + 1] !== "undefined") {
+			nextBn = this.chords[index + 1].getBarNumber();
+			nextBeat = this.chords[index + 1].getBeat();
+		} else {
+			// case last chords, we set next to the end
+			var sectionNumber = songModel.getSectionNumberFromBarNumber(currentBn);
+			nextBn = songModel.getStartBarNumberFromSectionNumber(sectionNumber) + songModel.getSection(sectionNumber).getNumberOfBars();
+			nextBeat = 1;
+		}
+		var duration = 0;
+		if (nextBn === currentBn) { // if chord are on the same bar
+			duration = nextBeat - currentBeat;
+		} else if (nextBn > currentBn) {
+			duration = beats * (nextBn - currentBn) + nextBeat - currentBeat;
+			// TODO test duration 2, it's probably more correct because it take into account time modification change
+			//duration2 = songModel.getStartBeatFromBarNumber(nextBn-1) + songModel.getTimeSignatureAt(nextBn-1).getBeats() + nextBeat - songModel.getStartBeatFromBarNumber(currentBn) - currentBeat;
+			//console.log(duration, duration2);
+		}
+		return duration;
 	};
 
 	/**
@@ -193,7 +214,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 		if (typeof this.chords[index] !== "undefined") {
 			var currentBn = this.chords[index].getBarNumber();
 			var currentBeat = this.chords[index].getBeat();
-			var beats = songModel.getBeatsFromTimeSignature(songModel.getTimeSignatureAt(currentBn));
+			var beats = songModel.getTimeSignatureAt(currentBn).getBeats();
 			var nextBn, nextBeat;
 			if (typeof this.chords[index + 1] !== "undefined") {
 				nextBn = this.chords[index + 1].getBarNumber();
@@ -211,7 +232,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 				if (currentBn === barNumber) {
 					duration = beats - currentBeat + 1;
 				} else if (barNumber < nextBn) {
-					duration = songModel.getBeatsFromTimeSignature(songModel.getTimeSignatureAt(barNumber));
+					duration = songModel.getTimeSignatureAt(barNumber).getBeats();
 				} else if (barNumber === nextBn) {
 					duration = nextBeat - 1;
 				}
@@ -281,7 +302,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 		var startChord = this.getChord(start);
 		var endChord = this.getChord(end);
 		var startBeat = song.getBeatsBeforeBarNumber(startChord.getBarNumber()) + startChord.getBeat();
-		var endBeat = song.getBeatsBeforeBarNumber(endChord.getBarNumber()) + 1 + song.getBeatsFromTimeSignatureAt(endChord.getBarNumber());
+		var endBeat = song.getBeatsBeforeBarNumber(endChord.getBarNumber()) + 1 + song.getTimeSignatureAt(endChord.getBarNumber()).getBeats();
 		return [startBeat, endBeat];
 	};
 

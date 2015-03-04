@@ -3,6 +3,7 @@ require.config({
 	baseUrl: "../../",
 	paths: {
 		jquery: 'external-libs/jquery-2.1.0.min',
+		jquery_autocomplete: 'external-libs/jquery.autocomplete.min',
 		qunit: 'external-libs/qunit/qunit',
 		vexflow_helper: 'external-libs/vexflow_test_helpers',
 		vexflow: 'external-libs/vexflow-min',
@@ -73,6 +74,7 @@ define(function(require) {
 	var NoteEditionView = require('modules/NoteEdition/src/NoteEditionView');
 	var NoteEditionController = require('modules/NoteEdition/src/NoteEditionController');
 
+	var ChordSpaceManager = require('modules/ChordEdition/src/ChordSpaceManager');
 	var ChordEditionView = require('modules/ChordEdition/src/ChordEditionView');
 	var ChordEditionController = require('modules/ChordEdition/src/ChordEditionController');
 
@@ -97,6 +99,7 @@ define(function(require) {
 	var menuV = new MainMenuView(menuM, document.getElementById('menu-container'));
 	var menuC = new MainMenuController(menuM, menuV);
 
+	myApp.menu = menuV;
 	myApp.historyM = new HistoryModel();
 	myApp.historyV = new HistoryView(myApp.historyM);
 	myApp.historyC = new HistoryController(myApp.historyM, myApp.historyV);
@@ -106,22 +109,61 @@ define(function(require) {
 	myApp.historyM.addToHistory({});
 	myApp.historyM.setCurrentPosition(1);*/
 
+	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
+	//initPlayerModule(songModel);
+
+	var option = {
+		displayTitle: true,
+		displayComposer: true,
+		displaySection: true,
+		displayBar: true,
+		delimiterBar: "|",
+		unfoldSong: false, //TODO unfoldSong is not working yet
+		fillEmptyBar: true,
+		fillEmptyBarCharacter: "%",
+	};
+	initChordSequenceModule(songModel, option);
+	/*
+		$('#main-container').prepend('<br />');
+		$('#main-container').prepend('<br />');
+		var optionChediak = {
+			displayTitle: true,
+			displayComposer: true,
+			displaySection: true,
+			displayBar: true,
+			delimiterBar: "",
+			delimiterBeat: "/",
+			unfoldSong: false, //TODO unfoldSong is not working yet
+			fillEmptyBar: false,
+			fillEmptyBarCharacter: "%",
+		};
+		initChordSequenceModule(songModel, optionChediak);*/
+
+	myApp.viewer = new LSViewer($('#score')[0]);
+
 	$.subscribe('MainMenuView-render', function(el) {
-
+		// Edit notes on view
+		var cursorNoteController = initCursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow');
+		myApp.viewer.addDrawableModel(cursorNoteController.view, 11);
+		// Edit notes menu
 		var neV = new NoteEditionView();
-		var neC = new NoteEditionController(neV);
+		var neC = new NoteEditionController(songModel, cursorNoteController.model, neV);
 
+		// Edit chords on view
+		var cursorChordController = initCursor(songModel.getSongTotalBeats(), songModel, 'chords', 'tab');
+		cursorChordController.model.setEditable(false);
+		var chordSpaceManager = new ChordSpaceManager(songModel, cursorChordController.model);
+		// Edit chords menu
+		var ceV = new ChordEditionView(undefined, cursorChordController.model);
+		var ceC = new ChordEditionController(songModel, cursorChordController.model, ceV);
 
-		var ceV = new ChordEditionView();
-		var ceC = new ChordEditionController(neV);
-
-
+		// Harmonize menu
 		var hV = new HarmonizerView();
-		var hC = new HarmonizerController(hV);
+		var hC = new HarmonizerController(songModel, hV);
 
-
-		var cM = new ConstraintModel();
-		var cV = new ConstraintView(cM);
+		// Constraint menu
+		var cM = new ConstraintModel(songModel);
+		var cV = new ConstraintView();
 		var cC = new ConstraintController(cM, cV);
 
 		neV.render(undefined, true, function() {
@@ -150,26 +192,11 @@ define(function(require) {
 				});
 			});
 		});
-
-		var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
-		initPlayerModule(songModel);
-		initChordSequenceModule(songModel);
-		initViewerModule(songModel);
-		initCursor();
+		myApp.viewer.draw(songModel);
 	});
 
 
-	function initChordSequenceModule(songModel) {
-		var option = {
-			displayTitle: true,
-			displayComposer: true,
-			displaySection: true,
-			displayBar: true,
-			delimiterBar: "|",
-			unfoldSong: false, //TODO unfoldSong is not working yet
-			fillEmptyBar: true,
-			fillEmptyBarCharacter: "%",
-		};
+	function initChordSequenceModule(songModel, option) {
 		var chordSequence = new SongView_chordSequence(songModel, option);
 		var txt = chordSequence.display();
 		$('#main-container').prepend(txt);
@@ -183,22 +210,17 @@ define(function(require) {
 			displayLoop: true,
 			displayTempo: true,
 			changeInstrument: true,
+			autoload: false,
 			progressBar: true
 		});
 		var pC = new PlayerController(player, pV);
 	}
 
-	function initViewerModule(songModel) {
-		var renderer = new Vex.Flow.Renderer($('#score')[0], Vex.Flow.Renderer.Backends.CANVAS);
-		var ctx = renderer.getContext("2d");
-		var viewer = new LSViewer(ctx);
-		viewer.draw(songModel);
-	}
-
-	function initCursor() {
-		var cM = new CursorModel();
-		var cV = new CursorView();
-		var cC = new CursorController(cM, cV);
+	function initCursor(listElement, songModel, id, keyType) {
+		var cM = new CursorModel(listElement);
+		var cV = new CursorView(cM, id, keyType);
+		var cC = new CursorController(songModel, cM, cV);
+		return cC;
 	}
 	window.myApp = myApp;
 });

@@ -1,6 +1,28 @@
 define(function() {
-
 	var NoteUtils = {};
+	NoteUtils.PITCH_CLASSES = ["C", "D", "E", "F", "G", "A", "B"];
+	NoteUtils.DURATIONS = {
+		4: "w",
+		2: "h",
+		1: "q",
+		0.5: "8",
+		0.25: "16",
+		0.125: "32",
+		0.675: "64"
+	};
+
+	NoteUtils.getStringFromBeatDuration = function(beat) {
+		return NoteUtils.DURATIONS[beat];
+	};
+
+	NoteUtils.getBeatFromStringDuration = function(string) {
+		for (var dur in NoteUtils.DURATIONS) {
+			if (NoteUtils.DURATIONS[dur] === string) {
+				return Number(dur);
+			}
+		}
+	};
+
 	/**
 	 * sorting pitches in case of polyphony because Vexflow adds accidentals in order relating to pitch order,
 	 * not to the actual array order
@@ -157,5 +179,97 @@ define(function() {
 		}
 
 	};
+
+	NoteUtils.getClosestKey = function(pitch, pitchClass2) {
+		var pitchClass = pitch.split('/')[0];
+		var pos1 = this.getKeyPosition(pitchClass);
+		var pos2 = this.getKeyPosition(pitchClass2);
+		var d1 = pos2 - pos1;
+		var d2 = this.PITCH_CLASSES.length - Math.abs(d1);
+		if (d1 > 0) d2 *= -1;
+		var inc = (Math.abs(d2) < Math.abs(d1)) ? d2 : d1;
+
+		return this.getKey(pitch, inc);
+	};
+
+	NoteUtils.getKeyPosition = function(key) {
+		for (var i = 0; i < this.PITCH_CLASSES.length; i++) {
+			if (this.PITCH_CLASSES[i] == key.toUpperCase()) break;
+		}
+		return i;
+	};
+
+
+	NoteUtils.getKey = function(key, inc) {
+		var keyParts = key.split("/");
+		var pitch = keyParts[0];
+		var accidentals = "";
+		if (typeof pitch[1] !== "undefined") {
+			accidentals = pitch[1];
+		}
+		var octave = parseInt(keyParts[1], null);
+
+		var newAbsPos = this.getKeyPosition(pitch[0]) + inc;
+		var newPos = newAbsPos % this.PITCH_CLASSES.length;
+		if (newPos < 0) newPos += this.PITCH_CLASSES.length;
+
+		var octavesInc = Math.floor(newAbsPos / this.PITCH_CLASSES.length);
+
+		var newOctave = octave + octavesInc;
+		//range: from e/3 to f/6
+		if ((newOctave <= 1 && newPos < 2) || (newOctave >= 7 && newPos > 3)) return null;
+		else return this.PITCH_CLASSES[newPos] + accidentals + "/" + newOctave;
+	};
+
+
+	NoteUtils.durationToNotes = function(duration, initBeat) {
+		var durs = ["q", "8", "16", "32", "64"];
+
+		function findDur(arrNotes, duration) {
+			arrNotes = arrNotes || [];
+			var matchedDur = 1;
+			var iDur = 0;
+			while (iDur <= durs.length) {
+				if (duration == matchedDur) {
+					arrNotes.push(durs[iDur]);
+					break;
+				} else if (duration > matchedDur) {
+					arrNotes.push(durs[iDur]);
+					arrNotes = findDur(arrNotes, duration - matchedDur);
+					break;
+				}
+				iDur++;
+				matchedDur /= 2;
+			}
+			return arrNotes;
+		}
+
+		var notes = [];
+
+		/* this "if" code assures that in the special case with two condition: 
+				1. replaced frase starts at a non absolute beat (4.5, 4.25..etc)
+				2. duration is longer than firstSilenceDur, which is difference with following absolute beat 
+				(i.e. if 4.5 -> difference is 0.5, if 4.25, difference is 0.75)
+			this is normally the case when we remove several measures starting from, beat 4.5 in a measure
+			We can check it relative to the absolute beat beacause the biggest figure is a quarter note 
+			(if we created half notes or whole notes, we should check it relative to those figures), also, this would give problems
+			in measures with no exact number of quarter beats: e.g.: 3/8 (= 1.5 beats) 5/8 (2.5 beats...etc.)
+		*/
+		if (initBeat != null) {
+			initBeat = Number(initBeat);
+			var residuBeat = initBeat - Math.floor(initBeat);
+			if (residuBeat !== 0) {
+				var firstSilenceDur = 1 - residuBeat;
+				if (duration > firstSilenceDur) {
+					notes = findDur(notes, firstSilenceDur);
+					duration -= firstSilenceDur;
+				}
+			}
+		}
+
+		return findDur(notes, duration);
+	};
+
+
 	return NoteUtils;
 });

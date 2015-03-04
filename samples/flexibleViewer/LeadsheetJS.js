@@ -2,9 +2,9 @@ require.config({
 	baseUrl: "../../",
 	paths: {
 		jquery: 'external-libs/jquery-2.1.0.min',
-		vexflow: 'external-libs/vexflow-min'
+		vexflow: 'external-libs/vexflow-min',
 		//Midijs: 'external-libs/Midijs/midijs.min',
-		//pubsub: 'external-libs/tiny-pubsub.min'
+		pubsub: 'external-libs/tiny-pubsub.min'
 	},
 	shim: {
 		'vexflow': {
@@ -41,7 +41,6 @@ define(function(require) {
 			//LeadsheetJS.init("leadsheet1",AloneTogether,{player:true});
 			
 			var songModel = SongModel_CSLJson.importFromMusicCSLJSON(AloneTogether, new SongModel());
-			
 			var score = $("#score");
 			var canvasEl =  $('#scoreCanvas');
 			canvasEl[0].width =  score.width();
@@ -51,19 +50,21 @@ define(function(require) {
 			var ctx = renderer.getContext("2d");
 			
 			var viewer = new LSViewer(ctx,{width:$('#scoreCanvas').width()});
-			viewer.draw(songModel);
+			
 
-			$(window).resize(function() { 
-				setInterval(function(){ 
-					var score = $("#score");
-					var canvasEl =  $('#scoreCanvas');
-					canvasEl[0].width =  score.width();
-					viewer.setWidth($('#scoreCanvas')[0].width);
-					viewer.draw(songModel);
+			// viewer.draw(songModel);
 
-				}, 500);
+			// $(window).resize(function() { 
+			// 	setInterval(function(){ 
+			// 		var score = $("#score");
+			// 		var canvasEl =  $('#scoreCanvas');
+			// 		canvasEl[0].width =  score.width();
+			// 		viewer.setWidth($('#scoreCanvas')[0].width);
+			// 		viewer.draw(songModel);
+
+			// 	}, 500);
 				
-			});
+			// });
 	});
 
 

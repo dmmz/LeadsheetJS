@@ -5,7 +5,8 @@ define([
 	'pubsub',
 ], function(Mustache, SongModel, UserLog, pubsub) {
 
-	function CursorController(model, view) {
+	function CursorController(songModel, model, view) {
+		this.songModel = songModel;
 		this.model = model || new CursorModel();
 		this.view = view;
 		this.initSubscribe();
@@ -16,13 +17,13 @@ define([
 	 */
 	CursorController.prototype.initSubscribe = function() {
 		var self = this;
-		$.subscribe('CursorView-setCursor', function(el, index) {
+		$.subscribe('CursorView-setCursor' + this.view.id, function(el, index) {
 			self.setCursor(index);
 		});
-		$.subscribe('CursorView-expandSelected', function(el, inc) {
+		$.subscribe('CursorView-expandSelected' + this.view.id, function(el, inc) {
 			self.expandSelected(inc);
 		});
-		$.subscribe('CursorView-moveCursor', function(el, inc) {
+		$.subscribe('CursorView-moveCursor' + this.view.id, function(el, inc) {
 			self.moveCursor(inc);
 		});
 	};
@@ -33,40 +34,25 @@ define([
 	 * @param {integer} index
 	 * @param {string} editMode "notes" or "chords"
 	 */
-	CursorController.prototype.setCursor = function(index, editMode) {
+	CursorController.prototype.setCursor = function(index) {
 		if (typeof index === "undefined" || isNaN(index)) {
 			throw 'CursorController - setCursor - index is not correct ' + index;
 		}
 
-		// function check if cursor index is correct
-		function controlIndex(index, min, max) {
-			if (!(index instanceof Array)) index = [index, index];
-			for (var i = 0; i < index.length; i++) {
-				if (index[i] < min) index[i] = min;
-				if (index[i] >= max) index[i] = max - 1;
-			}
-			return index;
-		}
-
-		console.log("CursorController - setCursor " + index);
-		//var manager = this.songModel.getComponent(editMode);
-		//index = controlIndex(index, 0, manager.getTotal());
 		this.model.setPos(index);
+		myApp.viewer.draw(this.songModel);
 	};
 
-	CursorController.prototype.expandSelected = function(inc, editMode) {
+	CursorController.prototype.expandSelected = function(inc) {
 		if (typeof inc === "undefined" || isNaN(inc)) {
 			throw 'CursorController - expandSelected - inc is not correct ' + inc;
 		}
-		console.log("CursorController - expandSelected " + inc);
-		/*var manager = this.songModel.getComponent(editMode);
-		this.model.expand(inc, manager.getTotal());*/
-		this.model.expand(inc, 10);
+		this.model.expand(inc);
+		myApp.viewer.draw(this.songModel);
 	};
 
 	CursorController.prototype.moveCursor = function(inc) {
-		console.log("CursorController - moveCursor " + inc);
-		this.model.setPos(this.model.getEnd() + inc);
+		this.setCursor(this.model.getEnd() + inc);
 	};
 
 

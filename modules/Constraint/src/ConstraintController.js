@@ -1,10 +1,11 @@
 define([
 	'mustache',
 	'modules/core/src/SongModel',
+	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
 	'modules/Constraint/src/ConstraintAPI',
 	'utils/UserLog',
 	'pubsub',
-], function(Mustache, SongModel, ConstraintAPI, UserLog, pubsub) {
+], function(Mustache, SongModel, SongModel_CSLJson, ConstraintAPI, UserLog, pubsub) {
 
 	function ConstraintController(model, view) {
 		this.model = model || new ConstraintModel();
@@ -20,13 +21,11 @@ define([
 		var tempo = 120;
 		var timeSignature = "4/4";
 		var leadsheet = {};
-		if (typeof editor !== "undefined" && typeof editor.getSong() !== "undefined") {
-			tempo = editor.player.getTempo();
-			timeSignature = editor.getSong().getTimeSignature();
-			leadsheet = editor.getSong().exportToMusicCSLJSON();
-		}
-		//var request = this.allConstraints2API(constraints, tempo, timeSignature, numberOfBars, songset);
+		// timeSignature = this.model.songModel.getTimeSignature();
+		leadsheet = SongModel_CSLJson.exportToMusicCSLJSON(this.model.songModel);
 
+		//var request = this.allConstraints2API(constraints, tempo, timeSignature, numberOfBars, songset);
+		timeSignatureFilter = "all";
 		var request = {
 			'incompleteLeadsheet': JSON.stringify(leadsheet),
 			'timesigFilter': timeSignatureFilter,
@@ -61,10 +60,10 @@ define([
 
 		if (typeof editor !== "undefined" && typeof editor.getSong() !== "undefined") {
 			var leadsheet = editor.getSong().exportToMusicCSLJSON();
-			this.model.addToHistory(leadsheet);
-			this.model.setCurrentPositionHistory(this.model.scoreHistory.length - 1);
+			//this.model.addToHistory(leadsheet);
+			//this.model.setCurrentPositionHistory(this.model.scoreHistory.length - 1);
 		}
-		self.view.displayHistory();
+		//self.view.displayHistory();
 		//test();
 
 		var logId = UserLog.log('info', 'Computing ...');
@@ -72,28 +71,18 @@ define([
 		capi.constraintAPI(request, function(data) {
 			UserLog.removeLog(logId);
 			if (typeof data.success === true) {
-				self.model.addToHistory(data.result);
-				self.model.setCurrentPositionHistory(self.model.scoreHistory.length - 1);
-				self.view.displayHistory();
+				//self.model.addToHistory(data.result);
+				//self.model.setCurrentPositionHistory(self.model.scoreHistory.length - 1);
+				//self.view.displayHistory();
 
 				self.model.compareObj2(leadsheet, data.result);
 				//console.log(data.result);
-				var songModel = new SongModel(data.result);
-				if (typeof editor !== "undefined") {
-					editor.setSong(songModel);
-					if (editor.player instanceof ModelPlayer) {
-						editor.player.setSongModel(songModel);
-					}
-					editor.update();
-					editor.viewer.draw(editor);
-				}
+				SongModel_CSLJson.importFromMusicCSLJSON(data.result, this.model.songModel);
 				if (typeof data.tags !== "undefined") {
 					var harm = new HarmonicAnalysis(editor);
 					harm.drawAreaFromJSON(data.tags);
 				}
 				UserLog.logAutoFade('success', 'Constraint is finished');
-				this.view.updateConstraintView(data.sequence);
-
 			} else {
 				var message = 'Unknown error';
 				if (typeof data.error !== "undefined") {

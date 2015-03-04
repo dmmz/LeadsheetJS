@@ -26,10 +26,10 @@ define(['jquery', 'utils/NoteUtils', 'utils/ChordTypesCollection'], function($, 
 				}
 			}
 		});
-	}
+	};
 
 
-	ChordUtils.getAllChords = function() {
+	ChordUtils.getAllChordTypes = function() {
 		// case we already now allchords
 		if (typeof ChordUtils.allChords !== "undefined") {
 			return ChordUtils.chordTypeToNote;
@@ -57,6 +57,27 @@ define(['jquery', 'utils/NoteUtils', 'utils/ChordTypesCollection'], function($, 
 			return ChordUtils.chordTypeToNote;
 		}
 	};
+
+	ChordUtils.getAllChords = function() {
+		var chordTypes = this.getAllChordTypes();
+		var pitchClasses = ["C", "C#", "Cb", "D", "D#", "Db", "E", "E#", "Eb", "F", "F#", "Fb", "G", "G#", "Gb", "A", "A#", "Ab", "B", "B#", "Bb", "%", "%%", "NC"];
+		var chords = [];
+		for (var pClass in pitchClasses) {
+			if (pitchClasses[pClass].indexOf("%") != -1 || pitchClasses[pClass] == 'NC') {
+				chords.push(pitchClasses[pClass]);
+				continue;
+			}
+
+			for (var chordType in chordTypes) {
+				if (chordType.substring(0, 1) == "#" || chordType.substring(0, 1) == "b") chordType = "_" + chordType;
+				chords.push(pitchClasses[pClass] + chordType);
+			}
+
+		}
+		ChordUtils.allChords = chords;
+		return chords;
+	};
+
 
 	return ChordUtils;
 });

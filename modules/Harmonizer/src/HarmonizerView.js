@@ -52,23 +52,11 @@ define([
 	HarmonizerView.prototype.initController = function() {
 		var self = this;
 		$('#harmonize').click(function() {
-			var idSong = $(this).attr('data');
 			var style = $('#harmonization_style_select').val();
-			$.publish('HarmonizerView-compute', idSong, style);
+			$.publish('HarmonizerView-compute', style);
 			return false;
 		});
 	};
-
-	HarmonizerView.prototype.updateHarmonizeView = function(leadsheet) {
-		if (typeof leadsheet !== "undefined") {
-			var songModel = new SongModel(leadsheet);
-			// TODO editor is not defined here
-			editor.songModel = songModel;
-			editor.viewer.draw(editor);
-			playerModel.initFromSongModel(songModel);
-			$.publish('SongModel-reinit');
-		}
-	};
-
+	
 	return HarmonizerView;
 });

@@ -8,35 +8,41 @@ define(['modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/
 
 			// display general option
 			this.displayTitle = (typeof option !== "undefined" && typeof option.displayTitle !== "undefined") ? option.displayTitle : true;
+			this.classTitle = (typeof option !== "undefined" && typeof option.classTitle !== "undefined") ? option.classTitle : 'song_view-title';
 			this.displayComposer = (typeof option !== "undefined" && typeof option.displayComposer !== "undefined") ? option.displayComposer : true;
 			this.displayBar = (typeof option !== "undefined" && typeof option.displayBar !== "undefined") ? option.displayBar : true;
 			this.delimiterBar = (typeof option !== "undefined" && typeof option.delimiterBar !== "undefined") ? option.delimiterBar : "|";
+			this.delimiterNewLine = (typeof option !== "undefined" && typeof option.delimiterNewLine !== "undefined") ? option.delimiterNewLine : "<br />";
+			this.delimiterBeat = (typeof option !== "undefined" && typeof option.delimiterBeat !== "undefined") ? option.delimiterBeat : "";
 			this.displaySection = (typeof option !== "undefined" && typeof option.displaySection !== "undefined") ? option.displaySection : true;
 			this.unfoldSong = (typeof option !== "undefined" && typeof option.unfoldSong !== "undefined") ? option.unfoldSong : false;
 			this.fillEmptyBar = (typeof option !== "undefined" && typeof option.fillEmptyBar !== "undefined") ? option.fillEmptyBar : true;
 			this.fillEmptyBarCharacter = (typeof option !== "undefined" && typeof option.fillEmptyBarCharacter !== "undefined") ? option.fillEmptyBarCharacter : "%";
-		};
+		}
 
 		SongView_chordSequence.prototype.display = function() {
 			var txt = '';
 			if (typeof this.songModel !== "undefined") {
 				if (this.displayTitle === true) {
-					txt += this.songModel.getTitle() + ' ';
+					txt += '<span class="song_view-title">' + this.songModel.getTitle() + '</span> ';
 				}
 				if (this.displayComposer === true) {
 					txt += '(' + this.songModel.getComposer() + ')';
 				}
 				if (this.displayTitle === true || this.displayComposer === true) {
-					txt += '\n';
+					txt += this.delimiterNewLine;
 				}
 				var sectionsLength = this.songModel.getSections().length;
 				for (var i = 0; i < sectionsLength; i++) {
+					txt += this.delimiterNewLine;
 					txt += this.getSectionView(i);
 					if (this.displayBar === true) {
 						var bars = this.songModel.getUnfoldedSongSection(i);
 
 						var currentBarNumber = 0;
 						var currentBar;
+						var chordDuration;
+						var cm;
 						for (var j = 0, c = bars.length; j < c; j++) {
 							currentBarNumber = bars[j];
 							currentBar = this.songModel.getBar(currentBarNumber);
@@ -44,29 +50,41 @@ define(['modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/
 								txt += this.delimiterBar;
 							}
 							if (typeof currentBar.ending !== "undefined" && (currentBar.ending === 'BEGIN' || currentBar.ending === 'BEGIN_END')) {
-								txt += ':'
+								txt += ':';
 							}
 							if (j !== 0) {
-								txt += ' '
+								txt += ' ';
 							}
 							var chordsInCurrentBar = this.songModel.getComponentsAtBarNumber(currentBarNumber, 'chords');
-							if (chordsInCurrentBar.length == 0 && this.fillEmptyBar === true) {
-								txt += this.fillEmptyBarCharacter;
+							if (chordsInCurrentBar.length === 0 && this.fillEmptyBar === true) {
+								txt += this.fillEmptyBarCharacter + ' ';
 							} else {
 								for (var k = 0, v = chordsInCurrentBar.length; k < v; k++) {
-									txt += chordsInCurrentBar[k].toString('');
+									if (typeof chordsInCurrentBar[k + 1] !== "undefined" && chordsInCurrentBar[k].getBeat() == chordsInCurrentBar[k + 1].getBeat()) {
+										txt += chordsInCurrentBar[k].toString('') + '_';
+									} else {
+										txt += chordsInCurrentBar[k].toString('') + ' ';
+									}
+									if (this.delimiterBeat !== "") {
+										cm = this.songModel.getComponent('chords');
+										chordDuration = cm.getChordDuration(this.songModel, cm.getChordIndex(chordsInCurrentBar[k]));
+										chordDuration = Math.floor(chordDuration);
+										for (var l = 0; l < chordDuration - 1; l++) {
+											txt += this.delimiterBeat + ' ';
+										}
+									}
 								}
 							}
-							txt += ' ';
 							if (typeof currentBar.ending !== "undefined" && (currentBar.ending === 'END' || currentBar.ending === 'BEGIN_END')) {
-								txt += ':'
+								txt += ':';
 							}
 						}
 					}
+					txt += this.delimiterNewLine;
 				}
 			}
 			return txt;
-		}
+		};
 
 
 
@@ -75,15 +93,16 @@ define(['modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/
 			if (this.displaySection === true) {
 				if (typeof this.songModel.getSection(sectionNumber) !== "undefined") {
 					var section = this.songModel.getSection(sectionNumber);
-					txt += 'section: ' + section.getName();
+					txt += /*'section: ' + */ section.getName();
 					if (section.getRepeatTimes() > 0) {
 						txt += ' (' + section.getRepeatTimes() + ')';
 					}
-					txt += '\n';
+					// txt += this.delimiterNewLine;
+					txt += ': ';
 				}
 			}
 			return txt;
-		}
+		};
 
 
 		return SongView_chordSequence;

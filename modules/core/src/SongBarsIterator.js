@@ -26,19 +26,32 @@ define(function() {
 		getFollowingBar: function(){
 			return this.song.getBar(this.index+1);
 		},
-		getBarKeySignature: function(){		
-			return this.getBar().getTonality() || (this.index == 0) ? this.song.getTonality() : this.prevKeySig;  
+		getBarKeySignature: function(){
+			var keySig = this.getBar().getTonality();
+			if (keySig) {
+				return keySig;
+			}
+			else {
+				return (this.index === 0) ? this.song.getTonality() : this.prevKeySig;
+			}
 		},
-		getBarTimeSignature: function(){		
-			return this.getBar().getTimeSignature() || (this.index == 0) ? this.song.getTimeSignature() : this.prevTimeSig;  
+		getBarTimeSignature: function(){
+			var timeSig = this.getBar().getTimeSignature();
+			if (timeSig) {
+				return timeSig;
+			}
+			else {
+				return (this.index === 0) ? this.song.getTimeSignature() : this.prevTimeSig;
+			}
+			//return this.getBar().getTimeSignature() || (this.index == 0) ? this.song.getTimeSignature() : this.prevTimeSig;
 		},
 		getEndingState: function(){
 			return this.endingState;
 		},
 		setEndingState: function(endingState){
-			return this.endingState = endingState;
+			this.endingState = endingState;
 		}
 
-	}
+	};
 	return SongBarsIterator;
 });

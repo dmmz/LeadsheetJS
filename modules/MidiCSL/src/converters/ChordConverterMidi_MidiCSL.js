@@ -17,7 +17,10 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordManager', 'modules/
 			if (typeof chordTypesNotes !== "undefined") {
 				// playing bass chord
 				if(chordModel.isEmptyBase() === false) {
-					chordTypesNotes.unshift(chordModel.getBase().getNote() + "3");
+					var note = chordModel.getBase().getNote();
+					var decalBase = NoteUtils.pitch2Number(note);
+					var noteDecalBase = NoteUtils.number2Pitch(decalBase-decal);
+					chordTypesNotes.unshift( noteDecalBase + "3");
 				}
 				// case chordTypeNotes in C are known
 				var midiNotes = MidiHelper.convertNotesToMidi(chordTypesNotes);
@@ -37,7 +40,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordManager', 'modules/
 				return;
 			}
 			var chordType = chordModel.unformatChordType(chordModel.getChordType());
-			var chordTypeToNote = ChordUtils.getAllChords();
+			var chordTypeToNote = ChordUtils.getAllChordTypes();
 			/**
 			 * We first try to know if chordModel chord is already known
 			 */

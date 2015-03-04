@@ -1,8 +1,9 @@
-define(['modules/core/src/NoteModel'], function(NoteModel) {
+define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, NoteUtils) {
 	function NoteManager() {
-			this.notes = [];
-		}
-		//Interface functions (this functions are also in ChordManagerModel  )
+		this.notes = [];
+	}
+
+	// Interface functions (this functions are also in ChordManagerModel)
 
 	/**
 	 * @interface
@@ -67,6 +68,33 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 		if (typeof notes !== "undefined") this.notes = notes;
 	};
 
+
+	NoteManager.prototype.insertNote = function(pos, note) {
+		if (isNaN(pos) || !(note instanceof NoteModel)) {
+			throw 'NoteManager - insertNote - attribute incorrect ' + pos + ' ' + note;
+		}
+		this.notes.splice(pos + 1, 0, note);
+	};
+
+	/**
+	 * @interface
+	 *
+	 * returns a copy of the notes from, pos1, to pos2.
+	 * @param  {Integer} pos1 if not specified, 0
+	 * @param  {Integer} pos2 first note that is not taken, e.g if to = 4, notes will be taken from 'from' to 3.
+	 * @return {Array}  array of cloned NoteModel
+	 */
+	NoteManager.prototype.cloneElems = function(pos1, pos2) {
+		var newNotes = [];
+		var notesToClone = this.getNotes(pos1, pos2);
+		var note;
+		notesToClone.forEach(function(note) {
+			newNotes.push(note.clone());
+		});
+		return newNotes;
+	};
+
+
 	/**
 	 * replace notes from pos1 to pos2+1, by default will always replace one note, if we want to insert notes at 
 	 * position pos without replacing note at 'pos' (e.g. scoreeditor.addBar() does it) we need to call it with cursor = [pos, pos -1 ]
@@ -101,6 +129,62 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 	};
 
 	/**
+	 * @param  {NoteModel} note
+	 * @return {Integer}
+	 */
+	NoteManager.prototype.getNoteIndex = function(note) {
+		if (typeof note !== "undefined" && note instanceof NoteModel) {
+			for (var i = 0; i < this.notes.length; i++) {
+				if (JSON.stringify(this.notes[i].serialize(true, true)) === JSON.stringify(note.serialize(true, true))) {
+					return i;
+				}
+			}
+		}
+		return undefined;
+	};
+
+	NoteManager.prototype.getNotesAtBarNumber = function(barNumber, song) {
+		if (!song) {
+			throw "NoteManager - getNotesAtBarNumber - incorrect song parameter";
+		}
+
+		var startBeat = 1,
+			endBeat,
+			beats = song.timeSignature.getBeats();
+		for (var i = 0; i < barNumber; i++) {
+			startBeat += song.getBarNumBeats(i, beats);
+		}
+		endBeat = startBeat + song.getBarNumBeats(i, beats);
+
+		if (this.getTotalDuration() + 1 < endBeat) {
+			throw "NoteManager - getNotesAtBarNumber - notes on bar " + barNumber + " do not fill the total bar duration";
+		}
+		return this.getNotes(
+			this.getNextIndexNoteByBeat(startBeat),
+			this.getNextIndexNoteByBeat(endBeat)
+		);
+	};
+
+	NoteManager.prototype.getNoteBarNumber = function(index, song) {
+		if (isNaN(index) || index < 0 || typeof song === "undefined") {
+			throw "NoteManager - getNoteBarNumber - attributes are not what expected, song: " + song + ", index: " + index;
+		}
+		var numBar = 0,
+			duration = 0;
+
+		var barNumBeats = song.getBarNumBeats(numBar, null);
+		for (var i = 0; i <= index; i++) {
+			if (roundBeat(duration) == barNumBeats) {
+				numBar++;
+				duration = 0;
+				barNumBeats = song.getBarNumBeats(numBar, barNumBeats);
+			}
+			duration += this.notes[i].getDuration();
+		}
+		return numBar;
+	};
+
+	/**
 	 * @param  {integer} start
 	 * @param  {integer} end
 	 * @return {Array}
@@ -128,8 +212,8 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 	 * @return {Integer} index of the note
 	 */
 	NoteManager.prototype.getNextIndexNoteByBeat = function(beat) {
-		if (!beat || isNaN(beat) || beat < 1) {
-			throw "beat not valid: " + beat;
+		if (isNaN(beat) || beat < 1) {
+			throw 'NoteManager - getNextIndexNoteByBeat - beat must be a positive integer ' + beat;
 		}
 		var curBeat = 1;
 		var i = 0;
@@ -149,8 +233,8 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 	 * @return {Integer} index of the note
 	 */
 	NoteManager.prototype.getPrevIndexNoteByBeat = function(beat) {
-		if (typeof beat === "undefined" || isNaN(beat) || beat > this.getTotalDuration() + 1) { // +1 because we start at beat 1
-			throw "beat not valid: " + beat;
+		if (isNaN(beat) || beat < 0) {
+			throw 'NoteManager - getPrevIndexNoteByBeat - beat must be a positive integer ' + beat;
 		}
 		var curBeat = 1;
 		var i = 0;
@@ -169,64 +253,146 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 	 */
 
 	NoteManager.prototype.getIndexesStartingBetweenBeatInterval = function(startBeat, endBeat) {
+		if (isNaN(startBeat) || startBeat < 0) {
+			startBeat = 1;
+		}
+		if (isNaN(endBeat)) {
+			throw 'NoteManager - getIndexesByBeatInterval - endBeat must be a positive integer ' + endBeat;
+		}
 		var index1 = this.getNextIndexNoteByBeat(startBeat);
 		var index2 = this.getPrevIndexNoteByBeat(endBeat);
 		return [index1, index2];
 	};
 
 	/**
-	 * @param  {NoteModel} note
-	 * @return {Integer}
+	 * adds silences at the end of array of notes so that they fill the gapDuration
+	 * @param  {integer} gapDuration
+	 * @param  {integer} initBeat
 	 */
+	NoteManager.prototype.fillGapWithRests = function(gapDuration, initBeat) {
+		if (isNaN(gapDuration)) {
+			return;
+		}
+		if (isNaN(initBeat) || initBeat < 0) {
+			initBeat = 1;
+		}
+		gapDuration = Math.round(gapDuration * 1000000) / 1000000;
+		var newNote;
+		var silenceDurs = NoteUtils.durationToNotes(gapDuration, initBeat);
+		var self = this;
+		silenceDurs.forEach(function(dur) {
+			if (typeof dur !== "undefined") {
+				newNote = new NoteModel(dur + 'r');
+				self.addNote(newNote);
+			}
+		});
+	};
 
-	NoteManager.prototype.getNoteIndex = function(note) {
-		if (typeof note !== "undefined" && note instanceof NoteModel) {
-			for (var i = 0; i < this.notes.length; i++) {
-				if (JSON.stringify(this.notes[i].serialize(true, true)) === JSON.stringify(note.serialize(true, true))) {
-					return i;
+	/**
+	 * this function is called after deleting a notes or copy and pasting notes, to check if there is a malformed tuplet or a malformed tie
+	 * if it does, it deletes the tie or the tuplet
+	 * @return {[type]} [description]
+	 */
+	NoteManager.prototype.reviseNotes = function(from, to) {
+
+		function getRemoveSet(input, i) {
+			var min = i;
+			var max = i;
+			while (min > 0 && input[min - 1] != "no") {
+				min--;
+			}
+			while (max + 1 < input.length && input[max + 1] != "no") {
+				max++;
+			}
+			return {
+				min: min,
+				max: max
+			};
+		}
+
+		/**
+		 * This function parses input controling that all transitions are valid,
+		 * if it finds a problem, removes the property that causes the error
+		 *
+		 * @param  {Array of NoteModel} notes          notes to modify
+		 * @param  {Object} graph          tranistion graph represents valid transitions
+		 * @param  {Array}  input          array of states, taken from notes
+		 * @param  {[type]} removeFunction function to remove property
+		 */
+		function parser(notes, graph, input, removeFunction) {
+			var prevState, currState;
+			var isTie = [];
+			var states = Object.keys(graph);
+			var iToStartRemoving;
+			var intervalsToRemove = [];
+			for (var i = 0; i < input.length; i++) {
+				prevState = (i < 1) ? "no" : input[i - 1];
+				currState = (i == input.length) ? "no" : input[i];
+
+				if ($.inArray(prevState, states) == -1) {
+					throw "value " + prevState + "(position " + i + ") not specified on transitions graph";
+				}
+				if ($.inArray(currState, graph[prevState]) == -1) {
+
+					iToStartRemove = (currState == "no") ? i - 1 : i;
+					intervalsToRemove.push(getRemoveSet(input, iToStartRemove));
+				}
+			};
+
+			var max, min;
+			for (var i in intervalsToRemove) {
+				max = intervalsToRemove[i].max;
+				min = intervalsToRemove[i].min;
+
+				for (var j = min; j <= max; j++) {
+					NoteModel.prototype[removeFunction].call(notes[j], notes[j].tie);
 				}
 			}
-		}
-		return undefined;
-	};
 
-	NoteManager.prototype.getNotesAtBarNumber = function(barNumber, song) {
-		if (!song) {
-			throw "getNotesAtBarNumber: incorrect song parameter";
 		}
 
-		var startBeat = 1,
-			endBeat,
-			beats = song.timeSignature.getBeats();
-		for (var i = 0; i < barNumber; i++) {
-			startBeat += song.getBarNumBeats(i, beats);
-		}
-		endBeat = startBeat + song.getBarNumBeats(i, beats);
-
-		if (this.getTotalDuration() + 1 < endBeat) {
-			throw "notes on bar " + barNumber + " do not fill the total bar duration";
-		}
-		return this.getNotes(
-			this.getNextIndexNoteByBeat(startBeat),
-			this.getNextIndexNoteByBeat(endBeat)
-		);
-	};
-	NoteManager.prototype.getNoteBarNumber = function(index, song) {
-		var numBar = 0,
-			duration = 0;
-
-		var barNumBeats = song.getBarNumBeats(numBar, null);
-		for (var i = 0; i <= index; i++) {
-			if (roundBeat(duration) == barNumBeats) {
-				numBar++;
-				duration = 0;
-				barNumBeats = song.getBarNumBeats(numBar, barNumBeats);
+		function checkTuplets(notes) {
+			var note;
+			var states = [];
+			var state;
+			for (var i = 0; i < notes.length; i++) {
+				note = notes[i];
+				state = note.getTuplet() || "no";
+				states.push(state);
 			}
-			duration += this.notes[i].getDuration();
+			parser(notes, {
+					"no": ["no", "start"],
+					"start": ["middle"],
+					"middle": ["stop"],
+					"stop": ["start", "no"]
+				}, states,
+				"removeTuplet"
+			);
 		}
-		return numBar;
 
+		function checkTies(notes) {
+			var note;
+			var states = [];
+			var state;
+			for (var i = 0; i < notes.length; i++) {
+				note = notes[i];
+				state = note.getTie() || "no";
+				states.push(state);
+			}
+			parser(notes, {
+					"no": ["no", "start"],
+					"start": ["stop", "stop_start"],
+					"stop_start": ["stop", "stop_start"],
+					"stop": ["start", "no"]
+				}, states,
+				"removeTie"
+			);
+
+		}
+		checkTuplets(this.notes);
+		checkTies(this.notes);
 	};
+
 
 	/**
 	 * private function for rounding beats
@@ -236,8 +402,6 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 	function roundBeat(beat) {
 		return Math.round(beat * 1000000) / 1000000;
 	}
-
-
 
 	// NoteManager.prototype.incrOffset = function(offset, dur) {
 	// 	offset += dur;
