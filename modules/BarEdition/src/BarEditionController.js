@@ -3,9 +3,11 @@ define([
 	'modules/Cursor/src/CursorModel',
 	'modules/core/src/SongModel',
 	'modules/core/src/BarModel',
+	'modules/core/src/NoteManager',
+	'modules/core/src/NoteModel',
 	'utils/UserLog',
 	'pubsub',
-], function(Mustache, CursorModel, SongModel, BarModel, UserLog, pubsub) {
+], function(Mustache, CursorModel, SongModel, BarModel, NoteManager, NoteModel, UserLog, pubsub) {
 
 	function BarEditionController(songModel, cursor, view) {
 		this.songModel = songModel || new SongModel();
@@ -43,15 +45,60 @@ define([
 		$.subscribe('BarEditionView-sublabel', function(el, sublabel) {
 			self.subLabel(sublabel);
 		});
+		$.subscribe('BarEditionView-activeView', function(el) {
+			self.changeEditMode(true);
+			myApp.viewer.draw(self.songModel);
+		});
+		$.subscribe('BarEditionView-unactiveView', function(el) {
+			self.changeEditMode(false);
+		});
 	};
 
-	BarEditionController.prototype.addBar = function() {
-		this.songModel.getComponent('bars').addBar();
 
-		// Update section number of bars
-		sectionNumber = this.songModel.getSections().length - 1;
-		section = this.songModel.getSection(sectionNumber);
+	BarEditionController.prototype.addBar = function() {
+		var selBars = this._getSelectedBars();
+		var numBar = 0;
+		if (selBars.length !== 0) {
+			numBar = selBars[0];
+		}
+
+		//get numBeat from first note of current bar
+		var numBeat = this.songModel.getStartBeatFromBarNumber(numBar) + 1;
+
+		// get the index of that note
+		var nm = this.songModel.getComponent('notes');
+		var index = nm.getNextIndexNoteByBeat(numBeat);
+
+		//get the duration of the bar, and create a new bar with silences
+		var beatDuration = this.songModel.getTimeSignatureAt(numBar).getQuarterBeats();
+		var newBarNm = new NoteManager(); //Create new Bar NoteManager
+		//if is first bar we add a note, otherwise there are inconsistencies with duration of a bar
+		if (numBar === 0) {
+			newBarNm.addNote(new NoteModel("E/4-q"));
+			beatDuration = beatDuration - 1;
+		}
+		//insert those silences
+		newBarNm.fillGapWithRests(beatDuration);
+
+		//add bar to barManager
+		var barManager = this.songModel.getComponent('bars');
+		var newBar = barManager.getBar(numBar).clone();
+		barManager.addBar(newBar);
+		var s = new NoteModel("E/4-q");
+		/*console.log(JSON.stringify(s));
+		s.setRest(true);
+		console.log(JSON.stringify(s));
+		console.log(JSON.stringify(new NoteModel("qr")));*/
+
+		// TODO bug to create rest note
+		//newBarNm.getNotes();
+		nm.notesSplice([index, index - 1], [new NoteModel("E/4-q"), new NoteModel("E/4-q"), new NoteModel("E/4-q"), new NoteModel("E/4-q")]);
+
+		//increment the number of bars of current section
+		var section = this.songModel.getSection(this.songModel.getSectionNumberFromBarNumber(numBar));
 		section.setNumberOfBars(section.getNumberOfBars() + 1);
+
+		this.songModel.getComponent('chords').incrementChordsBarNumberFromBarNumber(1, numBar);
 
 		myApp.viewer.draw(this.songModel);
 	};
@@ -63,12 +110,38 @@ define([
 		}
 		var bm = this.songModel.getComponent('bars');
 		var sectionNumber;
+		var sectionNumberOfBars;
+		var nm = this.songModel.getComponent('notes');
+		var cm = this.songModel.getComponent('chords');
+		var beatDuration, numBeat, index, index2;
 		for (var i = selBars.length - 1; i > 0; i--) {
 			sectionNumber = this.songModel.getSectionNumberFromBarNumber(selBars[i]);
 			section = this.songModel.getSection(sectionNumber);
-			section.setNumberOfBars(section.getNumberOfBars() - 1);
-			bm.removeBar(selBars[i]);
+			sectionNumberOfBars = section.getNumberOfBars();
+			if (sectionNumberOfBars === 1) {
+				UserLog.logAutoFade('warn', "Can't delete the last bar of section.");
+			} else {
+				// adjust section number of bars
+				section.setNumberOfBars(sectionNumberOfBars - 1);
+
+				// remove notes in bar
+				beatDuration = this.songModel.getTimeSignatureAt(selBars[i]).getQuarterBeats();
+				numBeat = this.songModel.getStartBeatFromBarNumber(selBars[i]) + 1;
+				index = nm.getNextIndexNoteByBeat(numBeat);
+				index2 = nm.getPrevIndexNoteByBeat(numBeat + beatDuration);
+				nm.notesSplice([index, index2], []);
+
+				// remove chords in bar
+				cm.removeChordsByBarNumber(selBars[i]);
+				// adjust all chords bar number
+				cm.incrementChordsBarNumberFromBarNumber(-1, selBars[i]);
+
+				bm.removeBar(selBars[i]);
+			}
 		}
+		this.cursor.setPos(index-1);
+
+
 		myApp.viewer.draw(this.songModel);
 	};
 
@@ -159,6 +232,10 @@ define([
 		selectedBars[0] = this.songModel.getComponent('notes').getNoteBarNumber(this.cursor.getStart(), this.songModel);
 		selectedBars[1] = this.songModel.getComponent('notes').getNoteBarNumber(this.cursor.getEnd(), this.songModel);
 		return selectedBars;
+	};
+
+	BarEditionController.prototype.changeEditMode = function(isEditable) {
+		this.cursor.setEditable(isEditable);
 	};
 
 	return BarEditionController;

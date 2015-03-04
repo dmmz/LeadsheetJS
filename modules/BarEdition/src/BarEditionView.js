@@ -105,5 +105,13 @@ define([
 	BarEditionView.prototype.initSubscribe = function() {};
 
 
+	BarEditionView.prototype.unactiveView = function(idElement) {
+		$.publish('BarEditionView-unactiveView');
+	};
+
+	BarEditionView.prototype.activeView = function(idElement) {
+		$.publish('BarEditionView-activeView', 'notes');
+	};
+
 	return BarEditionView;
 });
