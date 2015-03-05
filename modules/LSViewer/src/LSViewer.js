@@ -156,13 +156,14 @@ define([
 		};
 
 		LSViewer.prototype._scale = function() {
-			this.ctx.translate((this.ctx.canvas.width - (this.ctx.canvas.width * this.SCALE)) / 2, 0);
+			
 			this.ctx.scale(this.SCALE, this.SCALE);
+			this.ctx.translate((this.ctx.canvas.width * (1 -  this.SCALE)/2) , 0);
 		};
 		
 		LSViewer.prototype._resetScale = function() {
+			this.ctx.translate(-(this.ctx.canvas.width * (1 -  this.SCALE)/2) , 0);
 			this.ctx.scale(1 / this.SCALE, 1 / this.SCALE);
-			this.ctx.translate(-(this.ctx.canvas.width - (this.ctx.canvas.width * this.SCALE)) / 2, 0);
 		};
 
 		LSViewer.prototype.draw = function(song) {
