@@ -16,27 +16,32 @@ define([
 		function LSViewer(idDivContainer, params) {
 			params = params || {};
 			this.DEFAULT_HEIGHT = 1000;
+			
+
 			var idScore = "ls" + ($("canvas").length + 1),
 			divContainer = $("#" + idDivContainer),
 			width = params && params.width ? params.width : divContainer.width(),
 			height = params && params.height ? params.height : this.DEFAULT_HEIGHT;
 
 
+			//create canvas
 			canvas = $("<canvas id='" + idScore + "'></canvas>");
-
-			canvas[0].width = width;
+			canvas[0].width = width * 0.8;
 			canvas[0].height = height;
 			canvas.appendTo(divContainer);
 
-			// if (canvas[0].height > divContainer.height()){
-			// 	divContainer.css({overflow:"scroll"});
-			// }	
+			if (canvas[0].height > divContainer.height()){
+				divContainer.css({
+					overflowY: "scroll",
+					textAlign: "center"
+				});
+			}	
 
 			this.canvas = canvas;
 			var renderer = new Vex.Flow.Renderer(this.canvas[0], Vex.Flow.Renderer.Backends.CANVAS);
 			this.ctx = renderer.getContext("2d");
 			
-			params.width = width;
+			params.width = width*0.9;
 			this.init(params);
 			this.drawableModel = [];
 			this.initController();
@@ -78,8 +83,6 @@ define([
 			this.MARGIN_TOP = 100;
 			this.CHORDS_DISTANCE_STAVE = 20; //distance from stave
 
-
-
 			// this.marginLeft = 10;
 			if (params && params.width) {
 				this.setWidth(params.width);
@@ -100,11 +103,12 @@ define([
 
 		LSViewer.prototype.setWidth = function(width) {
 
+			
 			var viewerWidth = width || this.LINE_WIDTH;
 			
 			//this.SCALE = viewerWidth / this.LINE_WIDTH;
 			this.SCALE = 0.9;
-			
+
 			this.LINE_WIDTH = viewerWidth;
 		};
 
@@ -213,8 +217,6 @@ define([
 					this.drawableModel[i].elem.draw(self);
 				}
 			}
-			
-
 			var numBar = 0,
 				self = this,
 				nm = song.getComponent("notes"),
@@ -235,7 +237,7 @@ define([
 				barDimensions,
 				tieMng = new TieManager();
 
-			var barWidthMng = new BarWidthManager(this.LINE_HEIGHT, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE, this.MARGIN_TOP);
+			var barWidthMng = new BarWidthManager(this.LINE_HEIGHT, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE, this.MARGIN_TOP, this.SCALE);
 			barWidthMng.calculateBarsStructure(song, nm);
 			var numSection = 0;
 
@@ -308,6 +310,7 @@ define([
 					this.drawableModel[i].elem.draw(self);
 				}
 			}
+			this.ctx.scale(1/this.SCALE, 1/this.SCALE);
 			$.publish('LSViewer-drawEnd', this);
 			this._resetScale();
 		};
