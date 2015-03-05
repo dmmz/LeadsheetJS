@@ -35,12 +35,12 @@ define(function(require) {
 				sm.getComponent('bars').addBar(new BarModel());
 				sm.getComponent('bars').addBar(new BarModel());
 				var cm = new ChordManager();
-				var chord = new ChordModel({
+				chord = new ChordModel({
 					'note': 'G',
 					'chordType': '7',
 					'beat': 2,
 					'barNumber': 0
-				})
+				});
 				cm.addChord(chord);
 				var chord2 = new ChordModel({
 					'note': 'F',

@@ -11,6 +11,7 @@ require.config({
 		pubsub: 'external-libs/tiny-pubsub.min',
 		mustache: 'external-libs/mustache',
 		bootstrap: 'external-libs/bootstrap/bootstrap.min',
+		jsPDF: 'external-libs/jspdf/jspdf.min',
 		//bootstrap: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min',
 		LeadsheetJS: 'build/LeadsheetJS-1.0.0.min',
 	},
@@ -80,6 +81,9 @@ define(function(require) {
 
 	var BarEditionView = require('modules/BarEdition/src/BarEditionView');
 	var BarEditionController = require('modules/BarEdition/src/BarEditionController');
+
+	var FileEditionView = require('modules/FileEdition/src/FileEditionView');
+	var FileEditionController = require('modules/FileEdition/src/FileEditionController');
 
 	var SongModel = require('modules/core/src/SongModel');
 	var SongModel_CSLJson = require('modules/converters/MusicCSLJson/src/SongModel_CSLJson');
@@ -173,34 +177,43 @@ define(function(require) {
 		var beV = new BarEditionView();
 		var beC = new BarEditionController(songModel, cursorNoteController.model, beV);
 
+		// Edit files menu
+		var feV = new FileEditionView();
+		var feC = new FileEditionController(songModel, feV);
 
 
-		neV.render(undefined, true, function() {
+		feV.render(undefined, true, function() {
 			menuM.addMenu({
-				title: 'Notes',
-				view: neV
+				title: 'File',
+				view: feV
 			});
-			ceV.render(undefined, true, function() {
+			neV.render(undefined, true, function() {
 				menuM.addMenu({
-					title: 'Chords',
-					view: ceV
+					title: 'Notes',
+					view: neV
 				});
-				beV.render(undefined, true, function() {
+				ceV.render(undefined, true, function() {
 					menuM.addMenu({
-						title: 'Bars',
-						view: beV
+						title: 'Chords',
+						view: ceV
 					});
-					menuC.activeMenu('Notes');
-					cV.render(undefined, false, function() {
+					beV.render(undefined, true, function() {
 						menuM.addMenu({
-							title: 'Constraint',
-							view: cV
+							title: 'Bars',
+							view: beV
 						});
-						//menuC.activeMenu('Constraint');
-						hV.render(undefined, true, function() {
+						menuC.activeMenu('Notes');
+						cV.render(undefined, false, function() {
 							menuM.addMenu({
-								title: 'Harmonizer',
-								view: hV
+								title: 'Constraint',
+								view: cV
+							});
+							//menuC.activeMenu('Constraint');
+							hV.render(undefined, true, function() {
+								menuM.addMenu({
+									title: 'Harmonizer',
+									view: hV
+								});
 							});
 						});
 					});
