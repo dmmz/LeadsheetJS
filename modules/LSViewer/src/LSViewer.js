@@ -28,9 +28,9 @@ define([
 			canvas[0].height = height;
 			canvas.appendTo(divContainer);
 
-			if (canvas[0].height > divContainer.height()){
-				divContainer.css({overflow:"scroll"});
-			}	
+			// if (canvas[0].height > divContainer.height()){
+			// 	divContainer.css({overflow:"scroll"});
+			// }	
 
 			this.canvas = canvas;
 			var renderer = new Vex.Flow.Renderer(this.canvas[0], Vex.Flow.Renderer.Backends.CANVAS);
@@ -67,7 +67,7 @@ define([
 		};
 
 		LSViewer.prototype.init = function(params) {
-
+			this.SCALE = 0.9;
 			this.NOTE_WIDTH = 20; /* estimated note width in order to be more flexible */
 			this.LINE_HEIGHT = 150;
 			this.LINE_WIDTH = 1160;
@@ -77,6 +77,7 @@ define([
 			this.LABELS_Y = 0; //like this.ENDINGS_Y
 			this.MARGIN_TOP = 100;
 			this.CHORDS_DISTANCE_STAVE = 20; //distance from stave
+
 
 
 			// this.marginLeft = 10;
@@ -100,7 +101,10 @@ define([
 		LSViewer.prototype.setWidth = function(width) {
 
 			var viewerWidth = width || this.LINE_WIDTH;
-			this.SCALE = viewerWidth / this.LINE_WIDTH * 0.95;
+			
+			//this.SCALE = viewerWidth / this.LINE_WIDTH;
+			this.SCALE = 0.9;
+			
 			this.LINE_WIDTH = viewerWidth;
 		};
 
@@ -187,10 +191,21 @@ define([
 			return areas;
 		};
 
+		LSViewer.prototype._scale = function() {
+			
+			this.ctx.scale(this.SCALE, this.SCALE);
+			this.ctx.translate((this.ctx.canvas.width * (1 -  this.SCALE)/2) , 0);
+		};
+		
+		LSViewer.prototype._resetScale = function() {
+			this.ctx.translate(-(this.ctx.canvas.width * (1 -  this.SCALE)/2) , 0);
+			this.ctx.scale(1 / this.SCALE, 1 / this.SCALE);
+		};
 
 		LSViewer.prototype.draw = function(song) {
-			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
+			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+			this._scale();
 			var i, j, v, c;
 			// call drawable elem with zIndex < 10
 			for (i = 0, c = this.drawableModel.length; i < c; i++) {
@@ -198,8 +213,7 @@ define([
 					this.drawableModel[i].elem.draw(self);
 				}
 			}
-			// this.ctx.translate((this.ctx.canvas.width - (this.ctx.canvas.width * this.SCALE)) / 2, 0);
-			// this.ctx.scale(this.SCALE, this.SCALE);
+			
 
 			var numBar = 0,
 				self = this,
@@ -295,6 +309,7 @@ define([
 				}
 			}
 			$.publish('LSViewer-drawEnd', this);
+			this._resetScale();
 		};
 		return LSViewer;
 
