@@ -47,7 +47,7 @@ define([
 		};
 
 		LSViewer.prototype.init = function(params) {
-			this.SCALE = 0.85;
+			this.SCALE = 0.9;
 			this.NOTE_WIDTH = 20; /* estimated note width in order to be more flexible */
 			this.LINE_HEIGHT = 150;
 			this.LINE_WIDTH = 1160;
@@ -155,10 +155,20 @@ define([
 			return areas;
 		};
 
+		LSViewer.prototype._scale = function() {
+			this.ctx.translate((this.ctx.canvas.width - (this.ctx.canvas.width * this.SCALE)) / 2, 0);
+			this.ctx.scale(this.SCALE, this.SCALE);
+		};
+		
+		LSViewer.prototype._resetScale = function() {
+			this.ctx.scale(1 / this.SCALE, 1 / this.SCALE);
+			this.ctx.translate(-(this.ctx.canvas.width - (this.ctx.canvas.width * this.SCALE)) / 2, 0);
+		};
 
 		LSViewer.prototype.draw = function(song) {
-			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
+			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+			this._scale();
 			var i, j, v, c;
 			// call drawable elem with zIndex < 10
 			for (i = 0, c = this.drawableModel.length; i < c; i++) {
@@ -166,8 +176,7 @@ define([
 					this.drawableModel[i].elem.draw(self);
 				}
 			}
-			// this.ctx.translate((this.ctx.canvas.width - (this.ctx.canvas.width * this.SCALE)) / 2, 0);
-			// this.ctx.scale(this.SCALE, this.SCALE);
+			
 
 			var numBar = 0,
 				self = this,
@@ -263,6 +272,7 @@ define([
 				}
 			}
 			$.publish('LSViewer-drawEnd', this);
+			this._resetScale();
 		};
 		return LSViewer;
 
