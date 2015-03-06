@@ -137,26 +137,26 @@ define([
 	};
 
 	FileEditionController.prototype.exportAndPromptLeadsheetToPDF = function(title, composer, timeSignature, style, sources_abr) {
-		var srcCanvas = $("canvas")[0];
-		
+		var srcCanvas = myApp.viewer.canvas;
 		// create a dummy CANVAS to create a new viewer without selection or edition
-		var destinationCanvas = document.createElement("canvas");
-		destinationCanvas.width = srcCanvas.width;
-		destinationCanvas.height = srcCanvas.height;
-		var currentViewer = new LSViewer(destinationCanvas);
+		var destinationElement = document.createElement("div");
+		var currentViewer = new LSViewer(destinationElement, {
+			'width': srcCanvas.width,
+			'height': srcCanvas.height
+		});
 		currentViewer.draw(this.songModel);
 
 		// create another dummy CANVAS in which we will draw the first canvas, it prevents black screen to appear
-		var destinationCanvas2 = document.createElement("canvas");
-		destinationCanvas2.width = srcCanvas.width;
-		destinationCanvas2.height = srcCanvas.height;
-		var destCtx = destinationCanvas2.getContext('2d');
+		var destinationCanvas = document.createElement("canvas");
+		destinationCanvas.width = srcCanvas.width;
+		destinationCanvas.height = srcCanvas.height;
+		var destCtx = destinationCanvas.getContext('2d');
 		// create a rectangle with the desired color
 		destCtx.fillStyle = "#FFFFFF";
 		destCtx.fillRect(0, 0, srcCanvas.width, srcCanvas.height);
 		// draw the original canvas onto the destination canvas
-		destCtx.drawImage(destinationCanvas, 0, 0); // 
-		var imgData = destinationCanvas2.toDataURL('image/jpeg', 1);
+		destCtx.drawImage(currentViewer.canvas, 0, 0); // 
+		var imgData = destinationCanvas.toDataURL('image/jpeg', 1);
 
 		var totalWidth = 200;
 		var totalHeight = totalWidth * (srcCanvas.height / srcCanvas.width);
@@ -175,8 +175,7 @@ define([
 		}
 		if (sources_abr && sources_abr !== "") {
 			sources_abr = '_' + sources_abr;
-		}
-		else{
+		} else {
 			sources_abr = '';
 		}
 		doc.save(title + sources_abr + '.pdf');
@@ -184,12 +183,13 @@ define([
 
 	FileEditionController.prototype.exportPNG = function() {
 		var srcCanvas = myApp.viewer.canvas;
-		var destinationCanvas = document.createElement("canvas");
-		destinationCanvas.width = srcCanvas.width;
-		destinationCanvas.height = srcCanvas.height;
-		var currentViewer = new LSViewer(destinationCanvas);
+		var destinationElement = document.createElement("div");
+		var currentViewer = new LSViewer(destinationElement, {
+			'width': srcCanvas.width,
+			'height': srcCanvas.height
+		});
 		currentViewer.draw(this.songModel);
-		this.promptFile(this.songModel.getTitle() + '.png', destinationCanvas.toDataURL());
+		this.promptFile(this.songModel.getTitle() + '.png', currentViewer.canvas.toDataURL());
 		//this.promptFile(this.songModel.getTitle() + '.png', myApp.canvas.toDataURL());
 	};
 

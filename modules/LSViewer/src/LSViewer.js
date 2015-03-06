@@ -13,24 +13,27 @@ define([
 	],
 	function(Vex, LSNoteView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator, pubsub) {
 
-		function LSViewer(idDivContainer, params) {
-			
-			this.init(idDivContainer,params);
+		function LSViewer(divContainer, params) {
+			this.init(divContainer, params);
 			this.drawableModel = [];
 			this.initController();
 		}
-		LSViewer.prototype._createCanvas = function(idScore, width, height, divContainer ) {
+
+		/**
+		 * Create and return a dom element
+		 */
+		LSViewer.prototype._createCanvas = function(idScore, width, height, divContainer) {
 			var canvas = $("<canvas id='" + idScore + "'></canvas>");
 			canvas[0].width = width;
 			canvas[0].height = height;
 			canvas.appendTo(divContainer);
-			if (canvas[0].height > divContainer.height()){
+			if (canvas[0].height > divContainer.height()) {
 				divContainer.css({
 					overflowY: "scroll",
 					textAlign: "center"
 				});
 			}
-			return canvas;
+			return canvas[0];
 		};
 		/**
 		 * Publish event after receiving dom events
@@ -56,7 +59,7 @@ define([
 			}
 		};
 
-		LSViewer.prototype.init = function(idDivContainer, params) {
+		LSViewer.prototype.init = function(divContainer, params) {
 			params = params || {};
 			this.DEFAULT_HEIGHT = 1000;
 
@@ -72,25 +75,23 @@ define([
 			this.CHORDS_DISTANCE_STAVE = 20; //distance from stave
 
 			var idScore = "ls" + ($("canvas").length + 1),
-			divContainer = $("#" + idDivContainer),
-			width = params && params.width ? params.width : divContainer.width() * 0.8,
-			height = params && params.height ? params.height : this.DEFAULT_HEIGHT;
+				width = params && params.width ? params.width : $(divContainer).width() * 0.8,
+				height = params && params.height ? params.height : this.DEFAULT_HEIGHT;
 
-			this.canvas = this._createCanvas(idScore, width, height, divContainer);
-			var renderer = new Vex.Flow.Renderer(this.canvas[0], Vex.Flow.Renderer.Backends.CANVAS);
+			this.canvas = this._createCanvas(idScore, width, height, $(divContainer));
+			var renderer = new Vex.Flow.Renderer(this.canvas, Vex.Flow.Renderer.Backends.CANVAS);
 			this.ctx = renderer.getContext("2d");
-			
-			if (params.typeResize == 'scale'){
+
+			if (params.typeResize == 'scale') {
 				this.SCALE = (width / this.LINE_WIDTH) * 0.95;
-			}
-			else{ // typeResize == 'fluid'
+			} else { // typeResize == 'fluid'
 				this._setWidth(width);
 			}
 
 			// this.marginLeft = 10;
 
 		};
-		
+
 		LSViewer.prototype._setWidth = function(width) {
 			var viewerWidth = width || this.LINE_WIDTH;
 			this.LINE_WIDTH = viewerWidth;
@@ -181,11 +182,11 @@ define([
 
 		LSViewer.prototype._scale = function() {
 			this.ctx.scale(this.SCALE, this.SCALE);
-		//	this.ctx.translate((this.ctx.canvas.width * (1 -  this.SCALE)/2) , 0);
+			//	this.ctx.translate((this.ctx.canvas.width * (1 -  this.SCALE)/2) , 0);
 		};
-		
+
 		LSViewer.prototype._resetScale = function() {
-		//	this.ctx.translate(-(this.ctx.canvas.width * (1 -  this.SCALE)/2) , 0);
+			//	this.ctx.translate(-(this.ctx.canvas.width * (1 -  this.SCALE)/2) , 0);
 			this.ctx.scale(1 / this.SCALE, 1 / this.SCALE);
 		};
 

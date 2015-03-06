@@ -22,10 +22,10 @@ define(function(require){
 
 	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(AloneTogether, new SongModel());
 
-	var viewer = new LSViewer('ls1',{typeResize: 'fluid'});
+	var viewer = new LSViewer($('#ls1')[0],{typeResize: 'fluid'});
 	viewer.draw(songModel);
 
-	var viewer2 = new LSViewer('ls2',{typeResize: 'scale'});
+	var viewer2 = new LSViewer($('#ls2')[0],{typeResize: 'scale'});
 	viewer2.draw(songModel);
 	
 	
