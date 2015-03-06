@@ -101,8 +101,9 @@ define(function(require) {
   testSongView_chordSequence.run();
 
 
-  // //console.log(Vex);
+
   // //LSViewer Module
+  // //console.log(
   testBarWidthManager.run();
 
   // Midi sound model Module

@@ -146,7 +146,7 @@ define(function(require) {
 		};
 		initChordSequenceModule(songModel, optionChediak);*/
 
-	myApp.viewer = new LSViewer($('#score')[0]);
+	myApp.viewer = new LSViewer("canvas_container");
 
 	$.subscribe('MainMenuView-render', function(el) {
 		// Edit notes on view

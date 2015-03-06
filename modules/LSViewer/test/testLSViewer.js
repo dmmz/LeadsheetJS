@@ -8,14 +8,18 @@ define(['vexflow_helper',
 ], function(VexFlowTest, Vex, LSViewer, SongModel, SongModel_CSLJson, allRhythmicFigures,AloneTogether) {
 	return {
 		run: function() {
-
+			console.log(VexFlowTest);
 			VexFlowTest.runTest("ViewerDraw", function(options, contextBuilder) {
+				console.log(options);
 				var ctx = new contextBuilder(options.canvas_sel, 1100, 1150);
 				console.log(ctx);
 				var song = SongModel_CSLJson.importFromMusicCSLJSON(allRhythmicFigures, new SongModel());
 
+
 				var viewer = new LSViewer(ctx);
+
 				viewer.draw(song);
+				
 				ok(true, "all pass");
 
 			});
