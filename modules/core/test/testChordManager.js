@@ -35,18 +35,20 @@ define(function(require) {
 				sm.getComponent('bars').addBar(new BarModel());
 				sm.getComponent('bars').addBar(new BarModel());
 				var cm = new ChordManager();
-				cm.addChord(new ChordModel({
+				chord = new ChordModel({
 					'note': 'G',
 					'chordType': '7',
 					'beat': 2,
 					'barNumber': 0
-				}));
-				cm.addChord(new ChordModel({
+				});
+				cm.addChord(chord);
+				var chord2 = new ChordModel({
 					'note': 'F',
 					'chordType': 'M7',
 					'beat': 3,
 					'barNumber': 2
-				}));
+				});
+				cm.addChord(chord2);
 
 				assert.equal(cm.getChordDurationFromBarNumber(sm, 0, 0), 3, 'chord duration - first bar');
 				assert.equal(cm.getChordDurationFromBarNumber(sm, 0, 1), 4, 'chord duration - last full bar');
@@ -56,6 +58,18 @@ define(function(require) {
 				assert.equal(cm.getChordDuration(sm, 1), 6, 'chord duration - last');
 				assert.equal(cm.getChordDuration(sm, 2), undefined, 'chord does not exist');
 
+				assert.equal(cm.getChordsByBarNumber(0)[0].toString(), chord.toString());
+
+				// increment and decrement
+				cm.incrementChordsBarNumberFromBarNumber(1, 0);
+				assert.equal(cm.getChordsByBarNumber(1)[0].toString(), chord.toString());
+
+				cm.incrementChordsBarNumberFromBarNumber(-1, 0);
+				assert.equal(cm.getChordsByBarNumber(0)[0].toString(), chord.toString());
+
+				// delete chord by bar
+				cm.removeChordsByBarNumber(0);
+				assert.equal(cm.getChordsByBarNumber(0)[0], undefined);
 
 			});
 		}

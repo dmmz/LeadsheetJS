@@ -110,12 +110,21 @@ define([
 			input.focus(); // this focus allow setting cursor on end carac
 			input.val(inputVal);
 			input.focus(); // this focus launch autocomplete firectly when value is not empty
-			$('.chordSpaceInput').on('blur', function() {
-				input.devbridgeAutocomplete('dispose');
+			// on blur event we change the value
+			input.on('blur', function() {
 				self.onChange(chord, $(this).val());
+				input.devbridgeAutocomplete('dispose');
+			});
+			// on tab call (tab doesn't trigger blur event)
+			input.keydown(function(e) {
+				var code = e.keyCode || e.which;
+				if (code == '9') {
+					self.onChange(chord, $(this).val());
+					input.devbridgeAutocomplete('dispose');
+				}
 			});
 			// We use a filter function to make it easier for user to enter chords
-			$('.chordSpaceInput').on('input propertychange paste', function() {
+			input.on('input propertychange paste', function() {
 				$(this).val(self.filterFunction($(this).val()));
 			});
 		}

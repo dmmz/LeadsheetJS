@@ -221,7 +221,6 @@ define([
 	NoteEditionView.prototype.initSubscribe = function() {};
 
 
-
 	NoteEditionView.prototype.isEditMode = function(mode) {
 		if (this.editMode === mode) {
 			return true;

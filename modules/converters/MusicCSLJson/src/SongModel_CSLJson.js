@@ -18,15 +18,22 @@ define(function(require) {
 	var SongModel_CSLJson = {};
 
 	SongModel_CSLJson.importFromMusicCSLJSON = function(MusicCSLJSON, songModel, id) {
+		if (!songModel || !songModel instanceof SongModel) {
+			songModel = new SongModel();
+		}
 		var chordManager = new ChordManager();
 		var noteManager = new NoteManager();
 		var barManager = new BarManager();
 
 		//if (!MusicCSLJSON._id && !id)	throw "SongModel: importing from MusicCSL no id specified";
 
+		if (!MusicCSLJSON) {
+			throw "SongModel_CSLJson-importFromMusicCSLJSON: You can't import an empty song " + MusicCSLJSON;
+		}
+
 		//there are 4 cases: id by param, _id is 'MongoId' from php, _id is 'MongoId' from javascript or _id is string
-		if(typeof MusicCSLJSON._id !== "undefined"){
-			if(typeof MusicCSLJSON._id['$oid'] !== "undefined") {
+		if (typeof MusicCSLJSON._id !== "undefined") {
+			if (typeof MusicCSLJSON._id['$oid'] !== "undefined") {
 				MusicCSLJSON._id['$id'] = MusicCSLJSON._id['$oid'];
 			}
 		}
@@ -141,7 +148,7 @@ define(function(require) {
 					chords.push(JSONChord);
 				});
 
-				if (chords.length != 0)		JSONBar.chords = chords;
+				if (chords.length != 0) JSONBar.chords = chords;
 
 				barNotes = songModel.getComponentsAtBarNumber(j, 'notes');
 
@@ -151,7 +158,7 @@ define(function(require) {
 					melody.push(JSONNote);
 				});
 
-				if (melody.length !== 0)		JSONBar.melody = melody;
+				if (melody.length !== 0) JSONBar.melody = melody;
 
 				bars.push(JSONBar);
 			}

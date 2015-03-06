@@ -86,6 +86,12 @@ define([
 			else{ // typeResize == 'fluid'
 				this._setWidth(width);
 			}
+
+			// init background color to prevent black screen to appear on slow draw
+			this.ctx.fillStyle = "#FFFFFF";
+			this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+			// this.marginLeft = 10;
+
 		};
 		
 		LSViewer.prototype._setWidth = function(width) {
@@ -187,7 +193,7 @@ define([
 		};
 
 		LSViewer.prototype.draw = function(song) {
-
+			//console.time('whole draw');
 			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 			this._scale();
 			var i, j, v, c;
@@ -229,13 +235,17 @@ define([
 				// for each bar
 				sectionIt = new SectionBarsIterator(section);
 				while (sectionIt.hasNext()) {
+					//console.time('whole bar');
+					//console.log(sectionIt.getBarIndex());
 
 					beamMng = new BeamManager();
 					tupletMng = new TupletManager();
 					bar = [];
-
+					//console.time('getNotes');
 					barNotes = nm.getNotesAtBarNumber(songIt.getBarIndex(), song);
+					//console.timeEnd('getNotes');
 
+					//console.time('drawNotes');
 					// for each note of bar
 					for (j = 0, v = barNotes.length; j < v; j++) {
 						tieMng.checkTie(barNotes[j], iNote);
@@ -247,16 +257,20 @@ define([
 						vxfNotes.push(vxfNote);
 						iNote++;
 					}
+					//console.timeEnd('drawNotes');
 
 					barDimensions = barWidthMng.getDimensions(songIt.getBarIndex());
 					barView = new LSBarView(barDimensions);
+					//console.time('drawBars');
 					barView.draw(self.ctx, songIt, sectionIt, self.ENDINGS_Y, self.LABELS_Y);
+					//console.timeEnd('drawBars');
 
 					vxfBars.push({
 						'barDimensions': barDimensions,
 						'timeSignature': songIt.getBarTimeSignature(),
 					});
 
+					//console.time('getChords');
 					barChords = cm.getChordsByBarNumber(songIt.getBarIndex());
 					for (i = 0, c = barChords.length; i < c; i++) {
 						chordView = new LSChordView(barChords[i]).draw(
@@ -266,16 +280,26 @@ define([
 							self.CHORDS_DISTANCE_STAVE
 						);
 					}
+					//console.timeEnd('getChords');
 
+					//console.time('beams');
 					vxfBeams = beamMng.getVexflowBeams(); // we need to do getVexflowBeams before drawing notes
+					//console.timeEnd('beams');
+
+					//console.time('stave');
 					Vex.Flow.Formatter.FormatAndDraw(self.ctx, barView.getVexflowStave(), bar, {
 						autobeam: false
 					});
+					//console.timeEnd('stave');
 
+					//console.time('draw');
 					beamMng.draw(self.ctx, vxfBeams); // and draw beams needs to be done after drawing notes
 					tupletMng.draw(self.ctx, vxfNotes);
+					//console.timeEnd('draw');
+
 					songIt.next();
 					sectionIt.next();
+					//console.timeEnd('whole bar');
 				}
 				numSection++;
 			});
@@ -290,8 +314,12 @@ define([
 					this.drawableModel[i].elem.draw(self);
 				}
 			}
+<<<<<<< HEAD
 			
 			this._resetScale();
+=======
+			//console.timeEnd('whole draw');
+>>>>>>> 970f3677fefe07d35d97e025b0de87db1654c66e
 			$.publish('LSViewer-drawEnd', this);
 		};
 		return LSViewer;

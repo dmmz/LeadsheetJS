@@ -1,8 +1,8 @@
 define(function() {
 	function TimeSignatureModel(timeSig) {
 		var re = /\d\/\d/;
-		if (!timeSig.match(re)) {
-			throw "Time signature not valid " + timeSig;
+		if (!timeSig || !timeSig.match(re)) {
+			throw "TimeSignatureModel - Time signature not valid " + timeSig;
 		}
 
 		var timeSigArr = timeSig.split("/");

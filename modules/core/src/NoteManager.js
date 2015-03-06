@@ -100,7 +100,6 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	 * position pos without replacing note at 'pos' (e.g. scoreeditor.addBar() does it) we need to call it with cursor = [pos, pos -1 ]
 	 * @param  {Array} cursor       [pos1,pos2]
 	 * @param  {Array } notesToPaste array of NoteModel
-	 
 	 */
 	NoteManager.prototype.notesSplice = function(cursor, notesToPaste) {
 		var part1 = this.notes.slice(0, cursor[0]);
@@ -150,7 +149,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 
 		var startBeat = 1,
 			endBeat,
-			beats = song.timeSignature.getBeats();
+			beats = song.getTimeSignature().getBeats();
 		for (var i = 0; i < barNumber; i++) {
 			startBeat += song.getBarNumBeats(i, beats);
 		}

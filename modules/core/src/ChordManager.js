@@ -108,6 +108,24 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 		}
 	};
 
+
+	/**
+	 * Functions changes bar number of each chords that is equal or greater than barNumber
+	 * @param  {Int} inc       Increment bar number (usually it's 1 or -1)
+	 * @param  {Int} barNumber start bar from which we start to increment
+	 */
+	ChordManager.prototype.incrementChordsBarNumberFromBarNumber = function(inc, barNumber) {
+		if (typeof barNumber !== "undefined" && !isNaN(barNumber) && barNumber >= 0) {
+			var currentChord;
+			for (var i = 0, c = this.chords.length; i < c; i++) {
+				currentChord = this.chords[i];
+				if (currentChord.getBarNumber() >= barNumber) {
+					currentChord.setBarNumber(currentChord.getBarNumber() + inc);
+				}
+			}
+		}
+	};
+
 	/**
 	 * Return an array of chords that are in a bar define by barNumber argument
 	 * @param  {int} barNumber
@@ -126,6 +144,22 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 		return chordsByBarNumber;
 	};
 
+	/**
+	 * Return all chords in a bar
+	 * @param  {int} barNumber
+	 */
+	ChordManager.prototype.removeChordsByBarNumber = function(barNumber) {
+		if (typeof barNumber !== "undefined" && !isNaN(barNumber) && barNumber >= 0) {
+			var currentChord;
+			for (var i = this.chords.length - 1; i >= 0; i--) {
+				currentChord = this.chords[i];
+				if (currentChord.getBarNumber() === barNumber) {
+					this.removeChordByIndex(i);
+				}
+			}
+		}
+	};
+	
 	/**
 	 * Return a chord that is matching correct Bar and beat number
 	 * @param  {ChordModel} chord or undefined if no chord match

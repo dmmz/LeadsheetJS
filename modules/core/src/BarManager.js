@@ -24,14 +24,13 @@ define(['modules/core/src/BarModel'], function(BarModel) {
 	 */
 	BarManager.prototype.addBar = function(bar) {
 		if (typeof bar === "undefined" || !(bar instanceof BarModel)) {
-			throw "BarManager - addBar - bar must be a BarModel ";
+			bar = new BarModel();
 		}
-
 		this.bars.push(bar);
+		return bar;
 	};
 
 	BarManager.prototype.removeBar = function(index) {
-
 		if (typeof index === "undefined" || isNaN(index) || index < 0) {
 			throw "BarManager - removeBar - invalid index " + index;
 		}

@@ -222,7 +222,8 @@ define([
 	 * @return {Number}
 	 */
 	SongModel.prototype.getBarNumBeats = function(numBar, currentBeats) {
-		var barTimeSig = this.getBar(numBar).timeSignature,
+		//console.log(currentBeats, numBar, this.getComponent("bars").getTotal());
+		var barTimeSig = this.getBar(numBar).getTimeSignature(),
 			timeSig = barTimeSig || this.getTimeSignature();
 
 		if (!timeSig && !currentBeats) throw "bad use: either song is not well formatted, either currentBeats is not sent";
