@@ -1,6 +1,6 @@
 define(['modules/core/src/TimeSignatureModel'], function(TimeSignatureModel) {
 	return {
-		run: function() 
+		run: function()
 		{
 			test("Time Signature", function(assert) {
 				assert.throws(function(){new TimeSignatureModel("timesign/notvalid");});

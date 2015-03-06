@@ -58,9 +58,6 @@ define([
 			this.MARGIN_TOP = 100;
 			this.CHORDS_DISTANCE_STAVE = 20; //distance from stave
 
-			// init background color to prevent black screen to appear on slow draw
-			this.ctx.fillStyle = "#FFFFFF";
-			this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 			// this.marginLeft = 10;
 		};
 		/*	LSViewer.prototype.drawStave = function(section,i) {
