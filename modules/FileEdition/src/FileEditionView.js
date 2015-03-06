@@ -66,12 +66,25 @@ define([
 		$('#leadsheet_key_title').click(function() {
 
 		});*/
-
-		$('#import_musicCslJson').click(function() {
-			$.publish('FileEditionView-importMusicCSLJSON');
-		});
-		$('#import_musicXML').click(function() {
-			$.publish('FileEditionView-importMusicXML');
+		$('#importFile').change(function(e) {
+			var file = e.target.files[0];
+			var allowedTypes = ['json', 'xml', 'mxml'];
+			var extension = file.name.split('.');
+			extension = extension[extension.length - 1];
+			var type = allowedTypes.indexOf(extension);
+			if (!file || type === -1) {
+				return;
+			}
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				if (type === 0) {
+					$.publish('FileEditionView-importMusicCSLJSON', JSON.parse(e.target.result));
+				} else {
+					$.publish('FileEditionView-importMusicXML', e.target.result);
+				}
+			};
+			reader.readAsText(file);
+			return false;
 		});
 
 		// export sound

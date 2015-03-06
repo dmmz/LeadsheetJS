@@ -3,11 +3,11 @@ define(['vexflow'], function(Vex) {
 		this.vexflowStave = new Vex.Flow.Stave(barDimensions.left, barDimensions.top, barDimensions.width);
 	}
 	LSBarView.prototype.draw = function(ctx, songIt, sectionIt, endingsY, labelsY) {
-		if (songIt.getBarIndex() == 0) {
+		if (songIt.getBarIndex() === 0) {
 			this.vexflowStave.addClef("treble").setContext(ctx).draw();
 		}
 		//name section
-		if (sectionIt.getBarIndex() == 0) {
+		if (sectionIt.getBarIndex() === 0) {
 			var nameSection = sectionIt.getSection().getName();
 			if (nameSection !== "") {
 				this.vexflowStave.setSection(nameSection, 9);

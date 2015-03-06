@@ -149,7 +149,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 
 		var startBeat = 1,
 			endBeat,
-			beats = song.timeSignature.getBeats();
+			beats = song.getTimeSignature().getBeats();
 		for (var i = 0; i < barNumber; i++) {
 			startBeat += song.getBarNumBeats(i, beats);
 		}

@@ -61,7 +61,7 @@ define(['vexflow'], function(Vex) {
 	 * @param  {Array} vxfBeams  Array of Vex.Flow.Beam
 	 */
 	BeamManager.prototype.draw = function(ctx, vxfBeams) {
-		for (var j = 0; j < vxfBeams.length; j++) {
+		for (var j = 0, c = vxfBeams.length; j < c; j++) {
 			if (vxfBeams[j] !== null) vxfBeams[j].setContext(ctx).draw();
 		}
 	};
