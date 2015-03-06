@@ -1,20 +1,20 @@
 define(function() {
-	function BarWidthManager(lineHeight, lineWidth, noteWidth, barsPerLine, marginTop, scale) {
+	function BarWidthManager(lineHeight, lineWidth, noteWidth, barsPerLine, marginTop) {
 			if (!lineHeight) throw "BarWidthManager - lineHeight not defined";
 			if (!lineWidth) throw "BarWidthManager - lineWidth not defined";
 			if (!noteWidth) throw "BarWidthManager - noteWidth not defined";
 			if (!barsPerLine) throw "BarWidthManager - barsPerLine not defined";
 			if (!marginTop) throw "BarWidthManager - marginTop not defined";
-			if (!scale) throw "BarWidthManager - scale not defined";
+			
 
-			this.WIDTH_FACTOR = 1.25; // factor by witch we multiply the minimum width so that notes are not so crammed (always > 1)
+			this.WIDTH_FACTOR = 1.6; // factor by witch we multiply the minimum width so that notes are not so crammed (always > 1)
 			this.barsStruct = [];
 
-			this.lineHeight = Number(lineHeight) * Number(scale);
-			this.lineWidth = Number(lineWidth) * Number(scale);
-			this.noteWidth = Number(noteWidth) * Number(scale);
-			this.barsPerLine = Number(barsPerLine) * Number(scale);
-			this.marginTop = Number(marginTop) * Number(scale);
+			this.lineHeight = Number(lineHeight);
+			this.lineWidth = Number(lineWidth);
+			this.noteWidth = Number(noteWidth);
+			this.barsPerLine = Number(barsPerLine);
+			this.marginTop = Number(marginTop);
 		}
 		/**
 		 * calculates the minimum width for each bar depending on the number of notes it has

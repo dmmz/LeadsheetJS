@@ -14,9 +14,7 @@ require.config({
 });
 
 define(function(require){
-	var $ = require('jquery');
-	var Vex = require('vexflow');
-	
+		
 	var LSViewer = require('modules/LSViewer/src/LSViewer');
 	var SongModel = require('modules/core/src/SongModel');
 	var AloneTogether = require('tests/songs/AloneTogether');
@@ -24,18 +22,11 @@ define(function(require){
 
 	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(AloneTogether, new SongModel());
 
-	var viewer = new LSViewer('ls1');
-	
+	var viewer = new LSViewer('ls1',{typeResize: 'fluid'});
 	viewer.draw(songModel);
+
+	var viewer2 = new LSViewer('ls2',{typeResize: 'scale'});
+	viewer2.draw(songModel);
 	
-
-	// var LS = new LeadsheetJS({
-	// 	idDivContainer: 'ls1',
-	// 	score: aloneTogether
-	// });
-
-	// LeadsheetJS.construct({
-	// 	divContainer: 'ls2'
-	// });
 	
 });

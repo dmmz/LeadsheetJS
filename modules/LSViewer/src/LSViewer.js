@@ -14,39 +14,24 @@ define([
 	function(Vex, LSNoteView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator, pubsub) {
 
 		function LSViewer(idDivContainer, params) {
-			params = params || {};
-			this.DEFAULT_HEIGHT = 1000;
 			
-
-			var idScore = "ls" + ($("canvas").length + 1),
-			divContainer = $("#" + idDivContainer),
-			width = params && params.width ? params.width : divContainer.width(),
-			height = params && params.height ? params.height : this.DEFAULT_HEIGHT;
-
-
-			//create canvas
-			canvas = $("<canvas id='" + idScore + "'></canvas>");
-			canvas[0].width = width * 0.8;
+			this.init(idDivContainer,params);
+			this.drawableModel = [];
+			this.initController();
+		}
+		LSViewer.prototype._createCanvas = function(idScore, width, height, divContainer ) {
+			var canvas = $("<canvas id='" + idScore + "'></canvas>");
+			canvas[0].width = width;
 			canvas[0].height = height;
 			canvas.appendTo(divContainer);
-
 			if (canvas[0].height > divContainer.height()){
 				divContainer.css({
 					overflowY: "scroll",
 					textAlign: "center"
 				});
-			}	
-
-			this.canvas = canvas;
-			var renderer = new Vex.Flow.Renderer(this.canvas[0], Vex.Flow.Renderer.Backends.CANVAS);
-			this.ctx = renderer.getContext("2d");
-			
-			params.width = width*0.9;
-			this.init(params);
-			this.drawableModel = [];
-			this.initController();
-		}
-
+			}
+			return canvas;
+		};
 		/**
 		 * Publish event after receiving dom events
 		 */
@@ -71,7 +56,10 @@ define([
 			}
 		};
 
-		LSViewer.prototype.init = function(params) {
+		LSViewer.prototype.init = function(idDivContainer, params) {
+			params = params || {};
+			this.DEFAULT_HEIGHT = 1000;
+
 			this.SCALE = 0.9;
 			this.NOTE_WIDTH = 20; /* estimated note width in order to be more flexible */
 			this.LINE_HEIGHT = 150;
@@ -83,32 +71,25 @@ define([
 			this.MARGIN_TOP = 100;
 			this.CHORDS_DISTANCE_STAVE = 20; //distance from stave
 
-			// this.marginLeft = 10;
-			if (params && params.width) {
-				this.setWidth(params.width);
+			var idScore = "ls" + ($("canvas").length + 1),
+			divContainer = $("#" + idDivContainer),
+			width = params && params.width ? params.width : divContainer.width() * 0.8,
+			height = params && params.height ? params.height : this.DEFAULT_HEIGHT;
+
+			this.canvas = this._createCanvas(idScore, width, height, divContainer);
+			var renderer = new Vex.Flow.Renderer(this.canvas[0], Vex.Flow.Renderer.Backends.CANVAS);
+			this.ctx = renderer.getContext("2d");
+			
+			if (params.typeResize == 'scale'){
+				this.SCALE = (width / this.LINE_WIDTH) * 0.95;
+			}
+			else{ // typeResize == 'fluid'
+				this._setWidth(width);
 			}
 		};
-		/*	LSViewer.prototype.drawStave = function(section,i) {
-			var left = this.marginLeft + this.barWidth * this.xMeasure;
-			var top = this.marginTop + this.yMeasure * this.lineHeight;
-			console.log(left+" "+top+" "+this.barWidth);
-			var stave = new Vex.Flow.Stave(0, 0, this.totalWidth);
-			stave.setContext(this.ctx).draw();
-			stave.drawVerticalBar(this.barWidth);
-		};
-		LSViewer.prototype.drawSection = function(section) {
-			stave = this.drawStave(section,0);
-
-		};*/
-
-		LSViewer.prototype.setWidth = function(width) {
-
-			
+		
+		LSViewer.prototype._setWidth = function(width) {
 			var viewerWidth = width || this.LINE_WIDTH;
-			
-			//this.SCALE = viewerWidth / this.LINE_WIDTH;
-			this.SCALE = 0.9;
-
 			this.LINE_WIDTH = viewerWidth;
 		};
 
@@ -198,11 +179,11 @@ define([
 		LSViewer.prototype._scale = function() {
 			
 			this.ctx.scale(this.SCALE, this.SCALE);
-			this.ctx.translate((this.ctx.canvas.width * (1 -  this.SCALE)/2) , 0);
+		//	this.ctx.translate((this.ctx.canvas.width * (1 -  this.SCALE)/2) , 0);
 		};
 		
 		LSViewer.prototype._resetScale = function() {
-			this.ctx.translate(-(this.ctx.canvas.width * (1 -  this.SCALE)/2) , 0);
+		//	this.ctx.translate(-(this.ctx.canvas.width * (1 -  this.SCALE)/2) , 0);
 			this.ctx.scale(1 / this.SCALE, 1 / this.SCALE);
 		};
 
@@ -237,7 +218,7 @@ define([
 				barDimensions,
 				tieMng = new TieManager();
 
-			var barWidthMng = new BarWidthManager(this.LINE_HEIGHT, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE, this.MARGIN_TOP, this.SCALE);
+			var barWidthMng = new BarWidthManager(this.LINE_HEIGHT, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE, this.MARGIN_TOP);
 			barWidthMng.calculateBarsStructure(song, nm);
 			var numSection = 0;
 
@@ -310,9 +291,9 @@ define([
 					this.drawableModel[i].elem.draw(self);
 				}
 			}
-			this.ctx.scale(1/this.SCALE, 1/this.SCALE);
-			$.publish('LSViewer-drawEnd', this);
+			
 			this._resetScale();
+			$.publish('LSViewer-drawEnd', this);
 		};
 		return LSViewer;
 
