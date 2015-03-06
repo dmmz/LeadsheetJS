@@ -314,12 +314,8 @@ define([
 					this.drawableModel[i].elem.draw(self);
 				}
 			}
-<<<<<<< HEAD
-			
 			this._resetScale();
-=======
 			//console.timeEnd('whole draw');
->>>>>>> 970f3677fefe07d35d97e025b0de87db1654c66e
 			$.publish('LSViewer-drawEnd', this);
 		};
 		return LSViewer;
