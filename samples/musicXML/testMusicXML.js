@@ -33,11 +33,14 @@ define(function(require) {
 	var LSViewer = require('modules/LSViewer/src/LSViewer');
 	var musicXMLParser = require('modules/converters/MusicXML/utils/musicXMLParser');
 	var SongModel_MusicXML = require('modules/converters/MusicXML/src/SongModel_MusicXML');
+	var MusicXMLParser = require('modules/converters/MusicXML/utils/musicXMLParser');
 	
 	var filepath = '';
-	filepath = '/samples/musicXML/Faire fi de tout.xml';
-	filepath = '/samples/musicXML/Ferme.xml';
-	var song = SongModel_MusicXML.importFromMusicXML(filepath);
+	filepath = 'Faire fi de tout.xml';
+	filepath = 'Ferme.xml';
+	var mxlParse = new MusicXMLParser();
+	var docString = mxlParse.fetch(filepath);
+	var song = SongModel_MusicXML.importFromMusicXML(docString);
 	//console.log(song);
 	initViewerModule(song);
 
