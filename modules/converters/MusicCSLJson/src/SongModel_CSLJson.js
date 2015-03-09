@@ -20,6 +20,8 @@ define(function(require) {
 	SongModel_CSLJson.importFromMusicCSLJSON = function(MusicCSLJSON, songModel, id) {
 		if (!songModel || !songModel instanceof SongModel) {
 			songModel = new SongModel();
+		}else{
+			songModel.clear();
 		}
 		var chordManager = new ChordManager();
 		var noteManager = new NoteManager();

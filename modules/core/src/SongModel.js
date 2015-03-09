@@ -5,6 +5,11 @@ define([
 	'modules/core/src/TimeSignatureModel'
 ], function(NoteManager, BarManager, ChordManager, TimeSignatureModel) {
 	function SongModel(param) {
+		this.init(param);
+	}
+
+
+	SongModel.prototype.init = function(param) {
 		this.title = (typeof param !== "undefined" && param.title) ? param.title : '';
 		this.composers = (typeof param !== "undefined" && param.composers) ? param.composers : [];
 		this.style = (typeof param !== "undefined" && param.style) ? param.style : '';
@@ -17,7 +22,7 @@ define([
 
 		this.addComponent('notes', new NoteManager());
 		this.addComponent('bars', new BarManager());
-	}
+	};
 
 	///////////////////////////////
 	// Basic getters and setters //
@@ -417,6 +422,10 @@ define([
 			}
 		}
 		return components;
+	};
+
+	SongModel.prototype.clear = function() {
+		this.init();
 	};
 
 

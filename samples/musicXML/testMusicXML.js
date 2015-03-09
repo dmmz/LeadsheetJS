@@ -34,21 +34,18 @@ define(function(require) {
 	var musicXMLParser = require('modules/converters/MusicXML/utils/musicXMLParser');
 	var SongModel_MusicXML = require('modules/converters/MusicXML/src/SongModel_MusicXML');
 	var MusicXMLParser = require('modules/converters/MusicXML/utils/musicXMLParser');
-	
+
 	var filepath = '';
 	filepath = 'Faire fi de tout.xml';
 	filepath = 'Ferme.xml';
 	var mxlParse = new MusicXMLParser();
 	var docString = mxlParse.fetch(filepath);
-	var song = SongModel_MusicXML.importFromMusicXML(docString);
-	//console.log(song);
-	initViewerModule(song);
+	var songModel = SongModel_MusicXML.importFromMusicXML(docString);
+	//console.log(songModel);
+	var viewer = new LSViewer($('#score')[0]);
+	viewer.draw(songModel);
+	songModel = SongModel_MusicXML.importFromMusicXML(mxlParse.fetch('Faire fi de tout.xml'));
+	viewer.draw(songModel);
+	console.log(songModel);
 
-	/*filepath = '/samples/musicXML/belleville_solo.xml';
-	var song2 = SongModel_MusicXML.importFromMusicXML(filepath);
-	initViewerModule(song2);*/
-	function initViewerModule(songModel) {
-		var viewer = new LSViewer($('#score')[0]);
-		viewer.draw(songModel);
-	}
 });

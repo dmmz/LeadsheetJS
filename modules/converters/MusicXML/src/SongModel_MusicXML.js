@@ -17,8 +17,10 @@ define(function(require) {
 	var SongModel_MusicXML = {};
 
 	SongModel_MusicXML.importFromMusicXML = function(docString, songModel) {
-		if(typeof songModel === "undefine" || !(songModel instanceof SongModel)) {
+		if (typeof songModel === "undefined" || !(songModel instanceof SongModel)) {
 			songModel = new SongModel();
+		} else {
+			songModel.clear();
 		}
 		var chordManager = new ChordManager();
 		var noteManager = new NoteManager();
@@ -64,7 +66,7 @@ define(function(require) {
 				console.log(mxlParse);
 				console.log(mxlParse.partList[i], mxlParse.staveConnectors[i]);*/
 				//SectionModel_MusicXML.importFromMusicXML(mxlParse.partList[i], mxlParse.staveConnectors[i], section);
-				if(typeof mxlParse.partName[i] !== "undefined") {
+				if (typeof mxlParse.partName[i] !== "undefined") {
 					section.setName(mxlParse.partName[i]);
 				}
 				songModel.addSection(section);
@@ -87,12 +89,11 @@ define(function(require) {
 
 					if (typeof measure.notes !== "undefined") {
 						for (var k = 0, b = measure.notes.length; k < b; k++) {
-							if(measure.notes[k].chord === false) {
+							if (measure.notes[k].chord === false) {
 								// case it's polyphonic (we keep same rhythm)
 								note = NoteModel_MusicXML.importFromMusicXML(measure.notes[k]);
 								noteManager.addNote(note);
-							}
-							else{
+							} else {
 								// case it's not monophonic
 								// we reuse last note
 								NoteModel_MusicXML.importFromMusicXML(measure.notes[k], note);
