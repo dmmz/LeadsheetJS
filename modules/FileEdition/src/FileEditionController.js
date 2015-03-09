@@ -58,7 +58,7 @@ define([
 		if (typeof JSONSong === "undefined") {
 			throw 'FileEditionController - importMusicCSLJSON File imported is not defined ' + JSONSong;
 		}
-		this.songModel = SongModel_CSLJson.importFromMusicCSLJSON(JSONSong);
+		SongModel_CSLJson.importFromMusicCSLJSON(JSONSong, this.songModel);
 		myApp.viewer.draw(this.songModel);
 	};
 

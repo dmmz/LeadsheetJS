@@ -116,7 +116,7 @@ define(function(require) {
 	myApp.historyM.addToHistory({});
 	myApp.historyM.setCurrentPosition(1);*/
 
-	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
+	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
 	//initPlayerModule(songModel);
 
 	var option = {
@@ -152,6 +152,7 @@ define(function(require) {
 		// Edit notes on view
 		var cursorNoteController = initCursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow');
 		myApp.viewer.addDrawableModel(cursorNoteController.view, 11);
+
 		// Edit notes menu
 		var neV = new NoteEditionView();
 		var neC = new NoteEditionController(songModel, cursorNoteController.model, neV);

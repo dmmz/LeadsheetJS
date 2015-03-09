@@ -91,14 +91,15 @@ define([
 		var decalX;
 		var widthBeat;
 		var area;
+		var scale = viewer.SCALE;
 		for (var i = 0, c = viewer.vxfBars.length; i < c; i++) {
 			beatInBar = viewer.vxfBars[i].timeSignature.getBeats();
 			widthBeat = viewer.vxfBars[i].barDimensions.width / beatInBar;
 			for (var j = 0; j < beatInBar; j++) {
 				area = {
-					x: viewer.vxfBars[i].barDimensions.left + widthBeat * j,
-					y: viewer.vxfBars[i].barDimensions.top - 17,
-					xe: widthBeat,
+					x: (viewer.vxfBars[i].barDimensions.left + widthBeat * j) * scale,
+					y: (viewer.vxfBars[i].barDimensions.top - 17) * scale,
+					xe: widthBeat * scale,
 					ye: 20
 				};
 				chordSpace.push(new ChordSpaceView(viewer, area, i, j + 1));
