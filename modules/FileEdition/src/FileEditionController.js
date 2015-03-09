@@ -66,11 +66,7 @@ define([
 		if (typeof musicXMLSong === "undefined") {
 			throw 'FileEditionController - importMusicXML File imported is not defined ' + musicXMLSong;
 		}
-		//var filepath = '';
-		//filepath = '/samples/musicXML/Ferme.xml';
-		// filepath = '/samples/musicXML/Faire fi de tout.xml';
 		SongModel_MusicXML.importFromMusicXML(musicXMLSong, this.songModel);
-		console.log(this.songModel);
 		myApp.viewer.draw(this.songModel);
 	};
 

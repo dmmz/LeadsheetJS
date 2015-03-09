@@ -8,7 +8,6 @@ define([
 		this.init(param);
 	}
 
-
 	SongModel.prototype.init = function(param) {
 		this.title = (typeof param !== "undefined" && param.title) ? param.title : '';
 		this.composers = (typeof param !== "undefined" && param.composers) ? param.composers : [];
@@ -161,6 +160,7 @@ define([
 		return currentTimeSignature;
 	};
 
+
 	// USELESS function, use directly timesignature function instead
 	/**
 	 * The function returns the number of beats from the timeSig arguments or by default on current timeSignature
@@ -230,7 +230,6 @@ define([
 		//console.log(currentBeats, numBar, this.getComponent("bars").getTotal());
 		var barTimeSig = this.getBar(numBar).getTimeSignature(),
 			timeSig = barTimeSig || this.getTimeSignature();
-
 		if (!timeSig && !currentBeats) throw "bad use: either song is not well formatted, either currentBeats is not sent";
 
 		return (timeSig) ? timeSig.getBeats() : currentBeats;
@@ -384,14 +383,22 @@ define([
 	};
 
 	/**
-	 * Function return the number of total beat in the song
-	 * @return {int} number of total beat
+	 * Compute song length in beats
+	 * @return {int} length of the song in beats
 	 */
 	SongModel.prototype.getSongTotalBeats = function() {
 		var numberOfBeats = 0;
 		var bm = this.getComponent('bars');
-		for (var i = 0, c = bm.getTotal(); i < c; i++) {
-			numberOfBeats += this.getTimeSignatureAt(i).getBeats();
+		var currentNumberBeatsByBar = this.getTimeSignature().getBeats();
+		var barNumber = 0;
+		for (var i = 0, c = this.sections.length; i < c; i++) {
+			for (var j = 0, v = this.sections[i].getNumberOfBars(); j < v; j++) {
+				if (typeof bm.getBar(barNumber) !== "undefined" && typeof bm.getBar(barNumber).getTimeSignature() !== "undefined") {
+					currentNumberBeatsByBar = bm.getBar(barNumber).getTimeSignature().getBeats();
+				}
+				numberOfBeats += currentNumberBeatsByBar;
+				barNumber++;
+			}
 		}
 		return numberOfBeats;
 	};
@@ -424,6 +431,9 @@ define([
 		return components;
 	};
 
+	/**
+	 * Alias for init function, it can be more adapted to some situations
+	 */
 	SongModel.prototype.clear = function() {
 		this.init();
 	};

@@ -92,6 +92,7 @@ define([
 
 		// TODO bug to create rest note
 		//newBarNm.getNotes();
+		//nm.notesSplice([index, index - 1], newBarNm);
 		nm.notesSplice([index, index - 1], [new NoteModel("E/4-q"), new NoteModel("E/4-q"), new NoteModel("E/4-q"), new NoteModel("E/4-q")]);
 
 		//increment the number of bars of current section
@@ -139,7 +140,7 @@ define([
 				bm.removeBar(selBars[i]);
 			}
 		}
-		this.cursor.setPos(index-1);
+		this.cursor.setPos(index - 1);
 
 
 		myApp.viewer.draw(this.songModel);
@@ -150,14 +151,52 @@ define([
 		if (selBars.length === 0) {
 			return;
 		}
+		var durationBefore = this.songModel.getSongTotalBeats();
 		for (var i = 0, c = selBars.length; i < c; i++) {
 			if (timeSignature === "none") {
 				timeSignature = undefined;
 			}
 			this.songModel.getComponent("bars").getBar(selBars[i]).setTimeSignature(timeSignature);
 		}
+		var durationAfter = this.songModel.getSongTotalBeats();
+		this._checkDuration(durationBefore, durationAfter);
 		myApp.viewer.draw(this.songModel);
-		// TODO check notes duration
+	};
+
+	BarEditionController.prototype._checkDuration = function(durBefore, durAfter) {
+		function checkIfBreaksTuplet(initBeat, endBeat, nm) {
+			/**
+			 * means that is a 0.33333 or something like that
+			 * @return {Boolean}
+			 */
+			function isTupletBeat(beat) {
+				beat = beat * 16;
+				return Math.round(beat) != beat;
+			}
+			var iPrevNote = nm.getNextIndexNoteByBeat(initBeat);
+			var iNextNote = nm.getNextIndexNoteByBeat(endBeat);
+			return isTupletBeat(nm.getNoteBeat(iPrevNote)) || isTupletBeat(nm.getNoteBeat(iNextNote));
+		}
+		var nm = this.songModel.getComponent('notes');
+		var initBeat = 1;
+		var endBeat = durAfter + 1;
+
+		if (durBefore < durAfter) {
+			nm.fillGapWithRests(durAfter - durBefore, initBeat);
+		} else if (durBefore > durAfter) {
+			if (checkIfBreaksTuplet(initBeat, durAfter, nm)) {
+				UserLog.logAutoFade('error', "Can't break tuplet");
+				return;
+			}
+			var endIndex = nm.getNextIndexNoteByBeat(endBeat);
+			var beatEndNote = nm.getNoteBeat(endIndex);
+
+			if (endBeat < beatEndNote) {
+				nm.fillGapWithRests(beatEndNote - endBeat, initBeat);
+			}
+		}
+		//nm.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
+		nm.reviseNotes();
 	};
 
 	BarEditionController.prototype.tonality = function(tonality) {

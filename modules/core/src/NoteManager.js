@@ -96,7 +96,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 
 
 	/**
-	 * replace notes from pos1 to pos2+1, by default will always replace one note, if we want to insert notes at 
+	 * replace notes from pos1 to pos2+1, by default will always replace one note, if we want to insert notes at
 	 * position pos without replacing note at 'pos' (e.g. scoreeditor.addBar() does it) we need to call it with cursor = [pos, pos -1 ]
 	 * @param  {Array} cursor       [pos1,pos2]
 	 * @param  {Array } notesToPaste array of NoteModel
@@ -151,12 +151,12 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 			endBeat,
 			beats = song.getTimeSignature().getBeats();
 		for (var i = 0; i < barNumber; i++) {
-			startBeat += song.getBarNumBeats(i, beats);
+			startBeat += song.getTimeSignatureAt(i).getBeats();
 		}
-		endBeat = startBeat + song.getBarNumBeats(i, beats);
+		endBeat = startBeat + song.getTimeSignatureAt(i).getBeats();
 
 		if (this.getTotalDuration() + 1 < endBeat) {
-			throw "NoteManager - getNotesAtBarNumber - notes on bar " + barNumber + " do not fill the total bar duration";
+			throw "NoteManager - getNotesAtBarNumber - notes on bar " + barNumber + " do not fill the total bar duration" + (this.getTotalDuration() + 1) + ' ' + endBeat;
 		}
 		return this.getNotes(
 			this.getNextIndexNoteByBeat(startBeat),
@@ -218,6 +218,10 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		var i = 0;
 		//we round in the comparison in order to not carry the rounding in curBeat (which is cumulative inside the iteration)
 		while (roundBeat(curBeat) < beat) { //to avoid problems with tuplet 
+			/*if (typeof this.getNote(i) === "undefined") {
+				return i - 1;
+				// throw 'NoteManager - getNextIndexNoteByBeat - Not found';
+			}*/
 			curBeat += this.getNote(i).getDuration();
 			i++;
 		}
@@ -336,7 +340,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 					iToStartRemove = (currState == "no") ? i - 1 : i;
 					intervalsToRemove.push(getRemoveSet(input, iToStartRemove));
 				}
-			};
+			}
 
 			var max, min;
 			for (var i in intervalsToRemove) {

@@ -147,7 +147,7 @@ define(function(require) {
 		initChordSequenceModule(songModel, optionChediak);*/
 
 	myApp.viewer = new LSViewer($("#canvas_container")[0]);
-
+	
 	$.subscribe('MainMenuView-render', function(el) {
 		// Edit notes on view
 		var cursorNoteController = initCursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow');
