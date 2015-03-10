@@ -211,9 +211,10 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	 * @param  {[type]} beat    [description]
 	 * @return {[type]}         [description]
 	 */
-	NoteManager.prototype._getIndexAndCurBeat = function(curBeat,beat) {
+	NoteManager.prototype._getIndexAndCurBeat = function(beat) {
 		var i = 0,
-		curNote;
+		curNote,
+		curBeat = 1;
 		//we round in the comparison in order to not carry the rounding in curBeat (which is cumulative inside the iteration)
 		while (roundBeat(curBeat) < beat) { //to avoid problems with tuplet 
 			curNote = this.getNote(i);
@@ -233,16 +234,13 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	 * closest note just after a given beat
 	 * @param  {float} beat global beat (first beat starts at 1, not 0)
 	 * @return {Integer} index of the note
+	 * TODO: optimisation: accept object with cached index and beat to start from, useful when function is called in loops (iterator) 
 	 */
-	NoteManager.prototype.getNextIndexNoteByBeat = function(beat, startBeat) {
+	NoteManager.prototype.getNextIndexNoteByBeat = function(beat) {
 		if (isNaN(beat) || beat < 1) {
 			throw 'NoteManager - getNextIndexNoteByBeat - beat must be a positive integer ' + beat;
 		}
-		if (beat < startBeat){
-			throw "NoteManager - getNextIndexNoteByBeat - startBeat (from which we start counting) cannot be greater than beat parameter";
-		}
-		var curBeat = startBeat || 1;
-		return this._getIndexAndCurBeat(curBeat,beat).index;
+		return this._getIndexAndCurBeat(beat).index;
 	};
 
 
@@ -256,8 +254,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		if (isNaN(beat) || beat < 0) {
 			throw 'NoteManager - getPrevIndexNoteByBeat - beat must be a positive integer ' + beat;
 		}
-		var curBeat = 1;
-		var r = this._getIndexAndCurBeat(curBeat,beat);
+		var r = this._getIndexAndCurBeat(beat);
 
 		return (r.curBeat === beat ) ? r.index : r.index - 1;
 	};
