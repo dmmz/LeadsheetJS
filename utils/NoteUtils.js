@@ -8,7 +8,7 @@ define(function() {
 		0.5: "8",
 		0.25: "16",
 		0.125: "32",
-		0.675: "64"
+		0.0625: "64"
 	};
 
 	NoteUtils.getStringFromBeatDuration = function(beat) {
