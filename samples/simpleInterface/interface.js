@@ -79,8 +79,8 @@ define(function(require) {
 	var ChordEditionView = require('modules/ChordEdition/src/ChordEditionView');
 	var ChordEditionController = require('modules/ChordEdition/src/ChordEditionController');
 
-	var BarEditionView = require('modules/BarEdition/src/BarEditionView');
-	var BarEditionController = require('modules/BarEdition/src/BarEditionController');
+	var StructureEditionView = require('modules/StructureEdition/src/StructureEditionView');
+	var StructureEditionController = require('modules/StructureEdition/src/StructureEditionController');
 
 	var FileEditionView = require('modules/FileEdition/src/FileEditionView');
 	var FileEditionController = require('modules/FileEdition/src/FileEditionController');
@@ -147,7 +147,7 @@ define(function(require) {
 		initChordSequenceModule(songModel, optionChediak);*/
 
 	myApp.viewer = new LSViewer($("#canvas_container")[0]);
-	
+
 	$.subscribe('MainMenuView-render', function(el) {
 		// Edit notes on view
 		var cursorNoteController = initCursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow');
@@ -175,8 +175,8 @@ define(function(require) {
 		var cC = new ConstraintController(cM, cV);
 
 		// Edit bars menu
-		var beV = new BarEditionView();
-		var beC = new BarEditionController(songModel, cursorNoteController.model, beV);
+		var beV = new StructureEditionView();
+		var beC = new StructureEditionController(songModel, cursorNoteController.model, beV);
 
 		// Edit files menu
 		var feV = new FileEditionView();
@@ -200,7 +200,7 @@ define(function(require) {
 					});
 					beV.render(undefined, true, function() {
 						menuM.addMenu({
-							title: 'Bars',
+							title: 'Structure',
 							view: beV
 						});
 						menuC.activeMenu('Notes');

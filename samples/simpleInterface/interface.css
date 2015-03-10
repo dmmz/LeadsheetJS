@@ -433,6 +433,9 @@ body {
 #edit_bars_second_level select {
 	width: auto !important;
 }
+#edit_bars_second_level input {
+	width: auto !important;
+}
 
 /********* EDITOR ***********/
 #editor_menu_second_level > div {

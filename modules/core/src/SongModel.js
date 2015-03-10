@@ -194,7 +194,12 @@ define([
 	SongModel.prototype.addSection = function(sectionsItem) {
 		this.sections.push(sectionsItem);
 	};
-
+	SongModel.prototype.removeSection = function(sectionIndex) {
+		if (typeof sectionIndex === "undefined" || isNaN(sectionIndex) || sectionIndex < 0) {
+			throw "SongModel - removeSection - invalid sectionIndex " + sectionIndex;
+		}
+		this.sections.splice(sectionIndex, 1);
+	};
 
 	/**
 	 * gets component (either chords or notes)

@@ -2,14 +2,15 @@ define([
 	'mustache',
 	'modules/Cursor/src/CursorModel',
 	'modules/core/src/SongModel',
+	'modules/core/src/SectionModel',
 	'modules/core/src/BarModel',
 	'modules/core/src/NoteManager',
 	'modules/core/src/NoteModel',
 	'utils/UserLog',
 	'pubsub',
-], function(Mustache, CursorModel, SongModel, BarModel, NoteManager, NoteModel, UserLog, pubsub) {
+], function(Mustache, CursorModel, SongModel, SectionModel, BarModel, NoteManager, NoteModel, UserLog, pubsub) {
 
-	function BarEditionController(songModel, cursor, view) {
+	function StructureEditionController(songModel, cursor, view) {
 		this.songModel = songModel || new SongModel();
 		this.cursor = cursor || new CursorModel();
 		this.view = view;
@@ -19,43 +20,108 @@ define([
 	/**
 	 * Subscribe to view events
 	 */
-	BarEditionController.prototype.initSubscribe = function() {
+	StructureEditionController.prototype.initSubscribe = function() {
 		var self = this;
-		$.subscribe('BarEditionView-addBar', function(el) {
+		$.subscribe('StructureEditionView-addSection', function(el) {
+			self.addSection();
+		});
+		$.subscribe('StructureEditionView-removeSection', function(el) {
+			self.removeSection();
+		});
+		$.subscribe('StructureEditionView-sectionName', function(el, name) {
+			self.setSectionName();
+		});
+		$.subscribe('StructureEditionView-addBar', function(el) {
 			self.addBar();
 		});
-		$.subscribe('BarEditionView-removeBar', function(el) {
+		$.subscribe('StructureEditionView-removeBar', function(el) {
 			self.removeBar();
 		});
-		$.subscribe('BarEditionView-timeSignature', function(el, timeSignature) {
+		$.subscribe('StructureEditionView-timeSignature', function(el, timeSignature) {
 			self.timeSignature(timeSignature);
 		});
-		$.subscribe('BarEditionView-tonality', function(el, tonality) {
+		$.subscribe('StructureEditionView-tonality', function(el, tonality) {
 			self.tonality(tonality);
 		});
-		$.subscribe('BarEditionView-ending', function(el, ending) {
+		$.subscribe('StructureEditionView-ending', function(el, ending) {
 			self.ending(ending);
 		});
-		$.subscribe('BarEditionView-style', function(el, style) {
+		$.subscribe('StructureEditionView-style', function(el, style) {
 			self.style(style);
 		});
-		$.subscribe('BarEditionView-label', function(el, label) {
+		$.subscribe('StructureEditionView-label', function(el, label) {
 			self.label(label);
 		});
-		$.subscribe('BarEditionView-sublabel', function(el, sublabel) {
+		$.subscribe('StructureEditionView-sublabel', function(el, sublabel) {
 			self.subLabel(sublabel);
 		});
-		$.subscribe('BarEditionView-activeView', function(el) {
+		$.subscribe('StructureEditionView-activeView', function(el) {
 			self.changeEditMode(true);
 			myApp.viewer.draw(self.songModel);
 		});
-		$.subscribe('BarEditionView-unactiveView', function(el) {
+		$.subscribe('StructureEditionView-unactiveView', function(el) {
 			self.changeEditMode(false);
 		});
 	};
 
 
-	BarEditionController.prototype.addBar = function() {
+	StructureEditionController.prototype.addSection = function() {
+		/*var selBars = this._getSelectedBars();
+		if (selBars.length !== 0) {
+			return;
+		}*/
+		var numberOfBarsToCreate = 2;
+		var barManager = this.songModel.getComponent('bars');
+
+		// clone last bar
+		var indexLastBar = barManager.getTotal() - 1;
+		var newBar = barManager.getBar(indexLastBar).clone();
+
+		// now we add bar to this section and fill them with silence
+		var noteManager = this.songModel.getComponent('notes');
+		var indexLastNote = noteManager.getTotal() - 1;
+		var initBeat = noteManager.getNoteBeat(indexLastNote);
+		var beatDuration = this.songModel.getTimeSignatureAt(indexLastBar).getQuarterBeats();
+
+		for (var i = 0; i < numberOfBarsToCreate; i++) {
+			barManager.addBar(newBar);
+			noteManager.fillGapWithRests(beatDuration, initBeat);
+			initBeat += beatDuration;
+		}
+		var section = new SectionModel({
+			'numberOfBars': numberOfBarsToCreate
+		});
+		this.songModel.addSection(section);
+		myApp.viewer.draw(this.songModel);
+	};
+
+	StructureEditionController.prototype.removeSection = function() {
+		var selBars = this._getSelectedBars();
+		if (selBars.length === 0) {
+			return;
+		}
+		var sectionNumber = this.songModel.getSectionNumberFromBarNumber(selBars[0]);
+
+		var startBar = this.songModel.getStartBarNumberFromSectionNumber(sectionNumber);
+		var numberOfBars = this.songModel.getSection(sectionNumber).getNumberOfBars();
+
+		var barManager = this.songModel.getComponent('bars');
+		var noteManager = this.songModel.getComponent('notes');
+		var notes;
+		for (var i = 0; i < numberOfBars; i++) {
+			notes = noteManager.getNotesAtBarNumber(startBar, this.songModel);
+			for (var j = 0, c = notes.length; c < j; j++) {
+				noteManager.removeNote(noteManager.getNoteIndex(notes[j]));
+			}
+			barManager.removeBar(startBar); // each time we remove index move so we don't need to sum startBar with i
+		}
+		this.songModel.removeSection(sectionNumber);
+		myApp.viewer.draw(this.songModel);
+	};
+
+	StructureEditionController.prototype.sectionName = function() {};
+
+	StructureEditionController.prototype.addBar = function() {
 		var selBars = this._getSelectedBars();
 		var numBar = 0;
 		if (selBars.length !== 0) {
@@ -78,13 +144,13 @@ define([
 			beatDuration = beatDuration - 1;
 		}
 		//insert those silences
-		newBarNm.fillGapWithRests(beatDuration);
+		newBarNm.fillGapWithRests(beatDuration, numBeat);
 
 		//add bar to barManager
 		var barManager = this.songModel.getComponent('bars');
 		var newBar = barManager.getBar(numBar).clone();
 		barManager.addBar(newBar);
-		var s = new NoteModel("E/4-q");
+		//var s = new NoteModel("E/4-q");
 		/*console.log(JSON.stringify(s));
 		s.setRest(true);
 		console.log(JSON.stringify(s));
@@ -104,7 +170,7 @@ define([
 		myApp.viewer.draw(this.songModel);
 	};
 
-	BarEditionController.prototype.removeBar = function() {
+	StructureEditionController.prototype.removeBar = function() {
 		var selBars = this._getSelectedBars();
 		if (selBars.length === 0) {
 			return;
@@ -146,7 +212,7 @@ define([
 		myApp.viewer.draw(this.songModel);
 	};
 
-	BarEditionController.prototype.timeSignature = function(timeSignature) {
+	StructureEditionController.prototype.timeSignature = function(timeSignature) {
 		var selBars = this._getSelectedBars();
 		if (selBars.length === 0) {
 			return;
@@ -163,7 +229,7 @@ define([
 		myApp.viewer.draw(this.songModel);
 	};
 
-	BarEditionController.prototype._checkDuration = function(durBefore, durAfter) {
+	StructureEditionController.prototype._checkDuration = function(durBefore, durAfter) {
 		function checkIfBreaksTuplet(initBeat, endBeat, nm) {
 			/**
 			 * means that is a 0.33333 or something like that
@@ -199,7 +265,7 @@ define([
 		nm.reviseNotes();
 	};
 
-	BarEditionController.prototype.tonality = function(tonality) {
+	StructureEditionController.prototype.tonality = function(tonality) {
 		var selBars = this._getSelectedBars();
 		if (selBars.length === 0) {
 			return;
@@ -210,7 +276,7 @@ define([
 		myApp.viewer.draw(this.songModel);
 	};
 
-	BarEditionController.prototype.ending = function(ending) {
+	StructureEditionController.prototype.ending = function(ending) {
 		var selBars = this._getSelectedBars();
 		if (selBars.length === 0) {
 			return;
@@ -224,7 +290,7 @@ define([
 		myApp.viewer.draw(this.songModel);
 	};
 
-	BarEditionController.prototype.style = function(style) {
+	StructureEditionController.prototype.style = function(style) {
 		var selBars = this._getSelectedBars();
 		if (selBars.length === 0) {
 			return;
@@ -238,7 +304,7 @@ define([
 		myApp.viewer.draw(this.songModel);
 	};
 
-	BarEditionController.prototype.label = function(label) {
+	StructureEditionController.prototype.label = function(label) {
 		var selBars = this._getSelectedBars();
 		if (selBars.length === 0) {
 			return;
@@ -252,7 +318,7 @@ define([
 		myApp.viewer.draw(this.songModel);
 	};
 
-	BarEditionController.prototype.subLabel = function(sublabel) {
+	StructureEditionController.prototype.subLabel = function(sublabel) {
 		var selBars = this._getSelectedBars();
 		if (selBars.length === 0) {
 			return;
@@ -266,16 +332,16 @@ define([
 		myApp.viewer.draw(this.songModel);
 	};
 
-	BarEditionController.prototype._getSelectedBars = function() {
+	StructureEditionController.prototype._getSelectedBars = function() {
 		var selectedBars = [];
 		selectedBars[0] = this.songModel.getComponent('notes').getNoteBarNumber(this.cursor.getStart(), this.songModel);
 		selectedBars[1] = this.songModel.getComponent('notes').getNoteBarNumber(this.cursor.getEnd(), this.songModel);
 		return selectedBars;
 	};
 
-	BarEditionController.prototype.changeEditMode = function(isEditable) {
+	StructureEditionController.prototype.changeEditMode = function(isEditable) {
 		this.cursor.setEditable(isEditable);
 	};
 
-	return BarEditionController;
+	return StructureEditionController;
 });
