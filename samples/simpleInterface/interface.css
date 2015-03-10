@@ -432,6 +432,7 @@ body {
 
 #edit_bars_second_level select {
 	width: auto !important;
+	margin: 0;
 }
 #edit_bars_second_level input {
 	width: auto !important;

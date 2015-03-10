@@ -31,6 +31,9 @@ define([
 		$.subscribe('StructureEditionView-sectionName', function(el, name) {
 			self.setSectionName(name);
 		});
+		$.subscribe('StructureEditionView-repeatTimes', function(el, repeatTimes) {
+			self.setRepeatTimes(repeatTimes);
+		});
 		$.subscribe('StructureEditionView-addBar', function(el) {
 			self.addBar();
 		});
@@ -141,6 +144,19 @@ define([
 		}
 		var sectionNumber = this.songModel.getSectionNumberFromBarNumber(selBars[0]);
 		this.songModel.getSection(sectionNumber).setName(name);
+		myApp.viewer.draw(this.songModel);
+	};
+
+	StructureEditionController.prototype.setRepeatTimes = function(repeatTimes) {
+		if (typeof repeatTimes === "undefined") {
+			return;
+		}
+		var selBars = this._getSelectedBars();
+		if (selBars.length === 0) {
+			return;
+		}
+		var sectionNumber = this.songModel.getSectionNumberFromBarNumber(selBars[0]);
+		this.songModel.getSection(sectionNumber).setRepeatTimes(repeatTimes);
 		myApp.viewer.draw(this.songModel);
 	};
 
