@@ -60,6 +60,11 @@ define([
 			var name = $('#inputSectionName').val();
 			$.publish('StructureEditionView-sectionName', name);
 		});
+		$('#selectSectionRepeatTimes').change(function() {
+			var repeatTimes = $(this).val();
+			$.publish('StructureEditionView-repeatTimes', repeatTimes);
+		});
+
 		$('#add-bar').click(function() {
 			$.publish('StructureEditionView-addBar');
 		});

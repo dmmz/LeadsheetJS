@@ -9,8 +9,13 @@ define(['vexflow'], function(Vex) {
 		//name section
 		if (sectionIt.getBarIndex() === 0) {
 			var nameSection = sectionIt.getSection().getName();
+			var repeatSection = sectionIt.getSection().getRepeatTimes();
+			var textRepeatSection = '';
+			if (repeatSection > 0) {
+				textRepeatSection += ' (x' + repeatSection + ')';
+			}
 			if (nameSection !== "") {
-				this.vexflowStave.setSection(nameSection, 9);
+				this.vexflowStave.setSection(nameSection + textRepeatSection, 9);
 			}
 		}
 

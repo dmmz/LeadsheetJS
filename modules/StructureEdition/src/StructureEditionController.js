@@ -29,7 +29,10 @@ define([
 			self.removeSection();
 		});
 		$.subscribe('StructureEditionView-sectionName', function(el, name) {
-			self.setSectionName();
+			self.setSectionName(name);
+		});
+		$.subscribe('StructureEditionView-repeatTimes', function(el, repeatTimes) {
+			self.setRepeatTimes(repeatTimes);
 		});
 		$.subscribe('StructureEditionView-addBar', function(el) {
 			self.addBar();
@@ -70,6 +73,8 @@ define([
 		if (selBars.length !== 0) {
 			return;
 		}*/
+
+		// TODO add section after current section position
 		var numberOfBarsToCreate = 2;
 		var barManager = this.songModel.getComponent('bars');
 
@@ -96,6 +101,10 @@ define([
 	};
 
 	StructureEditionController.prototype.removeSection = function() {
+		if (this.songModel.getSections().length === 1) {
+			UserLog.logAutoFade('error', "You can't delete last section");
+			return;
+		}
 		var selBars = this._getSelectedBars();
 		if (selBars.length === 0) {
 			return;
@@ -110,16 +119,46 @@ define([
 		var notes;
 		for (var i = 0; i < numberOfBars; i++) {
 			notes = noteManager.getNotesAtBarNumber(startBar, this.songModel);
-			for (var j = 0, c = notes.length; c < j; j++) {
-				noteManager.removeNote(noteManager.getNoteIndex(notes[j]));
+			for (var j = notes.length - 1; j >= 0; j--) {
+				noteManager.deleteNote(noteManager.getNoteIndex(notes[j]));
 			}
 			barManager.removeBar(startBar); // each time we remove index move so we don't need to sum startBar with i
+
+		}
+		// check if cursor not outside
+		var indexLastNote = noteManager.getTotal() - 1;
+		if (this.cursor.getEnd() > indexLastNote) {
+			this.cursor.setPos(indexLastNote);
 		}
 		this.songModel.removeSection(sectionNumber);
 		myApp.viewer.draw(this.songModel);
 	};
 
-	StructureEditionController.prototype.sectionName = function() {};
+	StructureEditionController.prototype.setSectionName = function(name) {
+		if (typeof name === "undefined") {
+			return;
+		}
+		var selBars = this._getSelectedBars();
+		if (selBars.length === 0) {
+			return;
+		}
+		var sectionNumber = this.songModel.getSectionNumberFromBarNumber(selBars[0]);
+		this.songModel.getSection(sectionNumber).setName(name);
+		myApp.viewer.draw(this.songModel);
+	};
+
+	StructureEditionController.prototype.setRepeatTimes = function(repeatTimes) {
+		if (typeof repeatTimes === "undefined") {
+			return;
+		}
+		var selBars = this._getSelectedBars();
+		if (selBars.length === 0) {
+			return;
+		}
+		var sectionNumber = this.songModel.getSectionNumberFromBarNumber(selBars[0]);
+		this.songModel.getSection(sectionNumber).setRepeatTimes(repeatTimes);
+		myApp.viewer.draw(this.songModel);
+	};
 
 	StructureEditionController.prototype.addBar = function() {
 		var selBars = this._getSelectedBars();
@@ -129,8 +168,7 @@ define([
 		}
 
 		//get numBeat from first note of current bar
-		var numBeat = this.songModel.getStartBeatFromBarNumber(numBar) + 1;
-
+		var numBeat = this.songModel.getStartBeatFromBarNumber(numBar);
 		// get the index of that note
 		var nm = this.songModel.getComponent('notes');
 		var index = nm.getNextIndexNoteByBeat(numBeat);
@@ -139,26 +177,22 @@ define([
 		var beatDuration = this.songModel.getTimeSignatureAt(numBar).getQuarterBeats();
 		var newBarNm = new NoteManager(); //Create new Bar NoteManager
 		//if is first bar we add a note, otherwise there are inconsistencies with duration of a bar
+		var startBeat = 0;
 		if (numBar === 0) {
 			newBarNm.addNote(new NoteModel("E/4-q"));
 			beatDuration = beatDuration - 1;
+			startBeat = 1;
 		}
 		//insert those silences
-		newBarNm.fillGapWithRests(beatDuration, numBeat);
+		newBarNm.fillGapWithRests(beatDuration, startBeat);
 
 		//add bar to barManager
 		var barManager = this.songModel.getComponent('bars');
 		var newBar = barManager.getBar(numBar).clone();
 		barManager.addBar(newBar);
-		//var s = new NoteModel("E/4-q");
-		/*console.log(JSON.stringify(s));
-		s.setRest(true);
-		console.log(JSON.stringify(s));
-		console.log(JSON.stringify(new NoteModel("qr")));*/
 
-		// TODO bug to create rest note
-		//newBarNm.getNotes();
-		//nm.notesSplice([index, index - 1], newBarNm);
+		// console.log(nm.getNotes());
+		//nm.notesSplice([index, index - 1], newBarNm.getNotes());
 		nm.notesSplice([index, index - 1], [new NoteModel("E/4-q"), new NoteModel("E/4-q"), new NoteModel("E/4-q"), new NoteModel("E/4-q")]);
 
 		//increment the number of bars of current section
