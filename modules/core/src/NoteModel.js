@@ -67,12 +67,12 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 			this.pitchClass[0] = 'B';
 			this.octave[0] = '4';
 			var restPosition = string.indexOf("r");
-			if (restPosition == -1) {
+			if (restPosition === -1) {
 				this.duration = string;
 			} else {
 				this.duration = string.substr(0, restPosition);
+				this.isRest = true;
 			}
-			this.isRest = true;
 		}
 	};
 
