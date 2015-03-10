@@ -70,6 +70,8 @@ define([
 		if (selBars.length !== 0) {
 			return;
 		}*/
+
+		// TODO add section after current section position
 		var numberOfBarsToCreate = 2;
 		var barManager = this.songModel.getComponent('bars');
 
@@ -110,10 +112,16 @@ define([
 		var notes;
 		for (var i = 0; i < numberOfBars; i++) {
 			notes = noteManager.getNotesAtBarNumber(startBar, this.songModel);
-			for (var j = 0, c = notes.length; c < j; j++) {
-				noteManager.removeNote(noteManager.getNoteIndex(notes[j]));
+			for (var j = notes.length - 1; j >= 0; j--) {
+				noteManager.deleteNote(noteManager.getNoteIndex(notes[j]));
 			}
 			barManager.removeBar(startBar); // each time we remove index move so we don't need to sum startBar with i
+			
+		}
+		// check if cursor not outside
+		var indexLastNote = noteManager.getTotal()-1;
+		if(this.cursor.getEnd() > indexLastNote){
+			this.cursor.setPos(indexLastNote);
 		}
 		this.songModel.removeSection(sectionNumber);
 		myApp.viewer.draw(this.songModel);
