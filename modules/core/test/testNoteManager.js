@@ -1,9 +1,9 @@
-define(['modules/core/src/NoteManager', 
-		'modules/core/src/NoteModel',
-		'modules/core/src/SongModel',
-		'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
-		'tests/test-songs'
-		], function(NoteManager, NoteModel, SongModel, SongModel_CSLJson,testSongs) {
+define(['modules/core/src/NoteManager',
+	'modules/core/src/NoteModel',
+	'modules/core/src/SongModel',
+	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
+	'tests/test-songs'
+], function(NoteManager, NoteModel, SongModel, SongModel_CSLJson, testSongs) {
 	return {
 		run: function() {
 			test("NoteManager", function(assert) {
@@ -24,10 +24,10 @@ define(['modules/core/src/NoteManager',
 					});
 				}
 
-				function managingMelodies (noteManager) {
-					
+				function managingMelodies(noteManager) {
+
 					//melody ["E/4","F/4","G/4","A/4","B/4"]
-					function createMelody (noteManager) {
+					function createMelody(noteManager) {
 						// insert notes in order
 						noteManager.addNote(new NoteModel({
 							pitchList: ["E/4"],
@@ -50,7 +50,7 @@ define(['modules/core/src/NoteManager',
 						noteManager.addNote(new NoteModel({
 							pitchList: ["B/4"],
 							duration: "16"
-						}));	
+						}));
 					}
 
 					createMelody(noteManager);
@@ -116,9 +116,10 @@ define(['modules/core/src/NoteManager',
 					testPitchList(noteManager, assert, ["E/4", "E/5", "F/5", "Gb/5"]);
 
 				}
-				function durationFunctions (noteManager) {
+
+				function durationFunctions(noteManager) {
 					// rhythm  q,8,16,16, triplet(q,q,q)
-					function createRhythmicMelody () {
+					function createRhythmicMelody() {
 						var rhythmicMelody = [];
 						rhythmicMelody.push(new NoteModel({
 							pitchList: ["F#/5"],
@@ -206,23 +207,19 @@ define(['modules/core/src/NoteManager',
 						tuplet: "stop",
 						timeModification: "3/2"
 					});
-					
-					assert.equal(noteManager.getNoteIndex(newNote), 5);
 
-					
 					assert.equal(noteManager.getNoteBeat(0), 1);
 					assert.equal(noteManager.getNoteBeat(1), 2);
 					assert.equal(noteManager.getNoteBeat(2), 2.75);
 					assert.equal(noteManager.getNoteBeat(3), 3);
 					assert.equal(noteManager.getNoteBeat(4).toFixed(3), 3.667);
 					assert.equal(noteManager.getNoteBeat(6), 5);
-					
 				}
 
-				function otherFunctions (noteManager,testSongs) {
+				function otherFunctions(noteManager, testSongs) {
 					var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
 					var noteMng = song.getComponent("notes");
-					var notes = noteMng.getNotesAtBarNumber(3,song);
+					var notes = noteMng.getNotesAtBarNumber(3, song);
 					// returned notes
 					// [
 					//	{ keys: ["a/4"], duration: "q" },
@@ -230,22 +227,22 @@ define(['modules/core/src/NoteManager',
 					//	{ keys: ["g/4"], duration: "q" },
 					//	{ keys: ["e/4"], duration: "q" }
 					// ]
-					assert.equal(notes[0].getPitch(),"A/4");
-					assert.equal(notes[1].getPitch(),"F/4");
-					assert.equal(notes[2].getPitch(),"G/4");
-					assert.equal(notes[3].getPitch(),"E/4");
-					
-					assert.equal(noteMng.getNoteBarNumber(0,song),0);
-					assert.equal(noteMng.getNoteBarNumber(1,song),0);
-					assert.equal(noteMng.getNoteBarNumber(2,song),0);
-					assert.equal(noteMng.getNoteBarNumber(3,song),0);
-					assert.equal(noteMng.getNoteBarNumber(4,song),0);
-					assert.equal(noteMng.getNoteBarNumber(5,song),1);
-					assert.equal(noteMng.getNoteBarNumber(6,song),1);
-					assert.equal(noteMng.getNoteBarNumber(7,song),1);
-					assert.equal(noteMng.getNoteBarNumber(8,song),1);
-					assert.equal(noteMng.getNoteBarNumber(9,song),2);
-					assert.equal(noteMng.getNoteBarNumber(10,song),2);
+					assert.equal(notes[0].getPitch(), "A/4");
+					assert.equal(notes[1].getPitch(), "F/4");
+					assert.equal(notes[2].getPitch(), "G/4");
+					assert.equal(notes[3].getPitch(), "E/4");
+
+					assert.equal(noteMng.getNoteBarNumber(0, song), 0);
+					assert.equal(noteMng.getNoteBarNumber(1, song), 0);
+					assert.equal(noteMng.getNoteBarNumber(2, song), 0);
+					assert.equal(noteMng.getNoteBarNumber(3, song), 0);
+					assert.equal(noteMng.getNoteBarNumber(4, song), 0);
+					assert.equal(noteMng.getNoteBarNumber(5, song), 1);
+					assert.equal(noteMng.getNoteBarNumber(6, song), 1);
+					assert.equal(noteMng.getNoteBarNumber(7, song), 1);
+					assert.equal(noteMng.getNoteBarNumber(8, song), 1);
+					assert.equal(noteMng.getNoteBarNumber(9, song), 2);
+					assert.equal(noteMng.getNoteBarNumber(10, song), 2);
 				}
 				var noteManager = new NoteManager();
 
