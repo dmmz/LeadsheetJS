@@ -180,10 +180,6 @@ define(['modules/core/src/NoteManager',
 						noteManager.getNextIndexNoteByBeat(0.5);
 					});
 					assert.equal(noteManager.getNextIndexNoteByBeat(1.8), 1);
-					assert.throws(function(){
-						assert.equal(noteManager.getNextIndexNoteByBeat(1.8,1.9), 1);	
-					});
-					assert.equal(noteManager.getNextIndexNoteByBeat(1.8,1.6), 1);
 					assert.equal(noteManager.getNextIndexNoteByBeat(3), 3);
 					assert.equal(noteManager.getNextIndexNoteByBeat(3.1), 4);
 					assert.equal(noteManager.getNextIndexNoteByBeat(4.9), 6);
