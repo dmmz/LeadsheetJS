@@ -182,45 +182,51 @@ define(function(require) {
 		var feV = new FileEditionView();
 		var feC = new FileEditionController(songModel, feV);
 
-
+		neV.render(undefined, true, function() {
+			menuM.addMenu({
+				title: 'Notes',
+				view: neV,
+				order: 2
+			});
+			menuC.activeMenu('Notes');
+		});
+		ceV.render(undefined, true, function() {
+			menuM.addMenu({
+				title: 'Chords',
+				view: ceV,
+				order: 3
+			});
+		});
+		beV.render(undefined, true, function() {
+			menuM.addMenu({
+				title: 'Structure',
+				view: beV,
+				order: 4
+			});
+		});
+		cV.render(undefined, false, function() {
+			menuM.addMenu({
+				title: 'Constraint',
+				view: cV,
+				order: 5
+			});
+			// menuC.activeMenu('Constraint');
+		});
+		hV.render(undefined, true, function() {
+			menuM.addMenu({
+				title: 'Harmonizer',
+				view: hV,
+				order: 6
+			});
+		});
 		feV.render(undefined, true, function() {
 			menuM.addMenu({
 				title: 'File',
-				view: feV
-			});
-			neV.render(undefined, true, function() {
-				menuM.addMenu({
-					title: 'Notes',
-					view: neV
-				});
-				ceV.render(undefined, true, function() {
-					menuM.addMenu({
-						title: 'Chords',
-						view: ceV
-					});
-					beV.render(undefined, true, function() {
-						menuM.addMenu({
-							title: 'Structure',
-							view: beV
-						});
-						menuC.activeMenu('Notes');
-						cV.render(undefined, false, function() {
-							menuM.addMenu({
-								title: 'Constraint',
-								view: cV
-							});
-							//menuC.activeMenu('Constraint');
-							hV.render(undefined, true, function() {
-								menuM.addMenu({
-									title: 'Harmonizer',
-									view: hV
-								});
-							});
-						});
-					});
-				});
+				view: feV,
+				order: 1
 			});
 		});
+
 		myApp.viewer.draw(songModel);
 	});
 
