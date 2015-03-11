@@ -161,6 +161,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 			console.warn("NoteManager - getNotesAtBarNumber - notes on bar " + barNumber + " do not fill the total bar duration" + (this.getTotalDuration() + 1) + ' ' + endBeat);
 			//throw "NoteManager - getNotesAtBarNumber - notes on bar " + barNumber + " do not fill the total bar duration" + (this.getTotalDuration() + 1) + ' ' + endBeat;
 		}
+
 		return this.getNotes(
 			this.getNextIndexNoteByBeat(startBeat),
 			this.getNextIndexNoteByBeat(endBeat)
@@ -206,29 +207,42 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		endBeat = roundBeat(endBeat);
 		return [startBeat, endBeat];
 	};
-
 	/**
-	 * Returns the index found at the exact beat, and if not, at the
+	 * abstraction of code used by both getNextIndexNoteByBeat and getPrevIndexNoteByBeat
+	 * @param  {} curBeat [description]
+	 * @param  {[type]} beat    [description]
+	 * @return {[type]}         [description]
+	 */
+	NoteManager.prototype._getIndexAndCurBeat = function(beat) {
+		var i = 0,
+		curNote,
+		curBeat = 1;
+		//we round in the comparison in order to not carry the rounding in curBeat (which is cumulative inside the iteration)
+		while (roundBeat(curBeat) < beat) { //to avoid problems with tuplet 
+			curNote = this.getNote(i);
+			if (curNote === undefined) {
+				throw 'NoteManager - getNextIndexNoteByBeat - Note not found (possibly beat is greater than last note beat)';
+			}
+			curBeat += curNote.getDuration();
+			i++;
+		}
+		return {
+			index: i,
+			curBeat: curBeat
+		};
+	};
+	/**
+	 * Returns the index of the note found at the exact beat, and if not, at the
 	 * closest note just after a given beat
 	 * @param  {float} beat global beat (first beat starts at 1, not 0)
 	 * @return {Integer} index of the note
+	 * TODO: optimisation: accept object with cached index and beat to start from, useful when function is called in loops (iterator) 
 	 */
 	NoteManager.prototype.getNextIndexNoteByBeat = function(beat) {
 		if (isNaN(beat) || beat < 1) {
 			throw 'NoteManager - getNextIndexNoteByBeat - beat must be a positive integer ' + beat;
 		}
-		var curBeat = 1;
-		var i = 0;
-		//we round in the comparison in order to not carry the rounding in curBeat (which is cumulative inside the iteration)
-		while (roundBeat(curBeat) < beat) { //to avoid problems with tuplet 
-			/*if (typeof this.getNote(i) === "undefined") {
-				return i - 1;
-				// throw 'NoteManager - getNextIndexNoteByBeat - Not found';
-			}*/
-			curBeat += this.getNote(i).getDuration();
-			i++;
-		}
-		return i;
+		return this._getIndexAndCurBeat(beat).index;
 	};
 
 
@@ -242,14 +256,9 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		if (isNaN(beat) || beat < 0) {
 			throw 'NoteManager - getPrevIndexNoteByBeat - beat must be a positive integer ' + beat;
 		}
-		var curBeat = 1;
-		var i = 0;
-		//round just like in getNtextIndexNote
-		while (roundBeat(curBeat) < beat) {
-			curBeat += this.getNote(i).getDuration();
-			i++;
-		}
-		return i - 1;
+		var r = this._getIndexAndCurBeat(beat);
+
+		return (r.curBeat === beat ) ? r.index : r.index - 1;
 	};
 
 	/**
