@@ -32,7 +32,10 @@ define([
 			}
 			this.menuList.push(menu);
 			this.sortMenu();
-			$.publish('MainMenuModel-addMenu', menu);
+			window.clearTimeout(this.eventOptimizer);
+			this.eventOptimizer = window.setTimeout(function() {
+				$.publish('MainMenuModel-addMenu', menu);
+			}, 10);
 		} else {
 			console.warn('MainMenuModel - addMenu - menu ' + menu.title + ' already exist');
 		}
