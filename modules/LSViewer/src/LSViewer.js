@@ -27,12 +27,11 @@ define([
 			canvas[0].width = width;
 			canvas[0].height = height;
 			canvas.appendTo(divContainer);
+			var divCss = {textAlign: "center"};
 			if (canvas[0].height > divContainer.height()) {
-				divContainer.css({
-					overflowY: "scroll",
-					textAlign: "center"
-				});
+				divCss.overflowY = "scroll";
 			}
+			divContainer.css(divCss);
 			return canvas[0];
 		};
 		/**

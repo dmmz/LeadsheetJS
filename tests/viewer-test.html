@@ -4,31 +4,27 @@
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 	<link rel="stylesheet" href="/external-libs/qunit/qunit.css">
 	<style type="text/css">
-    div.testcanvas {
-      font-family: Arial, sans-serif;
-      font-size: 18px;
-      padding: 10px;
-      color: #554;
+    body{
+      font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+      font-size:12px;
     }
-
-    div.testcanvas .vex-tabdiv {
-      background: #eed;
-      padding: 10px;
-      border: 10px solid #ddc;
+    ul{
+      list-style-type: none;
+      width:80%;
     }
-
-    div.testcanvas .name {
-      font-family: Arial, sans-serif;
-      font-size: 18px;
-      padding: 10px;
-      color: #554;
+    li{
+      background-color: #DDD;
+      padding:5px;
     }
 	</style>
 </head>
+
 <body>
-	
-    <div id="test1"></div>
-    <div id="test2"></div>
+  <div id="tests"></div>
+  <div id="constructor-test">
+    <div id="ls1" style="border:1px solid;width:500px;height:500px;"></div>
+    <div id="ls2" style="border:1px solid;width:500px;height:500px;"></div>
+  </div>
     
 	<script data-main="viewer-test.js" src="../external-libs/require.js"></script>
 </body>
