@@ -128,11 +128,13 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	};
 
 	/**
+	 * FUNCTION DOES NOT WORK AS EXPECTED
 	 * @param  {NoteModel} note
 	 * @return {Integer}
 	 */
 	NoteManager.prototype.getNoteIndex = function(note) {
 		if (typeof note !== "undefined" && note instanceof NoteModel) {
+			console.warn('getNoteIndex does not work as expected');
 			for (var i = 0; i < this.notes.length; i++) {
 				if (JSON.stringify(this.notes[i].serialize(true)) === JSON.stringify(note.serialize(true))) {
 					return i;

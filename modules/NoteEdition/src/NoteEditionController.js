@@ -348,13 +348,9 @@ define([
 			myApp.viewer.draw(this.songModel);
 			return;
 		}
-		var notesInNewBar = noteManager.getNotesAtBarNumber(barNum + inc, this.songModel);
-
-		if (notesInNewBar.length === 0) {
-			// case it's last bar
-			notesInNewBar = noteManager.getNotesAtBarNumber(barNum, this.songModel);
-		}
-		var indexFirstNoteInNewBar = noteManager.getNoteIndex(notesInNewBar[0]);
+		
+		var startBeat = this.songModel.getStartBeatFromBarNumber(barNum + inc);
+		var indexFirstNoteInNewBar = noteManager.getNextIndexNoteByBeat(startBeat);
 
 		this.cursor.setPos(indexFirstNoteInNewBar);
 		myApp.viewer.draw(this.songModel);
