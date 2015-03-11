@@ -79,7 +79,7 @@ define(['modules/core/src/NoteManager',
 
 					assert.throws(function() {
 						noteManager.deleteNote();
-					});
+					}, 'Delete note');
 
 					//undo both inserts
 					noteManager.deleteNote(1);
@@ -159,8 +159,8 @@ define(['modules/core/src/NoteManager',
 					}
 					noteManager.setNotes(createRhythmicMelody());
 					assert.throws(function() {
-						noteManager.getNoteBeat(7)
-					});
+						noteManager.getNoteBeat(7);
+					}, 'Get Note beat');
 					assert.equal(noteManager.getNoteBeat(0), 1);
 					assert.equal(noteManager.getNoteBeat(1), 2);
 					assert.equal(noteManager.getNoteBeat(2), 2.75);
@@ -194,7 +194,7 @@ define(['modules/core/src/NoteManager',
 					});
 					assert.throws(function() {
 						noteManager.getNextIndexNoteByBeat(6.1); //exceeds last beat
-					});
+					}, 'getNextIndexNoteByBeat last beat must throw error');
 					assert.equal(noteManager.getNextIndexNoteByBeat(2), 1);
 					assert.equal(noteManager.getPrevIndexNoteByBeat(2), 1);
 					assert.equal(noteManager.getPrevIndexNoteByBeat(2.2), 1);
