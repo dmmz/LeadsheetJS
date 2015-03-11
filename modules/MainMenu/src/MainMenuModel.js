@@ -27,12 +27,30 @@ define([
 			throw 'MainMenuModel - addMenu - menu is undefined' + menu;
 		}
 		if (this.hasMenu(menu.title) === false) {
+			if (typeof menu.order === "undefined") {
+				menu.order = this.menuList.length + 1;
+			}
 			this.menuList.push(menu);
+			this.sortMenu();
 			$.publish('MainMenuModel-addMenu', menu);
 		} else {
 			console.warn('MainMenuModel - addMenu - menu ' + menu.title + ' already exist');
 		}
 	};
+
+	MainMenuModel.prototype.sortMenu = function() {
+		this.menuList.sort(function(a, b) {
+			if (a.order > b.order) {
+				return 1;
+			}
+			if (a.order < b.order) {
+				return -1;
+			}
+			// a doit être égale à b
+			return 0;
+		});
+	};
+
 
 	MainMenuModel.prototype.hasMenu = function(menuTitle) {
 		if (typeof menuTitle === "") {

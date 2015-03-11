@@ -35,7 +35,9 @@ define([
 	MainMenuView.prototype.initSubscribe = function() {
 		var self = this;
 		$.subscribe('MainMenuModel-addMenu', function(el, menu) {
-			self.addMenu(menu);
+			// we rebuild everything to take into account the order
+			self.removeMenu();
+			self.buildMenu();
 		});
 		$.subscribe('MainMenuModel-removeMenu', function(el, menu) {
 			self.removeMenu(menu);
@@ -60,23 +62,26 @@ define([
 		$('#main_menu_first_level').html();
 		$('#main_menu_second_level').html();
 		var currentMenu = this.model.getCurrentMenu();
-		var className = '';
+		var currentMenuIndex = -1;
+		if (typeof currentMenu !== "undefined") {
+			currentMenuIndex = this.model.searchMenuIndex(currentMenu.title);
+		}
+		var firstClassName = '';
+		var secondStyle = '';
 		var menu;
 		for (var i = 0, c = this.model.getMenuLength(); i < c; i++) {
 			menu = this.model.getMenu(i);
-			if (i === currentMenu) {
-				className = 'class="' + this.selectedClassName;
+			secondStyle = ' style="display:none"';
+			firstClassName = '';
+			if (i === currentMenuIndex) {
+				firstClassName = this.selectedClassName;
+				secondStyle = '';
 			}
-			first_level += '<div id="' + menu.title + '_first_level" class="first_level main_menu_item" ' + className + ' data-menuTitle="' + menu.title + '">' + menu.title + '</div>';
-			second_level += '<div id="' + menu.title + '_second_level" class="second_level" data-menuTitle="' + menu.title + '">' + menu.view.el + '</div>';
+			first_level += '<div id="' + menu.title + '_first_level" class="first_level main_menu_item ' + firstClassName + '" data-menuTitle="' + menu.title + '">' + menu.title + '</div>';
+			second_level += '<div id="' + menu.title + '_second_level" class="second_level" data-menuTitle="' + menu.title + '"' + secondStyle + '>' + menu.view.el + '</div>';
 		}
-	};
-
-	MainMenuView.prototype.addMenu = function(menu) {
-		$('#main_menu_first_level').append('<div id="' + menu.title + '_first_level" class="first_level main_menu_item" data-menuTitle="' + menu.title + '">' + menu.title + '</div>');
-		var secondLevelItem = '<div id="' + menu.title + '_second_level" class="second_level" data-menuTitle="' + menu.title + '" style="display:none">' + menu.view.el + '</div>';
-		$('#main_menu_second_level').append(secondLevelItem);
-		menu.view.initController();
+		$('#main_menu_first_level').html(first_level);
+		$('#main_menu_second_level').html(second_level);
 	};
 
 	MainMenuView.prototype.removeMenu = function(menuTitle) {
