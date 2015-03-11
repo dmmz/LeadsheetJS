@@ -54,7 +54,12 @@ define([
 					if (evt.shiftKey) {
 						$.publish('CursorView-expandSelected' + self.id, inc);
 					} else {
-						$.publish('CursorView-moveCursor' + self.id, inc);
+						if (evt.ctrlKey) {
+							$.publish('CursorView-moveCursorByElement' + self.id, inc);
+						}
+						else{
+							$.publish('CursorView-moveCursor' + self.id, inc);
+						}
 					}
 					stopEvent(evt);
 				} else if (keyCode == 36) { //begin

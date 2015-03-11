@@ -71,8 +71,8 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 				this.duration = string;
 			} else {
 				this.duration = string.substr(0, restPosition);
-				this.isRest = true;
 			}
+			this.isRest = true;
 		}
 	};
 
@@ -278,9 +278,8 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 	};
 
 
-	NoteModel.prototype.serialize = function(complete, withNumMeasure) {
+	NoteModel.prototype.serialize = function(complete) {
 		if (complete === undefined) complete = true;
-		if (withNumMeasure === undefined) withNumMeasure = false;
 
 		var noteObj = {};
 		noteObj.pitchList = [];
@@ -294,8 +293,6 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		if (this.tuplet != null && complete) noteObj.tuplet = this.tuplet;
 		if (this.time_modification != null && complete) noteObj.time_modification = this.time_modification;
 		if (this.isRest) noteObj.duration += "r";
-
-		if (this.measure != null && withNumMeasure) noteObj.num_measure = this.measure;
 
 		return noteObj;
 	};

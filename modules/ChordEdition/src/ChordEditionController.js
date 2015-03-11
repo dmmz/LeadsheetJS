@@ -18,7 +18,7 @@ define([
 	 */
 	ChordEditionController.prototype.initSubscribe = function() {
 		var self = this;
-		$.subscribe('ChordEditionView-toggleChordVisibility', function(el) {
+		/*$.subscribe('ChordEditionView-toggleChordVisibility', function(el) {
 			self.toggleChordVisibility();
 		});
 		$.subscribe('ChordEditionView-deleteChord', function(el) {
@@ -29,7 +29,7 @@ define([
 		});
 		$.subscribe('ChordEditionView-toggleEditChord', function(el) {
 			self.toggleEditChord();
-		});
+		});*/
 		$.subscribe('ChordEditionView-copyChords', function(el) {
 			self.copyChords();
 		});
@@ -48,7 +48,7 @@ define([
 		});
 	};
 
-	ChordEditionController.prototype.toggleChordVisibility = function() {
+	/*ChordEditionController.prototype.toggleChordVisibility = function() {
 		console.log('toggleChordVisibility');
 		// editor.toggleChordVisibility();
 	};
@@ -62,7 +62,7 @@ define([
 	};
 	ChordEditionController.prototype.toggleEditChord = function() {
 		console.log('toggleEditChord');
-	};
+	};*/
 	ChordEditionController.prototype.copyChords = function() {
 		console.log('copyChords');
 		// self.run("copyChords");

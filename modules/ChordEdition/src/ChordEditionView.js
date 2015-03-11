@@ -52,7 +52,7 @@ define([
 	 */
 	ChordEditionView.prototype.initController = function() {
 		// Chords
-		$('#chord-visibility').click(function() {
+		/*$('#chord-visibility').click(function() {
 			$.publish('ChordEditionView-toggleChordVisibility');
 		});
 		$('#delete_chord').click(function() {
@@ -65,7 +65,7 @@ define([
 		// Selection
 		$('#edit_chord').click(function() {
 			$.publish('ChordEditionView-toggleEditChord');
-		});
+		});*/
 		$('#copy_chord').click(function() {
 			$.publish('ChordEditionView-copyChords');
 		});
@@ -100,13 +100,13 @@ define([
 
 			//Functions for Chords
 			if (self.isEditMode("chords")) {
-				if (keyCode == 32) { // space					
+				/*if (keyCode == 32) { // space					
 					$.publish('ChordEditionView-addChord');
 					stopEvent(evt);
 				} else if (keyCode == 46) { // delete
 					$.publish('ChordEditionView-deleteChord');
 					stopEvent(evt);
-				} else if (keyCode == 13) { //	enter
+				} else*/ if (keyCode == 13) { //	enter
 					$.publish('ChordEditionView-toggleEditChord');
 					stopEvent(evt);
 				} /*else if (keyCode == 9) { // tab
@@ -116,10 +116,10 @@ define([
 						$.publish('ChordEditionView-chordTabEvent', 1);
 					}
 					stopEvent(evt);
-				}*/ else if (keyCode == 86) { // V
+				}*/ /*else if (keyCode == 86) { // V
 					$.publish('ChordEditionView-toggleChordVisibility');
 					stopEvent(evt);
-				} else if (keyCode == 67 && evt.ctrlKey) { // Ctrl + c
+				}*/ else if (keyCode == 67 && evt.ctrlKey) { // Ctrl + c
 					$.publish('ChordEditionView-copyChords');
 					stopEvent(evt);
 				} else if (keyCode == 86 && evt.ctrlKey) { // Ctrl + v

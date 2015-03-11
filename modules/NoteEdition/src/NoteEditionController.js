@@ -27,14 +27,13 @@ define([
 			// Accidental contain as first argument the type of accidental (b,#,n) and as second argument true or false for double accidental
 			// Or it may contain a string
 			var acc = '';
-			if(accidental.hasOwnProperty('acc')){
+			if (accidental.hasOwnProperty('acc')) {
 				acc = accidental.acc;
-			}
-			else{
+			} else {
 				acc = accidental;
 			}
 			var doubleAccidental = false;
-			if(accidental.hasOwnProperty('double')){
+			if (accidental.hasOwnProperty('double')) {
 				doubleAccidental = accidental.double;
 			}
 			self.addAccidental(acc, doubleAccidental);
@@ -73,6 +72,11 @@ define([
 		$.subscribe('NoteEditionView-unactiveView', function(el) {
 			self.changeEditMode(false);
 		});
+		// cursor view subscribe
+		$.subscribe('CursorView-moveCursorByElementnotes', function(el, inc) {
+			self.moveCursorByBar(inc);
+		});
+
 	};
 
 	/**
@@ -332,6 +336,30 @@ define([
 		myApp.viewer.draw(this.songModel);
 	};
 
+	NoteEditionController.prototype.moveCursorByBar = function(inc) {
+		if (this.cursor.getEditable() === false) {
+			return;
+		}
+		var noteManager = this.songModel.getComponent('notes');
+		var barNum = noteManager.getNoteBarNumber(this.cursor.getPos()[0], this.songModel);
+
+		if (barNum === 0 && inc === -1) {
+			this.cursor.setPos(0);
+			myApp.viewer.draw(this.songModel);
+			return;
+		}
+		var notesInNewBar = noteManager.getNotesAtBarNumber(barNum + inc, this.songModel);
+
+		if (notesInNewBar.length === 0) {
+			// case it's last bar
+			notesInNewBar = noteManager.getNotesAtBarNumber(barNum, this.songModel);
+		}
+		var indexFirstNoteInNewBar = noteManager.getNoteIndex(notesInNewBar[0]);
+
+		this.cursor.setPos(indexFirstNoteInNewBar);
+		myApp.viewer.draw(this.songModel);
+	};
+
 	NoteEditionController.prototype.getSelectedNotes = function() {
 		var noteManager = this.songModel.getComponent('notes');
 		var selectedNotes = noteManager.getNotes(this.cursor.getStart(), this.cursor.getEnd() + 1);
@@ -379,6 +407,6 @@ define([
 	NoteEditionController.prototype.changeEditMode = function(isEditable) {
 		this.cursor.setEditable(isEditable);
 	};
-	
+
 	return NoteEditionController;
 });

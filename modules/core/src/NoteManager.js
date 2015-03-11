@@ -134,7 +134,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	NoteManager.prototype.getNoteIndex = function(note) {
 		if (typeof note !== "undefined" && note instanceof NoteModel) {
 			for (var i = 0; i < this.notes.length; i++) {
-				if (JSON.stringify(this.notes[i].serialize(true, true)) === JSON.stringify(note.serialize(true, true))) {
+				if (JSON.stringify(this.notes[i].serialize(true)) === JSON.stringify(note.serialize(true))) {
 					return i;
 				}
 			}
@@ -142,18 +142,20 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		return undefined;
 	};
 
+
 	NoteManager.prototype.getNotesAtBarNumber = function(barNumber, song) {
 		if (!song) {
 			throw "NoteManager - getNotesAtBarNumber - incorrect song parameter";
 		}
 
 		var startBeat = 1,
-			endBeat,
-			beats = song.getTimeSignature().getBeats();
+			endBeat;
+		/*	beats = song.getTimeSignature().getBeats();
 		for (var i = 0; i < barNumber; i++) {
 			startBeat += song.getTimeSignatureAt(i).getBeats();
-		}
-		endBeat = startBeat + song.getTimeSignatureAt(i).getBeats();
+		}*/
+		startBeat = song.getStartBeatFromBarNumber(barNumber);
+		endBeat = startBeat + song.getTimeSignatureAt(barNumber).getBeats();
 
 		if (this.getTotalDuration() + 1 < endBeat) {
 			console.warn("NoteManager - getNotesAtBarNumber - notes on bar " + barNumber + " do not fill the total bar duration" + (this.getTotalDuration() + 1) + ' ' + endBeat);
