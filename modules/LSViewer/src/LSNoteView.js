@@ -9,15 +9,19 @@ define(['vexflow', 'modules/converters/MusicCSLJson/src/NoteModel_CSLJson'], fun
 		 * @return {Vex.Flow.StaveNote}
 		 */
 		function createVexflowNote(note) {
-			var vexflowNote = new Vex.Flow.StaveNote(NoteModel_CSLJson.exportToMusicCSLJSON(note));
-			var i;
-			//var vexflowNote = new Vex.Flow.StaveNote({keys: ["c/4", "e/4", "g/4"], duration: "q" });
-			//control stem direction
+
+			var cslNote = NoteModel_CSLJson.exportToMusicCSLJSON(note);
+			if (note.isRest){
+				cslNote.keys[0] = "B/4";
+			}
+			var vexflowNote = new Vex.Flow.StaveNote(cslNote);
+			
 			if (parseInt(vexflowNote.keyProps[0].octave, null) >= 5) {
 				vexflowNote.setStemDirection(-1);
 			}
 
 			var accidental = [];
+			var i;
 			for (i = 0; i < note.numPitches; i++) {
 				accidental.push(note.getAccidental(i));
 			}
@@ -31,6 +35,7 @@ define(['vexflow', 'modules/converters/MusicCSLJson/src/NoteModel_CSLJson'], fun
 			if (dot) {
 				for (i = 0; i < dot; i++) vexflowNote.addDot(0);
 			}
+			//if (note.isRest)
 			return vexflowNote;
 		}
 

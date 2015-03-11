@@ -62,7 +62,7 @@ define([
 			params = params || {};
 			this.DEFAULT_HEIGHT = 1000;
 
-			this.SCALE = 0.9;
+			this.SCALE = 0.999;
 			this.NOTE_WIDTH = 20; /* estimated note width in order to be more flexible */
 			this.LINE_HEIGHT = 150;
 			this.LINE_WIDTH = 1160;

@@ -26,7 +26,7 @@ define(['tests/DisplayTester',
 					viewer.draw(song);
 				},
 				{width:1200,height:1000},
-				"Rhythmic figueres",
+				"Rhythmic figures",
 				[
 				'Globally: adapting bars per line to width',
 				'Bar 4: all figure durations',
