@@ -20,10 +20,10 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/model/PlayerModel_Mid
 						'song': midiSong
 					});
 
-					$.subscribe('PlayerModel_MidiCSL-onload', function(e) {
-						console.log('play');
+					/*$.subscribe('PlayerModel_MidiCSL-onload', function(e) {
+						// console.log('play');
 						// player.play(midiSongModel, 120);
-					});
+					});*/
 				});
 			}
 		};

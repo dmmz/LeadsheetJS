@@ -72,6 +72,7 @@ define(function(require) {
 	var HistoryController = require('modules/History/src/HistoryController');
 	var HistoryView = require('modules/History/src/HistoryView');
 
+	var NoteSpaceManager = require('modules/NoteEdition/src/NoteSpaceManager');
 	var NoteEditionView = require('modules/NoteEdition/src/NoteEditionView');
 	var NoteEditionController = require('modules/NoteEdition/src/NoteEditionController');
 
@@ -151,7 +152,8 @@ define(function(require) {
 	$.subscribe('MainMenuView-render', function(el) {
 		// Edit notes on view
 		var cursorNoteController = initCursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow');
-		myApp.viewer.addDrawableModel(cursorNoteController.view, 11);
+		var noteSpaceManager = new NoteSpaceManager(songModel, cursorNoteController.model);
+		//myApp.viewer.addDrawableModel(cursorNoteController.view, 11);
 
 		// Edit notes menu
 		var neV = new NoteEditionView();
