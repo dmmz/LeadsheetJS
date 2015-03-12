@@ -11,10 +11,10 @@ define(['tests/DisplayTester',
 			
 			//constructor functions
 			var songModel = SongModel_CSLJson.importFromMusicCSLJSON(AloneTogether);
-			var viewer = new LSViewer($('#ls1')[0],{typeResize: 'fluid'});
+			var viewer = new LSViewer($('#ls1'),{typeResize: 'fluid'});
 			viewer.draw(songModel);
 
-			var viewer2 = new LSViewer($('#ls2')[0],{typeResize: 'scale'});
+			var viewer2 = new LSViewer($('#ls2'),{typeResize: 'scale'});
 			viewer2.draw(songModel);
 			
 
@@ -40,7 +40,9 @@ define(['tests/DisplayTester',
 				song = SongModel_CSLJson.importFromMusicCSLJSON(AloneTogether);
 				viewer = new LSViewer(divContainer);
 				viewer.draw(song);
-			},{width:1200,height:1000},"Real song: AloneTogether");
+			},
+			{width:1200,height:1000},
+			"Real song: AloneTogether");
 
 		}
 	};
