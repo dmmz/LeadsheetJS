@@ -12,6 +12,11 @@ define([
 		this.cursor = cursor || new CursorModel();
 		this.noteSpace = [];
 		this.initSubscribe();
+
+		this.CURSORHEIGHT = 80;
+		this.CURSORMARGINTOP = 20;
+		this.CURSORMARGINLEFT = 4;
+		this.CURSORMARGINRIGHT = 8;
 	}
 
 	/**
@@ -32,7 +37,7 @@ define([
 				myApp.viewer.el.style.cursor = 'pointer';
 				//self.cursor.setPos(inPath);
 				//myApp.viewer.draw(self.songModel);
-			}else{
+			} else {
 				myApp.viewer.el.style.cursor = 'default';
 			}
 		});
@@ -80,10 +85,6 @@ define([
 		if (typeof viewer.vxfBars === "undefined") {
 			return;
 		}
-		var cursorHeight = 80;
-		var cursorMarginTop = 20;
-		var cursorMarginLeft = 4;
-		var cursorMarginRight = 8;
 		var xi, yi, xe, ye;
 		var area;
 		var scale = viewer.SCALE;
@@ -92,10 +93,10 @@ define([
 			currentNoteStaveY = currentNote.stave.y;
 			boundingBox = currentNote.getBoundingBox();
 			area = {
-				x: boundingBox.x - cursorMarginLeft,
-				y: currentNoteStaveY + cursorMarginTop,
-				xe: boundingBox.w + cursorMarginLeft + cursorMarginRight,
-				ye: cursorHeight
+				x: boundingBox.x - this.CURSORMARGINLEFT,
+				y: currentNoteStaveY + this.CURSORMARGINTOP,
+				xe: boundingBox.w + this.CURSORMARGINLEFT + this.CURSORMARGINRIGHT,
+				ye: this.CURSORHEIGHT
 			};
 			noteSpace.push(new NoteSpaceView(viewer, area));
 		}
@@ -108,37 +109,36 @@ define([
 	 * @param  {[Integer, Integer] } Array with initial position and end position
 	 * @return {Array of Objects}, Object in this form: {area.x, area.y, area.xe, area.ye}
 	 */
-	NoteSpaceManager.prototype.getNotesAreasFromCursor = function(cursor) {
+	NoteSpaceManager.prototype.getNotesAreasFromCursor = function(viewer, cursor) {
 		var areas = [];
 		var cInit = cursor[0];
 		var cEnd = cursor[1];
-		if (typeof this.vxfNotes[cInit] === "undefined") {
+		if (typeof viewer.vxfNotes[cInit] === "undefined") {
 			return areas;
 		}
-		var xi, yi, xe, ye;
-		ye = this.LINE_HEIGHT;
+		var xi, yi, xe;
 
 		var currentNote, currentNoteStaveY, nextNoteStaveY;
 		var firstNoteLine, lastNoteLine;
-		firstNoteLine = this.vxfNotes[cInit];
+		firstNoteLine = viewer.vxfNotes[cInit];
 		while (cInit <= cEnd) {
-			currentNote = this.vxfNotes[cInit];
+			currentNote = viewer.vxfNotes[cInit];
 			currentNoteStaveY = currentNote.stave.y;
-			if (typeof this.vxfNotes[cInit + 1] !== "undefined") {
-				nextNoteStaveY = this.vxfNotes[cInit + 1].stave.y;
+			if (typeof viewer.vxfNotes[cInit + 1] !== "undefined") {
+				nextNoteStaveY = viewer.vxfNotes[cInit + 1].stave.y;
 			}
 			if (currentNoteStaveY != nextNoteStaveY || cInit == cEnd) {
 				lastNoteLine = currentNote.getBoundingBox();
-				xi = firstNoteLine.getBoundingBox().x;
-				xe = lastNoteLine.x - xi + lastNoteLine.w;
+				xi = firstNoteLine.getBoundingBox().x - this.CURSORMARGINLEFT;
+				xe = lastNoteLine.x - xi + lastNoteLine.w + this.CURSORMARGINRIGHT;
 				areas.push({
 					x: xi,
-					y: currentNoteStaveY,
+					y: currentNoteStaveY + this.CURSORMARGINTOP,
 					xe: xe,
-					ye: ye
+					ye: this.CURSORHEIGHT
 				});
 				if (cInit != cEnd) {
-					firstNoteLine = this.vxfNotes[cInit + 1];
+					firstNoteLine = viewer.vxfNotes[cInit + 1];
 				}
 			}
 
@@ -153,13 +153,23 @@ define([
 		viewer.ctx.fillStyle = "#0099FF";
 		viewer.ctx.globalAlpha = 0.2;
 		var currentNoteSpace;
-		for (var i = position[0]; i <= position[1]; i++) {
-			currentNoteSpacePosition = this.noteSpace[i].position;
+		var areas = [];
+		if (position[0] === position[1]) {
+			areas.push({
+				x: this.noteSpace[position[0]].position.x,
+				y: this.noteSpace[position[0]].position.y,
+				xe: this.noteSpace[position[0]].position.xe,
+				ye: this.noteSpace[position[0]].position.ye
+			});
+		} else {
+			areas = this.getNotesAreasFromCursor(viewer, position);
+		}
+		for (i = 0, c = areas.length; i < c; i++) {
 			viewer.ctx.fillRect(
-				currentNoteSpacePosition.x,
-				currentNoteSpacePosition.y,
-				currentNoteSpacePosition.xe,
-				currentNoteSpacePosition.ye
+				areas[i].x,
+				areas[i].y,
+				areas[i].xe,
+				areas[i].ye
 			);
 		}
 		viewer.ctx.fillStyle = saveFillColor;
