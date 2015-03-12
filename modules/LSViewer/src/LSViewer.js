@@ -14,6 +14,7 @@ define([
 	function(Vex, LSNoteView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator, pubsub) {
 
 		function LSViewer(divContainer, params) {
+			this.el = divContainer;
 			this.init(divContainer, params);
 			this.drawableModel = [];
 			this.initController();
@@ -44,7 +45,7 @@ define([
 			$(this.canvas).click(function(evt) {
 				$.publish('LSViewer-click', getXandY($(self.canvas), evt));
 			});
-			$(this.canvas).mouseover(function(evt) {
+			$(this.canvas).mousemove(function(evt) {
 				$.publish('LSViewer-mouseover', getXandY($(self.canvas), evt));
 			});
 
@@ -62,7 +63,7 @@ define([
 			params = params || {};
 			this.DEFAULT_HEIGHT = 1000;
 
-			this.SCALE = 0.9;
+			this.SCALE = 0.999; // fix vexflow bug that doesn't draw last pixel on end bar
 			this.NOTE_WIDTH = 20; /* estimated note width in order to be more flexible */
 			this.LINE_HEIGHT = 150;
 			this.LINE_WIDTH = 1160;
@@ -95,7 +96,6 @@ define([
 			var viewerWidth = width || this.LINE_WIDTH;
 			this.LINE_WIDTH = viewerWidth;
 		};
-
 
 		/**
 		 * Add a model that contains a draw function, this function will be called in the draw function
@@ -133,50 +133,6 @@ define([
 					return 1;
 				return 0;
 			});
-		};
-
-		/**
-		 * Function return several areas to indicate which notes are selected, usefull for cursor or selection
-		 * @param  {[Integer, Integer] } Array with initial position and end position
-		 * @return {Array of Objects}, Object in this form: {area.x, area.y, area.xe, area.ye}
-		 */
-		LSViewer.prototype.getNotesAreasFromCursor = function(cursor) {
-			var areas = [];
-			var cInit = cursor[0];
-			var cEnd = cursor[1];
-			if (typeof this.vxfNotes[cInit] === "undefined") {
-				return areas;
-			}
-			var xi, yi, xe, ye;
-			ye = this.LINE_HEIGHT;
-
-			var currentNote, currentNoteStaveY, nextNoteStaveY;
-			var firstNoteLine, lastNoteLine;
-			firstNoteLine = this.vxfNotes[cInit];
-			while (cInit <= cEnd) {
-				currentNote = this.vxfNotes[cInit];
-				currentNoteStaveY = currentNote.stave.y;
-				if (typeof this.vxfNotes[cInit + 1] !== "undefined") {
-					nextNoteStaveY = this.vxfNotes[cInit + 1].stave.y;
-				}
-				if (currentNoteStaveY != nextNoteStaveY || cInit == cEnd) {
-					lastNoteLine = currentNote.getBoundingBox();
-					xi = firstNoteLine.getBoundingBox().x;
-					xe = lastNoteLine.x - xi + lastNoteLine.w;
-					areas.push({
-						x: xi,
-						y: currentNoteStaveY,
-						xe: xe,
-						ye: ye
-					});
-					if (cInit != cEnd) {
-						firstNoteLine = this.vxfNotes[cInit + 1];
-					}
-				}
-
-				cInit++;
-			}
-			return areas;
 		};
 
 		LSViewer.prototype._scale = function() {

@@ -82,6 +82,12 @@ define([
 		}
 		$('#main_menu_first_level').html(first_level);
 		$('#main_menu_second_level').html(second_level);
+
+		// init controller
+		for (i = 0, c = this.model.getMenuLength(); i < c; i++) {
+			menu = this.model.getMenu(i);
+			menu.view.initController();
+		}
 	};
 
 	MainMenuView.prototype.removeMenu = function(menuTitle) {
