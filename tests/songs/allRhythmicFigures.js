@@ -30,7 +30,7 @@ define(function(){
 						melody:
 						[
 								{ keys: ["g/4"], duration: "q"},
-								{ keys: ["f/4"], duration: "q"},
+								{ keys: ["f/4"], duration: "qr"},
 								{ keys: ["e/4"], duration: "q"},
 								{ keys: ["d/4"], duration: "q"}
 						]

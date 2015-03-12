@@ -62,7 +62,6 @@ define([
 		LSViewer.prototype.init = function(divContainer, params) {
 			params = params || {};
 			this.DEFAULT_HEIGHT = 1000;
-
 			this.SCALE = 0.999; // fix vexflow bug that doesn't draw last pixel on end bar
 			this.NOTE_WIDTH = 20; /* estimated note width in order to be more flexible */
 			this.LINE_HEIGHT = 150;
