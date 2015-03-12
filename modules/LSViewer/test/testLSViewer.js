@@ -11,7 +11,9 @@ define(['tests/DisplayTester',
 			
 			//constructor functions
 			var songModel = SongModel_CSLJson.importFromMusicCSLJSON(AloneTogether);
-			var viewer = new LSViewer($('#ls1'),{typeResize: 'fluid'});
+			
+
+			var viewer = new LSViewer($('#ls1'),{typeResize: 'fluid',heightOverflow: 'scroll'});
 			viewer.draw(songModel);
 
 			var viewer2 = new LSViewer($('#ls2'),{typeResize: 'scale'});
@@ -38,11 +40,19 @@ define(['tests/DisplayTester',
 		
 			dispTest.runTest(function(divContainer) {
 				song = SongModel_CSLJson.importFromMusicCSLJSON(AloneTogether);
-				viewer = new LSViewer(divContainer);
+				viewer = new LSViewer(divContainer,{heightOverflow:'scroll'});
 				viewer.draw(song);
 			},
 			{width:1200,height:1000},
-			"Real song: AloneTogether");
+			"Real song: AloneTogether scroll. div height is 1000 and canvas is larger, so it scrolls");
+
+			dispTest.runTest(function(divContainer) {
+				song = SongModel_CSLJson.importFromMusicCSLJSON(AloneTogether);
+				viewer = new LSViewer(divContainer,{heightOverflow:'resizeDiv'});
+				viewer.draw(song);
+			},
+			{width:1200,height:1000},
+			"Real song: AloneTogether resideDiv. Same canvas as previous test,  same div height (1000), but now div height is adapted");
 
 		}
 	};
