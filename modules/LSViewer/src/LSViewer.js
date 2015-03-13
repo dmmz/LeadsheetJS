@@ -14,6 +14,17 @@ define([
 	function(Vex, LSNoteView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator, pubsub) {
 
 
+
+		/**
+		 * [LSViewer description]
+		 * @param {domObject} jQuery divContainer ; e.g.: $("#divContainerId");
+		 * @param {Object} params 	possible params:
+		 *                        	- heightOverflow: "scroll" | "resizeDiv".
+		 *                        		If scroll, when canvas is larger than containing div, it will scroll, if not, it will change div width
+		 *                        	- typeResize: "scale" | "fluid",
+		 *                        		If scale, when canvas is wider than containing div, it will scale to fit; if "fluid" it will try to fit withouth scaling.
+		 *                        	//TODO: possibility of combining both (scale partially and then fluid)
+		 */
 		function LSViewer(divContainer, params) {
 			this.el = divContainer;
 			this.init(divContainer, params);
@@ -21,34 +32,19 @@ define([
 			this.initController();
 		}
 
-		/**
-		 * [LSViewer description]
-		 * @param {domObject} jQuery divContainer ; e.g.: $("#divContainerId");
-		 * @param {Object} params 	possible params:
-		 *                        	- heightOverflow: "scroll" | "resizeDiv". 
-		 *                        		If scroll, when canvas is larger than containing div, it will scroll, if not, it will change div width
-		 *                        	- typeResize: "scale" | "fluid", 
-		 *                        		If scale, when canvas is wider than containing div, it will scale to fit; if "fluid" it will try to fit withouth scaling.
-		 *                        	//TODO: possibility of combining both (scale partially and then fluid)
-		 */
-		function LSViewer(divContainer, params) {
-				this.init(divContainer, params);
-				this.drawableModel = [];
-				this.initController();
-			}
 			/**
 			 * Create and return a dom element
 			 */
-		LSViewer.prototype._createCanvas = function(idScore, width, height, divContainer) {
+		LSViewer.prototype._createCanvas = function(idScore, width, height) {
 			var canvas = $("<canvas id='" + idScore + "'></canvas>");
 			canvas[0].width = width;
 			canvas[0].height = height;
-			canvas.appendTo(divContainer);
+			canvas.appendTo(this.divContainer);
 			var divCss = {
 				textAlign: "center"
 			};
 
-			divContainer.css(divCss);
+			$(this.divContainer).css(divCss);
 			return canvas[0];
 		};
 
@@ -98,9 +94,9 @@ define([
 
 
 			var idScore = "ls" + ($("canvas").length + 1),
-				width = divContainer.width() * this.CANVAS_DIV_WIDTH_PROPORTION;
+				width = $(divContainer).width() * this.CANVAS_DIV_WIDTH_PROPORTION;
 
-			this.canvas = this._createCanvas(idScore, width, this.DEFAULT_HEIGHT, divContainer);
+			this.canvas = this._createCanvas(idScore, width, this.DEFAULT_HEIGHT);
 			var renderer = new Vex.Flow.Renderer(this.canvas, Vex.Flow.Renderer.Backends.CANVAS);
 			this.ctx = renderer.getContext("2d");
 
@@ -163,15 +159,15 @@ define([
 			//	this.ctx.translate(-(this.ctx.canvas.width * (1 -  this.SCALE)/2) , 0);
 			this.ctx.scale(1 / this.SCALE, 1 / this.SCALE);
 		};
-		LSViewer.prototype.setHeight = function(song,barWidthMng) {
+		LSViewer.prototype.setHeight = function(song, barWidthMng) {
 			var totalNumBars = song.getComponent("bars").getTotal();
 			this.canvas.height = (barWidthMng.getDimensions(totalNumBars - 1).top + this.LINE_HEIGHT) * this.SCALE;
-			if (this.canvas.height > this.divContainer.height() && this.heightOverflow == 'scroll') {
-				this.divContainer.css({
+			if (this.canvas.height > $(this.divContainer).height() && this.heightOverflow == 'scroll') {
+				$(this.divContainer).css({
 					overflowY: "scroll"
 				});
-			}else{
-				this.divContainer.height(this.canvas.height);
+			} else {
+				$(this.divContainer).height(this.canvas.height);
 			}
 
 		};
