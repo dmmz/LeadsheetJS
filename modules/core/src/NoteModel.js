@@ -66,6 +66,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 			}
 			this.pitchClass[0] = 'B';
 			this.octave[0] = '4';
+			this.accidental[0] = '';
 			var restPosition = string.indexOf("r");
 			if (restPosition === -1) {
 				this.duration = string;
@@ -292,7 +293,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		if (this.tie != null && complete) noteObj.tie = this.tie;
 		if (this.tuplet != null && complete) noteObj.tuplet = this.tuplet;
 		if (this.time_modification != null && complete) noteObj.time_modification = this.time_modification;
-		if (this.isRest) noteObj.duration += "r";
+		if (this.isRest) noteObj.isRest = this.isRest;
 
 		return noteObj;
 	};

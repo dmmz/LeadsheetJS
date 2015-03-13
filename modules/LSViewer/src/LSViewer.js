@@ -35,18 +35,21 @@ define([
 			divContainer.css(divCss);
 			return canvas[0];
 		};
+
 		/**
 		 * Publish event after receiving dom events
 		 */
 		LSViewer.prototype.initController = function() {
 			var self = this;
 
-
+			$(this.canvas).mousedown(function(evt) {
+				$.publish('LSViewer-mousedown', getXandY($(self.canvas), evt));
+			});
 			$(this.canvas).click(function(evt) {
 				$.publish('LSViewer-click', getXandY($(self.canvas), evt));
 			});
 			$(this.canvas).mousemove(function(evt) {
-				$.publish('LSViewer-mouseover', getXandY($(self.canvas), evt));
+				$.publish('LSViewer-mousemove', getXandY($(self.canvas), evt));
 			});
 
 			function getXandY(element, event) {
@@ -146,6 +149,7 @@ define([
 
 		LSViewer.prototype.draw = function(song) {
 			//console.time('whole draw');
+			
 			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 			this._scale();
 			var i, j, v, c;
