@@ -224,10 +224,10 @@ define([
 				section.setNumberOfBars(sectionNumberOfBars - 1);
 
 				// remove notes in bar
-				beatDuration = this.songModel.getTimeSignatureAt(selBars[i]).getQuarterBeats();
-				numBeat = this.songModel.getStartBeatFromBarNumber(selBars[i]) + 1;
+				beatDuration = this.songModel.getTimeSignatureAt(selBars[i]).getQuarterBeats() - 1; // I am not sure why we remove 1 here
+				numBeat = this.songModel.getStartBeatFromBarNumber(selBars[i]);
 				index = nm.getNextIndexNoteByBeat(numBeat);
-				index2 = nm.getPrevIndexNoteByBeat(numBeat + beatDuration);
+				index2 = nm.getNextIndexNoteByBeat(numBeat + beatDuration);
 				nm.notesSplice([index, index2], []);
 
 				// remove chords in bar
