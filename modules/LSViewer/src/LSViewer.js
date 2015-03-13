@@ -19,6 +19,7 @@ define([
 		 * [LSViewer description]
 		 * @param {domObject} jQuery divContainer ; e.g.: $("#divContainerId");
 		 * @param {Object} params 	possible params:
+		 *                         	- width: in pixels
 		 *                        	- heightOverflow: "scroll" | "resizeDiv".
 		 *                        		If scroll, when canvas is larger than containing div, it will scroll, if not, it will change div width
 		 *                        	- typeResize: "scale" | "fluid",
@@ -80,7 +81,7 @@ define([
 			this.SCALE = 0.999; // fix vexflow bug that doesn't draw last pixel on end bar
 			this.CANVAS_DIV_WIDTH_PROPORTION = 0.8; //width proportion between canvas created and divContainer
 
-			this.NOTE_WIDTH = 20; /* estimated note width in order to be more flexible */
+			this.NOTE_WIDTH = 20; // estimated note width in order to be more flexible
 			this.LINE_HEIGHT = 150;
 			this.LINE_WIDTH = 1160;
 			this.BARS_PER_LINE = 4;
@@ -94,7 +95,7 @@ define([
 
 
 			var idScore = "ls" + ($("canvas").length + 1),
-				width = $(divContainer).width() * this.CANVAS_DIV_WIDTH_PROPORTION;
+			width = (params.width) ? params.width : $(divContainer).width() * this.CANVAS_DIV_WIDTH_PROPORTION;
 
 			this.canvas = this._createCanvas(idScore, width, this.DEFAULT_HEIGHT);
 			var renderer = new Vex.Flow.Renderer(this.canvas, Vex.Flow.Renderer.Backends.CANVAS);

@@ -240,7 +240,6 @@ define([
 	NoteEditionView.prototype.activeView = function(idElement) {
 		this.editMode = 'notes';
 		$.publish('NoteEditionView-activeView', 'notes');
-		//myApp.viewer.draw(self.songModel);
 	};
 
 	return NoteEditionView;

@@ -26,24 +26,31 @@ define([
 		$.subscribe('LSViewer-click', function(el, position) {
 			var inPath = self.isInPath(position.x, position.y);
 			if (inPath !== false) {
+				$.publish('ToAllCursor-setEditable', false);
+				self.cursor.setEditable(true);
 				self.cursor.setPos(inPath);
 				myApp.viewer.draw(self.songModel);
-			}else{
+			} else {
 				self.undraw();
 			}
 		});
-		/*$.subscribe('LSViewer-mouseover', function(el, position) {
-			var inPath = self.isInPath(position.x, position.y);
+		$.subscribe('LSViewer-mousemove', function(el, position) {
+			/*var inPath = self.isInPath(position.x, position.y);
 			if (inPath !== false) {
-				self.cursor.setPos(inPath);
-				myApp.viewer.draw(self.songModel);
-			}
-		});*/
+				myApp.viewer.el.style.cursor = 'pointer';
+				//self.cursor.setPos(inPath);
+				//myApp.viewer.draw(self.songModel);
+			} else {
+				myApp.viewer.el.style.cursor = 'default';
+			}*/
+		});
 		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
 			if (self.cursor.getEditable()) {
 				self.refresh(viewer);
-			}
-			else{
+			} else if (self.chordSpace.length === 0) {
+				// case chordspace have never been drawn, we create it so isInPath function can works
+				self.chordSpace = self.createChordSpace(viewer);
+			} else {
 				self.undraw(); // maybe we should call it only once
 			}
 		});

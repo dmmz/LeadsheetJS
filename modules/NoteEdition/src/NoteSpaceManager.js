@@ -27,6 +27,8 @@ define([
 		$.subscribe('LSViewer-click', function(el, position) {
 			var inPath = self.isInPath(position.x, position.y);
 			if (inPath !== false) {
+				$.publish('ToAllCursor-setEditable', false);
+				self.cursor.setEditable(true);
 				self.cursor.setPos(inPath);
 				myApp.viewer.draw(self.songModel);
 			}
