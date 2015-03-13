@@ -21,7 +21,7 @@ define(function() {
 	 * @param  {Array} comments ["comment1","comment2"]
 	 * @return {domObject}          
 	 */
-	DisplayTester.prototype._createDiv = function(size,title, comments) {
+	DisplayTester.prototype._createDiv = function(divSize,title, comments) {
 		this.numTest++;
 		var divTests = $("#tests");
 		var idDiv = "test" + this.numTest;
@@ -29,9 +29,9 @@ define(function() {
 		var css = {
 			border:'1px solid'
 		};
-		if (size){
-			if (size.width != null)		css.width = size.width;
-			if (size.height != null)	css.height = size.height;
+		if (divSize){
+			if (divSize.width != null)		css.width = divSize.width;
+			if (divSize.height != null)		css.height = divSize.height;
 		}
 		newDiv.css(css);
 		
@@ -43,8 +43,8 @@ define(function() {
 		return newDiv;
 	};
 
-	DisplayTester.prototype.runTest = function(func, size, title, comments) {
-		func(this._createDiv(size,title,comments));
+	DisplayTester.prototype.runTest = function(func, divSize, title, comments) {
+		func(this._createDiv(divSize,title,comments));
 	};
 	return DisplayTester;
 });

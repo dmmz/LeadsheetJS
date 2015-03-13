@@ -101,6 +101,7 @@ define(['modules/LSViewer/src/BarWidthManager'], function(BarWidthManager) {
 				assert.deepEqual(abtlResult, abtlExpectedResult);
 				swResult = barWidthMng.getWidths(abtlResult);
 				
+
 				swExpectedResult = [
 					[lineWidth],
 					[290, 290, 300, 140, 140],

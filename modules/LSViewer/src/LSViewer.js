@@ -13,6 +13,7 @@ define([
 	],
 	function(Vex, LSNoteView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator, pubsub) {
 
+
 		function LSViewer(divContainer, params) {
 			this.el = divContainer;
 			this.init(divContainer, params);
@@ -21,17 +22,32 @@ define([
 		}
 
 		/**
-		 * Create and return a dom element
+		 * [LSViewer description]
+		 * @param {domObject} jQuery divContainer ; e.g.: $("#divContainerId");
+		 * @param {Object} params 	possible params:
+		 *                        	- heightOverflow: "scroll" | "resizeDiv". 
+		 *                        		If scroll, when canvas is larger than containing div, it will scroll, if not, it will change div width
+		 *                        	- typeResize: "scale" | "fluid", 
+		 *                        		If scale, when canvas is wider than containing div, it will scale to fit; if "fluid" it will try to fit withouth scaling.
+		 *                        	//TODO: possibility of combining both (scale partially and then fluid)
 		 */
+		function LSViewer(divContainer, params) {
+				this.init(divContainer, params);
+				this.drawableModel = [];
+				this.initController();
+			}
+			/**
+			 * Create and return a dom element
+			 */
 		LSViewer.prototype._createCanvas = function(idScore, width, height, divContainer) {
 			var canvas = $("<canvas id='" + idScore + "'></canvas>");
 			canvas[0].width = width;
 			canvas[0].height = height;
 			canvas.appendTo(divContainer);
-			var divCss = {textAlign: "center"};
-			if (canvas[0].height > divContainer.height()) {
-				divCss.overflowY = "scroll";
-			}
+			var divCss = {
+				textAlign: "center"
+			};
+
 			divContainer.css(divCss);
 			return canvas[0];
 		};
@@ -66,21 +82,25 @@ define([
 			params = params || {};
 			this.DEFAULT_HEIGHT = 1000;
 			this.SCALE = 0.999; // fix vexflow bug that doesn't draw last pixel on end bar
+			this.CANVAS_DIV_WIDTH_PROPORTION = 0.8; //width proportion between canvas created and divContainer
+
 			this.NOTE_WIDTH = 20; /* estimated note width in order to be more flexible */
 			this.LINE_HEIGHT = 150;
 			this.LINE_WIDTH = 1160;
 			this.BARS_PER_LINE = 4;
-
 			this.ENDINGS_Y = 20; //0 -> thisChordsPosY==40, the greater the closer to stave 
 			this.LABELS_Y = 0; //like this.ENDINGS_Y
 			this.MARGIN_TOP = 100;
 			this.CHORDS_DISTANCE_STAVE = 20; //distance from stave
 
-			var idScore = "ls" + ($("canvas").length + 1),
-				width = params && params.width ? params.width : $(divContainer).width() * 0.8,
-				height = params && params.height ? params.height : this.DEFAULT_HEIGHT;
+			this.heightOverflow = params.heightOverflow || "resizeDiv";
+			this.divContainer = divContainer;
 
-			this.canvas = this._createCanvas(idScore, width, height, $(divContainer));
+
+			var idScore = "ls" + ($("canvas").length + 1),
+				width = divContainer.width() * this.CANVAS_DIV_WIDTH_PROPORTION;
+
+			this.canvas = this._createCanvas(idScore, width, this.DEFAULT_HEIGHT, divContainer);
 			var renderer = new Vex.Flow.Renderer(this.canvas, Vex.Flow.Renderer.Backends.CANVAS);
 			this.ctx = renderer.getContext("2d");
 
@@ -89,9 +109,6 @@ define([
 			} else { // typeResize == 'fluid'
 				this._setWidth(width);
 			}
-
-			// this.marginLeft = 10;
-
 		};
 
 		LSViewer.prototype._setWidth = function(width) {
@@ -146,19 +163,22 @@ define([
 			//	this.ctx.translate(-(this.ctx.canvas.width * (1 -  this.SCALE)/2) , 0);
 			this.ctx.scale(1 / this.SCALE, 1 / this.SCALE);
 		};
+		LSViewer.prototype.setHeight = function(song,barWidthMng) {
+			var totalNumBars = song.getComponent("bars").getTotal();
+			this.canvas.height = (barWidthMng.getDimensions(totalNumBars - 1).top + this.LINE_HEIGHT) * this.SCALE;
+			if (this.canvas.height > this.divContainer.height() && this.heightOverflow == 'scroll') {
+				this.divContainer.css({
+					overflowY: "scroll"
+				});
+			}else{
+				this.divContainer.height(this.canvas.height);
+			}
 
+		};
 		LSViewer.prototype.draw = function(song) {
 			//console.time('whole draw');
-			
-			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-			this._scale();
 			var i, j, v, c;
-			// call drawable elem with zIndex < 10
-			for (i = 0, c = this.drawableModel.length; i < c; i++) {
-				if (this.drawableModel[i].zIndex < 10 && typeof this.drawableModel[i].elem.draw === "function") {
-					this.drawableModel[i].elem.draw(self);
-				}
-			}
+
 			var numBar = 0,
 				self = this,
 				nm = song.getComponent("notes"),
@@ -181,11 +201,23 @@ define([
 
 			var barWidthMng = new BarWidthManager(this.LINE_HEIGHT, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE, this.MARGIN_TOP);
 			barWidthMng.calculateBarsStructure(song, nm);
-			var numSection = 0;
+			this.setHeight(song, barWidthMng);
 
+			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+			this._scale();
+
+			// call drawable elem with zIndex < 10
+			for (i = 0, c = this.drawableModel.length; i < c; i++) {
+				if (this.drawableModel[i].zIndex < 10 && typeof this.drawableModel[i].elem.draw === "function") {
+					this.drawableModel[i].elem.draw(self);
+				}
+			}
+
+			var numSection = 0;
 			var songIt = new SongBarsIterator(song);
 			var barView;
 			var sectionIt;
+
 			song.getSections().forEach(function(section) {
 
 				// for each bar
