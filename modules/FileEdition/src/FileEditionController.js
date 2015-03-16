@@ -137,8 +137,7 @@ define([
 		// create a dummy CANVAS to create a new viewer without selection or edition
 		var destinationElement = document.createElement("div");
 		var currentViewer = new LSViewer(destinationElement, {
-			'width': srcCanvas.width,
-			'height': srcCanvas.height
+			'width': srcCanvas.width - 10
 		});
 		currentViewer.draw(this.songModel);
 
@@ -151,7 +150,7 @@ define([
 		destCtx.fillStyle = "#FFFFFF";
 		destCtx.fillRect(0, 0, srcCanvas.width, srcCanvas.height);
 		// draw the original canvas onto the destination canvas
-		destCtx.drawImage(currentViewer.canvas, 0, 0); // 
+		destCtx.drawImage(currentViewer.canvas, 0, 0);
 		var imgData = destinationCanvas.toDataURL('image/jpeg', 1);
 
 		var totalWidth = 200;
@@ -182,7 +181,6 @@ define([
 		var destinationElement = document.createElement("div");
 		var currentViewer = new LSViewer(destinationElement, {
 			'width': srcCanvas.width,
-			'height': srcCanvas.height
 		});
 		currentViewer.draw(this.songModel);
 		this.promptFile(this.songModel.getTitle() + '.png', currentViewer.canvas.toDataURL());

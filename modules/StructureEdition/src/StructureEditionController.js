@@ -167,12 +167,7 @@ define([
 			numBar = selBars[0];
 		}
 
-		//get numBeat from first note of current bar
-		var numBeat = this.songModel.getStartBeatFromBarNumber(numBar);
-		// get the index of that note
 		var nm = this.songModel.getComponent('notes');
-		var index = nm.getNextIndexNoteByBeat(numBeat);
-
 		//get the duration of the bar, and create a new bar with silences
 		var beatDuration = this.songModel.getTimeSignatureAt(numBar).getQuarterBeats();
 		var newBarNm = new NoteManager(); //Create new Bar NoteManager
@@ -186,19 +181,22 @@ define([
 		//insert those silences
 		newBarNm.fillGapWithRests(beatDuration, startBeat);
 
+		//get numBeat from first note of current bar
+		var numBeat = this.songModel.getStartBeatFromBarNumber(numBar);
+		// get the index of that note
+		var index = nm.getNextIndexNoteByBeat(numBeat);
+		nm.notesSplice([index, index - 1], newBarNm.getNotes());
+
 		//add bar to barManager
 		var barManager = this.songModel.getComponent('bars');
 		var newBar = barManager.getBar(numBar).clone();
 		barManager.addBar(newBar);
 
-		// console.log(nm.getNotes());
-		//nm.notesSplice([index, index - 1], newBarNm.getNotes());
-		nm.notesSplice([index, index - 1], [new NoteModel("E/4-q"), new NoteModel("E/4-q"), new NoteModel("E/4-q"), new NoteModel("E/4-q")]);
-
 		//increment the number of bars of current section
 		var section = this.songModel.getSection(this.songModel.getSectionNumberFromBarNumber(numBar));
 		section.setNumberOfBars(section.getNumberOfBars() + 1);
 
+		// decal chords
 		this.songModel.getComponent('chords').incrementChordsBarNumberFromBarNumber(1, numBar);
 
 		myApp.viewer.draw(this.songModel);
@@ -226,10 +224,10 @@ define([
 				section.setNumberOfBars(sectionNumberOfBars - 1);
 
 				// remove notes in bar
-				beatDuration = this.songModel.getTimeSignatureAt(selBars[i]).getQuarterBeats();
-				numBeat = this.songModel.getStartBeatFromBarNumber(selBars[i]) + 1;
+				beatDuration = this.songModel.getTimeSignatureAt(selBars[i]).getQuarterBeats() - 1; // I am not sure why we remove 1 here
+				numBeat = this.songModel.getStartBeatFromBarNumber(selBars[i]);
 				index = nm.getNextIndexNoteByBeat(numBeat);
-				index2 = nm.getPrevIndexNoteByBeat(numBeat + beatDuration);
+				index2 = nm.getNextIndexNoteByBeat(numBeat + beatDuration);
 				nm.notesSplice([index, index2], []);
 
 				// remove chords in bar

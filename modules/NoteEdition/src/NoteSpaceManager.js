@@ -15,8 +15,8 @@ define([
 
 		this.CURSORHEIGHT = 80;
 		this.CURSORMARGINTOP = 20;
-		this.CURSORMARGINLEFT = 4;
-		this.CURSORMARGINRIGHT = 8;
+		this.CURSORMARGINLEFT = 6;
+		this.CURSORMARGINRIGHT = 9;
 	}
 
 	/**
@@ -27,11 +27,13 @@ define([
 		$.subscribe('LSViewer-click', function(el, position) {
 			var inPath = self.isInPath(position.x, position.y);
 			if (inPath !== false) {
+				$.publish('ToAllCursor-setEditable', false);
+				self.cursor.setEditable(true);
 				self.cursor.setPos(inPath);
 				myApp.viewer.draw(self.songModel);
 			}
 		});
-		$.subscribe('LSViewer-mouseover', function(el, position) {
+		$.subscribe('LSViewer-mousemove', function(el, position) {
 			var inPath = self.isInPath(position.x, position.y);
 			if (inPath !== false) {
 				myApp.viewer.el.style.cursor = 'pointer';

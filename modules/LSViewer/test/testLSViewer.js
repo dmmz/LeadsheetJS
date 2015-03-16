@@ -12,10 +12,10 @@ define(['tests/DisplayTester',
 			//constructor functions
 			var songModel = SongModel_CSLJson.importFromMusicCSLJSON(AloneTogether);
 
-			var viewer = new LSViewer($('#ls1'),{typeResize: 'fluid',heightOverflow: 'scroll'});
+			var viewer = new LSViewer($('#ls1')[0],{typeResize: 'fluid',heightOverflow: 'scroll'});
 			viewer.draw(songModel);
 
-			var viewer2 = new LSViewer($('#ls2'),{typeResize: 'scale'});
+			var viewer2 = new LSViewer($('#ls2')[0],{typeResize: 'scale'});
 			viewer2.draw(songModel);
 
 			var dispTest = new DisplayTester();

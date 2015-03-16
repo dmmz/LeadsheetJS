@@ -17,6 +17,9 @@ define([
 	 */
 	CursorController.prototype.initSubscribe = function() {
 		var self = this;
+		$.subscribe('ToAllCursor-setEditable', function(el, isEditable) {
+			self.setEditable(isEditable);
+		});
 		$.subscribe('CursorView-setCursor' + this.view.id, function(el, index) {
 			self.setCursor(index);
 		});
@@ -55,6 +58,9 @@ define([
 		this.setCursor(this.model.getEnd() + inc);
 	};
 
+	CursorController.prototype.setEditable = function(isEditable) {
+		this.model.setEditable(isEditable);
+	}
 
 /*
 	CursorController.prototype.setCursorByCoords = function(coords, selectingMode) {

@@ -8,7 +8,7 @@ define([
 ], function(Mustache, SongModel, SongModel_CSLJson, HarmonizeAPI, UserLog, pubsub) {
 
 	function HarmonizerController(songModel, view) {
-		this.model = songModel;
+		this.songModel = songModel;
 		this.view = view;
 		var self = this;
 		$.subscribe('HarmonizerView-compute', function(el, style) {
@@ -22,14 +22,15 @@ define([
 			style = "Take6";
 		}
 		//var idSong = "517cc0c058e3388155000001";
-		var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.model);
+		var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel);
 		$('#harmonize').html('Computing <div id="followingBallsG"><div id="followingBallsG_1" class="followingBallsG"></div><div id="followingBallsG_2" class="followingBallsG"></div><div id="followingBallsG_3" class="followingBallsG"></div><div id="followingBallsG_4" class="followingBallsG"></div></div>');
 		var harm = new HarmonizeAPI();
 		harm.harmonizeFromLeadsheetAPI(JSON.stringify(JSONSong), style, function(data) {
 			$('#harmonize').html('Harmonize');
 			if (data.success === true) {
 				UserLog.logAutoFade('success', 'Harmonization is finished');
-				SongModel_CSLJson.importFromMusicCSLJSON(data.sequence, this.model);
+				SongModel_CSLJson.importFromMusicCSLJSON(data.sequence, self.songModel);
+				myApp.viewer.draw(self.songModel);
 			} else {
 				UserLog.logAutoFade('error', 'Harmonization is finished');
 			}

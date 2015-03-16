@@ -2,7 +2,7 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 	return {
 		run: function() {
 			test("Notes", function(assert) {
-				
+
 				//empty note
 				var note = new NoteModel();
 
@@ -12,49 +12,49 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 
 				note.setDot(1);
 				assert.equal(note.getDot(), 1);
-				
+
 				assert.throws(function() {
-					note.setDot("wrongDot"); 
+					note.setDot("wrongDot");
 				});
 
 				//setTie
 				note.setTie();
-				assert.equal(note.getTie(),undefined); 
-				
+				assert.equal(note.getTie(), undefined);
+
 				assert.throws(function() {
-					note.setTie("wrongTie"); 
+					note.setTie("wrongTie");
 				});
 				note.setTie("start");
-				assert.equal(note.getTie(),"start");
-				
+				assert.equal(note.getTie(), "start");
+
 				note.setTie("start");
-				assert.equal(note.getTie(),"start");
+				assert.equal(note.getTie(), "start");
 
 				note.setTie("stop");
-				assert.equal(note.getTie(),"stop_start");				
-				
+				assert.equal(note.getTie(), "stop_start");
+
 				//tuplet
 				assert.throws(function() {
 					note.setTuplet("wrongValidType");
 				});
 				note.setTuplet("start");
-				assert.equal(note.getTuplet(),"start");
-				assert.equal(note.getTimeModification(),"3/2");
+				assert.equal(note.getTuplet(), "start");
+				assert.equal(note.getTimeModification(), "3/2");
 				assert.ok(note.isTuplet());
 
 				note.removeTuplet();
-				assert.equal(note.getTuplet(),null);
-				assert.equal(note.getTimeModification(),null);				
+				assert.equal(note.getTuplet(), null);
+				assert.equal(note.getTimeModification(), null);
 				assert.ok(!note.isTuplet());
-				
-				note.setTuplet(null,"5/4");
-				assert.equal(note.getTuplet(),"middle");
-				assert.equal(note.getTimeModification(),"5/4");
+
+				note.setTuplet(null, "5/4");
+				assert.equal(note.getTuplet(), "middle");
+				assert.equal(note.getTimeModification(), "5/4");
 				assert.ok(note.isTuplet());
 
-				note.setTuplet("middle","3/4");
-				assert.equal(note.getTuplet(),"middle");
-				assert.equal(note.getTimeModification(),"3/4");
+				note.setTuplet("middle", "3/4");
+				assert.equal(note.getTuplet(), "middle");
+				assert.equal(note.getTimeModification(), "3/4");
 				assert.ok(note.isTuplet());
 
 				//measure
@@ -65,15 +65,15 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 				assert.equal(note.getMeasure(),2);*/
 
 				//accidental
-				assert.throws(function(){
-					note.setAccidental("invalidAcc");	
+				assert.throws(function() {
+					note.setAccidental("invalidAcc");
 				});
-				
+
 				note.setAccidental("#");
-				assert.equal(note.getAccidental(),"#");
+				assert.equal(note.getAccidental(), "#");
 				note.removeAccidental();
-				assert.equal(note.getAccidental(),"");
-				
+				assert.equal(note.getAccidental(), "");
+
 
 				var noteMinuscule = new NoteModel({
 					pitchList: ["E/4"],
@@ -93,30 +93,33 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 				assert.equal(polyphonicNote.getNumPitches(), 3);
 
 				var restNote = new NoteModel("h");
-				assert.equal(restNote.getDuration(),2);
+				assert.equal(restNote.getDuration(), 2);
 				assert.ok(restNote.isRest);
 
 				restNote = new NoteModel("hr");
-				assert.equal(restNote.getDuration(),2);
+				assert.equal(restNote.getDuration(), 2);
 				assert.ok(restNote.isRest);
 
 				var inlineNote = new NoteModel('C#/4-8.');
-				assert.equal(inlineNote.getPitch(),'C#/4');
-				assert.equal(inlineNote.getNumPitches(),1);
-				assert.equal(inlineNote.getAccidental(),"#");
+				assert.equal(inlineNote.getPitch(), 'C#/4');
+				assert.equal(inlineNote.getNumPitches(), 1);
+				assert.equal(inlineNote.getAccidental(), "#");
 				assert.equal(inlineNote.getDuration(), 0.75);
 				assert.equal(inlineNote.getDot(), 1);
-				assert.equal(inlineNote.getTie(),undefined); 
-				assert.equal(inlineNote.getTuplet(),null);
-				assert.equal(inlineNote.getTimeModification(),null);
+				assert.equal(inlineNote.getTie(), undefined);
+				assert.equal(inlineNote.getTuplet(), null);
+				assert.equal(inlineNote.getTimeModification(), null);
 				assert.ok(!inlineNote.isRest);
-				
+
 				var inlineNote2 = new NoteModel('16r');
 				assert.equal(inlineNote2.getDuration(), 0.25);
 				assert.ok(inlineNote2.isRest, 'is a silence');
 
-				var clonedChord = inlineNote.clone();
-				assert.deepEqual(clonedChord, inlineNote, "clone test");
+				var clonedNote = inlineNote.clone();
+				assert.deepEqual(clonedNote, inlineNote, "clone test");
+
+				var clonedNotes2 = inlineNote2.clone();
+				assert.deepEqual(clonedNotes2, inlineNote2, "clone test with silence");
 
 			});
 		}
