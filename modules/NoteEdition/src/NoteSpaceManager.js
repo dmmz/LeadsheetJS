@@ -30,7 +30,7 @@ define([
 				$.publish('ToAllCursor-setEditable', false);
 				self.cursor.setEditable(true);
 				self.cursor.setPos(inPath);
-				myApp.viewer.draw(self.songModel);
+				$.publish('ToViewer-draw', self.songModel);
 			}
 		});
 		$.subscribe('LSViewer-mousemove', function(el, position) {
@@ -38,7 +38,7 @@ define([
 			if (inPath !== false) {
 				myApp.viewer.el.style.cursor = 'pointer';
 				//self.cursor.setPos(inPath);
-				//myApp.viewer.draw(self.songModel);
+				//$.publish('ToViewer-draw', self.songModel);
 			} else {
 				myApp.viewer.el.style.cursor = 'default';
 			}

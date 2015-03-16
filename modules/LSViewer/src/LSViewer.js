@@ -31,11 +31,12 @@ define([
 			this.init(divContainer, params);
 			this.drawableModel = [];
 			this.initController();
+			this.initSubscribe();
 		}
 
-			/**
-			 * Create and return a dom element
-			 */
+		/**
+		 * Create and return a dom element
+		 */
 		LSViewer.prototype._createCanvas = function(idScore, width, height) {
 			var canvas = $("<canvas id='" + idScore + "'></canvas>");
 			canvas[0].width = width;
@@ -74,6 +75,12 @@ define([
 				};
 			}
 		};
+		LSViewer.prototype.initSubscribe = function() {
+			var self = this;
+			$.subscribe('ToViewer-draw', function(el, songModel) {
+				self.draw(songModel);
+			});
+		};
 
 		LSViewer.prototype.init = function(divContainer, params) {
 			params = params || {};
@@ -95,7 +102,7 @@ define([
 
 
 			var idScore = "ls" + ($("canvas").length + 1),
-			width = (params.width) ? params.width : $(divContainer).width() * this.CANVAS_DIV_WIDTH_PROPORTION;
+				width = (params.width) ? params.width : $(divContainer).width() * this.CANVAS_DIV_WIDTH_PROPORTION;
 
 			this.canvas = this._createCanvas(idScore, width, this.DEFAULT_HEIGHT);
 			var renderer = new Vex.Flow.Renderer(this.canvas, Vex.Flow.Renderer.Backends.CANVAS);
@@ -173,6 +180,10 @@ define([
 
 		};
 		LSViewer.prototype.draw = function(song) {
+			if (typeof song === "undefined") {
+				console.warn('song is empty'); // only for debug, remove after 1 week safe
+				return;
+			}
 			//console.time('whole draw');
 			var i, j, v, c;
 

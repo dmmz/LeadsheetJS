@@ -8,10 +8,9 @@ define([
 	'pubsub',
 ], function(Mustache, SongModel, NoteManager, CursorModel, NoteUtils, UserLog, pubsub) {
 
-	function NoteEditionController(songModel, cursor, view) {
+	function NoteEditionController(songModel, cursor) {
 		this.songModel = songModel || new SongModel();
 		this.cursor = cursor || new CursorModel();
-		this.view = view;
 		this.initSubscribe();
 	}
 
@@ -67,7 +66,7 @@ define([
 		});
 		$.subscribe('NoteEditionView-activeView', function(el) {
 			self.changeEditMode(true);
-			myApp.viewer.draw(self.songModel);
+			$.publish('ToViewer-draw', self.songModel);
 		});
 		$.subscribe('NoteEditionView-unactiveView', function(el) {
 			self.changeEditMode(false);
@@ -100,7 +99,7 @@ define([
 				note.setNoteFromString(newKey);
 			}
 		}
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 
@@ -120,7 +119,7 @@ define([
 				note.setAccidental(accidental);
 			}
 		}
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	/**
@@ -151,7 +150,7 @@ define([
 			durAfter += selNotes[i].getDuration();
 		}
 		this.checkDuration(durBefore, durAfter);
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	NoteEditionController.prototype.setDot = function() {
@@ -171,7 +170,7 @@ define([
 			durAfter += selNotes[i].getDuration();
 		}
 		this.checkDuration(durBefore, durAfter);
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	NoteEditionController.prototype.setTie = function() {
@@ -193,7 +192,7 @@ define([
 				}
 			}
 		}
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 
@@ -271,7 +270,7 @@ define([
 				}
 			}
 		}
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 
@@ -288,7 +287,7 @@ define([
 			}
 			if (!note.isRest) note.setRest(true);
 		}
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 
@@ -303,7 +302,7 @@ define([
 		this.checkDuration(durBefore, 0);
 		var numNotes = noteManager.getTotal();
 		this.cursor.revisePos(numNotes);
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	NoteEditionController.prototype.addNote = function() {
@@ -314,14 +313,14 @@ define([
 		noteManager.insertNote(pos, cloned);
 		this.checkDuration(0, noteToClone.getDuration());
 		// this.cursor.setPos(pos + 1);
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 
 	NoteEditionController.prototype.copyNotes = function() {
 		var noteManager = this.songModel.getComponent('notes');
 		this.buffer = noteManager.cloneElems(this.cursor.getStart(), this.cursor.getEnd() + 1);
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	NoteEditionController.prototype.pasteNotes = function(notesToPaste) {
@@ -333,7 +332,7 @@ define([
 		var noteManager = this.songModel.getComponent('notes');
 		//this.checkDuration(0, noteManager.getTotalDuration());
 		noteManager.notesSplice(this.cursor.getPos(), notesToPaste);
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	NoteEditionController.prototype.moveCursorByBar = function(inc) {
@@ -345,15 +344,15 @@ define([
 
 		if (barNum === 0 && inc === -1) {
 			this.cursor.setPos(0);
-			myApp.viewer.draw(this.songModel);
+			$.publish('ToViewer-draw', this.songModel);
 			return;
 		}
-		
+
 		var startBeat = this.songModel.getStartBeatFromBarNumber(barNum + inc);
 		var indexFirstNoteInNewBar = noteManager.getNextIndexNoteByBeat(startBeat);
 
 		this.cursor.setPos(indexFirstNoteInNewBar);
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	NoteEditionController.prototype.getSelectedNotes = function() {

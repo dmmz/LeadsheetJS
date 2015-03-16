@@ -9,12 +9,11 @@ define([
 	'utils/apiFlowMachines/ComposerServlet',
 	'utils/AjaxUtils',
 	'jsPDF',
-	'modules/converters/MusicXML/utils/musicXMLParser'
-], function(Mustache, SongModel, SongModel_CSLJson, SongModel_MusicXML, LSViewer, pubsub, UserLog, ComposerServlet, AjaxUtils, jsPDF, musicXMLParser) {
+], function(Mustache, SongModel, SongModel_CSLJson, SongModel_MusicXML, LSViewer, pubsub, UserLog, ComposerServlet, AjaxUtils, jsPDF) {
 
-	function FileEditionController(songModel, view) {
+	function FileEditionController(songModel, viewerCanvas) {
+		this.viewerCanvas = viewerCanvas;
 		this.songModel = songModel || new SongModel();
-		this.view = view;
 		this.initSubscribe();
 	}
 
@@ -59,7 +58,7 @@ define([
 			throw 'FileEditionController - importMusicCSLJSON File imported is not defined ' + JSONSong;
 		}
 		SongModel_CSLJson.importFromMusicCSLJSON(JSONSong, this.songModel);
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	FileEditionController.prototype.importMusicXML = function(musicXMLSong) {
@@ -67,7 +66,7 @@ define([
 			throw 'FileEditionController - importMusicXML File imported is not defined ' + musicXMLSong;
 		}
 		SongModel_MusicXML.importFromMusicXML(musicXMLSong, this.songModel);
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	/**
@@ -133,7 +132,7 @@ define([
 	};
 
 	FileEditionController.prototype.exportAndPromptLeadsheetToPDF = function(title, composer, timeSignature, style, sources_abr) {
-		var srcCanvas = myApp.viewer.canvas;
+		var srcCanvas = this.viewerCanvas;
 		// create a dummy CANVAS to create a new viewer without selection or edition
 		var destinationElement = document.createElement("div");
 		var currentViewer = new LSViewer(destinationElement, {
@@ -177,14 +176,13 @@ define([
 	};
 
 	FileEditionController.prototype.exportPNG = function() {
-		var srcCanvas = myApp.viewer.canvas;
+		var srcCanvas = this.viewerCanvas;
 		var destinationElement = document.createElement("div");
 		var currentViewer = new LSViewer(destinationElement, {
 			'width': srcCanvas.width,
 		});
 		currentViewer.draw(this.songModel);
 		this.promptFile(this.songModel.getTitle() + '.png', currentViewer.canvas.toDataURL());
-		//this.promptFile(this.songModel.getTitle() + '.png', myApp.canvas.toDataURL());
 	};
 
 	FileEditionController.prototype.exportLeadsheetJSON = function() {

@@ -157,7 +157,7 @@ define(function(require) {
 
 		// Edit notes menu
 		var neV = new NoteEditionView();
-		var neC = new NoteEditionController(songModel, cursorNoteController.model, neV);
+		var neC = new NoteEditionController(songModel, cursorNoteController.model);
 
 		// Edit chords on view
 		var cursorChordController = initCursor(songModel.getSongTotalBeats(), songModel, 'chords', 'tab');
@@ -178,11 +178,11 @@ define(function(require) {
 
 		// Edit bars menu
 		var beV = new StructureEditionView();
-		var beC = new StructureEditionController(songModel, cursorNoteController.model, beV);
+		var beC = new StructureEditionController(songModel, cursorNoteController.model);
 
 		// Edit files menu
 		var feV = new FileEditionView();
-		var feC = new FileEditionController(songModel, feV);
+		var feC = new FileEditionController(songModel, myApp.viewer.canvas);
 
 		neV.render(undefined, true, function() {
 			menuM.addMenu({
@@ -229,7 +229,7 @@ define(function(require) {
 			});
 		});
 
-		myApp.viewer.draw(songModel);
+		$.publish('ToViewer-draw', songModel);
 	});
 
 

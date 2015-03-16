@@ -41,7 +41,7 @@ define([
 		});*/
 		$.subscribe('ChordEditionView-activeView', function(el) {
 			self.changeEditMode(true);
-			myApp.viewer.draw(self.songModel);
+			$.publish('ToViewer-draw', self.songModel);
 		});
 		$.subscribe('ChordEditionView-unactiveView', function(el) {
 			self.changeEditMode(false);
