@@ -25,9 +25,9 @@ define([
 		 * [LSViewer description]
 		 * @param {domObject} jQuery divContainer ; e.g.: $("#divContainerId");
 		 * @param {Object} params 	possible params:
-		 *                        	- heightOverflow: "scroll" | "resizeDiv". 
+		 *                        	- heightOverflow: "scroll" | "auto"; default: "auto"
 		 *                        		If scroll, when canvas is larger than containing div, it will scroll, if not, it will change div width
-		 *                        	- typeResize: "scale" | "fluid", 
+		 *                        	- typeResize: "scale" | "fluid"; default: "fluid"
 		 *                        		If scale, when canvas is wider than containing div, it will scale to fit; if "fluid" it will try to fit withouth scaling.
 		 *                        	//TODO: possibility of combining both (scale partially and then fluid)
 		 */
@@ -90,7 +90,7 @@ define([
 			this.MARGIN_TOP = 100;
 			this.CHORDS_DISTANCE_STAVE = 20; //distance from stave
 
-			this.heightOverflow = params.heightOverflow || "resizeDiv";
+			this.heightOverflow = params.heightOverflow || "auto";
 			this.divContainer = divContainer;
 
 
@@ -172,6 +172,13 @@ define([
 			}
 
 		};
+		/**
+		 * function useful to be called in 'draw' function between this._scale() and this._resetScale().
+		 * It takes the width without taking into account we are scaling. This way we can place elements correctly (e.g. centering the title)
+		 */
+		LSViewer.prototype._getNonScaledWidth = function() {
+			return this.canvas.width / this.SCALE;
+		};
 		LSViewer.prototype.draw = function(song) {
 			//console.time('whole draw');
 
@@ -211,8 +218,8 @@ define([
 			var songIt = new SongBarsIterator(song);
 			var barView;
 			var sectionIt;
-
 			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+
 
 			this._scale();
 			song.getSections().forEach(function(section) {
@@ -299,6 +306,16 @@ define([
 					this.drawableModel[i].elem.draw(self);
 				}
 			}
+			this.ctx.fillStyle = "black";
+			this.ctx.strokeStyle = "black";
+			var oldTextAlign = this.ctx.textAlign;
+			this.ctx.textAlign = 'right';
+			this.ctx.font = "24px lato Verdana";
+			this.ctx.fillText(song.getComposer(), 1175, 20, 1200);
+			this.ctx.textAlign = 'center';
+			this.ctx.font = "32px lato Verdana";
+			this.ctx.fillText(song.getTitle(), this._getNonScaledWidth()/2, 60, this._getNonScaledWidth());
+			this.ctx.textAlign = oldTextAlign;
 			this._resetScale();
 			//console.timeEnd('whole draw');
 			$.publish('LSViewer-drawEnd', this);
