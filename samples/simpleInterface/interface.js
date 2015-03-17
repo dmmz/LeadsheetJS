@@ -117,8 +117,8 @@ define(function(require) {
 	myApp.historyM.addToHistory({});
 	myApp.historyM.setCurrentPosition(1);*/
 
-	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
-	//initPlayerModule(songModel);
+	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleIncompleteLeadSheet);
+	// initPlayerModule(songModel);
 
 	var option = {
 		displayTitle: true,
@@ -172,9 +172,9 @@ define(function(require) {
 		var hC = new HarmonizerController(songModel, hV);
 
 		// Constraint menu
-		var cM = new ConstraintModel(songModel);
+		var cM = new ConstraintModel();
 		var cV = new ConstraintView();
-		var cC = new ConstraintController(cM, cV);
+		var cC = new ConstraintController(songModel);
 
 		// Edit bars menu
 		var beV = new StructureEditionView();

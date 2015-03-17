@@ -7,24 +7,28 @@ define([
 	'pubsub',
 ], function(Mustache, SongModel, SongModel_CSLJson, ConstraintAPI, UserLog, pubsub) {
 
-	function ConstraintController(model, view) {
-		this.model = model || new ConstraintModel();
-		this.view = view;
-		var self = this;
-		$.subscribe('ConstraintView-compute', function(el, songset, composer, timeSignature, source, numberOfBars) {
-			self.computeConstraint(songset, composer, timeSignature, source, numberOfBars);
-		});
+	function ConstraintController(songModel) {
+		this.songModel = songModel || new SongModel();
+		this.initSubscribe();
 	}
+
+	/**
+	 * Subscribe to view events
+	 */
+	ConstraintController.prototype.initSubscribe = function() {
+		var self = this;
+		$.subscribe('ConstraintView-compute', function(el, opts) {
+			self.computeConstraint(opts.songset, opts.composer, opts.timeSignature, opts.source, opts.numberOfBars);
+		});
+	};
 
 	ConstraintController.prototype.constraint2API = function(songset, composer, timeSignatureFilter, source, numberOfBars, constraint, controller) {
 		var self = this;
 		var tempo = 120;
 		var timeSignature = "4/4";
 		var leadsheet = {};
-		// timeSignature = this.model.songModel.getTimeSignature();
-		leadsheet = SongModel_CSLJson.exportToMusicCSLJSON(this.model.songModel);
+		leadsheet = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel);
 
-		//var request = this.allConstraints2API(constraints, tempo, timeSignature, numberOfBars, songset);
 		timeSignatureFilter = "all";
 		var request = {
 			'incompleteLeadsheet': JSON.stringify(leadsheet),
@@ -58,30 +62,29 @@ define([
 		var request = {};
 		request = this.constraint2API(songset, composer, timeSignature, source, numberOfBars);
 
-		if (typeof editor !== "undefined" && typeof editor.getSong() !== "undefined") {
-			var leadsheet = editor.getSong().exportToMusicCSLJSON();
-			//this.model.addToHistory(leadsheet);
-			//this.model.setCurrentPositionHistory(this.model.scoreHistory.length - 1);
-		}
+		//this.model.addToHistory(request.leadsheet);
+		//this.model.setCurrentPositionHistory(this.model.scoreHistory.length - 1);
 		//self.view.displayHistory();
-		//test();
 
 		var logId = UserLog.log('info', 'Computing ...');
 
 		capi.constraintAPI(request, function(data) {
 			UserLog.removeLog(logId);
-			if (typeof data.success === true) {
+			console.log(data);
+			if (data.success === true) {
 				//self.model.addToHistory(data.result);
 				//self.model.setCurrentPositionHistory(self.model.scoreHistory.length - 1);
 				//self.view.displayHistory();
 
-				self.model.compareObj2(leadsheet, data.result);
+				self._compareObj(request.leadsheet, data.result);
+
 				//console.log(data.result);
-				SongModel_CSLJson.importFromMusicCSLJSON(data.result, this.model.songModel);
-				if (typeof data.tags !== "undefined") {
+				SongModel_CSLJson.importFromMusicCSLJSON(data.result, self.songModel);
+				$.publish('ToViewer-draw', self.songModel);
+				/*if (typeof data.tags !== "undefined") {
 					var harm = new HarmonicAnalysis(editor);
 					harm.drawAreaFromJSON(data.tags);
-				}
+				}*/
 				UserLog.logAutoFade('success', 'Constraint is finished');
 			} else {
 				var message = 'Unknown error';
@@ -96,22 +99,150 @@ define([
 
 	};
 
-	ConstraintController.prototype.loadHistory = function(indexDiff) {
-		var currentHistory = this.model.currentPositionHistory + indexDiff;
-		if (typeof this.scoreHistory[currentHistory] === "undefined") {
-			UserLog.logAutoFade('error', "No history available");
-			return;
-		}
-		this.setCurrentPositionHistory(currentHistory);
-		var newLeadsheet = this.scoreHistory[currentHistory]['leadsheet'];
-		var songModel = new SongModel(newLeadsheet);
-		editor.setSong(songModel);
-		if (editor.player instanceof ModelPlayer) {
-			editor.player.setSongModel(songModel);
-		}
-		editor.update();
-		editor.viewer.draw(editor);
-	};
+	/**
+	 * Function compares two leadsheets and add a color "colorDiff" to item that change
+	 * @param  {[type]} obj1 [description]
+	 * @param  {[type]} obj2 [description]
+	 * @return {[type]}      [description]
+	 */
+	ConstraintController.prototype._compareObj = function(obj1, obj2) {
+		var same = true;
+		var sameChord = true;
+		var sameNote = true;
+		var section = false;
+		var bars = false;
+		var existMelody = false;
+		var existChords = false;
 
+		var colorDiff = "blue";
+		/*console.log(obj1);
+		console.log(obj2);*/
+		if (typeof obj2 !== "undefined") {
+			if (typeof obj1 === "undefined") {
+				//console.log('object undefined');
+				same = false;
+			} else {
+				same = true;
+			}
+			if (typeof obj2.changes !== "undefined") {
+				if (same === true) {
+					if (typeof obj1.changes === "undefined") {
+						//console.log('no changes ');
+						same = false;
+					} else {
+						same = true;
+					}
+				}
+				for (var i in obj2.changes) {
+					var JSONSection = obj2.changes[i];
+					if (section === true) {
+						same = true;
+						section = false;
+					}
+					if (same === true) {
+						if (typeof obj1.changes[i] === "undefined") {
+							//console.log('no section ' + i);
+							section = true;
+							same = false;
+						} else {
+							same = true;
+						}
+					}
+					// console.log(JSONSection);
+					if (typeof JSONSection.bars !== "undefined") {
+						if (same === true) {
+							if (typeof obj1.changes[i].bars === "undefined") {
+								//console.log('no bars in section ' + i);
+								same = false;
+							} else {
+								same = true;
+							}
+						}
+						for (var j in JSONSection.bars) {
+							if (bars === true) {
+								same = true;
+								bars = false;
+							}
+							var JSONBar = JSONSection.bars[j];
+							if (same === true) {
+								if (typeof obj1.changes[i].bars[j] === "undefined") {
+									//console.log('no bar ' + j);
+									same = false;
+									bars = true;
+								} else {
+									same = true;
+								}
+							}
+							// console.log(j, JSONBar);
+							if (typeof JSONBar.chords !== "undefined") {
+								if (existChords === true) {
+									same = true;
+									existChords = false;
+								}
+								if (same === true) {
+									if (typeof obj1.changes[i].bars[j].chords === "undefined") {
+										//console.log('enter at bar chords ' + j);
+										same = false;
+										existChords = true;
+									} else {
+										same = true;
+									}
+								}
+								for (var k in JSONBar.chords) {
+									var JSONChord = JSONBar.chords[k];
+									if (same === true) {
+										sameChord = true;
+										if (typeof obj1.changes[i].bars[j].chords[k] === "undefined" ||
+											obj1.changes[i].bars[j].chords[k]['p'] != JSONChord['p'] ||
+											obj1.changes[i].bars[j].chords[k]['ch'] != JSONChord['ch'] ||
+											obj1.changes[i].bars[j].chords[k]['beat'] != JSONChord['beat']) {
+											//console.log('if chords');
+											sameChord = false;
+										}
+									}
+									if (same === false || sameChord === false) {
+										JSONChord['color'] = colorDiff;
+										sameChord = true;
+									}
+								}
+							}
+							if (typeof JSONBar.melody !== "undefined") {
+								if (existMelody === true) {
+									same = true;
+									existMelody = false;
+								}
+								if (same === true) {
+									if (typeof obj1.changes[i].bars[j].melody === "undefined") {
+										//console.log('enter at bar melody ' + j);
+										same = false;
+										existMelody = true;
+									} else {
+										same = true;
+									}
+								}
+								for (var k in JSONBar.melody) {
+									var JSONNote = JSONBar.melody[k];
+									if (same === true) {
+										sameNote = true;
+										if (typeof obj1.changes[i].bars[j].melody[k] === "undefined" ||
+											obj1.changes[i].bars[j].melody[k]['duration'] != JSONNote['duration'] ||
+											obj1.changes[i].bars[j].melody[k]['keys'][0] != JSONNote['keys'][0]) {
+											//console.log('if notes');
+											sameNote = false;
+										}
+									}
+									if (same === false || sameNote === false) {
+										JSONNote['color'] = colorDiff;
+										sameNote = true;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return obj2;
+	};
 	return ConstraintController;
 });

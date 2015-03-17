@@ -115,12 +115,12 @@ define([
 
 		var barManager = this.songModel.getComponent('bars');
 		var noteManager = this.songModel.getComponent('notes');
-		var notes;
+		//var notes;
 		for (var i = 0; i < numberOfBars; i++) {
-			notes = noteManager.getNotesAtBarNumber(startBar, this.songModel);
-			for (var j = notes.length - 1; j >= 0; j--) {
-				noteManager.deleteNote(noteManager.getNoteIndex(notes[j]));
-			}
+			//notes = noteManager.getNotesAtBarNumber(startBar, this.songModel);
+			//for (var j = notes.length - 1; j >= 0; j--) {
+			//	noteManager.deleteNote(noteManager.getNoteIndex(notes[j]));
+			//}
 			barManager.removeBar(startBar); // each time we remove index move so we don't need to sum startBar with i
 
 		}
@@ -217,7 +217,11 @@ define([
 			section = this.songModel.getSection(sectionNumber);
 			sectionNumberOfBars = section.getNumberOfBars();
 			if (sectionNumberOfBars === 1) {
-				UserLog.logAutoFade('warn', "Can't delete the last bar of section.");
+				if (this.songModel.getSections().length === 1) {
+					UserLog.logAutoFade('warn', "Can't delete the last bar of the last section.");
+				} else {
+					this.removeSection(sectionNumber);
+				}
 			} else {
 				// adjust section number of bars
 				section.setNumberOfBars(sectionNumberOfBars - 1);
@@ -238,7 +242,8 @@ define([
 			}
 		}
 		this.cursor.setPos(index - 1);
-
+		/*console.log(this.cursor.getPos());
+		console.log(nm.getNotes());*/
 
 		$.publish('ToViewer-draw', this.songModel);
 	};

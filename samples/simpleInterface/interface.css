@@ -170,9 +170,9 @@ body {
 #constraint_songsets_container, #constraint_composer_container, #constraint_timeSignature_container, #constraint_source_container{
 	padding: 2.5em 1em;
 }
-#constraint_source{
+/*#constraint_source{
 	width: 200px;
-}
+}*/
 #constraint_select_songsets, #constraint_select_composer, #constraint_select_source, #constraint_select_timeSignature{
 	margin: 0;
 	padding-bottom: 0.5em;
