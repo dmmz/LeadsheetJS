@@ -28,7 +28,6 @@ define([
 		var timeSignature = "4/4";
 		var leadsheet = {};
 		leadsheet = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel);
-
 		timeSignatureFilter = "all";
 		var request = {
 			'incompleteLeadsheet': JSON.stringify(leadsheet),
@@ -71,7 +70,7 @@ define([
 		capi.constraintAPI(request, function(data) {
 			UserLog.removeLog(logId);
 			console.log(data);
-			if (data.success === true) {
+			if (typeof data.success === true) {
 				//self.model.addToHistory(data.result);
 				//self.model.setCurrentPositionHistory(self.model.scoreHistory.length - 1);
 				//self.view.displayHistory();

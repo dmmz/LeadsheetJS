@@ -20,7 +20,7 @@ define(function(require) {
 	SongModel_CSLJson.importFromMusicCSLJSON = function(MusicCSLJSON, songModel, id) {
 		if (!songModel || !songModel instanceof SongModel) {
 			songModel = new SongModel();
-		}else{
+		} else {
 			songModel.clear();
 		}
 		var chordManager = new ChordManager();
@@ -124,6 +124,7 @@ define(function(require) {
 		MusicCSLJSON.source = songModel.getSource();
 
 		// Sections
+		var bm = songModel.getComponent("bars");
 		var JSONSection = {};
 		var startbarNumber, lastBarSection, barChords, barNotes;
 		MusicCSLJSON.changes = [];
@@ -139,8 +140,8 @@ define(function(require) {
 			var JSONBar, JSONChord, JSONNote;
 
 			for (var j = startbarNumber; j <= lastBarSection; j++) {
-				JSONBar = BarModel_CSLJson.exportToMusicCSLJSON(songModel.getBar(j));
-				//bar = songModel.getBar(j).exportToMusicCSLJSON(songModel);
+				JSONBar = BarModel_CSLJson.exportToMusicCSLJSON(bm.getBar(j));
+				//bar = bm.getBar(j).exportToMusicCSLJSON(songModel);
 
 				chords = [];
 				barChords = songModel.getComponentsAtBarNumber(j, 'chords');

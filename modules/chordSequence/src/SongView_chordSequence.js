@@ -32,6 +32,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/
 				if (this.displayTitle === true || this.displayComposer === true) {
 					txt += this.delimiterNewLine;
 				}
+				var bm = this.songModel.getComponent("bars");
 				var sectionsLength = this.songModel.getSections().length;
 				for (var i = 0; i < sectionsLength; i++) {
 					txt += this.delimiterNewLine;
@@ -45,7 +46,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/
 						var cm;
 						for (var j = 0, c = bars.length; j < c; j++) {
 							currentBarNumber = bars[j];
-							currentBar = this.songModel.getBar(currentBarNumber);
+							currentBar = bm.getBar(currentBarNumber);
 							if (j !== 0) {
 								txt += this.delimiterBar;
 							}

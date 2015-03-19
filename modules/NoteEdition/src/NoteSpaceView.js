@@ -5,8 +5,7 @@ define([
 	'jquery_autocomplete',
 ], function(ChordUtils, UserLog, pubsub, jquery_autocomplete) {
 
-	function NoteSpaceView(viewer, position) {
-		this.viewer = viewer;
+	function NoteSpaceView( position) {
 		this.initSubscribe();
 		this.position = position;
 	}

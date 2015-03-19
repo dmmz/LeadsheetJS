@@ -2,6 +2,7 @@ define(function() {
 	function SongBarsIterator (song) {
 		this.song = song;
 		this.index = 0;
+		this.bm = this.song.getComponent('bars');
 
 		this.prevTimeSig = null;
 		this.prevKeySig = null;
@@ -9,10 +10,10 @@ define(function() {
 	}
 	SongBarsIterator.prototype = {
 		hasNext: function(){
-			return this.index < this.song.getComponent('bars').getTotal();
+			return this.index < this.bm.getTotal();
 		},
 		next: function(){
-			var bar = this.song.getBar(this.index);
+			var bar = this.bm.getBar(this.index);
 			this.prevKeySig = this.getBarKeySignature();
 			this.prevTimeSig = this.getBarTimeSignature();
 			this.index++;
@@ -21,10 +22,10 @@ define(function() {
 			return this.index;
 		},
 		getBar: function(){
-			return this.song.getBar(this.index);
+			return this.bm.getBar(this.index);
 		},
 		getFollowingBar: function(){
-			return this.song.getBar(this.index+1);
+			return this.bm.getBar(this.index+1);
 		},
 		getBarKeySignature: function(){
 			var keySig = this.getBar().getTonality();

@@ -91,7 +91,7 @@ define(['modules/MidiCSL/src/model/NoteModel_MidiCSL'], function(NoteModel_MidiC
 		return new SongModel_MidiCSL(this.serialize());
 	};
 
-	SongModel_MidiCSL.prototype.generateMetronome = function( songModel ) {
+	SongModel_MidiCSL.prototype.generateMetronome = function(songModel) {
 		var note, duration;
 		var noteObject = {};
 		var metronome = [];
@@ -99,23 +99,22 @@ define(['modules/MidiCSL/src/model/NoteModel_MidiCSL'], function(NoteModel_MidiC
 		var notes = [];
 		var beatUnit = 4;
 		timeSig = 4;
-		if(typeof songModel !== "undefined"){
+		if (typeof songModel !== "undefined") {
 			timeSig = songModel.timeSignature.getBeats();
 			beatUnit = songModel.timeSignature.getBeatUnitQuarter();
 		}
-		for(var i = 0, c = 200; i < c; i++){
-			if( i%timeSig === 0 ){
-				notes = [ 105 ]; // C8
-			}
-			else{
-				notes = [ 93 ]; // C7
+		for (var i = 0, c = 200; i < c; i++) {
+			if (i % timeSig === 0) {
+				notes = [105]; // C8
+			} else {
+				notes = [93]; // C7
 			}
 			duration = 0.5;
 			noteObject = new NoteModel_MidiCSL({
-				'midiNote' : notes,
-				'type' : 'metronome',
-				'currentTime' : currentTime,
-				'duration' : duration,
+				'midiNote': notes,
+				'type': 'metronome',
+				'currentTime': currentTime,
+				'duration': duration,
 			});
 			currentTime += beatUnit;
 			metronome.push(noteObject);
