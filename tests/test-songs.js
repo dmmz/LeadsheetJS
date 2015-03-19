@@ -299,7 +299,7 @@ define(function() {
 			bars: [{
 				chords: [{
 					p: "A",
-					ch: "Maj7",
+					ch: "M7",
 					beat: 1
 				}, {
 					p: "B",
@@ -3199,7 +3199,7 @@ define(function() {
      "chords": [
       {
        "p": "C",
-       "ch": "maj7",
+       "ch": "M7",
        "beat": 1
       }
      ],

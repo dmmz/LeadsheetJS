@@ -35,13 +35,13 @@ define([
 
 					assert.deepEqual(
 						song.getComponent("chords").getChordsAsString(),
-						["Dm", "F7", "Am", "G7", "E7", "F", "D", "G7", "Cmaj7"],
+						["Dm", "F7", "Am", "G7", "E7", "F", "D", "G7", "CM7"],
 						"compare folded chords"
 					);
 
 					assert.deepEqual(
 						unfoldedSong.getComponent("chords").getChordsAsString(),
-						["Dm", "F7", "Am", "G7", "Dm", "F7","Am","E7", "F", "D", "G7", "Cmaj7"],
+						["Dm", "F7", "Am", "G7", "Dm", "F7","Am","E7", "F", "D", "G7", "CM7"],
 						"compare unfolded chords"
 					);
 				}
