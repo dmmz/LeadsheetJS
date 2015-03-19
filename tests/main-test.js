@@ -8,6 +8,7 @@ require.config({
     vexflow: 'external-libs/vexflow-min',
     Midijs: 'external-libs/Midijs/midijs.min',
     pubsub: 'external-libs/tiny-pubsub.min',
+    jsPDF: 'external-libs/jspdf/jspdf.min',
     mustache: 'external-libs/mustache',
   },
   shim: {
@@ -64,6 +65,10 @@ define(function(require) {
 
   var testHistoryModel = require('modules/History/test/testHistoryModel');
 
+  var testNoteEditionController  = require('modules/NoteEdition/test/testNoteEditionController');
+  var testStructureEditionController  = require('modules/StructureEdition/test/testStructureEditionController');
+  var testFileEditionController  = require('modules/FileEdition/test/testFileEditionController');
+
   var testHarmonizerController = require('modules/Harmonizer/test/testHarmonizerController');
   var testModuleManager = require('modules/ModuleManager/test/testModuleManager');
   var testMainMenuModel = require('modules/MainMenu/test/testMainMenuModel');
@@ -102,14 +107,21 @@ define(function(require) {
   // Chord Sequence Module
   testSongView_chordSequence.run();
 
+  // Note Edition
+  testNoteEditionController.run();
 
+  // Structure Edition
+  testStructureEditionController.run();
+
+  // File Edition
+  testFileEditionController.run();
 
   // //LSViewer Module
   // //console.log(
   testBarWidthManager.run();
 
   // Midi sound model Module
-  testPlayerModel_MidiCSL.run();
+ // testPlayerModel_MidiCSL.run();
   testSongModel_midiCSL.run();
   testNoteModel_midiCSL.run();
 

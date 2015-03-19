@@ -25,9 +25,9 @@ define(['vexflow', 'modules/converters/MusicCSLJson/src/NoteModel_CSLJson'], fun
 			for (i = 0; i < note.getNumPitches(); i++) {
 				accidental.push(note.getAccidental(i));
 			}
-			//accidental can either be a string (for monphony) or an array (for polyphony)
+			//accidental can either be a string (for monophony) or an array (for polyphony)
 			for (var acc in accidental) {
-				if (accidental[acc] != null && accidental[acc].length != 0)
+				if (accidental[acc] != null && accidental[acc].length !== 0)
 					vexflowNote.addAccidental(acc, new Vex.Flow.Accidental(accidental[acc]));
 			}
 			var dot = note.getDot();

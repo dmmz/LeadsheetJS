@@ -118,8 +118,12 @@ define(function(require) {
 	myApp.historyM.addToHistory({});
 	myApp.historyM.setCurrentPosition(1);*/
 
-	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
+	// tried for unfolding
+	//var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
 	//initPlayerModule(songModel);
+
+	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleIncompleteLeadSheet);
+	// initPlayerModule(songModel);
 
 	var option = {
 		displayTitle: true,
@@ -158,7 +162,7 @@ define(function(require) {
 
 		// Edit notes menu
 		var neV = new NoteEditionView();
-		var neC = new NoteEditionController(songModel, cursorNoteController.model, neV);
+		var neC = new NoteEditionController(songModel, cursorNoteController.model);
 
 		// Edit chords on view
 		var cursorChordController = initCursor(songModel.getSongTotalBeats(), songModel, 'chords', 'tab');
@@ -173,9 +177,9 @@ define(function(require) {
 		var hC = new HarmonizerController(songModel, hV);
 
 		// Constraint menu
-		var cM = new ConstraintModel(songModel);
+		var cM = new ConstraintModel();
 		var cV = new ConstraintView();
-		var cC = new ConstraintController(cM, cV);
+		var cC = new ConstraintController(songModel);
 
 		// Edit bars menu
 		var seV = new StructureEditionView();
@@ -184,7 +188,7 @@ define(function(require) {
 
 		// Edit files menu
 		var feV = new FileEditionView();
-		var feC = new FileEditionController(songModel, feV);
+		var feC = new FileEditionController(songModel, myApp.viewer.canvas);
 
 		neV.render(undefined, true, function() {
 			menuM.addMenu({
@@ -231,7 +235,7 @@ define(function(require) {
 			});
 		});
 
-		myApp.viewer.draw(songModel);
+		$.publish('ToViewer-draw', songModel);
 	});
 
 

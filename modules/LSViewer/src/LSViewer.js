@@ -16,28 +16,29 @@ define([
 
 
 		/**
-		 * [LSViewer description]
+		 * LSViewer Constructor
 		 * @param {domObject} jQuery divContainer ; e.g.: $("#divContainerId");
-		 * @param {Object} params 	possible params:
-		 *                         	- width: in pixels
-		 *                        	- heightOverflow: "scroll" | "auto".
-		 *                        		If scroll, when canvas is larger than containing div, it will scroll, if not, it will change div width
-		 *                        	- typeResize: "scale" | "fluid",
-		 *                        		If scale, when canvas is wider than containing div, it will scale to fit; if "fluid" it will try to fit withouth scaling.
-		 *                        	- displayTitle
-		 *                        	- displayComposer
-		 *                        	//TODO: possibility of combining both (scale partially and then fluid)
+		 * @param {Object} params possible params:
+		 *  - width: in pixels
+		 *  - heightOverflow: "scroll" | "auto".
+		 *  If scroll, when canvas is larger than containing div, it will scroll, if not, it will change div width
+		 *  - typeResize: "scale" | "fluid",
+		 *  If scale, when canvas is wider than containing div, it will scale to fit; if "fluid" it will try to fit withouth scaling.
+		 *  - displayTitle
+		 *  - displayComposer
+		 *  //TODO: possibility of combining both (scale partially and then fluid)
 		 */
 		function LSViewer(divContainer, params) {
 			this.el = divContainer;
 			this._init(divContainer, params);
 			this.drawableModel = [];
 			this._initController();
+			this._initSubscribe();
 		}
 
-			/**
-			 * Create and return a dom element
-			 */
+		/**
+		 * Create and return a dom element
+		 */
 		LSViewer.prototype._createCanvas = function(idScore, width, height) {
 			var canvas = $("<canvas id='" + idScore + "'></canvas>");
 			canvas[0].width = width;
@@ -75,6 +76,12 @@ define([
 				};
 			}
 		};
+		LSViewer.prototype._initSubscribe = function() {
+			var self = this;
+			$.subscribe('ToViewer-draw', function(el, songModel) {
+				self.draw(songModel);
+			});
+		};
 
 		LSViewer.prototype._init = function(divContainer, params) {
 			params = params || {};
@@ -99,7 +106,7 @@ define([
 
 
 			var idScore = "ls" + ($("canvas").length + 1),
-			width = (params.width) ? params.width : $(divContainer).width() * this.CANVAS_DIV_WIDTH_PROPORTION;
+				width = (params.width) ? params.width : $(divContainer).width() * this.CANVAS_DIV_WIDTH_PROPORTION;
 
 			this.canvas = this._createCanvas(idScore, width, this.DEFAULT_HEIGHT);
 			var renderer = new Vex.Flow.Renderer(this.canvas, Vex.Flow.Renderer.Backends.CANVAS);
@@ -133,12 +140,12 @@ define([
 		LSViewer.prototype._getNonScaledWidth = function() {
 			return this.canvas.width / this.SCALE;
 		};
-		
+
 		LSViewer.prototype._displayTitle = function(title) {
 			var oldTextAlign = this.ctx.textAlign;
 			this.ctx.textAlign = 'center';
 			this.ctx.font = "32px lato Verdana";
-			this.ctx.fillText(title, this._getNonScaledWidth()/2, 60, this._getNonScaledWidth());
+			this.ctx.fillText(title, this._getNonScaledWidth() / 2, 60, this._getNonScaledWidth());
 			this.ctx.textAlign = oldTextAlign;
 		};
 
@@ -146,7 +153,8 @@ define([
 			var oldTextAlign = this.ctx.textAlign;
 			this.ctx.textAlign = 'right';
 			this.ctx.font = "24px lato Verdana";
-			this.ctx.fillText(composer, this._getNonScaledWidth()-20, 20, this._getNonScaledWidth());
+
+			this.ctx.fillText(composer, this._getNonScaledWidth() - 20, 20, this._getNonScaledWidth());
 			this.ctx.textAlign = oldTextAlign;
 
 		};
@@ -161,7 +169,7 @@ define([
 				$(this.divContainer).height(this.canvas.height);
 			}
 		};
-				/**
+		/**
 		 * Add a model that contains a draw function, this function will be called in the draw function
 		 * @param {object} model  should contain a draw function that will be call
 		 * @param {int} zIndex Notes and chords are on zIndex 10, if you want to draw before then use zIndex < 10 or after use z index > 10
@@ -199,6 +207,10 @@ define([
 			});
 		};
 		LSViewer.prototype.draw = function(song) {
+			if (typeof song === "undefined") {
+				console.warn('song is empty'); // only for debug, remove after 1 week safe
+				return;
+			}
 			//console.time('whole draw');
 			var i, j, v, c;
 

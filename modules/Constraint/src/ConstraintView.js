@@ -121,7 +121,14 @@ define([
 			if (isNaN(numberOfBars)) {
 				numberOfBars = 8;
 			}
-			$.publish('ConstraintView-compute', songset, composer, timeSignature, source, numberOfBars);
+			var computeOptions = {
+				'songset': songset,
+				'composer': composer,
+				'timeSignature': timeSignature,
+				'source': source,
+				'numberOfBars': numberOfBars
+			};
+			$.publish('ConstraintView-compute', computeOptions);
 			return false;
 		});
 

@@ -21,7 +21,7 @@ define([
 		var self = this;
 		$.subscribe('ChordSpaceView-updateChord', function(el, update) {
 			self.updateChord(update.chordString, update.chordModel, update.chordSpace);
-			myApp.viewer.draw(self.songModel);
+			$.publish('ToViewer-draw', self.songModel);
 		});
 		$.subscribe('LSViewer-click', function(el, position) {
 			var inPath = self.isInPath(position.x, position.y);
@@ -29,7 +29,7 @@ define([
 				$.publish('ToAllCursor-setEditable', false);
 				self.cursor.setEditable(true);
 				self.cursor.setPos(inPath);
-				myApp.viewer.draw(self.songModel);
+				$.publish('ToViewer-draw', self.songModel);
 			} else {
 				self.undraw();
 			}
@@ -39,7 +39,7 @@ define([
 			if (inPath !== false) {
 				myApp.viewer.el.style.cursor = 'pointer';
 				//self.cursor.setPos(inPath);
-				//myApp.viewer.draw(self.songModel);
+				//$.publish('ToViewer-draw', self.songModel);
 			} else {
 				myApp.viewer.el.style.cursor = 'default';
 			}*/

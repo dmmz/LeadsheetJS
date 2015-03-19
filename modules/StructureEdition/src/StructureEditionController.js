@@ -12,7 +12,6 @@ define([
 	function StructureEditionController(songModel, cursor, view, structEditionModel) {
 		this.songModel = songModel || new SongModel();
 		this.cursor = cursor || new CursorModel();
-		this.view = view;
 		this.initSubscribe();
 		this.structEditionModel = structEditionModel;
 	}
@@ -60,7 +59,7 @@ define([
 		});
 		$.subscribe('StructureEditionView-activeView', function(el) {
 			self.changeEditMode(true);
-			myApp.viewer.draw(self.songModel);
+			$.publish('ToViewer-draw', self.songModel);
 		});
 		$.subscribe('StructureEditionView-unactiveView', function(el) {
 			self.changeEditMode(false);
@@ -101,7 +100,7 @@ define([
 			'numberOfBars': numberOfBarsToCreate
 		});
 		this.songModel.addSection(section);
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	StructureEditionController.prototype.removeSection = function() {
@@ -120,12 +119,12 @@ define([
 
 		var barManager = this.songModel.getComponent('bars');
 		var noteManager = this.songModel.getComponent('notes');
-		var notes;
+		//var notes;
 		for (var i = 0; i < numberOfBars; i++) {
-			notes = noteManager.getNotesAtBarNumber(startBar, this.songModel);
-			for (var j = notes.length - 1; j >= 0; j--) {
-				noteManager.deleteNote(noteManager.getNoteIndex(notes[j]));
-			}
+			//notes = noteManager.getNotesAtBarNumber(startBar, this.songModel);
+			//for (var j = notes.length - 1; j >= 0; j--) {
+			//	noteManager.deleteNote(noteManager.getNoteIndex(notes[j]));
+			//}
 			barManager.removeBar(startBar); // each time we remove index move so we don't need to sum startBar with i
 
 		}
@@ -135,7 +134,7 @@ define([
 			this.cursor.setPos(indexLastNote);
 		}
 		this.songModel.removeSection(sectionNumber);
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	StructureEditionController.prototype.setSectionName = function(name) {
@@ -148,7 +147,7 @@ define([
 		}
 		var sectionNumber = this.songModel.getSectionNumberFromBarNumber(selBars[0]);
 		this.songModel.getSection(sectionNumber).setName(name);
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	StructureEditionController.prototype.setRepeatTimes = function(repeatTimes) {
@@ -161,7 +160,7 @@ define([
 		}
 		var sectionNumber = this.songModel.getSectionNumberFromBarNumber(selBars[0]);
 		this.songModel.getSection(sectionNumber).setRepeatTimes(repeatTimes);
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	StructureEditionController.prototype.addBar = function() {
@@ -203,7 +202,7 @@ define([
 		// decal chords
 		this.songModel.getComponent('chords').incrementChordsBarNumberFromBarNumber(1, numBar);
 
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	StructureEditionController.prototype.removeBar = function() {
@@ -222,7 +221,11 @@ define([
 			section = this.songModel.getSection(sectionNumber);
 			sectionNumberOfBars = section.getNumberOfBars();
 			if (sectionNumberOfBars === 1) {
-				UserLog.logAutoFade('warn', "Can't delete the last bar of section.");
+				if (this.songModel.getSections().length === 1) {
+					UserLog.logAutoFade('warn', "Can't delete the last bar of the last section.");
+				} else {
+					this.removeSection(sectionNumber);
+				}
 			} else {
 				// adjust section number of bars
 				section.setNumberOfBars(sectionNumberOfBars - 1);
@@ -243,9 +246,10 @@ define([
 			}
 		}
 		this.cursor.setPos(index - 1);
+		/*console.log(this.cursor.getPos());
+		console.log(nm.getNotes());*/
 
-
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	StructureEditionController.prototype.timeSignature = function(timeSignature) {
@@ -262,7 +266,7 @@ define([
 		}
 		var durationAfter = this.songModel.getSongTotalBeats();
 		this._checkDuration(durationBefore, durationAfter);
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	StructureEditionController.prototype._checkDuration = function(durBefore, durAfter) {
@@ -309,7 +313,7 @@ define([
 		for (var i = 0, c = selBars.length; i < c; i++) {
 			this.songModel.getComponent("bars").getBar(selBars[i]).setTonality(tonality);
 		}
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	StructureEditionController.prototype.ending = function(ending) {
@@ -323,7 +327,7 @@ define([
 			}
 			this.songModel.getComponent("bars").getBar(selBars[i]).setEnding(ending);
 		}
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	StructureEditionController.prototype.style = function(style) {
@@ -337,7 +341,7 @@ define([
 			}
 			this.songModel.getComponent("bars").getBar(selBars[i]).setStyle(style);
 		}
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	StructureEditionController.prototype.label = function(label) {
@@ -351,7 +355,7 @@ define([
 			}
 			this.songModel.getComponent("bars").getBar(selBars[i]).setLabel(label);
 		}
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	StructureEditionController.prototype.subLabel = function(sublabel) {
@@ -365,7 +369,7 @@ define([
 			}
 			this.songModel.getComponent("bars").getBar(selBars[i]).setSublabel(sublabel);
 		}
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	StructureEditionController.prototype._getSelectedBars = function() {

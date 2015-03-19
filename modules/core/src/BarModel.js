@@ -9,8 +9,8 @@ define(['modules/core/src/TimeSignatureModel'], function(TimeSignatureModel) {
 		this.style = (typeof(option.style) !== "undefined") ? option.style : '';
 		this.timeSignature = (typeof(option.timeSignature) !== "undefined") ? option.timeSignature : undefined; // empty timeSignature means it doesn't change from previous
 		this.tonality = (typeof(option.tonality) !== "undefined") ? option.tonality : undefined;
-		this.label = (typeof(option.label) !== "undefined") ? option.label : undefined;
-		this.sublabel = (typeof(option.sublabel) !== "undefined") ? option.sublabel : undefined;
+		this.label = (typeof(option.label) !== "undefined") ? option.label : undefined; // Segno, fine, coda, on cue ...
+		this.sublabel = (typeof(option.sublabel) !== "undefined") ? option.sublabel : undefined; // Ds, Ds al fine, ds al capo ...
 	}
 
 

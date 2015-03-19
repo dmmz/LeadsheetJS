@@ -43,7 +43,7 @@ define([
 		}
 
 		this.model.setPos(index);
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	CursorController.prototype.expandSelected = function(inc) {
@@ -51,7 +51,7 @@ define([
 			throw 'CursorController - expandSelected - inc is not correct ' + inc;
 		}
 		this.model.expand(inc);
-		myApp.viewer.draw(this.songModel);
+		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	CursorController.prototype.moveCursor = function(inc) {
@@ -60,7 +60,7 @@ define([
 
 	CursorController.prototype.setEditable = function(isEditable) {
 		this.model.setEditable(isEditable);
-	}
+	};
 
 /*
 	CursorController.prototype.setCursorByCoords = function(coords, selectingMode) {
