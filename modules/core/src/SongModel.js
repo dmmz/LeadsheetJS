@@ -264,27 +264,29 @@ define([
 	};
 
 	/**
-	 * Function return an array containing index of bars in an unfolded song
+	 * Returns an array of index of bars when song if unfolded. 
+	 * like getUnfoldedSongSection() but for the whole song
 	 * @return {array}
 	 */
 	SongModel.prototype.getUnfoldedSongStructure = function() {
-		var pointerbarNumberStructure = [];
+		var pointerBarNumberStructure = [];
 		for (var i = 0, c = this.getSections().length; i < c; i++) {
-			// looping on all sections
-			pointerbarNumberStructure = pointerbarNumberStructure.concat(this.getUnfoldedSongSection(i));
+			pointerBarNumberStructure = pointerBarNumberStructure.concat(this.getUnfoldedSongSection(i));
 		}
-		return pointerbarNumberStructure;
+		return pointerBarNumberStructure;
 	};
 
 	/**
-	 * Function return an array containing index of bars in an unfolded song
+	 * Returns an array containing index of bars in an unfolded song
+	 *	e.g.: [	0, 1, 2, 3, 4, 5, 6, 7, 
+	 *			0, 1, 2, 3, 4, 5, 8, 9]
 	 * @return {array}
 	 */
 	SongModel.prototype.getUnfoldedSongSection = function(sectionNumber) {
 		if (typeof sectionNumber !== "undefined" && !isNaN(sectionNumber)) {
-			var pointerbarNumberStructure = [];
+			var pointerBarNumberStructure = [];
 			var endingBar;
-			var alreadyAddedbars = []; // contain the bars that are in 1 part so when we will look in 2 part they will not be getted
+			var alreadyAddedbars = []; // contains the bars that are in 1 part so when we will look in 2 part they will not be getted
 			var currentRepeatedPart = 0;
 			var section = this.getSection(sectionNumber);
 			var repeat = section.getRepeatTimes();
@@ -303,23 +305,23 @@ define([
 						if (endingBar == '1') {
 							repeat--;
 						}
-						pointerbarNumberStructure.push(barNumber);
+						pointerBarNumberStructure.push(barNumber);
 
 						// Case bars after the 1 start
 						if (currentRepeatedPart == 1) {
 							alreadyAddedbars.push(barNumber);
 						}
-						// Case bars got a 1 repetition (it happen only to the first bar repeated)
+						// Case bars got a 1 repetition (it happens only when the first bar is repeated)
 						if (typeof endingBar !== "undefined" && endingBar == 1) {
 							alreadyAddedbars.push(barNumber);
 							currentRepeatedPart = 1;
 						}
 
-						//  Case bars got a 2 repetition (it happen only to the first repeated bar)
+						//  Case bars got a 2 repetition (it happens only to the first repeated bar)
 						if (typeof endingBar !== "undefined" && endingBar == 2) {
 							// case it's the first time we arrive on 2
 							if (currentRepeatedPart == 1) {
-								pointerbarNumberStructure.pop();
+								pointerBarNumberStructure.pop();
 								alreadyAddedbars.pop();
 								barNumber = startBar - 1;
 								currentRepeatedPart++;
@@ -330,7 +332,7 @@ define([
 				}
 				repeat--;
 			}
-			return pointerbarNumberStructure;
+			return pointerBarNumberStructure;
 		}
 	};
 
@@ -409,10 +411,10 @@ define([
 	};
 
 	/**
-	 * Function return all components in a given bar number, componentTitle attriubtes is a filter for component title (eg chords, notes...)
+	 * Returns all components in a given bar number, componentTitle attriubtes is a filter for component title (eg chords, notes...)
 	 * @param  {int} barNumber
 	 * @param  {string} componentTitle will filter all the result depending the type (chords, notes...)
-	 * @return {array} it return an array of the direct object
+	 * @return {array} it returns an array of the direct object
 	 */
 	SongModel.prototype.getComponentsAtBarNumber = function(barNumber, componentTitle) {
 		var components = [];
@@ -443,63 +445,97 @@ define([
 		this.init();
 	};
 
+	SongModel.prototype.unfold = function() {
+		var self = this;
 
-	/*SongModel.prototype.getNotesAtBarNumberOld = function(barNumber) {
-		//noteManager
-		var noteMng = this.getComponent('notes'); 
-		
-		
-		function isSameMeasure(offset, offsetAnt, nMeasureBeats, beatsPerBar, timeSig, songModel) {
-			var tu = songModel.getBeatUnitFromTimeSignature(timeSig);
-			offset -= nMeasureBeats;
-			offsetAnt -= nMeasureBeats;
-			var mOffset = offset / (beatsPerBar * tu);
-			var mOffsetAnt = offsetAnt / (beatsPerBar * tu);
+		function getUnfoldedNotes () {
+			var barNotes = self.getUnfoldedSongComponents("notes");
+			var newNoteMng = new NoteManager();
+			for(var i in barNotes){
+				newNoteMng.addNotes(barNotes[i]);
+			}
+			return newNoteMng.getNotes();
+		}
+		function getUnfoldedChords () {
+			var newChords = [];
+			var chord;
+			var barChords = self.getUnfoldedSongComponents("chords");
+			for(var i in barChords){
+				for (var j in barChords[i]){
+					chord = barChords[i][j].clone();
+					chord.setBarNumber(i);
+					newChords.push(chord);
+				}
+			}
+			return newChords;
+		}
 
-			var isSameMeasure = (Math.floor(Math.round((mOffset) * 100) / 100) == Math.floor(Math.round((mOffsetAnt) * 100) / 100));
-			var error = (!isSameMeasure && mOffset > 1);
-			//first round to 2 decimals (to aviod issues with triplets (periodics 0.3333333), then floor to see if they are in the same beat ) 
+		function getUnfoldedSectionsAndBars() {
+			var i,c,j,
+				section,
+				pointerBarNumberStructure,
+				newSections = [],
+				newBars = [],
+				barMng = self.getComponent("bars");
+
+			for (i = 0, c = self.getSections().length; i < c; i++) {
+				section = self.getSection(i);
+				pointerBarNumberStructure = self.getUnfoldedSongSection(i);
+				newSections.push(
+					section.cloneUnfolded(pointerBarNumberStructure.length)
+				);
+				
+				for ( j = 0; j < pointerBarNumberStructure.length; j++) {
+					newBars.push(
+						barMng.getBar(pointerBarNumberStructure[j]).clone(true)
+					);
+				}
+			}
 			return {
-				v: isSameMeasure,
-				error: error
+				newBars:newBars,
+				newSections:newSections
 			};
 		}
-		var currentBar = 0;
-		var beatsPerBar = this.getBeatsFromTimeSignatureAt(currentBar);
-		var localTimeSig = this.getTimeSignatureAt(currentBar);
-		var nMeasureBeatsAcc = 0; //offset in beats on absolute bars
-		var nMeasureBeats = beatsPerBar * this.getBeatUnitFromTimeSignature(localTimeSig);
-		var offset = 0,
-			offsetAnt = 0;
 
-		var notesBar = [];
+		// Copy basic song data. 
+		var newSong = new SongModel({
+			title: this.getTitle(),
+			composers: this.composers,
+			style: this.getStyle(),
+			source: this.getSource(),
+			tempo: this.getTempo(),
+			tonality: this.getTonality(),
+			timeSignature: this.getTimeSignature()
+		});
+				
+		// BARS and SECTIONS
+		var r = getUnfoldedSectionsAndBars();
+				
+		var barMng = new BarManager();
+		barMng.setBars(r.newBars);
 
-		for (var i = 0; i < noteMng.getTotal(); i++) {
-			note = noteMng.getNote(i);
-
-			// isSameMeasure=this.isSameMeasure(offset,offsetAnt,nMeasureBeatsAcc,beatsPerBar,localTimeSig);
-			var sameMeasure = isSameMeasure(offset, offsetAnt, nMeasureBeatsAcc, beatsPerBar, localTimeSig, this);
-
-			if (!sameMeasure.v) { //will not enter the first time
-				currentBar++;
-				// if we have finish to compute desired bar we return result
-				if (currentBar > barNumber) {
-					return notesBar[barNumber];
-				}
-				nMeasureBeats = beatsPerBar * this.getBeatUnitFromTimeSignature(localTimeSig);
-				nMeasureBeatsAcc += nMeasureBeats;
-				localTimeSig = this.getTimeSignatureAt(currentBar);
-				beatsPerBar = this.getBeatsFromTimeSignatureAt(currentBar);
-			}
-			if (!notesBar[currentBar]) {
-				notesBar[currentBar] = [];
-			}
-			notesBar[currentBar].push(note);
-			offsetAnt = offset;
-			offset = noteMng.incrOffset(offset, note.getDuration(nMeasureBeats));
+		newSong.sections = [];
+		for(var i in r.newSections){
+			newSong.addSection(r.newSections[i]);
 		}
 
-	};*/
+		//NOTES
+		var noteMng = new NoteManager();
+		noteMng.setNotes(getUnfoldedNotes());
+
+		//CHORDS
+		var chordMng = new ChordManager();
+		chordMng.setAllChords(getUnfoldedChords());
+
+		newSong.addComponent('notes', noteMng);
+		newSong.addComponent('chords', chordMng);
+		newSong.addComponent('bars', barMng);
+
+		return newSong;
+	};
+
+
+
 
 	return SongModel;
 });

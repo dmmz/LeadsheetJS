@@ -107,7 +107,10 @@ define([
 			var sublabel = $(this).val();
 			$.publish('StructureEditionView-sublabel', sublabel);
 		});
-
+		$('#unfold').click(function() {
+			var sublabel = $(this).val();
+			$.publish('StructureEditionView-unfold');
+		});
 	};
 
 	StructureEditionView.prototype.initKeyboard = function(evt) {};
@@ -117,7 +120,13 @@ define([
 	/**
 	 * Subscribe to model events
 	 */
-	StructureEditionView.prototype.initSubscribe = function() {};
+	StructureEditionView.prototype.initSubscribe = function() {
+		$.subscribe('StructureEditionModel-toggleUnfolded', function(el, unfolded)
+		{
+			var textButton = unfolded ? "Fold" : "Unfold";
+			$("#unfold").val(textButton);
+		});
+	};
 
 
 	StructureEditionView.prototype.unactiveView = function(idElement) {

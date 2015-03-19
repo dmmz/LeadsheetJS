@@ -108,7 +108,17 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		for (var i = 0, c = notesToPaste.length; i < c; i++) copyArr.push(notesToPaste[i].clone());
 		this.notes = part1.concat(copyArr, part2);
 	};
-
+	/**
+	 * Adds notes in a given position (special case of noteSplice)
+	 * @param {Array of NoteModel} notes 
+	 * @param {Integer} position 
+	 */
+	NoteManager.prototype.addNotes = function(notes, position) {
+		if (position === undefined){
+			position = this.notes.length;
+		} 
+		this.notesSplice([position, position - 1], notes);
+	};
 	/**
 	 * returns the global beat of a note specified by its index (starting at 1)
 	 * @param  {Integer} index of the note
@@ -126,6 +136,19 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		}
 		return roundBeat(noteBeat);
 	};
+
+	/**
+	 * 
+	 * @return {Array} array of pitches of all the notes. e.g.  ["Db/4", "E/4", "F/4", "A#/4", "C/5", "B/4"]
+	 */
+	NoteManager.prototype.getNotesAsString = function() {
+		var arrPitches = [];
+		this.notes.forEach(function(note){
+			arrPitches.push(note.toString());
+		});
+		return arrPitches;
+	};
+
 
 	/**
 	 * FUNCTION DOES NOT WORK AS EXPECTED

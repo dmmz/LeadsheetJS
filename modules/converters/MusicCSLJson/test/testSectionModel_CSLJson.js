@@ -6,7 +6,7 @@ define(['modules/converters/MusicCSLJson/src/SectionModel_CSLJson', 'modules/cor
 				var t = SectionModel_CSLJson.exportToMusicCSLJSON(section);
 				assert.deepEqual(t, {"name":""});
 
-				var section = new SectionModel({"name":"A", 'repeatTime':2, "numberOfBars":8, "style":"Bossa Nova"});
+				var section = new SectionModel({"name":"A", 'repeatTimes':2, "numberOfBars":8, "style":"Bossa Nova"});
 				var exp = SectionModel_CSLJson.exportToMusicCSLJSON(section);
 				assert.deepEqual(exp, {"name":"A", 'repeat':2, "style":"Bossa Nova"});
 

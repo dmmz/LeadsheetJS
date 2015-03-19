@@ -34,7 +34,16 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 
 
 	NoteModel.prototype.toString = function(string, index) {
-		return this.pitchClass[0] + this.accidental[0] + this.octave[0];
+		if (this.isRest){
+			return this.duration + "r";
+		}else{
+			var str = this.pitchClass[0] + this.accidental[0] + "/" + this.octave[0] + "-" + this.duration;
+			for (var i = 0; i < this.dot; i++){
+				str += ".";
+			}
+			return str;
+		}
+		
 	};
 
 	NoteModel.prototype.setNoteFromString = function(string, index) {
@@ -284,6 +293,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 
 		var noteObj = {};
 		noteObj.pitchList = [];
+
 		for (var i = 0, c = this.getNumPitches(); i < c; i++) {
 			noteObj.pitchList.push(this.getPitch(i));
 		}

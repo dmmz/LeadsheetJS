@@ -10,7 +10,9 @@ define(['modules/core/src/BarModel'], function(BarModel) {
 	BarManager.prototype.getBars = function() {
 		return this.bars;
 	};
-
+	BarManager.prototype.setBars = function(bars) {
+		this.bars = bars;
+	};
 
 	BarManager.prototype.getBar = function(index) {
 		if (isNaN(index) || index < 0) {
@@ -36,5 +38,9 @@ define(['modules/core/src/BarModel'], function(BarModel) {
 		}
 		this.bars.splice(index, 1);
 	};
+	BarManager.prototype.clear = function() {
+		this.bars = [];
+	};
+
 	return BarManager;
 });

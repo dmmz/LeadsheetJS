@@ -43,7 +43,9 @@ define(['modules/core/src/TimeSignatureModel'], function(TimeSignatureModel) {
 		}
 		this.ending = ending;
 	};
-
+	BarModel.prototype.removeEnding = function() {
+		this.ending = undefined;
+	};
 	BarModel.prototype.getEnding = function() {
 		return this.ending;
 	};
@@ -112,9 +114,17 @@ define(['modules/core/src/TimeSignatureModel'], function(TimeSignatureModel) {
 			return this.sublabel;
 		}
 	};
-
-	BarModel.prototype.clone = function() {
-		return new BarModel(this);
+	/**
+	 * @param  {boolean} unfolding , if true it means we are unfolding so we want to remove endings, labels..etc., if false, is pure cloning
+	 * @return {BarModel}
+	 */
+	BarModel.prototype.clone = function(unfolding) {
+		var newBar = new BarModel(this);
+		if (unfolding)
+		{
+			newBar.removeEnding();
+		}
+		return newBar;
 	};
 
 	return BarModel;

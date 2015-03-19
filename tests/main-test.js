@@ -34,6 +34,7 @@ define(function(require) {
   // var testAjaxUtils = require('utils/test/testAjaxUtils');
 
   var testSongModel = require('modules/core/test/testSongModel');
+  var testSectionModel = require('modules/core/test/testSectionModel');
   var testChordManager = require('modules/core/test/testChordManager');
   var testChordModel = require('modules/core/test/testChordModel');
   var testNoteManager = require('modules/core/test/testNoteManager');
@@ -81,6 +82,7 @@ define(function(require) {
   testChordModel.run();
   testNoteManager.run();
   testSongModel.run();
+  testSectionModel.run();
   testBarModel.run();
   testChordManager.run();
   testTimeSignatureModel.run();

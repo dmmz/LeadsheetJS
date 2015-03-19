@@ -12,7 +12,6 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 		if (MusicXMLNote.hasOwnProperty('dot')) {
 			note.setDot(1);
 		}
-		note.numPitches = MusicXMLNote.keys.length;
 
 		var duration = MusicXMLNote.duration;
 		if ((duration.indexOf("r") != -1)) {

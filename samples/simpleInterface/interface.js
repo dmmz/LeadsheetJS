@@ -82,6 +82,7 @@ define(function(require) {
 
 	var StructureEditionView = require('modules/StructureEdition/src/StructureEditionView');
 	var StructureEditionController = require('modules/StructureEdition/src/StructureEditionController');
+	var StructureEditionModel = require('modules/StructureEdition/src/StructureEditionModel');
 
 	var FileEditionView = require('modules/FileEdition/src/FileEditionView');
 	var FileEditionController = require('modules/FileEdition/src/FileEditionController');
@@ -117,7 +118,7 @@ define(function(require) {
 	myApp.historyM.addToHistory({});
 	myApp.historyM.setCurrentPosition(1);*/
 
-	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
+	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
 	//initPlayerModule(songModel);
 
 	var option = {
@@ -177,8 +178,9 @@ define(function(require) {
 		var cC = new ConstraintController(cM, cV);
 
 		// Edit bars menu
-		var beV = new StructureEditionView();
-		var beC = new StructureEditionController(songModel, cursorNoteController.model, beV);
+		var seV = new StructureEditionView();
+		var seM = new StructureEditionModel();
+		var seC = new StructureEditionController(songModel, cursorNoteController.model, seV, seM);
 
 		// Edit files menu
 		var feV = new FileEditionView();
@@ -199,10 +201,10 @@ define(function(require) {
 				order: 3
 			});
 		});
-		beV.render(undefined, true, function() {
+		seV.render(undefined, true, function() {
 			menuM.addMenu({
 				title: 'Structure',
-				view: beV,
+				view: seV,
 				order: 4
 			});
 		});
