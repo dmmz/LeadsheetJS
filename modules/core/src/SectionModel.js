@@ -26,7 +26,13 @@ define(function() {
 
 	SectionModel.prototype.setRepeatTimes = function(repeatTimes) 
 	{
-		this.repeatTimes = (repeatTimes !== undefined) ? repeatTimes : 0;
+		if (repeatTimes === undefined){
+			repeatTimes = 0;
+		}
+		if (repeatTimes < 0){
+			throw "repeatTimes cannot be negative";
+		}
+		this.repeatTimes = repeatTimes;
 	};
 
 	SectionModel.prototype.getRepeatTimes = function() {

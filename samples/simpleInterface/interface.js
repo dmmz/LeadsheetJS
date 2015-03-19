@@ -119,11 +119,10 @@ define(function(require) {
 	myApp.historyM.setCurrentPosition(1);*/
 
 	// tried for unfolding
-	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
-	initPlayerModule(songModel);
+	// var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
 
 	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleIncompleteLeadSheet);
-	// initPlayerModule(songModel);
+	//initPlayerModule(songModel);
 
 	var option = {
 		displayTitle: true,

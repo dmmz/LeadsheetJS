@@ -12,38 +12,38 @@ define(['modules/core/src/NoteModel',
 				var cM = new CursorModel(songModel.getComponent('notes'));
 				var nec = new NoteEditionController(songModel, cM);
 
-				assert.equal(nec.getSelectedNotes().toString(), "A4");
+				assert.equal(nec.getSelectedNotes().toString(), "A/4-q");
 
 				// Pitch
 				nec.setPitch(1);
-				assert.equal(nec.getSelectedNotes().toString(), "B4");
+				assert.equal(nec.getSelectedNotes().toString(), "B/4-q");
 
 				nec.setPitch("C");
-				assert.equal(nec.getSelectedNotes().toString(), "C5");
+				assert.equal(nec.getSelectedNotes().toString(), "C/5-q");
 
 				// Wrong insert (accidental should be specified like this)
 				nec.setPitch("Db");
-				assert.equal(nec.getSelectedNotes().toString(), "C5");
+				assert.equal(nec.getSelectedNotes().toString(), "C/5-q");
 
 				// Accidentals
 				nec.addAccidental("b");
-				assert.equal(nec.getSelectedNotes().toString(), "Cb5", 'accidental flat');
+				assert.equal(nec.getSelectedNotes().toString(), "Cb/5-q", 'accidental flat');
 
 				nec.addAccidental("bb");
-				assert.equal(nec.getSelectedNotes().toString(), "Cbb5");
+				assert.equal(nec.getSelectedNotes().toString(), "Cbb/5-q");
 
 				nec.addAccidental("#");
-				assert.equal(nec.getSelectedNotes().toString(), "C#5");
+				assert.equal(nec.getSelectedNotes().toString(), "C#/5-q");
 
 				nec.addAccidental("##");
-				assert.equal(nec.getSelectedNotes().toString(), "C##5");
+				assert.equal(nec.getSelectedNotes().toString(), "C##/5-q");
 
 				nec.addAccidental("n");
-				assert.equal(nec.getSelectedNotes().toString(), "Cn5");
+				assert.equal(nec.getSelectedNotes().toString(), "Cn/5-q");
 
 				// remove if same
 				nec.addAccidental("n");
-				assert.equal(nec.getSelectedNotes().toString(), "C5", 'remove accidental');
+				assert.equal(nec.getSelectedNotes().toString(), "C/5-q", 'remove accidental');
 
 				// Durations
 				nec.setCurrDuration("1");
@@ -127,9 +127,9 @@ define(['modules/core/src/NoteModel',
 
 				assert.equal(nec.moveCursorByBar(-1), undefined);
 				nec.moveCursorByBar(1);
-				assert.equal(nec.getSelectedNotes().toString(), "G4");
+				assert.equal(nec.getSelectedNotes().toString(), "G/4-8");
 				nec.moveCursorByBar(-1);
-				assert.equal(nec.getSelectedNotes().toString(), "C5");
+				assert.equal(nec.getSelectedNotes().toString(), "wr");
 			});
 		}
 	};
