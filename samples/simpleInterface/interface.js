@@ -101,6 +101,8 @@ define(function(require) {
 	var CursorController = require('modules/Cursor/src/CursorController');
 	var CursorView = require('modules/Cursor/src/CursorView');
 
+	var TagManager = require('modules/Tag/src/TagManager');
+
 	var myApp = {};
 
 	var menuM = new MainMenuModel();
@@ -230,6 +232,7 @@ define(function(require) {
 		});
 
 		$.publish('ToViewer-draw', songModel);
+
 	});
 
 
