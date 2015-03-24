@@ -101,7 +101,7 @@ define(function() {
 
 	ChordModel.prototype.setBarNumber = function(barNumber) {
 		if (typeof barNumber !== "undefined" && !isNaN(barNumber)) {
-			this.barNumber = barNumber;
+			this.barNumber = Number(barNumber);
 			return true;
 		}
 		return false;
@@ -119,7 +119,7 @@ define(function() {
 
 	/**
 	 *
-	 * @param  {string}  delimiter  It's the separator between note and chordtype, by default it's a space : C M7
+	 * @param  {string}  delimiter  It's the separator between note and chordtype, by default there is no delimiter : C M7
 	 * @param  {Boolean} isFormated If true some chordsd are formatted with symbiols like Δ or ø
 	 * @return {string}             [description]
 	 */

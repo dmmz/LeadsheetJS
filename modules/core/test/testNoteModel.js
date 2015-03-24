@@ -110,10 +110,12 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 				assert.equal(inlineNote.getTuplet(), null);
 				assert.equal(inlineNote.getTimeModification(), null);
 				assert.ok(!inlineNote.isRest);
+				assert.equal(inlineNote.toString(), 'C#/4-8.');
 
 				var inlineNote2 = new NoteModel('16r');
 				assert.equal(inlineNote2.getDuration(), 0.25);
 				assert.ok(inlineNote2.isRest, 'is a silence');
+				assert.equal(inlineNote2.toString(), '16r');
 
 				var clonedNote = inlineNote.clone();
 				assert.deepEqual(clonedNote, inlineNote, "clone test");

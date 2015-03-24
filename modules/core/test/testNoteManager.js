@@ -246,9 +246,9 @@ define(['modules/core/src/NoteManager',
 				}
 				var noteManager = new NoteManager();
 
-				//managingMelodies(noteManager);
+				managingMelodies(noteManager);
 				durationFunctions(noteManager);
-				//otherFunctions(noteManager,testSongs);
+				otherFunctions(noteManager,testSongs);
 				// TODO: add tests for time signature changes
 
 			});

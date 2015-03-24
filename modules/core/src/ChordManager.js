@@ -320,6 +320,14 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 			exact: r == "equal"
 		};
 	};
+	
+	ChordManager.prototype.getChordsAsString = function() {
+		var strChords = [];
+		for (var i = 0; i < this.chords.length; i++) {
+			strChords.push(this.chords[i].toString());
+		}
+		return strChords;
+	};
 
 	/**
 	 * getBeatIntervalByIndexes return the beat interval between chords[start] and chords[end] + chords[end] duration

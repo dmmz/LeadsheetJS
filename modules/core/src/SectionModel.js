@@ -1,55 +1,56 @@
 define(function() {
-	function SectionModel(option) {
-		if (typeof option === "undefined") {
-			option = {};
-		}
-		this.name = (typeof(option.name) !== "undefined") ? option.name : '';
-		this.repeatTime = (typeof(option.repeatTime) !== "undefined") ? option.repeatTime : 0;
-		this.numberOfBars = (typeof(option.numberOfBars) !== "undefined") ? option.numberOfBars : 0;
-		this.style = (typeof(option.style) !== "undefined") ? option.style : '';
-		this.timeSignature = (typeof(option.timeSignature) !== "undefined") ? option.timeSignature : undefined; // empty timeSignature means it doesn't change from previous 
+	function SectionModel(params) {
+		params = params || {};
+
+		this.setName(params.name);
+		this.setRepeatTimes(params.repeatTimes);
+		this.setNumberOfBars(params.numberOfBars);
+		this.setStyle(params.style);
+		this.setTimeSignature(params.timeSignature);
 	}
 
 	/////////////////////////
-	// Basic getter setter //
+	// Basic getters setters //
 	/////////////////////////
 
-	SectionModel.prototype.setName = function(name) {
-		if (typeof name === "undefined") {
-			throw 'SectionModel - name should not be undefined';
-		}
-		this.name = name;
+	SectionModel.prototype.setName = function(name) 
+	{
+		/*using 'name !== undefined' instead of 'typeof "undefined"', because in this case (ternary if) everything is in same line, 
+		and it is more readable like this*/
+		this.name = (name !== undefined) ? name : '';	
 	};
 
 	SectionModel.prototype.getName = function() {
 		return this.name;
 	};
 
-	SectionModel.prototype.setRepeatTimes = function(repeatTime) {
-		if (typeof repeatTime === "undefined" || isNaN(repeatTime) || repeatTime < 0) {
-			throw 'SectionModel - repeatTime should be an integer';
+	SectionModel.prototype.setRepeatTimes = function(repeatTimes) 
+	{
+		if (repeatTimes === undefined){
+			repeatTimes = 0;
 		}
-		this.repeatTime = repeatTime;
+		if (repeatTimes < 0){
+			throw "repeatTimes cannot be negative";
+		}
+		this.repeatTimes = repeatTimes;
 	};
 
 	SectionModel.prototype.getRepeatTimes = function() {
-		return this.repeatTime;
+		return this.repeatTimes;
 	};
 
-	SectionModel.prototype.setNumberOfBars = function(numBars) {
-		if (typeof numBars === "undefined" || isNaN(numBars) || numBars < 0) {
-			throw 'SectionModel - numBars should be an integer';
-		}
-		this.numberOfBars = numBars;
-		return true;
+	SectionModel.prototype.setNumberOfBars = function(numberOfBars) 
+	{
+		this.numberOfBars = (numberOfBars !== undefined) ? numberOfBars : 0;
 	};
 
 	SectionModel.prototype.getNumberOfBars = function() {
 		return this.numberOfBars;
 	};
 
-	SectionModel.prototype.setStyle = function(style) {
-		this.style = style;
+	SectionModel.prototype.setStyle = function(style) 
+	{
+		this.style = (style !== undefined) ? style : '';
 	};
 
 	SectionModel.prototype.getStyle = function() {
@@ -57,13 +58,27 @@ define(function() {
 	};
 
 	SectionModel.prototype.setTimeSignature = function(timeSignature) {
-		this.timeSignature = timeSignature;
+		this.timeSignature = (timeSignature !== undefined) ? timeSignature : undefined; 
+		// empty timeSignature means it doesn't change from previous 
 	};
 
 	SectionModel.prototype.getTimeSignature = function() {
 		return this.timeSignature;
 	};
-
+	/**
+	 * returns the unfolded section
+	 * @param  {Number} numBars the number of bars of the unfolded section. This can be calculated by SongModel.getUnfoldedSongSection.  
+	 * @return {SectionModel}         
+	 */
+	SectionModel.prototype.cloneUnfolded = function(numBars) {
+		if (!numBars)	throw "SectionModel - cloneUnfolded: numBars not valid :" + numBars;
+		return new SectionModel({
+			name: this.name,
+			numberOfBars: numBars,
+			style: this.style,
+			timeSignature: this.timeSignature
+		});
+	};
 
 	return SectionModel;
 });

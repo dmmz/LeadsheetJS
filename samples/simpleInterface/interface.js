@@ -86,6 +86,7 @@ define(function(require) {
 
 	var StructureEditionView = require('modules/StructureEdition/src/StructureEditionView');
 	var StructureEditionController = require('modules/StructureEdition/src/StructureEditionController');
+	var StructureEditionModel = require('modules/StructureEdition/src/StructureEditionModel');
 
 	var FileEditionView = require('modules/FileEdition/src/FileEditionView');
 	var FileEditionController = require('modules/FileEdition/src/FileEditionController');
@@ -123,8 +124,13 @@ define(function(require) {
 	myApp.historyM.addToHistory({});
 	myApp.historyM.setCurrentPosition(1);*/
 
+
+	// tried for unfolding
+	// var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
+
 	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
-	// initPlayerModule(songModel);
+	//initPlayerModule(songModel);
+
 
 	var option = {
 		displayTitle: true,
@@ -188,8 +194,9 @@ define(function(require) {
 		var cC = new ConstraintController(songModel);
 
 		// Edit bars menu
-		var beV = new StructureEditionView();
-		var beC = new StructureEditionController(songModel, cursorNoteController.model);
+		var seV = new StructureEditionView();
+		var seM = new StructureEditionModel();
+		var seC = new StructureEditionController(songModel, cursorNoteController.model, seV, seM);
 
 		// Edit files menu
 		var feV = new FileEditionView();
@@ -210,10 +217,10 @@ define(function(require) {
 				order: 3
 			});
 		});
-		beV.render(undefined, true, function() {
+		seV.render(undefined, true, function() {
 			menuM.addMenu({
 				title: 'Structure',
-				view: beV,
+				view: seV,
 				order: 4
 			});
 		});

@@ -3,17 +3,17 @@ define([
 	'modules/Cursor/src/CursorModel',
 	'modules/core/src/SongModel',
 	'modules/core/src/SectionModel',
-	'modules/core/src/BarModel',
 	'modules/core/src/NoteManager',
 	'modules/core/src/NoteModel',
 	'utils/UserLog',
 	'pubsub',
-], function(Mustache, CursorModel, SongModel, SectionModel, BarModel, NoteManager, NoteModel, UserLog, pubsub) {
+], function(Mustache, CursorModel, SongModel, SectionModel, NoteManager, NoteModel, UserLog, pubsub) {
 
-	function StructureEditionController(songModel, cursor) {
+	function StructureEditionController(songModel, cursor, view, structEditionModel) {
 		this.songModel = songModel || new SongModel();
 		this.cursor = cursor || new CursorModel();
 		this.initSubscribe();
+		this.structEditionModel = structEditionModel;
 	}
 
 	/**
@@ -64,6 +64,10 @@ define([
 		$.subscribe('StructureEditionView-unactiveView', function(el) {
 			self.changeEditMode(false);
 		});
+		$.subscribe('StructureEditionView-unfold', function() {
+			self.unfold();
+		});
+
 	};
 
 
@@ -377,6 +381,19 @@ define([
 
 	StructureEditionController.prototype.changeEditMode = function(isEditable) {
 		this.cursor.setEditable(isEditable);
+	};
+
+	StructureEditionController.prototype.unfold = function() {
+		
+		if (!this.structEditionModel.unfolded){
+			this.oldSong = this.songModel;
+			var newSongModel = this.songModel.unfold();
+			myApp.viewer.draw(newSongModel);	
+		}else{
+			myApp.viewer.draw(this.oldSong);
+		}
+		this.structEditionModel.toggleUnfolded();
+		
 	};
 
 	return StructureEditionController;

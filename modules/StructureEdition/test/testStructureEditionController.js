@@ -25,26 +25,19 @@ define(['modules/StructureEdition/src/StructureEditionController',
 				sec.setSectionName('ok é !');
 				assert.equal(songModel.getSection(0).getName(), 'ok é !', "Section Name");
 
-				sec.setRepeatTimes(4);
-				assert.equal(songModel.getSection(0).getRepeatTimes(), 4, "Section Repeats");
-
-				assert.throws(function(){
-					sec.setRepeatTimes(-2);
-				});
-
 				sec.removeSection();
 				assert.equal(songModel.getSections().length, numberOfSections, "remove last section should not change section length");
 
 				// Add bar
 				sec.addBar();
-				assert.equal(nm.getNotesAtBarNumber(0, songModel).toString(), "E4,B4,B4,B4", "test bar have been created with E at start because it's forst bar");
+				assert.equal(nm.getNotesAtBarNumber(0, songModel).toString(), "E/4-q,qr,qr,qr", "test bar have been created with E at start because it's forst bar");
 				cM.setPos(4);
 				sec.addBar();
-				assert.equal(nm.getNotesAtBarNumber(1, songModel).toString(), "B4,B4,B4,B4", "test bar have been created with only silence");
+				assert.equal(nm.getNotesAtBarNumber(1, songModel).toString(), "qr,qr,qr,qr", "test bar have been created with only silence");
 				
 				// Remove bar
 				sec.removeBar();
-				assert.equal(nm.getNotesAtBarNumber(0, songModel).toString(), "E4,B4,B4,B4", "test bar have been created with only silence");
+				assert.equal(nm.getNotesAtBarNumber(0, songModel).toString(), "E/4-q,qr,qr,qr", "test bar have been created with only silence");
 
 				cM.setPos(0);
 				var selBar = sec._getSelectedBars();

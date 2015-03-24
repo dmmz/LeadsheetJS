@@ -1,3 +1,4 @@
+
 define(['vexflow', 'modules/converters/MusicCSLJson/src/NoteModel_CSLJson'], function(Vex, NoteModel_CSLJson) {
 	function LSNoteView(note) {
 		this.vexflowNote = createVexflowNote(note);
@@ -19,10 +20,9 @@ define(['vexflow', 'modules/converters/MusicCSLJson/src/NoteModel_CSLJson'], fun
 			if (parseInt(vexflowNote.keyProps[0].octave, null) >= 5) {
 				vexflowNote.setStemDirection(-1);
 			}
-
 			var accidental = [];
 			var i;
-			for (i = 0; i < note.numPitches; i++) {
+			for (i = 0; i < note.getNumPitches(); i++) {
 				accidental.push(note.getAccidental(i));
 			}
 			//accidental can either be a string (for monophony) or an array (for polyphony)

@@ -2,7 +2,6 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	var NoteModel_CSLJson = {};
 
 	NoteModel_CSLJson.importFromMusicCSLJSON = function(noteStruct, noteModel) {
-		noteModel.numPitches = noteStruct.keys.length;
 
 		var duration = noteStruct.duration;
 		if ((duration.indexOf("r") != -1)) {
