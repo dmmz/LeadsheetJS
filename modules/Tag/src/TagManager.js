@@ -14,6 +14,7 @@ define([
 		this.tags = (typeof tags !== "undefined") ? tags : [];
 		this.colors = (typeof colors !== "undefined") ? colors : ["#559", "#995", "#599", "#595"];
 		this.tagSpace = [];
+		this.isActive = true;
 		this.initSubscribe();
 		this.CURSORHEIGHT = 80;
 		this.CURSORMARGINTOP = 20;
@@ -29,9 +30,9 @@ define([
 		if (typeof tags === "undefined") {
 			throw 'TagManager - setTags tags must be an array ' + tags;
 		}
+		this.tags = tags;
 		$.publish('TagManager-setTags', this);
 		$.publish('ToViewer-draw', this.songModel);
-		return this.tags;
 	};
 
 	TagManager.prototype.getColors = function() {
@@ -42,9 +43,18 @@ define([
 		if (typeof colors === "undefined") {
 			throw 'TagManager - setColors colors must be an array ' + colors;
 		}
+		this.colors = colors;
 		$.publish('TagManager-setColors', this);
 		$.publish('ToViewer-draw', this.songModel);
-		return this.colors;
+	};
+
+	TagManager.prototype.setActive = function(active) {
+		this.isActive = !!active;
+		$.publish('ToViewer-draw', this.songModel);
+	};
+
+	TagManager.prototype.getActive = function() {
+		return this.isActive;
 	};
 
 
@@ -91,7 +101,7 @@ define([
 		var nm = this.songModel.getComponent('notes');
 		var tagName = '';
 		for (var i = 0, c = this.tags.length; i < c; i++) {
-			startEnd = nm.getIndexesStartingBetweenBeatInterval(this.tags[i].startBeat, this.tags[i].endBeat-1);
+			startEnd = nm.getIndexesStartingBetweenBeatInterval(this.tags[i].startBeat, this.tags[i].endBeat - 1);
 			fromIndex = startEnd[0];
 			toIndex = startEnd[1];
 			if (typeof viewer.vxfNotes[fromIndex] === "undefined" || typeof viewer.vxfNotes[toIndex] === "undefined") {
@@ -115,7 +125,7 @@ define([
 						ye: this.CURSORHEIGHT
 					};
 					tagName = '';
-					if(typeof this.tags[i].name !== "undefined"){
+					if (typeof this.tags[i].name !== "undefined") {
 						tagName = this.tags[i].name;
 					}
 					areas.push(new TagSpaceView(area, tagName));
@@ -132,6 +142,9 @@ define([
 
 
 	TagManager.prototype.draw = function(viewer) {
+		if (this.isActive !== true) {
+			return;
+		}
 		if (this.tags.length <= 0) {
 			return;
 		}
@@ -143,8 +156,8 @@ define([
 		var numberOfColors = this.colors.length;
 		for (var i = 0, c = this.tagSpace.length; i < c; i++) {
 			viewer.ctx.globalAlpha = 0.4;
-			viewer.ctx.fillStyle = this.colors[i%numberOfColors]; // permute colors each time
-			if (i%2) {
+			viewer.ctx.fillStyle = this.colors[i % numberOfColors]; // permute colors each time
+			if (i % 2) {
 				this.tagSpace[i].position.y += yDecalToggle;
 				this.tagSpace[i].position.ye += yDecalToggle;
 			} else {

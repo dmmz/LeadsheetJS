@@ -124,13 +124,11 @@ define(function(require) {
 	myApp.historyM.addToHistory({});
 	myApp.historyM.setCurrentPosition(1);*/
 
-
 	// tried for unfolding
 	// var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
 
 	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
 	//initPlayerModule(songModel);
-
 
 	var option = {
 		displayTitle: true,
@@ -138,7 +136,7 @@ define(function(require) {
 		displaySection: true,
 		displayBar: true,
 		delimiterBar: "|",
-		unfoldSong: false, //TODO unfoldSong is not working yet
+		unfoldSong: false, // TODO unfoldSong is not working yet
 		fillEmptyBar: true,
 		fillEmptyBarCharacter: "%",
 	};

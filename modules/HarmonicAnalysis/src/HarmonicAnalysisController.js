@@ -10,13 +10,22 @@ define([
 
 	function HarmonicAnalysisController(songModel, view) {
 		this.songModel = songModel;
-		var self = this;
-		$.subscribe('HarmonicAnalysisView-compute', function(el) {
-			self.computeHarmonize();
-		});
+		this.initSubscribe();
+		this.tagManager = new TagManager(this.songModel, []);
+		this.tagManager.setActive(false);
 	}
 
-	HarmonicAnalysisController.prototype.computeHarmonize = function() {
+	HarmonicAnalysisController.prototype.initSubscribe = function() {
+		var self = this;
+		$.subscribe('HarmonicAnalysisView-compute', function(el) {
+			self.computeHarmonicAnalysis();
+		});
+		$.subscribe('HarmonicAnalysisView-remove', function(el) {
+			self.removeHarmonicAnalysis();
+		});
+	};
+
+	HarmonicAnalysisController.prototype.computeHarmonicAnalysis = function() {
 		var self = this;
 		var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel);
 		$('#harmonic_analysis').html('Computing <div id="followingBallsG"><div id="followingBallsG_1" class="followingBallsG"></div><div id="followingBallsG_2" class="followingBallsG"></div><div id="followingBallsG_3" class="followingBallsG"></div><div id="followingBallsG_4" class="followingBallsG"></div></div>');
@@ -26,7 +35,8 @@ define([
 			if (data.success === true) {
 				UserLog.logAutoFade('success', 'Harmonic Analysis is finished');
 				if (typeof data.analysis !== "undefined") {
-					var tags = new TagManager(self.songModel, data.analysis);
+					self.tagManager.setActive(true);
+					self.tagManager.setTags(data.analysis);
 					$.publish('ToViewer-draw', self.songModel);
 				}
 			} else {
@@ -34,6 +44,11 @@ define([
 			}
 		});
 	};
+
+	HarmonicAnalysisController.prototype.removeHarmonicAnalysis = function() {
+		this.tagManager.setActive(false);
+	};
+
 
 	return HarmonicAnalysisController;
 });

@@ -53,9 +53,15 @@ define([
 		var self = this;
 		$('#harmonic_analysis').click(function() {
 			$.publish('HarmonicAnalysisView-compute');
+			$('#remove_harmonic_analysis').show();
+			return false;
+		});
+		$('#remove_harmonic_analysis').click(function() {
+			$.publish('HarmonicAnalysisView-remove');
+			$('#remove_harmonic_analysis').hide();
 			return false;
 		});
 	};
-	
+
 	return HarmonicAnalysisView;
 });

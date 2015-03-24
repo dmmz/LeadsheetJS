@@ -118,7 +118,7 @@ define([
 			$.publish('NoteEditionView-setPitch', 0);
 		});
 		$('#delete-note').click(function() {
-			$.publish('NoteEditionView-deleteNote');
+			$.publish('NoteEditionView-setSilence'); // in our editor we want to replace note by silence and not delete note
 		});
 		$('#add-note').click(function() {
 			$.publish('NoteEditionView-addNote');
@@ -193,7 +193,7 @@ define([
 					$.publish('NoteEditionView-setSilence');
 					stopEvent(evt);
 				} else if (keyCode == 46) { //supr
-					$.publish('NoteEditionView-deleteNote');
+					$.publish('NoteEditionView-setSilence'); // in our editor we want to replace note by silence and not delete note
 					stopEvent(evt);
 				} else if (keyCode == 13) { //enter
 					$.publish('NoteEditionView-addNote');
