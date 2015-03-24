@@ -59,6 +59,10 @@ define(function(require) {
 
 	var HarmonizerController = require('modules/Harmonizer/src/HarmonizerController');
 	var HarmonizerView = require('modules/Harmonizer/src/HarmonizerView');
+
+	var HarmonicAnalysisController = require('modules/HarmonicAnalysis/src/HarmonicAnalysisController');
+	var HarmonicAnalysisView = require('modules/HarmonicAnalysis/src/HarmonicAnalysisView');
+
 	var ConstraintModel = require('modules/Constraint/src/ConstraintModel');
 	var ConstraintView = require('modules/Constraint/src/ConstraintView');
 	var ConstraintController = require('modules/Constraint/src/ConstraintController');
@@ -119,7 +123,7 @@ define(function(require) {
 	myApp.historyM.addToHistory({});
 	myApp.historyM.setCurrentPosition(1);*/
 
-	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleIncompleteLeadSheet);
+	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
 	// initPlayerModule(songModel);
 
 	var option = {
@@ -173,6 +177,11 @@ define(function(require) {
 		var hV = new HarmonizerView();
 		var hC = new HarmonizerController(songModel, hV);
 
+		// Harmonic Analysis menu
+		var haV = new HarmonicAnalysisView();
+		var haC = new HarmonicAnalysisController(songModel, haV);
+
+
 		// Constraint menu
 		var cM = new ConstraintModel();
 		var cV = new ConstraintView();
@@ -221,6 +230,13 @@ define(function(require) {
 				title: 'Harmonizer',
 				view: hV,
 				order: 6
+			});
+		});
+		haV.render(undefined, true, function() {
+			menuM.addMenu({
+				title: 'Harmonic Analysis',
+				view: haV,
+				order: 7
 			});
 		});
 		feV.render(undefined, true, function() {

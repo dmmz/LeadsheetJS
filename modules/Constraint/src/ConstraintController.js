@@ -70,7 +70,6 @@ define([
 
 		capi.constraintAPI(request, function(data) {
 			UserLog.removeLog(logId);
-			console.log(data);
 			if (data.success === true) {
 				//self.model.addToHistory(data.result);
 				//self.model.setCurrentPositionHistory(self.model.scoreHistory.length - 1);

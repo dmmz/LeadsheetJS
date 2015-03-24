@@ -4,9 +4,10 @@ define([
 ], function(TagSpaceView, pubsub) {
 
 	/**
-	 * Cursor consists of a pos array that contain index start and index end of position
-	 * @param {Int|Array|Object} listElement allow to get size of a list, must be an int, or an array, or an object, if it's an object then getTotal function will be call to get list length
-	 * @param {Array} optCursor gets a cursor as an array of two positions [start,end]
+	 * Create and display tags
+	 * @param {Object} songModel
+	 * @param {Array} tags      Array of object that contain at least a startBeat, a endBeat, can also contain a name
+	 * @param {Array} colors    Array of colors in rgba or hexadecimal or html color
 	 */
 	function TagManager(songModel, tags, colors) {
 		this.songModel = songModel;
@@ -75,22 +76,25 @@ define([
 		return false;
 	};
 
+	/**
+	 * Function takes tags and transform them into TagSpace View that can be displayed on leadsheet,
+	 * it basically transform beat position to x, y positions
+	 * @param  {Object} viewer LSViewer
+	 * @return {Array} array of TagSpaceView
+	 */
 	TagManager.prototype.getTagsAreas = function(viewer) {
-		// new TagModel(startBeat, endBeat, name);
-		// Check startBeat and endbeat to get position;
-
 		var areas = [];
 		var area = {};
 		var startEnd, fromIndex, toIndex, xi, yi, xe;
 		var currentNote, currentNoteStaveY, nextNoteStaveY;
 		var firstNoteLine, lastNoteLine;
 		var nm = this.songModel.getComponent('notes');
-
+		var tagName = '';
 		for (var i = 0, c = this.tags.length; i < c; i++) {
-			startEnd = nm.getIndexesStartingBetweenBeatInterval(this.tags[i].startBeat, this.tags[i].endBeat);
+			startEnd = nm.getIndexesStartingBetweenBeatInterval(this.tags[i].startBeat, this.tags[i].endBeat-1);
 			fromIndex = startEnd[0];
 			toIndex = startEnd[1];
-			if (typeof viewer.vxfNotes[fromIndex] === "undefined") {
+			if (typeof viewer.vxfNotes[fromIndex] === "undefined" || typeof viewer.vxfNotes[toIndex] === "undefined") {
 				return areas;
 			}
 			firstNoteLine = viewer.vxfNotes[fromIndex];
@@ -110,7 +114,11 @@ define([
 						xe: xe,
 						ye: this.CURSORHEIGHT
 					};
-					areas.push(new TagSpaceView(area, this.tags[i].name));
+					tagName = '';
+					if(typeof this.tags[i].name !== "undefined"){
+						tagName = this.tags[i].name;
+					}
+					areas.push(new TagSpaceView(area, tagName));
 					if (fromIndex != toIndex) {
 						firstNoteLine = viewer.vxfNotes[fromIndex + 1];
 					}
@@ -132,8 +140,8 @@ define([
 		viewer.ctx.font = "15px Arial";
 		this.tagSpace = this.getTagsAreas(viewer);
 		var yDecalToggle = 3;
-		var numberOfColors = this.colors[i].length;
-		for (i = 0, c = this.tagSpace.length; i < c; i++) {
+		var numberOfColors = this.colors.length;
+		for (var i = 0, c = this.tagSpace.length; i < c; i++) {
 			viewer.ctx.globalAlpha = 0.4;
 			viewer.ctx.fillStyle = this.colors[i%numberOfColors]; // permute colors each time
 			if (i%2) {

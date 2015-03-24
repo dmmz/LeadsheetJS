@@ -255,7 +255,6 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 			throw 'NoteManager - getPrevIndexNoteByBeat - beat must be a positive integer ' + beat;
 		}
 		var r = this._getIndexAndCurBeat(beat);
-
 		return (r.curBeat === beat ) ? r.index : r.index - 1;
 	};
 
