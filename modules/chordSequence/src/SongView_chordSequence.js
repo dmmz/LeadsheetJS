@@ -26,11 +26,11 @@ define(['modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/
 		SongView_chordSequence.prototype._initSubscribe = function() {
 			var self = this;
 			$.subscribe('ToViewer-draw', function(el, songModel) {
-				self.display();
+				self.draw();
 			});
 		};
 
-		SongView_chordSequence.prototype.display = function() {
+		SongView_chordSequence.prototype.draw = function() {
 			var txt = '';
 			if (typeof this.songModel !== "undefined") {
 				if (this.displayTitle === true) {

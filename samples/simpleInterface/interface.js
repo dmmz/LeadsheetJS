@@ -257,7 +257,7 @@ define(function(require) {
 
 	function initChordSequenceModule(parentHTML, songModel, option) {
 		var chordSequence = new SongView_chordSequence(parentHTML, songModel, option);
-		chordSequence.display();
+		chordSequence.draw();
 	}
 
 	function initPlayerModule(songModel) {
