@@ -54,7 +54,7 @@ define(['jquery'], function($) {
 	/**
 	 * Direct link to the servlet ajax request with predefined ajax options
 	 * @param  {string}   servletRoot Servlet context root, eg. 'rechord', 'jsonsong', 'flow'
-	 * @param  {[type]}   servletName Servlet name eg. 'composer', 'harmonize', 'radiofeed'
+	 * @param  {string}   servletName Servlet name eg. 'composer', 'harmonize', 'radiofeed'
 	 * @param  {Object}   data        Contain a JS object that you want to send to the server
 	 * @param  {Function} callback    Function call when the request is complete, always launch whenever there is an error or not
 	 */
@@ -67,7 +67,7 @@ define(['jquery'], function($) {
 		}
 		var request = {
 			url: 'http://apijava.flow-machines.com:8080/' + servletRoot + '/' + servletName,
-			type: 'GET',
+			type: 'POST',
 			data: data,
 			dataType: 'json',
 			withCredentialsBool: true

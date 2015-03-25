@@ -61,7 +61,10 @@ define([
 
 		// Alteration
 		$('#double_flat').click(function() {
-			$.publish('NoteEditionView-addAccidental', {'acc':'b','double':true});
+			$.publish('NoteEditionView-addAccidental', {
+				'acc': 'b',
+				'double': true
+			});
 		});
 		$('#flat').click(function() {
 			$.publish('NoteEditionView-addAccidental', 'b');
@@ -73,7 +76,10 @@ define([
 			$.publish('NoteEditionView-addAccidental', '#');
 		});
 		$('#double_sharp').click(function() {
-			$.publish('NoteEditionView-addAccidental', {'acc':'#','double':true});
+			$.publish('NoteEditionView-addAccidental', {
+				'acc': '#',
+				'double': true
+			});
 		});
 
 		// Rhythm
@@ -148,10 +154,11 @@ define([
 			var key = String.fromCharCode(keyCode).toLowerCase();
 			var metaKey = !!evt.metaKey;
 
+
+			var d = evt.srcElement || evt.target;
 			//prevent backspace
 			if (keyCode === 8) {
 				var doPrevent = false;
-				var d = evt.srcElement || evt.target;
 				if (d.tagName.toUpperCase() === 'TEXTAREA' || (d.tagName.toUpperCase() === 'INPUT' && (d.type.toUpperCase() === 'TEXT' || d.type.toUpperCase() === 'PASSWORD' || d.type.toUpperCase() === 'FILE'))) {
 					doPrevent = d.readOnly || d.disabled;
 				} else {
@@ -162,8 +169,12 @@ define([
 				}
 			}
 
+			doListenToEvent = true;
+			if (d.tagName.toUpperCase() === 'TEXTAREA' || (d.tagName.toUpperCase() === 'INPUT' && (d.type.toUpperCase() === 'TEXT' || d.type.toUpperCase() === 'PASSWORD' || d.type.toUpperCase() === 'FILE'))) {
+				doListenToEvent = false;
+			}
 			//Functions for Notes
-			//if (self.isEditMode("notes")) {
+			if (doListenToEvent) {
 				if (keyCode == 38 || keyCode == 40) { // up & down arrows
 					var inc = (keyCode == 38) ? 1 : -1;
 					$.publish('NoteEditionView-setPitch', inc);
@@ -174,7 +185,10 @@ define([
 				} else if (ACC_KEYS.hasOwnProperty(key) && (!evt.ctrlKey)) {
 					var acc = ACC_KEYS[key];
 					// console.log(acc);
-					$.publish('NoteEditionView-addAccidental', {'acc':acc,'double':evt.shiftKey});
+					$.publish('NoteEditionView-addAccidental', {
+						'acc': acc,
+						'double': evt.shiftKey
+					});
 					stopEvent(evt);
 				} else if (parseInt(key, null) >= 1 && parseInt(key, null) <= 9) {
 					$.publish('NoteEditionView-setCurrDuration', key);
@@ -205,12 +219,13 @@ define([
 					$.publish('NoteEditionView-pasteNotes');
 					stopEvent(evt);
 				}
-			//}
+			}
 		});
 
 		function stopEvent(evt) {
 			evt.preventDefault();
 			evt.stopPropagation();
+			return false;
 		}
 	};
 
