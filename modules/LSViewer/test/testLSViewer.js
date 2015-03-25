@@ -56,13 +56,13 @@ define(['tests/DisplayTester',
 			
 			dispTest.runTest(function(divContainer){
 				var waveMng = new WaveManager();
-				var viewer = new LSViewer(divContainer,{heightOverflow:'resizeDiv',audioHeight:150});
+				var viewer = new LSViewer(divContainer,{heightOverflow:'resizeDiv',lineMarginTop:150});
 				var song = SongModel_CSLJson.importFromMusicCSLJSON(Solar);
 				viewer.draw(song);	
 				waveMng.load('/tests/audio/solar.wav',viewer,song);
 
 
-			},{width:1200,height:1000}, "leaving space for audio");
+			},{width:1200,height:1000}, "Painting audio");
 		}
 	};
 });

@@ -105,10 +105,10 @@ define([
 			this.DISPLAY_TITLE = (params.displayTitle != undefined) ? params.displayTitle : true;
 			this.DISPLAY_COMPOSER = (params.displayComposer != undefined) ? params.displayComposer : true;
 
-			if (params.audioHeight){
-				this.MARGIN_TOP += params.audioHeight;
-				this.LINE_HEIGHT += params.audioHeight;
-				this.AUDIO_HEIGHT = params.audioHeight;
+			if (params.lineMarginTop){
+				this.MARGIN_TOP += params.lineMarginTop;
+				this.LINE_HEIGHT += params.lineMarginTop;
+				this.LINE_MARGIN_TOP = params.lineMarginTop;
 			}
 
 			this.heightOverflow = params.heightOverflow || "auto";
@@ -354,39 +354,6 @@ define([
 			this._resetScale();
 			//console.timeEnd('whole draw');
 			$.publish('LSViewer-drawEnd', this);
-		};
-
-
-		
-		LSViewer.prototype.drawAudio = function(waveMng,song) {
-			var songIt = new SongBarsIterator(song);
-			var area,dim;
-			var numBars = song.getComponent("bars").getTotal();
-			
-			var sliceSong = 1/numBars;
-			var start = 0;
-			var peaks;
-			var toggleColor = 0;
-			var color = ["#55F","#A00"];
-			var i = 0;
-			while(songIt.hasNext()){
-				peaks = waveMng.getPeaks(1000,start,start+sliceSong);
-				dim = this.barWidthMng.getDimensions(songIt.getBarIndex());
-				area = {
-					x: dim.left,
-					y: dim.top-this.AUDIO_HEIGHT,
-					w: dim.width,
-					h: this.AUDIO_HEIGHT
-				};
-
-				waveMng.drawPeaks(peaks,area,color[toggleColor],this.ctx);
-				toggleColor = (toggleColor + 1) % 2;
-				
-				start += sliceSong;
-				songIt.next();
-				i++;
-			}	
-		
 		};
 		return LSViewer;
 

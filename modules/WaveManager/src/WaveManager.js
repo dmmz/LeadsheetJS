@@ -1,10 +1,10 @@
-define(function() {
+define(['modules/core/src/SongBarsIterator'],function(SongBarsIterator) {
 	function WaveManager() {
 		this.buffer = null;
 		this.source = null;
 		this.pixelRatio = window.devicePixelRatio;
 	}
-	WaveManager.prototype.load = function(url,ctx,song) {
+	WaveManager.prototype.load = function(url,viewer,song) {
 		var xhr = new XMLHttpRequest();
 		var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 		var source =  audioCtx.createBufferSource();
@@ -22,9 +22,9 @@ define(function() {
 			    source.buffer = self.buffer;
 			    //source.playbackRate.value = playbackControl.value;
 			    source.connect(audioCtx.destination);
-			    
+			    self.drawAudio(viewer,song)
 			    //source.start(0)
-			    $.publish('WaveManager-loadedSound',[self,song]);
+			    //$.publish('WaveManager-loadedSound',[self,song]);
 			   
 
 			  },
@@ -78,7 +78,6 @@ define(function() {
 	};
 
 	WaveManager.prototype.drawPeaks = function(peaks,area,color,ctx) {
-		
         // Split channels
         if (peaks[0] instanceof Array) {
             var channels = peaks;
@@ -140,5 +139,35 @@ define(function() {
         }, this);
   
 	};
+    WaveManager.prototype.drawAudio = function(viewer,song) {
+            var songIt = new SongBarsIterator(song);
+            var area,dim;
+            var numBars = song.getComponent("bars").getTotal();
+            
+            var sliceSong = 1/numBars;
+            var start = 0;
+            var peaks;
+            var toggleColor = 0;
+            var color = ["#55F","#A00"];
+            var i = 0;
+            while(songIt.hasNext()){
+                dim = viewer.barWidthMng.getDimensions(songIt.getBarIndex());
+                area = {
+                    x: dim.left,
+                    y: dim.top - viewer.LINE_MARGIN_TOP,
+                    w: dim.width,
+                    h: viewer.LINE_MARGIN_TOP
+                };
+                peaks = this.getPeaks(area.w,start,start+sliceSong);
+
+                this.drawPeaks(peaks,area,color[toggleColor],viewer.ctx);
+                toggleColor = (toggleColor + 1) % 2;
+                
+                start += sliceSong;
+                songIt.next();
+                i++;
+            }   
+        
+        };
 	return WaveManager;
 });
