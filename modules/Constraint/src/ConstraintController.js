@@ -67,7 +67,6 @@ define([
 		//self.view.displayHistory();
 
 		var logId = UserLog.log('info', 'Computing ...');
-
 		capi.constraintAPI(request, function(data) {
 			UserLog.removeLog(logId);
 			if (data.success === true) {
