@@ -47,6 +47,7 @@ define([
 			var divCss = {
 				textAlign: "center"
 			};
+			this.barWidthMng = null;
 
 			$(this.divContainer).css(divCss);
 			return canvas[0];
@@ -81,6 +82,10 @@ define([
 			$.subscribe('ToViewer-draw', function(el, songModel) {
 				self.draw(songModel);
 			});
+			$.subscribe('WaveManager-loadedSound', function(el, waveMng,song) {
+
+				self.drawAudio(waveMng,song);
+			});
 		};
 
 		LSViewer.prototype._init = function(divContainer, params) {
@@ -100,6 +105,11 @@ define([
 			this.DISPLAY_TITLE = (params.displayTitle != undefined) ? params.displayTitle : true;
 			this.DISPLAY_COMPOSER = (params.displayComposer != undefined) ? params.displayComposer : true;
 
+			if (params.audioHeight){
+				this.MARGIN_TOP += params.audioHeight;
+				this.LINE_HEIGHT += params.audioHeight;
+				this.AUDIO_HEIGHT = params.audioHeight;
+			}
 
 			this.heightOverflow = params.heightOverflow || "auto";
 			this.divContainer = divContainer;
@@ -234,9 +244,9 @@ define([
 				barDimensions,
 				tieMng = new TieManager();
 
-			var barWidthMng = new BarWidthManager(this.LINE_HEIGHT, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE, this.MARGIN_TOP);
-			barWidthMng.calculateBarsStructure(song, nm);
-			this.setHeight(song, barWidthMng);
+			this.barWidthMng = new BarWidthManager(this.LINE_HEIGHT, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE, this.MARGIN_TOP);
+			this.barWidthMng.calculateBarsStructure(song, nm);
+			this.setHeight(song, this.barWidthMng);
 
 			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 			this._scale();
@@ -282,7 +292,7 @@ define([
 					}
 					//console.timeEnd('drawNotes');
 
-					barDimensions = barWidthMng.getDimensions(songIt.getBarIndex());
+					barDimensions = self.barWidthMng.getDimensions(songIt.getBarIndex());
 					barView = new LSBarView(barDimensions);
 					//console.time('drawBars');
 					barView.draw(self.ctx, songIt, sectionIt, self.ENDINGS_Y, self.LABELS_Y);
@@ -326,7 +336,7 @@ define([
 				}
 				numSection++;
 			});
-			tieMng.draw(this.ctx, vxfNotes, nm, barWidthMng, song);
+			tieMng.draw(this.ctx, vxfNotes, nm, this.barWidthMng, song);
 			this.vxfNotes = vxfNotes;
 			this.vxfBars = vxfBars;
 			//this.lastDrawnSong = song;
@@ -344,6 +354,39 @@ define([
 			this._resetScale();
 			//console.timeEnd('whole draw');
 			$.publish('LSViewer-drawEnd', this);
+		};
+
+
+		
+		LSViewer.prototype.drawAudio = function(waveMng,song) {
+			var songIt = new SongBarsIterator(song);
+			var area,dim;
+			var numBars = song.getComponent("bars").getTotal();
+			
+			var sliceSong = 1/numBars;
+			var start = 0;
+			var peaks;
+			var toggleColor = 0;
+			var color = ["#55F","#A00"];
+			var i = 0;
+			while(songIt.hasNext()){
+				peaks = waveMng.getPeaks(1000,start,start+sliceSong);
+				dim = this.barWidthMng.getDimensions(songIt.getBarIndex());
+				area = {
+					x: dim.left,
+					y: dim.top-this.AUDIO_HEIGHT,
+					w: dim.width,
+					h: this.AUDIO_HEIGHT
+				};
+
+				waveMng.drawPeaks(peaks,area,color[toggleColor],this.ctx);
+				toggleColor = (toggleColor + 1) % 2;
+				
+				start += sliceSong;
+				songIt.next();
+				i++;
+			}	
+		
 		};
 		return LSViewer;
 

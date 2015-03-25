@@ -3,9 +3,11 @@ define(['tests/DisplayTester',
 	'modules/LSViewer/src/LSViewer',
 	'modules/core/src/SongModel',
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
+	'modules/WaveManager/src/WaveManager',
 	'tests/songs/allRhythmicFigures',
-	'tests/songs/AloneTogether'
-], function(DisplayTester,  LSViewer, SongModel, SongModel_CSLJson, allRhythmicFigures,AloneTogether) {
+	'tests/songs/AloneTogether',
+	'tests/songs/Solar',
+], function(DisplayTester,  LSViewer, SongModel, SongModel_CSLJson, WaveManager, allRhythmicFigures,AloneTogether,Solar) {
 	return {
 		run: function() {
 			
@@ -17,7 +19,7 @@ define(['tests/DisplayTester',
 
 			var viewer2 = new LSViewer($('#ls2')[0],{typeResize: 'scale'});
 			viewer2.draw(songModel);
-
+			
 			var dispTest = new DisplayTester();
 			dispTest.runTest(
 				function(divContainer){
@@ -35,9 +37,9 @@ define(['tests/DisplayTester',
 				'Bar 10: triplets'
 				]
 			);
-		
+			song = SongModel_CSLJson.importFromMusicCSLJSON(AloneTogether);
 			dispTest.runTest(function(divContainer) {
-				song = SongModel_CSLJson.importFromMusicCSLJSON(AloneTogether);
+			
 				viewer = new LSViewer(divContainer,{heightOverflow:'scroll'});
 				viewer.draw(song);
 			},
@@ -45,13 +47,22 @@ define(['tests/DisplayTester',
 			"Real song: AloneTogether scroll. div height is 1000 and canvas is larger, so it scrolls");
 
 			dispTest.runTest(function(divContainer) {
-				song = SongModel_CSLJson.importFromMusicCSLJSON(AloneTogether);
 				viewer = new LSViewer(divContainer,{heightOverflow:'resizeDiv'});
 				viewer.draw(song);
 			},
 			{width:1200,height:1000},
 			"Real song: AloneTogether resideDiv. Same canvas as previous test,  same div height (1000), but now div height is adapted");
 
+			
+			dispTest.runTest(function(divContainer){
+				var waveMng = new WaveManager();
+				var viewer = new LSViewer(divContainer,{heightOverflow:'resizeDiv',audioHeight:150});
+				var song = SongModel_CSLJson.importFromMusicCSLJSON(Solar);
+				viewer.draw(song);	
+				waveMng.load('/tests/audio/solar.wav',viewer,song);
+
+
+			},{width:1200,height:1000}, "leaving space for audio");
 		}
 	};
 });
