@@ -150,11 +150,7 @@ define([
 		}
 		return false;
 	};
-
-	ChordEditionView.prototype.getEditMode = function() {
-		return this.editMode;
-	};
-
+	
 	ChordEditionView.prototype.unactiveView = function(idElement) {
 		this.editMode = '';
 		$.publish('ChordEditionView-unactiveView');

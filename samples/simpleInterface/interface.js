@@ -140,22 +140,20 @@ define(function(require) {
 		fillEmptyBar: true,
 		fillEmptyBarCharacter: "%",
 	};
-	initChordSequenceModule(songModel, option);
-	/*
-		$('#main-container').prepend('<br />');
-		$('#main-container').prepend('<br />');
-		var optionChediak = {
-			displayTitle: true,
-			displayComposer: true,
-			displaySection: true,
-			displayBar: true,
-			delimiterBar: "",
-			delimiterBeat: "/",
-			unfoldSong: false, //TODO unfoldSong is not working yet
-			fillEmptyBar: false,
-			fillEmptyBarCharacter: "%",
-		};
-		initChordSequenceModule(songModel, optionChediak);*/
+	initChordSequenceModule($('#chordSequence1')[0], songModel, option);
+/*
+	var optionChediak = {
+		displayTitle: true,
+		displayComposer: true,
+		displaySection: true,
+		displayBar: true,
+		delimiterBar: "",
+		delimiterBeat: "/",
+		unfoldSong: false, //TODO unfoldSong is not working yet
+		fillEmptyBar: false,
+		fillEmptyBarCharacter: "%",
+	};
+	initChordSequenceModule($('#chordSequence2')[0], songModel, optionChediak);*/
 
 	myApp.viewer = new LSViewer($("#canvas_container")[0]);
 
@@ -257,10 +255,9 @@ define(function(require) {
 	});
 
 
-	function initChordSequenceModule(songModel, option) {
-		var chordSequence = new SongView_chordSequence(songModel, option);
-		var txt = chordSequence.display();
-		$('#main-container').prepend(txt);
+	function initChordSequenceModule(parentHTML, songModel, option) {
+		var chordSequence = new SongView_chordSequence(parentHTML, songModel, option);
+		chordSequence.display();
 	}
 
 	function initPlayerModule(songModel) {

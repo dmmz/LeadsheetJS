@@ -163,7 +163,7 @@ define([
 			}
 
 			//Functions for Notes
-			if (self.isEditMode("notes")) {
+			//if (self.isEditMode("notes")) {
 				if (keyCode == 38 || keyCode == 40) { // up & down arrows
 					var inc = (keyCode == 38) ? 1 : -1;
 					$.publish('NoteEditionView-setPitch', inc);
@@ -205,7 +205,7 @@ define([
 					$.publish('NoteEditionView-pasteNotes');
 					stopEvent(evt);
 				}
-			}
+			//}
 		});
 
 		function stopEvent(evt) {
@@ -226,10 +226,6 @@ define([
 			return true;
 		}
 		return false;
-	};
-
-	NoteEditionView.prototype.getEditMode = function() {
-		return this.editMode;
 	};
 
 	NoteEditionView.prototype.unactiveView = function(idElement) {

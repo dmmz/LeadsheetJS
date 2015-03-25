@@ -1,6 +1,7 @@
 define(['modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/core/src/BarManager', 'modules/core/src/BarModel', 'modules/core/src/ChordManager', 'modules/core/src/ChordModel'],
 	function(SongModel, SectionModel, BarManager, BarModel, ChordManager, ChordModel) {
-		function SongView_chordSequence(songModel, option) {
+		function SongView_chordSequence(parentHTML, songModel, option) {
+			this.el = parentHTML;
 			// songModel
 			this.songModel = (typeof songModel !== "undefined" && songModel instanceof SongModel) ? songModel : undefined;
 
@@ -18,7 +19,16 @@ define(['modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/
 			this.unfoldSong = (typeof option !== "undefined" && typeof option.unfoldSong !== "undefined") ? option.unfoldSong : false;
 			this.fillEmptyBar = (typeof option !== "undefined" && typeof option.fillEmptyBar !== "undefined") ? option.fillEmptyBar : true;
 			this.fillEmptyBarCharacter = (typeof option !== "undefined" && typeof option.fillEmptyBarCharacter !== "undefined") ? option.fillEmptyBarCharacter : "%";
+
+			this._initSubscribe();
 		}
+
+		SongView_chordSequence.prototype._initSubscribe = function() {
+			var self = this;
+			$.subscribe('ToViewer-draw', function(el, songModel) {
+				self.display();
+			});
+		};
 
 		SongView_chordSequence.prototype.display = function() {
 			var txt = '';
@@ -61,7 +71,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/
 								txt += this.fillEmptyBarCharacter + ' ';
 							} else {
 								for (var k = 0, v = chordsInCurrentBar.length; k < v; k++) {
-									if (typeof chordsInCurrentBar[k + 1] !== "undefined" && chordsInCurrentBar[k].getBeat() == chordsInCurrentBar[k + 1].getBeat()) {
+									if (typeof chordsInCurrentBar[k + 1] !== "undefined" && (chordsInCurrentBar[k].getBeat() === chordsInCurrentBar[k + 1].getBeat())) {
 										txt += chordsInCurrentBar[k].toString('') + '_';
 									} else {
 										txt += chordsInCurrentBar[k].toString('') + ' ';
@@ -84,7 +94,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/
 					txt += this.delimiterNewLine;
 				}
 			}
-			return txt;
+			this.el.innerHTML = txt;
 		};
 
 
