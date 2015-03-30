@@ -148,7 +148,7 @@ define(['modules/core/src/SongBarsIterator'],function(SongBarsIterator) {
             var start = 0;
             var peaks;
             var toggleColor = 0;
-            var color = ["#55F","#A00"];
+            var color = ["#55F","#5A5"];
             var i = 0;
             while(songIt.hasNext()){
                 dim = viewer.barWidthMng.getDimensions(songIt.getBarIndex());
