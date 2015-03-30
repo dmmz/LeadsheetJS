@@ -2,9 +2,9 @@ define([
 	'utils/AjaxUtils',
 ], function(AjaxUtils) {
 
-	function HarmonizeAPI() {}
+	function HarmonizerAPI() {}
 
-	HarmonizeAPI.prototype.harmonizeFromIdSongAPI = function(idSong, style, callback) {
+	HarmonizerAPI.prototype.harmonizeFromIdSongAPI = function(idSong, style, callback) {
 		var request = {
 			'id': idSong,
 			'setName': style,
@@ -12,7 +12,7 @@ define([
 		AjaxUtils.servletRequest('flow', 'harmonize', request, callback);
 	};
 
-	HarmonizeAPI.prototype.harmonizeFromLeadsheetAPI = function(leadsheet, style, callback) {
+	HarmonizerAPI.prototype.harmonizeFromLeadsheetAPI = function(leadsheet, style, callback) {
 		var request = {
 			'leadsheet': leadsheet,
 			'setName': style,
@@ -20,5 +20,5 @@ define([
 		AjaxUtils.servletRequest('flow', 'harmonize', request, callback);
 	};
 
-	return HarmonizeAPI;
+	return HarmonizerAPI;
 });

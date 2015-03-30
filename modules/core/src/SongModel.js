@@ -108,10 +108,11 @@ define([
 			throw "invalid barNumber " + barNumber;
 		}
 		var currentTonality = this.tonality;
+		var bm = this.getComponent("bars");
 		var tonality;
 		while (barNumber >= 0) {
-			if (this.getBar(barNumber) != null) {
-				tonality = this.getBar(barNumber).getTonality();
+			if (bm.getBar(barNumber) != null) {
+				tonality = bm.getBar(barNumber).getTonality();
 				if (typeof tonality !== "undefined" && tonality !== '') {
 					return tonality;
 				}
@@ -143,9 +144,10 @@ define([
 			return currentTimeSignature; // TODO need test on song that have repetitions on last section and a time signature change
 		}
 		var startBarSection = this.getStartBarNumberFromSectionNumber(sectionNumber);
+		var bm = this.getComponent("bars");
 		// loop in all previous bar in the current section
 		while (barNumber >= startBarSection) {
-			timeSig = this.getBar(barNumber).getTimeSignature();
+			timeSig = bm.getBar(barNumber).getTimeSignature();
 			if (typeof timeSig !== "undefined") {
 				return timeSig;
 			}
@@ -221,6 +223,7 @@ define([
 
 	SongModel.prototype.getBar = function(index) {
 		//TODO, remove function, duplicate
+		console.warn('get bar will be deleted, use getComponent("bars") instead');
 		return this.getComponent("bars").getBar(index);
 	};
 
@@ -233,7 +236,7 @@ define([
 	 */
 	SongModel.prototype.getBarNumBeats = function(numBar, currentBeats) {
 		//console.log(currentBeats, numBar, this.getComponent("bars").getTotal());
-		var barTimeSig = this.getBar(numBar).getTimeSignature(),
+		var barTimeSig = this.getComponent("bars").getBar(numBar).getTimeSignature(),
 			timeSig = barTimeSig || this.getTimeSignature();
 		if (!timeSig && !currentBeats) throw "bad use: either song is not well formatted, either currentBeats is not sent";
 
@@ -242,6 +245,7 @@ define([
 
 	SongModel.prototype.getBars = function() {
 		//TODO, remove function, duplicate
+		console.warn('getBars will be deleted, use getComponent("bars").getBars() instead');
 		return this.getComponent("bars").getBars();
 	};
 
@@ -284,6 +288,7 @@ define([
 	 */
 	SongModel.prototype.getUnfoldedSongSection = function(sectionNumber) {
 		if (typeof sectionNumber !== "undefined" && !isNaN(sectionNumber)) {
+			var bm = this.getComponent("bars");
 			var pointerBarNumberStructure = [];
 			var endingBar;
 			var alreadyAddedbars = []; // contains the bars that are in 1 part so when we will look in 2 part they will not be getted
@@ -301,7 +306,7 @@ define([
 				endBar = startBar + section.getNumberOfBars();
 				for (var barNumber = startBar; barNumber < endBar; barNumber++) {
 					if (alreadyAddedbars.indexOf(barNumber) === -1) { // excluding first part if there is one
-						endingBar = this.getBar(barNumber).getEnding();
+						endingBar = bm.getBar(barNumber).getEnding();
 						if (endingBar == '1') {
 							repeat--;
 						}

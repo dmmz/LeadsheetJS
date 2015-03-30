@@ -1,6 +1,7 @@
 define(['modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/core/src/BarManager', 'modules/core/src/BarModel', 'modules/core/src/ChordManager', 'modules/core/src/ChordModel'],
 	function(SongModel, SectionModel, BarManager, BarModel, ChordManager, ChordModel) {
-		function SongView_chordSequence(songModel, option) {
+		function SongView_chordSequence(parentHTML, songModel, option) {
+			this.el = parentHTML;
 			// songModel
 			this.songModel = (typeof songModel !== "undefined" && songModel instanceof SongModel) ? songModel : undefined;
 
@@ -18,9 +19,18 @@ define(['modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/
 			this.unfoldSong = (typeof option !== "undefined" && typeof option.unfoldSong !== "undefined") ? option.unfoldSong : false;
 			this.fillEmptyBar = (typeof option !== "undefined" && typeof option.fillEmptyBar !== "undefined") ? option.fillEmptyBar : true;
 			this.fillEmptyBarCharacter = (typeof option !== "undefined" && typeof option.fillEmptyBarCharacter !== "undefined") ? option.fillEmptyBarCharacter : "%";
+
+			this._initSubscribe();
 		}
 
-		SongView_chordSequence.prototype.display = function() {
+		SongView_chordSequence.prototype._initSubscribe = function() {
+			var self = this;
+			$.subscribe('ToViewer-draw', function(el, songModel) {
+				self.draw();
+			});
+		};
+
+		SongView_chordSequence.prototype.draw = function() {
 			var txt = '';
 			if (typeof this.songModel !== "undefined") {
 				if (this.displayTitle === true) {
@@ -32,6 +42,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/
 				if (this.displayTitle === true || this.displayComposer === true) {
 					txt += this.delimiterNewLine;
 				}
+				var bm = this.songModel.getComponent("bars");
 				var sectionsLength = this.songModel.getSections().length;
 				for (var i = 0; i < sectionsLength; i++) {
 					txt += this.delimiterNewLine;
@@ -45,7 +56,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/
 						var cm;
 						for (var j = 0, c = bars.length; j < c; j++) {
 							currentBarNumber = bars[j];
-							currentBar = this.songModel.getBar(currentBarNumber);
+							currentBar = bm.getBar(currentBarNumber);
 							if (j !== 0) {
 								txt += this.delimiterBar;
 							}
@@ -60,7 +71,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/
 								txt += this.fillEmptyBarCharacter + ' ';
 							} else {
 								for (var k = 0, v = chordsInCurrentBar.length; k < v; k++) {
-									if (typeof chordsInCurrentBar[k + 1] !== "undefined" && chordsInCurrentBar[k].getBeat() == chordsInCurrentBar[k + 1].getBeat()) {
+									if (typeof chordsInCurrentBar[k + 1] !== "undefined" && (chordsInCurrentBar[k].getBeat() === chordsInCurrentBar[k + 1].getBeat())) {
 										txt += chordsInCurrentBar[k].toString('') + '_';
 									} else {
 										txt += chordsInCurrentBar[k].toString('') + ' ';
@@ -83,7 +94,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/
 					txt += this.delimiterNewLine;
 				}
 			}
-			return txt;
+			this.el.innerHTML = txt;
 		};
 
 

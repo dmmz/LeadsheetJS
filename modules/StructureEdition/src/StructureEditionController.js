@@ -384,16 +384,15 @@ define([
 	};
 
 	StructureEditionController.prototype.unfold = function() {
-		
-		if (!this.structEditionModel.unfolded){
+		if (!this.structEditionModel.unfolded) {
 			this.oldSong = this.songModel;
 			var newSongModel = this.songModel.unfold();
-			myApp.viewer.draw(newSongModel);	
-		}else{
-			myApp.viewer.draw(this.oldSong);
+			$.publish('ToViewer-draw', newSongModel);
+		} else {
+			$.publish('ToViewer-draw', this.oldSong);
 		}
 		this.structEditionModel.toggleUnfolded();
-		
+
 	};
 
 	return StructureEditionController;

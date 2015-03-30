@@ -1,11 +1,12 @@
 define([
 	'mustache',
 	'modules/core/src/SongModel',
+	'modules/Tag/src/TagManager',
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
 	'modules/Constraint/src/ConstraintAPI',
 	'utils/UserLog',
 	'pubsub',
-], function(Mustache, SongModel, SongModel_CSLJson, ConstraintAPI, UserLog, pubsub) {
+], function(Mustache, SongModel, TagManager, SongModel_CSLJson, ConstraintAPI, UserLog, pubsub) {
 
 	function ConstraintController(songModel) {
 		this.songModel = songModel || new SongModel();
@@ -28,7 +29,6 @@ define([
 		var timeSignature = "4/4";
 		var leadsheet = {};
 		leadsheet = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel);
-
 		timeSignatureFilter = "all";
 		var request = {
 			'incompleteLeadsheet': JSON.stringify(leadsheet),
@@ -67,10 +67,8 @@ define([
 		//self.view.displayHistory();
 
 		var logId = UserLog.log('info', 'Computing ...');
-
 		capi.constraintAPI(request, function(data) {
 			UserLog.removeLog(logId);
-			console.log(data);
 			if (data.success === true) {
 				//self.model.addToHistory(data.result);
 				//self.model.setCurrentPositionHistory(self.model.scoreHistory.length - 1);
@@ -80,11 +78,11 @@ define([
 
 				//console.log(data.result);
 				SongModel_CSLJson.importFromMusicCSLJSON(data.result, self.songModel);
+
+				if (typeof data.tags !== "undefined") {
+					var tags = new TagManager(self.songModel, data.tags);
+				}
 				$.publish('ToViewer-draw', self.songModel);
-				/*if (typeof data.tags !== "undefined") {
-					var harm = new HarmonicAnalysis(editor);
-					harm.drawAreaFromJSON(data.tags);
-				}*/
 				UserLog.logAutoFade('success', 'Constraint is finished');
 			} else {
 				var message = 'Unknown error';

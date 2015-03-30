@@ -15,7 +15,7 @@ define([
             $.ajax({
                 url: 'http://localhost:8080/flow/ct',
                 dataType: 'json',
-                type: 'GET',
+                type: 'POST',
                 data: request,
                 xhrFields: {
                     withCredentials: true

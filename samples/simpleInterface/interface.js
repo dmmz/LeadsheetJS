@@ -59,6 +59,10 @@ define(function(require) {
 
 	var HarmonizerController = require('modules/Harmonizer/src/HarmonizerController');
 	var HarmonizerView = require('modules/Harmonizer/src/HarmonizerView');
+
+	var HarmonicAnalysisController = require('modules/HarmonicAnalysis/src/HarmonicAnalysisController');
+	var HarmonicAnalysisView = require('modules/HarmonicAnalysis/src/HarmonicAnalysisView');
+
 	var ConstraintModel = require('modules/Constraint/src/ConstraintModel');
 	var ConstraintView = require('modules/Constraint/src/ConstraintView');
 	var ConstraintController = require('modules/Constraint/src/ConstraintController');
@@ -102,6 +106,8 @@ define(function(require) {
 	var CursorController = require('modules/Cursor/src/CursorController');
 	var CursorView = require('modules/Cursor/src/CursorView');
 
+	var TagManager = require('modules/Tag/src/TagManager');
+
 	var myApp = {};
 
 	var menuM = new MainMenuModel();
@@ -121,7 +127,7 @@ define(function(require) {
 	// tried for unfolding
 	// var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
 
-	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleIncompleteLeadSheet);
+	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
 	//initPlayerModule(songModel);
 
 	var option = {
@@ -130,26 +136,24 @@ define(function(require) {
 		displaySection: true,
 		displayBar: true,
 		delimiterBar: "|",
-		unfoldSong: false, //TODO unfoldSong is not working yet
+		unfoldSong: false, // TODO unfoldSong is not working yet
 		fillEmptyBar: true,
 		fillEmptyBarCharacter: "%",
 	};
-	initChordSequenceModule(songModel, option);
-	/*
-		$('#main-container').prepend('<br />');
-		$('#main-container').prepend('<br />');
-		var optionChediak = {
-			displayTitle: true,
-			displayComposer: true,
-			displaySection: true,
-			displayBar: true,
-			delimiterBar: "",
-			delimiterBeat: "/",
-			unfoldSong: false, //TODO unfoldSong is not working yet
-			fillEmptyBar: false,
-			fillEmptyBarCharacter: "%",
-		};
-		initChordSequenceModule(songModel, optionChediak);*/
+	initChordSequenceModule($('#chordSequence1')[0], songModel, option);
+/*
+	var optionChediak = {
+		displayTitle: true,
+		displayComposer: true,
+		displaySection: true,
+		displayBar: true,
+		delimiterBar: "",
+		delimiterBeat: "/",
+		unfoldSong: false, //TODO unfoldSong is not working yet
+		fillEmptyBar: false,
+		fillEmptyBarCharacter: "%",
+	};
+	initChordSequenceModule($('#chordSequence2')[0], songModel, optionChediak);*/
 
 	myApp.viewer = new LSViewer($("#canvas_container")[0]);
 
@@ -174,6 +178,11 @@ define(function(require) {
 		// Harmonize menu
 		var hV = new HarmonizerView();
 		var hC = new HarmonizerController(songModel, hV);
+
+		// Harmonic Analysis menu
+		var haV = new HarmonicAnalysisView();
+		var haC = new HarmonicAnalysisController(songModel, haV);
+
 
 		// Constraint menu
 		var cM = new ConstraintModel();
@@ -226,6 +235,13 @@ define(function(require) {
 				order: 6
 			});
 		});
+		haV.render(undefined, true, function() {
+			menuM.addMenu({
+				title: 'Harmonic Analysis',
+				view: haV,
+				order: 7
+			});
+		});
 		feV.render(undefined, true, function() {
 			menuM.addMenu({
 				title: 'File',
@@ -235,13 +251,13 @@ define(function(require) {
 		});
 
 		$.publish('ToViewer-draw', songModel);
+
 	});
 
 
-	function initChordSequenceModule(songModel, option) {
-		var chordSequence = new SongView_chordSequence(songModel, option);
-		var txt = chordSequence.display();
-		$('#main-container').prepend(txt);
+	function initChordSequenceModule(parentHTML, songModel, option) {
+		var chordSequence = new SongView_chordSequence(parentHTML, songModel, option);
+		chordSequence.draw();
 	}
 
 	function initPlayerModule(songModel) {

@@ -100,7 +100,7 @@ define([
 				xe: boundingBox.w + this.CURSORMARGINLEFT + this.CURSORMARGINRIGHT,
 				ye: this.CURSORHEIGHT
 			};
-			noteSpace.push(new NoteSpaceView(viewer, area));
+			noteSpace.push(new NoteSpaceView(area));
 		}
 		return noteSpace;
 	};
