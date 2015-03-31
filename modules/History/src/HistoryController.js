@@ -46,7 +46,9 @@ define([
 			return;
 		}
 		this.model.setCurrentPosition(currentHistory);
-		SongModel_CSLJson.importFromMusicCSLJSON(this.model.getCurrentState().leadsheet, this.songModel);
+		if (typeof this.model.getCurrentState().leadsheet !== "undefined") {
+			SongModel_CSLJson.importFromMusicCSLJSON(this.model.getCurrentState().leadsheet, this.songModel);
+		}
 		$.publish('ToViewer-draw', this.songModel);
 		// $.publish('toSongModel-load', this.model.getCurrentState().leadsheet); // TODO must work! this or this.songModel
 	};
@@ -59,7 +61,6 @@ define([
 		if (isNaN(inc)) {
 			throw 'HistoryController - moveSelectHistory - inc must be an int ' + inc;
 		}
-		console.log('load', this.model.getCurrentPosition(), inc)
 		this.loadHistory(this.model.getCurrentPosition() + inc);
 	};
 
