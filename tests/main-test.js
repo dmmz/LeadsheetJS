@@ -64,6 +64,7 @@ define(function(require) {
 
 
   var testHistoryModel = require('modules/History/test/testHistoryModel');
+  var testHistoryController = require('modules/History/test/testHistoryController');
 
   var testNoteEditionController  = require('modules/NoteEdition/test/testNoteEditionController');
   var testStructureEditionController  = require('modules/StructureEdition/test/testStructureEditionController');
@@ -130,6 +131,7 @@ define(function(require) {
   testHarmonizerController.run();
 
   testHistoryModel.run();
+  testHistoryController.run();
 
   testModuleManager.run();
   testMainMenuModel.run();

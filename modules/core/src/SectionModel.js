@@ -13,23 +13,21 @@ define(function() {
 	// Basic getters setters //
 	/////////////////////////
 
-	SectionModel.prototype.setName = function(name) 
-	{
+	SectionModel.prototype.setName = function(name) {
 		/*using 'name !== undefined' instead of 'typeof "undefined"', because in this case (ternary if) everything is in same line, 
 		and it is more readable like this*/
-		this.name = (name !== undefined) ? name : '';	
+		this.name = (name !== undefined) ? name : '';
 	};
 
 	SectionModel.prototype.getName = function() {
 		return this.name;
 	};
 
-	SectionModel.prototype.setRepeatTimes = function(repeatTimes) 
-	{
-		if (repeatTimes === undefined){
+	SectionModel.prototype.setRepeatTimes = function(repeatTimes) {
+		if (repeatTimes === undefined) {
 			repeatTimes = 0;
 		}
-		if (repeatTimes < 0){
+		if (repeatTimes < 0) {
 			throw "repeatTimes cannot be negative";
 		}
 		this.repeatTimes = repeatTimes;
@@ -39,8 +37,7 @@ define(function() {
 		return this.repeatTimes;
 	};
 
-	SectionModel.prototype.setNumberOfBars = function(numberOfBars) 
-	{
+	SectionModel.prototype.setNumberOfBars = function(numberOfBars) {
 		this.numberOfBars = (numberOfBars !== undefined) ? numberOfBars : 0;
 	};
 
@@ -48,8 +45,7 @@ define(function() {
 		return this.numberOfBars;
 	};
 
-	SectionModel.prototype.setStyle = function(style) 
-	{
+	SectionModel.prototype.setStyle = function(style) {
 		this.style = (style !== undefined) ? style : '';
 	};
 
@@ -58,7 +54,7 @@ define(function() {
 	};
 
 	SectionModel.prototype.setTimeSignature = function(timeSignature) {
-		this.timeSignature = (timeSignature !== undefined) ? timeSignature : undefined; 
+		this.timeSignature = (timeSignature !== undefined) ? timeSignature : undefined;
 		// empty timeSignature means it doesn't change from previous 
 	};
 
@@ -67,11 +63,11 @@ define(function() {
 	};
 	/**
 	 * returns the unfolded section
-	 * @param  {Number} numBars the number of bars of the unfolded section. This can be calculated by SongModel.getUnfoldedSongSection.  
-	 * @return {SectionModel}         
+	 * @param  {Number} numBars the number of bars of the unfolded section. This can be calculated by SongModel.getUnfoldedSongSection.
+	 * @return {SectionModel}
 	 */
 	SectionModel.prototype.cloneUnfolded = function(numBars) {
-		if (!numBars)	throw "SectionModel - cloneUnfolded: numBars not valid :" + numBars;
+		if (!numBars) throw "SectionModel - cloneUnfolded: numBars not valid :" + numBars;
 		return new SectionModel({
 			name: this.name,
 			numberOfBars: numBars,

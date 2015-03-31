@@ -5,10 +5,9 @@ define([
 ], function(Mustache, SongModel, UserLog, pubsub) {
 	/**
 	 * HistoryModel is an array of state, it allow a high level management of Historys
-	 * @param {songModel} songModel
 	 * @param {object} options
 	 */
-	var HistoryModel = function(songModel, options) {
+	var HistoryModel = function(options) {
 		this.init();
 	};
 
@@ -17,18 +16,22 @@ define([
 	 * By default currentPosition is on 0
 	 */
 	HistoryModel.prototype.init = function() {
-		this.historyList = [];    // state list
+		this.historyList = []; // state list
 		this.currentPosition = 0; // current Position start at 0
 	};
-	
+
 	HistoryModel.prototype.getCurrentPosition = function() {
 		return this.currentPosition;
+	};
+
+	HistoryModel.prototype.getCurrentState = function() {
+		return this.historyList[this.currentPosition];
 	};
 
 	HistoryModel.prototype.setCurrentPosition = function(position) {
 		if (!isNaN(position) && position >= 0 && position < this.historyList.length) {
 			this.currentPosition = position;
-			$.publish('HistoryModel-setCurrentPosition', position);
+			$.publish('HistoryModel-setCurrentPosition', this);
 		}
 	};
 
@@ -48,7 +51,7 @@ define([
 			'time': time
 		};
 		this.historyList.push(newHistorical);
-		$.publish('HistoryModel-addToHistory', newHistorical);
+		$.publish('HistoryModel-addToHistory', this);
 	};
 
 	return HistoryModel;

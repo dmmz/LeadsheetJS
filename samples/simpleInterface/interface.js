@@ -114,10 +114,6 @@ define(function(require) {
 	var menuV = new MainMenuView(menuM, document.getElementById('menu-container'));
 	var menuC = new MainMenuController(menuM, menuV);
 
-	myApp.menu = menuV;
-	myApp.historyM = new HistoryModel();
-	myApp.historyV = new HistoryView(myApp.historyM);
-	myApp.historyC = new HistoryController(myApp.historyM, myApp.historyV);
 
 	//myApp.historyV.activeView();
 	/*myApp.historyM.addToHistory({},'Edit notes');
@@ -130,6 +126,14 @@ define(function(require) {
 	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
 	//initPlayerModule(songModel);
 
+	var historyM = new HistoryModel();
+	var historyV = new HistoryView();
+	var historyC = new HistoryController(historyM, songModel);
+	
+	$.publish('ToHistory-add', {
+		'item': testSongs.simpleLeadSheet,
+		'title': 'Initial'
+	});
 	var option = {
 		displayTitle: true,
 		displayComposer: true,
@@ -141,19 +145,19 @@ define(function(require) {
 		fillEmptyBarCharacter: "%",
 	};
 	initChordSequenceModule($('#chordSequence1')[0], songModel, option);
-/*
-	var optionChediak = {
-		displayTitle: true,
-		displayComposer: true,
-		displaySection: true,
-		displayBar: true,
-		delimiterBar: "",
-		delimiterBeat: "/",
-		unfoldSong: false, //TODO unfoldSong is not working yet
-		fillEmptyBar: false,
-		fillEmptyBarCharacter: "%",
-	};
-	initChordSequenceModule($('#chordSequence2')[0], songModel, optionChediak);*/
+	/*
+		var optionChediak = {
+			displayTitle: true,
+			displayComposer: true,
+			displaySection: true,
+			displayBar: true,
+			delimiterBar: "",
+			delimiterBeat: "/",
+			unfoldSong: false, //TODO unfoldSong is not working yet
+			fillEmptyBar: false,
+			fillEmptyBarCharacter: "%",
+		};
+		initChordSequenceModule($('#chordSequence2')[0], songModel, optionChediak);*/
 
 	myApp.viewer = new LSViewer($("#canvas_container")[0]);
 
@@ -249,9 +253,7 @@ define(function(require) {
 				order: 1
 			});
 		});
-
 		$.publish('ToViewer-draw', songModel);
-
 	});
 
 
