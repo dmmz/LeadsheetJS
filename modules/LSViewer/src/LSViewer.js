@@ -12,28 +12,30 @@ define([
 		'pubsub'
 	],
 	function(Vex, LSNoteView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator, pubsub) {
-
-
-
 		/**
 		 * LSViewer Constructor
 		 * @param {domObject} jQuery divContainer ; e.g.: $("#divContainerId");
-		 * @param {Object} params possible params:
+		 * @param {Object} params, possible params:
+		 *  
 		 *  - width: in pixels
+		 *  
 		 *  - heightOverflow: "scroll" | "auto".
-		 *  If scroll, when canvas is larger than containing div, it will scroll, if not, it will change div width
+		 *    If scroll, when canvas is larger than containing div, it will scroll, if not, it will change div width
 		 *  - typeResize: "scale" | "fluid",
-		 *  If scale, when canvas is wider than containing div, it will scale to fit; if "fluid" it will try to fit withouth scaling.
+		 *    If scale, when canvas is wider than containing div, it will scale to fit; if "fluid" it will try to fit withouth scaling.
 		 *  - displayTitle
-		 *  - displayComposer
-		 *  //TODO: possibility of combining both (scale partially and then fluid)
+		 *  - displayComposer   // TODO: possibility of combining both (scale partially and then fluid)
+		 *  - layer: true
+		 *  
 		 */
 		function LSViewer(divContainer, params) {
+			params = params || {};
 			this.el = divContainer;
 			this._init(divContainer, params);
 			this.drawableModel = [];
 			this._initController();
 			this._initSubscribe();
+			
 		}
 
 		/**
@@ -51,6 +53,35 @@ define([
 
 			$(this.divContainer).css(divCss);
 			return canvas[0];
+		};
+		/**
+		 * creates the layer if it does not exists
+		 * @return {canvas context} 
+		 */
+		LSViewer.prototype._createLayer = function() {
+			if (!this.canvas){
+				throw "LSViewer cannot create layer because canvas does not exist";
+			}
+			var canvasEl = $(this.canvas),
+				idCanvas = $(this.canvas).attr('id'),
+				idLayer = idCanvas + "-layer",
+				offset = canvasEl.offset(),
+				layersProps = {
+					position:"absolute",
+					left:offset.left,
+					top:offset.top
+				};
+			var layerCanvas;
+			// we only create it if it does not exist
+			if ($("canvas#" + idLayer).length === 0){
+				$("<canvas id='"+ idLayer + "' width='" + canvasEl.width() + "' height='" + canvasEl.height() + "'></canvas>").insertAfter(canvasEl);
+				layerCanvas = $("#" + idLayer);
+				layerCanvas.css(layersProps);
+				layerCanvas.css('z-index',10);
+			}else{
+				layerCanvas = $("canvas#" + idLayer);
+			}
+			return layerCanvas[0].getContext('2d');
 		};
 		/**
 		 * Publish event after receiving dom events
@@ -82,10 +113,6 @@ define([
 			$.subscribe('ToViewer-draw', function(el, songModel) {
 				self.draw(songModel);
 			});
-			$.subscribe('WaveManager-loadedSound', function(el, waveMng,song) {
-
-				self.drawAudio(waveMng,song);
-			});
 		};
 
 		LSViewer.prototype._init = function(divContainer, params) {
@@ -114,7 +141,6 @@ define([
 			this.heightOverflow = params.heightOverflow || "auto";
 			this.divContainer = divContainer;
 
-
 			var idScore = "ls" + ($("canvas").length + 1),
 				width = (params.width) ? params.width : $(divContainer).width() * this.CANVAS_DIV_WIDTH_PROPORTION;
 
@@ -126,6 +152,10 @@ define([
 				this.SCALE = (width / this.LINE_WIDTH) * 0.95;
 			} else { // typeResize == 'fluid'
 				this._setWidth(width);
+			}
+
+			if (params.layer){
+				this.layerCtx = this._createLayer();
 			}
 		};
 
@@ -251,12 +281,6 @@ define([
 			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 			this._scale();
 
-			// call drawable elem with zIndex < 10
-			for (i = 0, c = this.drawableModel.length; i < c; i++) {
-				if (this.drawableModel[i].zIndex < 10 && typeof this.drawableModel[i].elem.draw === "function") {
-					this.drawableModel[i].elem.draw(self);
-				}
-			}
 
 			var numSection = 0;
 			var songIt = new SongBarsIterator(song);
@@ -342,11 +366,11 @@ define([
 			//this.lastDrawnSong = song;
 
 			// call drawable elem with zIndex > 10
-			for (i = 0, c = this.drawableModel.length; i < c; i++) {
-				if (this.drawableModel[i].zIndex >= 10 && typeof this.drawableModel[i].elem.draw === "function") {
-					this.drawableModel[i].elem.draw(self);
-				}
-			}
+			// for (i = 0, c = this.drawableModel.length; i < c; i++) {
+			// 	if (this.drawableModel[i].zIndex >= 10 && typeof this.drawableModel[i].elem.draw === "function") {
+			// 		this.drawableModel[i].elem.draw(self);
+			// 	}
+			// }
 			this.ctx.fillStyle = "black";
 			this.ctx.strokeStyle = "black";
 			this._displayComposer(song.getComposer());

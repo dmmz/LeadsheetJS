@@ -44,14 +44,21 @@ define(['tests/DisplayTester',
 				viewer.draw(song);
 			},
 			{width:1200,height:1000},
-			"Real song: AloneTogether scroll. div height is 1000 and canvas is larger, so it scrolls");
+			"Real song: AloneTogether scroll. div height is 1000 and canvas is larger, so it scrolls. ");
 
 			dispTest.runTest(function(divContainer) {
-				viewer = new LSViewer(divContainer,{heightOverflow:'resizeDiv'});
+				viewer = new LSViewer(divContainer,{heightOverflow:'resizeDiv',layer:true});
 				viewer.draw(song);
+				//test drawing on layer 
+				
+				viewer.layerCtx.font = "18px lato Verdana";
+				viewer.layerCtx.fillText(" This square is drawn in a new layer (canvas) placed on top of the main canvas", 65, 30);
+				viewer.layerCtx.fillStyle = "rgb(200,0,0)";
+				viewer.layerCtx.fillRect (10, 10, 55, 50);
+
 			},
 			{width:1200,height:1000},
-			"Real song: AloneTogether resideDiv. Same canvas as previous test,  same div height (1000), but now div height is adapted");
+			"Real song: AloneTogether resideDiv. Same canvas as previous test,  same div height (1000), but now div height is adapted. Also, creating a new layer");
 
 			
 			dispTest.runTest(function(divContainer){
