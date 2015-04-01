@@ -61,23 +61,16 @@ define([
 		var capi = new ConstraintAPI();
 		var request = {};
 		request = this.constraint2API(songset, composer, timeSignature, source, numberOfBars);
-
-		//this.model.addToHistory(request.leadsheet);
-		//this.model.setCurrentPositionHistory(this.model.scoreHistory.length - 1);
-		//self.view.displayHistory();
-
 		var logId = UserLog.log('info', 'Computing ...');
 		capi.constraintAPI(request, function(data) {
 			UserLog.removeLog(logId);
 			if (data.success === true) {
-				//self.model.addToHistory(data.result);
-				//self.model.setCurrentPositionHistory(self.model.scoreHistory.length - 1);
-				//self.view.displayHistory();
-
 				self._compareObj(request.leadsheet, data.result);
-
-				//console.log(data.result);
 				SongModel_CSLJson.importFromMusicCSLJSON(data.result, self.songModel);
+				$.publish('ToHistory-add', {
+					'item': data.result,
+					'title': 'Constraint'
+				});
 
 				if (typeof data.tags !== "undefined") {
 					var tags = new TagManager(self.songModel, data.tags);

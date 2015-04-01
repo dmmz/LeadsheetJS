@@ -9,12 +9,12 @@ define([
 	 * @param {Array} tags      Array of object that contain at least a startBeat, a endBeat, can also contain a name
 	 * @param {Array} colors    Array of colors in rgba or hexadecimal or html color
 	 */
-	function TagManager(songModel, tags, colors) {
+	function TagManager(songModel, tags, colors, isActive) {
 		this.songModel = songModel;
 		this.tags = (typeof tags !== "undefined") ? tags : [];
 		this.colors = (typeof colors !== "undefined") ? colors : ["#559", "#995", "#599", "#595"];
 		this.tagSpace = [];
-		this.isActive = true;
+		this.isActive = (typeof isActive !== "undefined") ? isActive : true;
 		this.initSubscribe();
 		this.CURSOR_HEIGHT = 80;
 		this.CURSOR_MARGIN_TOP = 20;

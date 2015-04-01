@@ -143,11 +143,11 @@ define([
 	};
 
 	ConstraintView.prototype.unactiveView = function(idElement) {
-		myApp.historyV.unactiveView();
+		$.publish('toHistoryView-unactiveView');
 	};
 
 	ConstraintView.prototype.activeView = function(idElement) {
-		myApp.historyV.activeView();
+		$.publish('toHistoryView-activeView');
 	};
 
 	return ConstraintView;

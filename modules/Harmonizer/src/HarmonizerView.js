@@ -58,5 +58,13 @@ define([
 		});
 	};
 	
+	HarmonizerView.prototype.unactiveView = function(idElement) {
+		$.publish('toHistoryView-unactiveView');
+	};
+
+	HarmonizerView.prototype.activeView = function(idElement) {
+		$.publish('toHistoryView-activeView');
+	};
+
 	return HarmonizerView;
 });

@@ -123,8 +123,11 @@ define([
 	};
 
 	SongModel.prototype.setTimeSignature = function(timeSignature) {
-
-		this.timeSignature = new TimeSignatureModel(timeSignature);
+		if (typeof timeSignature === "undefined") {
+			this.timeSignature = new TimeSignatureModel('4/4');
+		} else {
+			this.timeSignature = new TimeSignatureModel(timeSignature);
+		}
 	};
 
 	SongModel.prototype.getTimeSignature = function() {
@@ -268,7 +271,7 @@ define([
 	};
 
 	/**
-	 * Returns an array of index of bars when song if unfolded. 
+	 * Returns an array of index of bars when song if unfolded.
 	 * like getUnfoldedSongSection() but for the whole song
 	 * @return {array}
 	 */
@@ -282,7 +285,7 @@ define([
 
 	/**
 	 * Returns an array containing index of bars in an unfolded song
-	 *	e.g.: [	0, 1, 2, 3, 4, 5, 6, 7, 
+	 *	e.g.: [	0, 1, 2, 3, 4, 5, 6, 7,
 	 *			0, 1, 2, 3, 4, 5, 8, 9]
 	 * @return {array}
 	 */
@@ -453,20 +456,21 @@ define([
 	SongModel.prototype.unfold = function() {
 		var self = this;
 
-		function getUnfoldedNotes () {
+		function getUnfoldedNotes() {
 			var barNotes = self.getUnfoldedSongComponents("notes");
 			var newNoteMng = new NoteManager();
-			for(var i in barNotes){
+			for (var i in barNotes) {
 				newNoteMng.addNotes(barNotes[i]);
 			}
 			return newNoteMng.getNotes();
 		}
-		function getUnfoldedChords () {
+
+		function getUnfoldedChords() {
 			var newChords = [];
 			var chord;
 			var barChords = self.getUnfoldedSongComponents("chords");
-			for(var i in barChords){
-				for (var j in barChords[i]){
+			for (var i in barChords) {
+				for (var j in barChords[i]) {
 					chord = barChords[i][j].clone();
 					chord.setBarNumber(i);
 					newChords.push(chord);
@@ -476,7 +480,7 @@ define([
 		}
 
 		function getUnfoldedSectionsAndBars() {
-			var i,c,j,
+			var i, c, j,
 				section,
 				pointerBarNumberStructure,
 				newSections = [],
@@ -489,16 +493,16 @@ define([
 				newSections.push(
 					section.cloneUnfolded(pointerBarNumberStructure.length)
 				);
-				
-				for ( j = 0; j < pointerBarNumberStructure.length; j++) {
+
+				for (j = 0; j < pointerBarNumberStructure.length; j++) {
 					newBars.push(
 						barMng.getBar(pointerBarNumberStructure[j]).clone(true)
 					);
 				}
 			}
 			return {
-				newBars:newBars,
-				newSections:newSections
+				newBars: newBars,
+				newSections: newSections
 			};
 		}
 
@@ -512,15 +516,15 @@ define([
 			tonality: this.getTonality(),
 			timeSignature: this.getTimeSignature()
 		});
-				
+
 		// BARS and SECTIONS
 		var r = getUnfoldedSectionsAndBars();
-				
+
 		var barMng = new BarManager();
 		barMng.setBars(r.newBars);
 
 		newSong.sections = [];
-		for(var i in r.newSections){
+		for (var i in r.newSections) {
 			newSong.addSection(r.newSections[i]);
 		}
 
@@ -538,7 +542,6 @@ define([
 
 		return newSong;
 	};
-
 
 
 
