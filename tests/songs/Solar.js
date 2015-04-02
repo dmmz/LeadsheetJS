@@ -394,36 +394,88 @@ define(function(){
       }
      ],
      "melody": [
+       {
+       "keys": [
+        "G\/4"
+       ],
+       "duration": "16",
+      },
       {
        "keys": [
         "G\/4"
        ],
-       "duration": "q",
-       "tie": "stop"
+       "duration": "16",
       },
       {
        "keys": [
-        "F\/4"
+        "A\/4"
        ],
-       "duration": "8"
+       "duration": "16",
       },
       {
        "keys": [
-        "Eb\/4"
+        "B\/4"
        ],
-       "duration": "8"
+       "duration": "16",
       },
       {
        "keys": [
-        "D\/4"
+        "G\/4"
        ],
-       "duration": "8"
+       "duration": "16",
       },
       {
        "keys": [
-        "C\/4"
+        "G\/4"
        ],
-       "duration": "q"
+       "duration": "16",
+      },
+      {
+       "keys": [
+        "A\/4"
+       ],
+       "duration": "16",
+      },
+      {
+       "keys": [
+        "B\/4"
+       ],
+       "duration": "16",
+      },
+       {
+       "keys": [
+        "G\/4"
+       ],
+       "duration": "16",
+      },
+      {
+       "keys": [
+        "G\/4"
+       ],
+       "duration": "16",
+      },
+      {
+       "keys": [
+        "A\/4"
+       ],
+       "duration": "16",
+      },
+      {
+       "keys": [
+        "B\/4"
+       ],
+       "duration": "16",
+      },{
+       "keys": [
+        "A\/4"
+       ],
+       "duration": "16",
+      },
+      {
+       "keys": [
+        "B\/4"
+       ],
+       "duration": "16",
       },
       {
        "keys": [
