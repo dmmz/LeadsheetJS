@@ -6,10 +6,11 @@ define(['tests/DisplayTester',
 	'modules/WaveManager/src/WaveManager',
 	'modules/WaveManager/src/WaveManagerView',
 	'modules/WaveManager/src/WaveManagerController',
+	'modules/NoteEdition/src/NoteSpaceManager',
 	'tests/songs/allRhythmicFigures',
 	'tests/songs/AloneTogether',
 	'tests/songs/Solar',
-], function(DisplayTester,  LSViewer, SongModel, SongModel_CSLJson, WaveManager, WaveManagerView, WaveManagerController, allRhythmicFigures,AloneTogether,Solar) {
+], function(DisplayTester,  LSViewer, SongModel, SongModel_CSLJson, WaveManager, WaveManagerView, WaveManagerController, NoteSpaceManager, allRhythmicFigures,AloneTogether,Solar) {
 	return {
 		run: function() {
 			
@@ -17,7 +18,7 @@ define(['tests/DisplayTester',
 			var songModel = SongModel_CSLJson.importFromMusicCSLJSON(AloneTogether);
 			var dispTest = new DisplayTester();
 
-		/*	var viewer = new LSViewer($('#ls1')[0],{typeResize: 'fluid',heightOverflow: 'scroll'});
+			var viewer = new LSViewer($('#ls1')[0],{typeResize: 'fluid',heightOverflow: 'scroll'});
 			viewer.draw(songModel);
 
 			var viewer2 = new LSViewer($('#ls2')[0],{typeResize: 'scale'});
@@ -61,11 +62,13 @@ define(['tests/DisplayTester',
 			},
 			{width:1200,height:1000},
 			"Real song: AloneTogether resideDiv. Same canvas as previous test,  same div height (1000), but now div height is adapted. Also, creating a new layer");
-		*/
+		
 			dispTest.runTest(function(divContainer){
 				var waveMng = new WaveManager();
 				var viewer = new LSViewer(divContainer,{heightOverflow:'resizeDiv',lineMarginTop:150,layer:true});
 				var song = SongModel_CSLJson.importFromMusicCSLJSON(Solar);
+				// var noteSpaceMng = new NoteSpaceManager(song);
+				// console.log(noteSpaceMng.getNotesAreasFromCursor(0,1));
 				viewer.draw(song);	
 				waveMng.load('/tests/audio/solar.wav',viewer,song);
 
