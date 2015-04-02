@@ -71,23 +71,85 @@ define(function(){
        "keys": [
         "G\/4"
        ],
-       "duration": "q",
-       "dot": "1",
-       "tie": "start"
+       "duration": "16",
       },
       {
        "keys": [
         "G\/4"
        ],
-       "duration": "q",
-       "dot": "1",
-       "tie": "stop"
+       "duration": "16",
+      },
+      {
+       "keys": [
+        "G\/4"
+       ],
+       "duration": "16",
+      },
+      {
+       "keys": [
+        "G\/4"
+       ],
+       "duration": "16",
+      },
+      {
+       "keys": [
+        "G\/4"
+       ],
+       "duration": "16",
+      },
+      {
+       "keys": [
+        "G\/4"
+       ],
+       "duration": "16",
+      },
+      {
+       "keys": [
+        "G\/4"
+       ],
+       "duration": "16",
+      },
+      {
+       "keys": [
+        "G\/4"
+       ],
+       "duration": "16",
       },
       {
        "keys": [
         "A\/4"
        ],
-       "duration": "8"
+       "duration": "16",
+      },
+      {
+       "keys": [
+        "B\/4"
+       ],
+       "duration": "16",
+      },
+      {
+       "keys": [
+        "G\/4"
+       ],
+       "duration": "16",
+      },
+      {
+       "keys": [
+        "A\/4"
+       ],
+       "duration": "16",
+      },
+      {
+       "keys": [
+        "A\/4"
+       ],
+       "duration": "16"
+      },
+      {
+       "keys": [
+        "A\/4"
+       ],
+       "duration": "16"
       }
      ]
     },
