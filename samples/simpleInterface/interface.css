@@ -147,6 +147,9 @@ body {
 .current_history{
 	background-color: #eec;
 }
+.history_ul{
+	margin: 0;
+}
 .history_ul li{
 	cursor: pointer;
 }
@@ -483,7 +486,8 @@ body {
 	right: 0;
 	left: 0;
 	z-index: 10;
-	text-align: center;
+	width: 90%;
+	/*text-align: center;*/
 }
 
 .chordSpaceInput{
