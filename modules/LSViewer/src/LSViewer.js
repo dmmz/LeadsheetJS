@@ -192,7 +192,9 @@ define([
 			var oldTextAlign = this.ctx.textAlign;
 			this.ctx.textAlign = 'right';
 			this.ctx.font = "24px lato Verdana";
-
+			if (typeof composer === "undefined") {
+				composer = 'Unknown';
+			}
 			this.ctx.fillText(composer, this._getNonScaledWidth() - 20, 20, this._getNonScaledWidth());
 			this.ctx.textAlign = oldTextAlign;
 

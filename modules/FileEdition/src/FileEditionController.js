@@ -58,6 +58,10 @@ define([
 			throw 'FileEditionController - importMusicCSLJSON File imported is not defined ' + JSONSong;
 		}
 		SongModel_CSLJson.importFromMusicCSLJSON(JSONSong, this.songModel);
+		$.publish('ToHistory-add', {
+			'item': JSONSong,
+			'title': 'Open MusicCSLJson - ' + this.songModel.getTitle()
+		});
 		$.publish('ToViewer-draw', this.songModel);
 	};
 
@@ -66,6 +70,10 @@ define([
 			throw 'FileEditionController - importMusicXML File imported is not defined ' + musicXMLSong;
 		}
 		SongModel_MusicXML.importFromMusicXML(musicXMLSong, this.songModel);
+		$.publish('ToHistory-add', {
+			'item': musicXMLSong,
+			'title': 'Open MusicXML - ' + this.songModel.getTitle()
+		});
 		$.publish('ToViewer-draw', this.songModel);
 	};
 

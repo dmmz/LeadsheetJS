@@ -129,10 +129,10 @@ define(function(require) {
 	var historyM = new HistoryModel();
 	var historyV = new HistoryView();
 	var historyC = new HistoryController(historyM, songModel);
-	
+
 	$.publish('ToHistory-add', {
 		'item': testSongs.simpleLeadSheet,
-		'title': 'Initial'
+		'title': 'Open song - ' + songModel.getTitle()
 	});
 	var option = {
 		displayTitle: true,
