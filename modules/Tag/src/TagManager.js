@@ -16,10 +16,10 @@ define([
 		this.tagSpace = [];
 		this.isActive = (typeof isActive !== "undefined") ? isActive : true;
 		this.initSubscribe();
-		this.CURSORHEIGHT = 80;
-		this.CURSORMARGINTOP = 20;
-		this.CURSORMARGINLEFT = 6;
-		this.CURSORMARGINRIGHT = 9;
+		this.CURSOR_HEIGHT = 80;
+		this.CURSOR_MARGIN_TOP = 20;
+		this.CURSOR_MARGIN_LEFT = 6;
+		this.CURSOR_MARGIN_RIGHT = 9;
 	}
 
 	TagManager.prototype.getTags = function() {
@@ -116,13 +116,13 @@ define([
 				}
 				if (currentNoteStaveY != nextNoteStaveY || fromIndex == toIndex) {
 					lastNoteLine = currentNote.getBoundingBox();
-					xi = firstNoteLine.getBoundingBox().x - this.CURSORMARGINLEFT;
-					xe = lastNoteLine.x - xi + lastNoteLine.w + this.CURSORMARGINRIGHT;
+					xi = firstNoteLine.getBoundingBox().x - this.CURSOR_MARGIN_LEFT;
+					xe = lastNoteLine.x - xi + lastNoteLine.w + this.CURSOR_MARGIN_RIGHT;
 					area = {
 						x: xi,
-						y: currentNoteStaveY + this.CURSORMARGINTOP,
+						y: currentNoteStaveY + this.CURSOR_MARGIN_TOP,
 						xe: xe,
-						ye: this.CURSORHEIGHT
+						ye: this.CURSOR_HEIGHT
 					};
 					tagName = '';
 					if (typeof this.tags[i].name !== "undefined") {
