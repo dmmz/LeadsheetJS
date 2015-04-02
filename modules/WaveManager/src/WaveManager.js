@@ -3,11 +3,17 @@ define(['modules/core/src/SongBarsIterator'],function(SongBarsIterator) {
 		this.buffer = null;
 		this.source = null;
 		this.pixelRatio = window.devicePixelRatio;
+        this.waveBarDimensions = [];
+        this.barTimes = [];
+        this.beatDuration = 0;
+        this.ctx = null;
+        this.currBar = 0;
 	}
 	WaveManager.prototype.load = function(url,viewer,song) {
+
 		var xhr = new XMLHttpRequest();
-		var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-		var source =  audioCtx.createBufferSource();
+		this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+		this.source =  this.audioCtx.createBufferSource();
 		var self = this;
 		
 		xhr.open("GET", url);
@@ -15,26 +21,43 @@ define(['modules/core/src/SongBarsIterator'],function(SongBarsIterator) {
 
 		xhr.onload = function() {
 			var audioData = xhr.response;
-			audioCtx.decodeAudioData(audioData, function(buffer) {
+			self.audioCtx.decodeAudioData(audioData, function(buffer) {
 				
-			    self.buffer = buffer;
-			    //songLength = buffer.duration;
-			    source.buffer = self.buffer;
-			    //source.playbackRate.value = playbackControl.value;
-			    source.connect(audioCtx.destination);
-			    self.drawAudio(viewer,song)
-			    //source.start(0)
-			    //$.publish('WaveManager-loadedSound',[self,song]);
-			   
-
-			  },
-			  function(e){
-			  	"Error with decoding audio data" + e.err
-			});			
-		}
+            self.buffer = buffer;
+            self.beatDuration = self.buffer.duration / song.getSongTotalBeats();
+            self.source.buffer = self.buffer;
+            //source.playbackRate.value = playbackControl.value;
+            self.source.connect(self.audioCtx.destination);
+            self.drawAudio(viewer,song);
+            //source.start(0)
+            },
+			function(e){
+                throw "Error with decoding audio data" + e.err;
+            });			
+		};
 		xhr.send();
 	};
+    WaveManager.prototype.play = function() {
+        this.startTime = this.audioCtx.currentTime;
+        this.isPause = false;
+        var requestFrame = window.requestAnimationFrame ||
+            window.webkitRequestAnimationFrame;
+        var self = this;
 
+        this.source.start(0);
+        var frame = function () {
+            if (!self.isPause) {
+            //  my.drawer.progress(my.backend.getPlayedPercents());
+                self.drawCursor(self.getPlayedTime());
+                requestFrame(frame);
+            }
+        };
+        frame();
+    };
+    WaveManager.prototype.pause = function() {
+        this.isPause = true;
+        this.source.stop();
+    };
 	WaveManager.prototype.getPeaks = function(length, startPoint, endPoint) {
 		
         startPoint = startPoint || 0;
@@ -139,35 +162,88 @@ define(['modules/core/src/SongBarsIterator'],function(SongBarsIterator) {
         }, this);
   
 	};
-    WaveManager.prototype.drawAudio = function(viewer,song) {
-            var songIt = new SongBarsIterator(song);
-            var area,dim;
-            var numBars = song.getComponent("bars").getTotal();
+    WaveManager.prototype._getCursorPos = function(time) {
+        var self = this;
+        function getBarByTime(time){
+            while (self.currBar < self.barTimes.length && self.barTimes[self.currBar] < time){
+                self.currBar++;
+            }
+            return self.currBar;
+        }
+        function getCursorDims(currBar,time){
+            var newDim = {};
+            var dim = self.waveBarDimensions[currBar];
+            var prevBarTime = (currBar===0) ? 0 : self.barTimes[currBar-1];
+            var barTime = self.barTimes[currBar];
+            var timeDist = barTime - prevBarTime;
             
-            var sliceSong = 1/numBars;
-            var start = 0;
-            var peaks;
-            var toggleColor = 0;
-            var color = ["#55F","#5A5"];
-            var i = 0;
-            while(songIt.hasNext()){
-                dim = viewer.barWidthMng.getDimensions(songIt.getBarIndex());
-                area = {
-                    x: dim.left,
-                    y: dim.top - viewer.LINE_MARGIN_TOP,
-                    w: dim.width,
-                    h: viewer.LINE_MARGIN_TOP
-                };
-                peaks = this.getPeaks(area.w,start,start+sliceSong);
+            var percent = (time - prevBarTime) / (barTime - prevBarTime);
 
-                this.drawPeaks(peaks,area,color[toggleColor],viewer.ctx);
-                toggleColor = (toggleColor + 1) % 2;
-                
-                start += sliceSong;
-                songIt.next();
-                i++;
-            }   
+            var marginCursor = 20;
+            newDim.y = dim.y + marginCursor;
+            newDim.h = dim.h - marginCursor * 2;
+            newDim.x = dim.x +  percent * dim.w; 
+            newDim.w = dim.w;
+            return newDim;
+        }
+        var currBar = getBarByTime(time);
+        var dim = getCursorDims(currBar,time);
+        return  dim;
+
+    };
+    WaveManager.prototype.drawCursor = function(time) {
+        time = time || 0;
         
-        };
+        dim = this._getCursorPos(time);
+       
+        this.ctx.clearRect(0,0,this.ctx.canvas.width,this.ctx.canvas.height);
+        this.ctx.beginPath();
+        this.ctx.moveTo(dim.x,dim.y);
+        this.ctx.lineTo(dim.x,dim.y+dim.h);
+        this.ctx.stroke(); 
+
+    };
+    WaveManager.prototype.drawAudio = function(viewer,song) {
+        this.ctx = viewer.layerCtx;
+        var numBars = song.getComponent("bars").getTotal();
+        var songIt = new SongBarsIterator(song);
+        var area,dim,bar,barTime = 0,
+        sliceSong = 1 / numBars,
+        start = 0,
+        peaks,
+        toggleColor = 0,
+        color = ["#55F","#5A5"],
+        i = 0;
+        
+        while(songIt.hasNext()){
+            barTime = this.getBarTime(songIt,barTime);
+            this.barTimes.push(barTime);
+            dim = viewer.barWidthMng.getDimensions(songIt.getBarIndex());
+            area = {
+                x: dim.left,
+                y: dim.top - viewer.LINE_MARGIN_TOP - viewer.CHORDS_DISTANCE_STAVE,
+                w: dim.width,
+                h: viewer.LINE_MARGIN_TOP
+            };
+            this.waveBarDimensions.push(area);
+            peaks = this.getPeaks(area.w,start,start+sliceSong);
+
+            this.drawPeaks(peaks,area,color[toggleColor],viewer.ctx);
+            toggleColor = (toggleColor + 1) % 2;
+            
+            start += sliceSong;
+            songIt.next();
+            i++;
+        }
+        this.drawCursor(0);
+    };
+    WaveManager.prototype.getPlayedTime = function() {
+         //var dur = this.buffer.duration;
+         return this.audioCtx.currentTime - this.startTime;
+    };
+    WaveManager.prototype.getBarTime = function(songIt,barTime) {
+
+        return barTime + songIt.getBarTimeSignature().getBeats() * this.beatDuration;
+    };
 	return WaveManager;
 });

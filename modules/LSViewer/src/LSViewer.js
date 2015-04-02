@@ -35,7 +35,6 @@ define([
 			this.drawableModel = [];
 			this._initController();
 			this._initSubscribe();
-			
 		}
 
 		/**
