@@ -124,7 +124,7 @@ define(function(require) {
 	// var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
 
 	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
-	//initPlayerModule(songModel);
+	// initPlayerModule(songModel);
 
 	var historyM = new HistoryModel();
 	var historyV = new HistoryView();

@@ -489,6 +489,9 @@ body {
 	width: 90%;
 	/*text-align: center;*/
 }
+#canvas_container canvas{
+	margin-bottom: 100px;
+}
 
 .chordSpaceInput{
 	margin: 0 !important;

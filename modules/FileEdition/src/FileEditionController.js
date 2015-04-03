@@ -187,7 +187,8 @@ define([
 		var srcCanvas = this.viewerCanvas;
 		var destinationElement = document.createElement("div");
 		var currentViewer = new LSViewer(destinationElement, {
-			'width': srcCanvas.width,
+			'width': srcCanvas.width * 5,
+			'typeResize': 'scale'
 		});
 		currentViewer.draw(this.songModel);
 		this.promptFile(this.songModel.getTitle() + '.png', currentViewer.canvas.toDataURL());
