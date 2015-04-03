@@ -61,7 +61,7 @@ define([
 			$.publish('StructureEditionView-sectionName', name);
 		});
 		$('#selectSectionRepeatTimes').change(function() {
-			var repeatTimes = $(this).val();
+			var repeatTimes = parseInt($(this).val(), 10) - 1; // number of repetition is the number of played times minus 1
 			$.publish('StructureEditionView-repeatTimes', repeatTimes);
 		});
 
@@ -121,8 +121,7 @@ define([
 	 * Subscribe to model events
 	 */
 	StructureEditionView.prototype.initSubscribe = function() {
-		$.subscribe('StructureEditionModel-toggleUnfolded', function(el, unfolded)
-		{
+		$.subscribe('StructureEditionModel-toggleUnfolded', function(el, unfolded) {
 			var textButton = unfolded ? "Fold" : "Unfold";
 			$("#unfold").val(textButton);
 		});

@@ -140,7 +140,6 @@ define(function(require) {
 		displaySection: true,
 		displayBar: true,
 		delimiterBar: "|",
-		unfoldSong: false, // TODO unfoldSong is not working yet
 		fillEmptyBar: true,
 		fillEmptyBarCharacter: "%",
 	};

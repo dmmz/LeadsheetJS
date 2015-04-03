@@ -335,7 +335,6 @@ define([
 								currentRepeatedPart++;
 							}
 						}
-
 					}
 				}
 				repeat--;

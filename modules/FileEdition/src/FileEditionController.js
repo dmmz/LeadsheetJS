@@ -139,6 +139,17 @@ define([
 		});
 	};
 
+	FileEditionController.prototype.exportPNG = function() {
+		var srcCanvas = this.viewerCanvas;
+		var destinationElement = document.createElement("div");
+		var currentViewer = new LSViewer(destinationElement, {
+			'width': srcCanvas.width * 5,
+			'typeResize': 'scale'
+		});
+		currentViewer.draw(this.songModel);
+		this.promptFile(this.songModel.getTitle() + '.png', currentViewer.canvas.toDataURL());
+	};
+
 	FileEditionController.prototype.exportAndPromptLeadsheetToPDF = function(title, composer, timeSignature, style, sources_abr) {
 		var srcCanvas = this.viewerCanvas;
 		// create a dummy CANVAS to create a new viewer without selection or edition
@@ -181,17 +192,6 @@ define([
 			sources_abr = '';
 		}
 		doc.save(title + sources_abr + '.pdf');
-	};
-
-	FileEditionController.prototype.exportPNG = function() {
-		var srcCanvas = this.viewerCanvas;
-		var destinationElement = document.createElement("div");
-		var currentViewer = new LSViewer(destinationElement, {
-			'width': srcCanvas.width * 5,
-			'typeResize': 'scale'
-		});
-		currentViewer.draw(this.songModel);
-		this.promptFile(this.songModel.getTitle() + '.png', currentViewer.canvas.toDataURL());
 	};
 
 	FileEditionController.prototype.exportLeadsheetJSON = function() {

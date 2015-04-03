@@ -23,6 +23,7 @@ define(function() {
 		return this.name;
 	};
 
+	// Carefull, if a section is played 2 times, repeatTimes = 1
 	SectionModel.prototype.setRepeatTimes = function(repeatTimes) {
 		if (repeatTimes === undefined) {
 			repeatTimes = 0;
@@ -30,7 +31,7 @@ define(function() {
 		if (repeatTimes < 0) {
 			throw "repeatTimes cannot be negative";
 		}
-		this.repeatTimes = repeatTimes;
+		this.repeatTimes = parseInt(repeatTimes, 10);
 	};
 
 	SectionModel.prototype.getRepeatTimes = function() {

@@ -150,6 +150,7 @@ define([
 		$.publish('ToViewer-draw', this.songModel);
 	};
 
+	// Carefull, if a section is played 2 times, repeatTimes = 1
 	StructureEditionController.prototype.setRepeatTimes = function(repeatTimes) {
 		if (typeof repeatTimes === "undefined") {
 			return;

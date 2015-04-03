@@ -12,7 +12,6 @@ define(['modules/converters/MusicCSLJson/src/SongModel_CSLJson', 'modules/core/s
 						displayBar: true,
 						delimiterBar: "|",
 						delimiterNewLine: "\n",
-						unfoldSong: false,//TODO unfoldSong is not working yet
 						fillEmptyBar: true,
 						fillEmptyBarCharacter: "%",
 					};

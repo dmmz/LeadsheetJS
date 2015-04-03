@@ -5,8 +5,6 @@ define(['modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/
 			// songModel
 			this.songModel = (typeof songModel !== "undefined" && songModel instanceof SongModel) ? songModel : undefined;
 
-			//TODO unfoldSong is not working yet
-
 			// display general option
 			this.displayTitle = (typeof option !== "undefined" && typeof option.displayTitle !== "undefined") ? option.displayTitle : true;
 			this.classTitle = (typeof option !== "undefined" && typeof option.classTitle !== "undefined") ? option.classTitle : 'song_view-title';
@@ -16,7 +14,6 @@ define(['modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/
 			this.delimiterNewLine = (typeof option !== "undefined" && typeof option.delimiterNewLine !== "undefined") ? option.delimiterNewLine : "<br />";
 			this.delimiterBeat = (typeof option !== "undefined" && typeof option.delimiterBeat !== "undefined") ? option.delimiterBeat : "";
 			this.displaySection = (typeof option !== "undefined" && typeof option.displaySection !== "undefined") ? option.displaySection : true;
-			this.unfoldSong = (typeof option !== "undefined" && typeof option.unfoldSong !== "undefined") ? option.unfoldSong : false;
 			this.fillEmptyBar = (typeof option !== "undefined" && typeof option.fillEmptyBar !== "undefined") ? option.fillEmptyBar : true;
 			this.fillEmptyBarCharacter = (typeof option !== "undefined" && typeof option.fillEmptyBarCharacter !== "undefined") ? option.fillEmptyBarCharacter : "%";
 
@@ -48,22 +45,18 @@ define(['modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/
 					txt += this.delimiterNewLine;
 					txt += this.getSectionView(i);
 					if (this.displayBar === true) {
-						var bars = this.songModel.getUnfoldedSongSection(i);
-
-						var currentBarNumber = 0;
 						var currentBar;
 						var chordDuration;
 						var cm;
-						for (var j = 0, c = bars.length; j < c; j++) {
-							currentBarNumber = bars[j];
+						for (var currentBarNumber = 0, c = bm.getBars().length; currentBarNumber < c; currentBarNumber++) {
 							currentBar = bm.getBar(currentBarNumber);
-							if (j !== 0) {
+							if (currentBarNumber !== 0) {
 								txt += this.delimiterBar;
 							}
 							if (typeof currentBar.ending !== "undefined" && (currentBar.ending === 'BEGIN' || currentBar.ending === 'BEGIN_END')) {
 								txt += ':';
 							}
-							if (j !== 0) {
+							if (currentBarNumber !== 0) {
 								txt += ' ';
 							}
 							var chordsInCurrentBar = this.songModel.getComponentsAtBarNumber(currentBarNumber, 'chords');
@@ -106,7 +99,8 @@ define(['modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/
 					var section = this.songModel.getSection(sectionNumber);
 					txt += /*'section: ' + */ section.getName();
 					if (section.getRepeatTimes() > 0) {
-						txt += ' (' + section.getRepeatTimes() + ')';
+						var playedTimes = parseInt(section.getRepeatTimes(), 10) + 1;
+						txt += ' (' + playedTimes + ')';
 					}
 					// txt += this.delimiterNewLine;
 					txt += ': ';
