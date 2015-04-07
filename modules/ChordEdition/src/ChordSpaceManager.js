@@ -54,6 +54,10 @@ define([
 				self.undraw(); // maybe we should call it only once
 			}
 		});
+		// cursor view subscribe
+		$.subscribe('CursorView-moveCursorByElementchords', function(el, inc) {
+			self.moveCursorByBar(inc);
+		});
 	};
 
 	ChordSpaceManager.prototype.updateChord = function(chordString, chordModel, chordSpace) {
@@ -82,6 +86,28 @@ define([
 		}
 		return false;
 	};
+
+
+
+	ChordSpaceManager.prototype.moveCursorByBar = function(inc) {
+		if (this.cursor.getEditable() === false) {
+			return;
+		}
+		var barNum = this.chordSpace[this.cursor.getPos()[0]].barNumber;
+		var startBeat = this.songModel.getStartBeatFromBarNumber(barNum+inc) - 1;
+
+		if (barNum === 0 && inc === -1) {
+			this.cursor.setPos(0);
+			$.publish('ToViewer-draw', this.songModel);
+			return;
+		}
+
+		this.cursor.setPos(startBeat);
+		$.publish('ToViewer-draw', this.songModel);
+	};
+
+
+
 
 	/**
 	 * Function return several areas to indicate which notes are selected, usefull for cursor or selection

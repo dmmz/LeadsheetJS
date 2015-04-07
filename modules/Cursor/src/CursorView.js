@@ -44,7 +44,7 @@ define([
 			if (self.keyToNext === 'tab') {
 				if(keyCode==9) {
 					inc = (evt.shiftKey) ? -1 : 1;
-					$.publish('CursorView-moveCursor' + self.id, inc);
+					$.publish('CursorView-moveCursorByElement' + self.id, inc);
 					stopEvent(evt);
 				}
 			} else { // arrow
