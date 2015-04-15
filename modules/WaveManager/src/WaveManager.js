@@ -1,20 +1,25 @@
 define(['modules/core/src/SongBarsIterator'],function(SongBarsIterator) {
-	function WaveManager() {
+	function WaveManager(song,cModel) {
 		this.buffer = null;
 		this.source = null;
 		this.pixelRatio = window.devicePixelRatio;
         this.waveBarDimensions = [];
         this.barTimes = [];
         this.beatDuration = 0;
+        
         this.ctx = null;
         this.currBar = 0;
-	}
-	WaveManager.prototype.load = function(url,viewer,song) {
+        this.song = song;
+        this.cursorModel = cModel;
 
+	}
+	WaveManager.prototype.load = function(url,viewer) {
+        this.viewer = viewer;
 		var xhr = new XMLHttpRequest();
 		this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 		this.source =  this.audioCtx.createBufferSource();
 		var self = this;
+
 		
 		xhr.open("GET", url);
 		xhr.responseType = 'arraybuffer';
@@ -24,11 +29,12 @@ define(['modules/core/src/SongBarsIterator'],function(SongBarsIterator) {
 			self.audioCtx.decodeAudioData(audioData, function(buffer) {
 				
             self.buffer = buffer;
-            self.beatDuration = self.buffer.duration / song.getSongTotalBeats();
+            self.beatDuration = self.buffer.duration / self.song.getSongTotalBeats();
+            
             self.source.buffer = self.buffer;
             //source.playbackRate.value = playbackControl.value;
             self.source.connect(self.audioCtx.destination);
-            self.drawAudio(viewer,song);
+            self.drawAudio(self.song);
             //source.start(0)
             },
 			function(e){
@@ -42,12 +48,30 @@ define(['modules/core/src/SongBarsIterator'],function(SongBarsIterator) {
         this.isPause = false;
         var requestFrame = window.requestAnimationFrame ||
             window.webkitRequestAnimationFrame;
+        var noteMng = this.song.getComponent('notes');
+        var iNote = 0, prevINote = 0;
         var self = this;
-
         this.source.start(0);
+        var minBeatStep = this.beatDuration / 32;
+       
+        var timeStep = 0;
+         //we don't want to update notes cursor as often as we update audio cursor, to optimize we only update note cursor every 1/32 beats
         var frame = function () {
             if (!self.isPause) {
-            //  my.drawer.progress(my.backend.getPlayedPercents());
+
+                if (self.getPlayedTime() >= timeStep + minBeatStep){
+                    iNote = noteMng.getPrevIndexNoteByBeat(self.getPlayedTime() / self.beatDuration + 1);
+                    if (iNote != prevINote)
+                    {
+                        self.cursorModel.setPos(iNote);
+                        $.publish('ToViewer-draw',self.song);    
+                        prevINote = iNote;
+                    }
+                    
+                    
+                    timeStep += minBeatStep;    
+                }
+                
                 self.drawCursor(self.getPlayedTime());
                 requestFrame(frame);
             }
@@ -203,8 +227,8 @@ define(['modules/core/src/SongBarsIterator'],function(SongBarsIterator) {
         this.ctx.stroke(); 
 
     };
-    WaveManager.prototype.drawAudio = function(viewer,song) {
-        this.ctx = viewer.layerCtx;
+    WaveManager.prototype.drawAudio = function(song) {
+        this.ctx = this.viewer.layerCtx;
         var numBars = song.getComponent("bars").getTotal();
         var songIt = new SongBarsIterator(song);
         var area,dim,bar,barTime = 0,
@@ -218,17 +242,17 @@ define(['modules/core/src/SongBarsIterator'],function(SongBarsIterator) {
         while(songIt.hasNext()){
             barTime = this.getBarTime(songIt,barTime);
             this.barTimes.push(barTime);
-            dim = viewer.barWidthMng.getDimensions(songIt.getBarIndex());
+            dim = this.viewer.barWidthMng.getDimensions(songIt.getBarIndex());
             area = {
                 x: dim.left,
-                y: dim.top - viewer.LINE_MARGIN_TOP - viewer.CHORDS_DISTANCE_STAVE,
+                y: dim.top - this.viewer.LINE_MARGIN_TOP - this.viewer.CHORDS_DISTANCE_STAVE,
                 w: dim.width,
-                h: viewer.LINE_MARGIN_TOP
+                h: this.viewer.LINE_MARGIN_TOP
             };
             this.waveBarDimensions.push(area);
             peaks = this.getPeaks(area.w,start,start+sliceSong);
 
-            this.drawPeaks(peaks,area,color[toggleColor],viewer.ctx);
+            this.drawPeaks(peaks,area,color[toggleColor],this.viewer.ctx);
             toggleColor = (toggleColor + 1) % 2;
             
             start += sliceSong;

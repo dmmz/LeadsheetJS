@@ -261,7 +261,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	 */
 	NoteManager.prototype.getNextIndexNoteByBeat = function(beat) {
 		if (isNaN(beat) || beat < 1) {
-			throw 'NoteManager - getNextIndexNoteByBeat - beat must be a positive integer ' + beat;
+			throw 'NoteManager - getNextIndexNoteByBeat - beat must be a positive float greater than 1 ' + beat;
 		}
 		return this._getIndexAndCurBeat(beat).index;
 	};
@@ -275,7 +275,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	 */
 	NoteManager.prototype.getPrevIndexNoteByBeat = function(beat) {
 		if (isNaN(beat) || beat < 0) {
-			throw 'NoteManager - getPrevIndexNoteByBeat - beat must be a positive integer ' + beat;
+			throw 'NoteManager - getPrevIndexNoteByBeat - beat must be a positive float ' + beat;
 		}
 		var r = this._getIndexAndCurBeat(beat);
 		return (r.curBeat === beat ) ? r.index : r.index - 1;
