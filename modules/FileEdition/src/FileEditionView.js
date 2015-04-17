@@ -91,20 +91,24 @@ define([
 		$('#export_mp3').click(function() {
 			var chord = $('#export_sound_chords').prop("checked");
 			var tick = $('#export_sound_tick').prop("checked");
+			var style = $('#sound_export_style').val();
 			$.publish('FileEditionView-sound_export', {
 				'exportType': 'mp3',
 				'chord': chord,
-				'tick': tick
+				'tick': tick,
+				'style': style
 			});
 		});
 
 		$('#export_wav').click(function() {
 			var chord = $('#export_sound_chords').prop("checked");
 			var tick = $('#export_sound_tick').prop("checked");
+			var style = $('#sound_export_style').val();
 			$.publish('FileEditionView-sound_export', {
 				'exportType': 'wav',
 				'chord': chord,
-				'tick': tick
+				'tick': tick,
+				'style': style
 			});
 		});
 

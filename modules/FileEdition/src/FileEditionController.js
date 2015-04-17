@@ -33,13 +33,14 @@ define([
 			var exportType = (options && typeof options.exportType !== "undefined") ? options.exportType : 'mp3';
 			var chord = (options && typeof options.chord !== "undefined") ? options.chord : true;
 			var tick = (options && typeof options.tick !== "undefined") ? options.tick : false;
+			var style = (options && typeof options.style !== "undefined") ? options.style : "none";
 			var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(self.songModel);
 			JSONSong = JSON.stringify(JSONSong);
 			var tempo = self.songModel.getTempo();
 			if (exportType === 'mid') {
 				self.exportMidiFile(JSONSong, tempo, chord, tick);
 			} else {
-				self.exportAudioFile(JSONSong, tempo, exportType, chord, tick);
+				self.exportAudioFile(JSONSong, tempo, exportType, chord, tick, style);
 			}
 		});
 		$.subscribe('FileEditionView-exportPNG', function(el) {
@@ -95,10 +96,10 @@ define([
 		export_link.remove();
 	};
 
-	FileEditionController.prototype.exportAudioFile = function(JSONSong, tempo, exportType, chord, tick) {
+	FileEditionController.prototype.exportAudioFile = function(JSONSong, tempo, exportType, chord, tick, style) {
 		var self = this;
 		var idLog = UserLog.log('info', 'Computing...');
-		var request = ComposerServlet.getRequestForSimpleAudio(JSONSong, tempo, chord, tick);
+		var request = ComposerServlet.getRequestForSimpleAudio(JSONSong, tempo, chord, tick, style);
 		AjaxUtils.servletRequest('flow', 'composer', request, function(data) {
 			UserLog.removeLog(idLog);
 			if (typeof data !== "undefined") {

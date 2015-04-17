@@ -4,7 +4,7 @@ define(['jquery'], function($) {
 	/**
 	 * Return correct request for simple audio get
 	 */
-	ComposerServlet.getRequestForSimpleAudio = function(leadsheet, tempo, playComping, playTick) {
+	ComposerServlet.getRequestForSimpleAudio = function(leadsheet, tempo, playComping, playTick, style) {
 		var request = {
 			'ls.leadsheet': leadsheet,
 			'type': 'audio',
