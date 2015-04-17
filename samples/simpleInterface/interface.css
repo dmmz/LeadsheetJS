@@ -140,7 +140,7 @@ body {
 	right: 0;
 	position: absolute;
 	display: none;
-	z-index: 11;
+	z-index: 12;
 	margin-right: 0.5em;
 }
 
@@ -509,3 +509,24 @@ body {
 .autocomplete-group { padding: 2px 5px; }
 .autocomplete-group strong { font-weight: bold; font-size: 16px; color: #000; display: block; border-bottom: 1px solid #000; }
 .autocomplete input { font-size: 28px; padding: 10px; border: 1px solid #CCC; display: block; margin: 20px 0; }
+
+
+.backgroundPopin{
+	background: black;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	top: 0;
+	z-index: 9000;
+}
+.foregroundPopin{
+	padding: 1em;
+	z-index: 9001;
+	background: white;
+	position: absolute;
+	top: 10%;
+}
+.foregroundPopin .close{
+	float: right;
+}

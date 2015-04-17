@@ -87,8 +87,6 @@ define([
 		return false;
 	};
 
-
-
 	ChordSpaceManager.prototype.moveCursorByBar = function(inc) {
 		if (this.cursor.getEditable() === false) {
 			return;
@@ -105,9 +103,6 @@ define([
 		this.cursor.setPos(startBeat);
 		$.publish('ToViewer-draw', this.songModel);
 	};
-
-
-
 
 	/**
 	 * Function return several areas to indicate which notes are selected, usefull for cursor or selection

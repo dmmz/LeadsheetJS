@@ -108,12 +108,16 @@ define(function(require) {
 
 	var TagManager = require('modules/Tag/src/TagManager');
 
+	var PopIn = require('utils/PopIn');
+
 	var myApp = {};
 
 	var menuM = new MainMenuModel();
 	var menuV = new MainMenuView(menuM, document.getElementById('menu-container'));
 	var menuC = new MainMenuController(menuM, menuV);
 
+	/*var popIn = new PopIn('Hello', 'Test<br />ok');
+	popIn.render();*/
 
 	//myApp.historyV.activeView();
 	/*myApp.historyM.addToHistory({},'Edit notes');
@@ -123,7 +127,7 @@ define(function(require) {
 	// tried for unfolding
 	// var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
 
-	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
+	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
 	// initPlayerModule(songModel);
 
 	var historyM = new HistoryModel();

@@ -2992,7 +2992,7 @@ define(function() {
  "source": "51b6fe4067ca227d25665b0e",
  "changes": [  {
    "name": "",
-   "repeat": 1,
+   "repeat": 3,
    "numBars": 10,
    "bars": [
     {
@@ -3023,6 +3023,7 @@ define(function() {
      ]
     },
     {
+     "ending": "1",
      "chords": [
       {
        "p": "F",
@@ -3050,6 +3051,7 @@ define(function() {
      ]
     },
     {
+     "ending": "2",
      "chords": [
       {
        "p": "A",
@@ -3083,7 +3085,7 @@ define(function() {
      ]
     },
     {
-     "ending": "1",
+     "ending": "3",
      "chords": [
       {
        "p": "G",
@@ -3123,7 +3125,7 @@ define(function() {
      ]
     },
     {
-     "ending": "2",
+     "ending": "4",
      "chords": [
       {
        "p": "E",

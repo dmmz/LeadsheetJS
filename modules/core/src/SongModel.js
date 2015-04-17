@@ -292,50 +292,36 @@ define([
 	SongModel.prototype.getUnfoldedSongSection = function(sectionNumber) {
 		if (typeof sectionNumber !== "undefined" && !isNaN(sectionNumber)) {
 			var bm = this.getComponent("bars");
-			var pointerBarNumberStructure = [];
-			var endingBar;
-			var alreadyAddedbars = []; // contains the bars that are in 1 part so when we will look in 2 part they will not be getted
-			var currentRepeatedPart = 0;
 			var section = this.getSection(sectionNumber);
 			var repeat = section.getRepeatTimes();
 			var whileSecurity = 0;
 			var startBar, endBar;
+			var currentRepeatedPart = 0;
+			var repeatedPart = [];
+			var pointerBarNumberStructure = [];
 			while (repeat >= 0 || whileSecurity > 1000) {
 				whileSecurity++;
 				// looping in all sections repeat
-				alreadyAddedbars = [];
+				repeatedPart = [];
 				currentRepeatedPart = 0;
 				startBar = this.getStartBarNumberFromSectionNumber(sectionNumber);
 				endBar = startBar + section.getNumberOfBars();
 				for (var barNumber = startBar; barNumber < endBar; barNumber++) {
-					if (alreadyAddedbars.indexOf(barNumber) === -1) { // excluding first part if there is one
-						endingBar = bm.getBar(barNumber).getEnding();
-						if (endingBar == '1') {
-							repeat--;
-						}
-						pointerBarNumberStructure.push(barNumber);
-
-						// Case bars after the 1 start
-						if (currentRepeatedPart == 1) {
-							alreadyAddedbars.push(barNumber);
-						}
-						// Case bars got a 1 repetition (it happens only when the first bar is repeated)
-						if (typeof endingBar !== "undefined" && endingBar == 1) {
-							alreadyAddedbars.push(barNumber);
-							currentRepeatedPart = 1;
-						}
-
-						//  Case bars got a 2 repetition (it happens only to the first repeated bar)
-						if (typeof endingBar !== "undefined" && endingBar == 2) {
-							// case it's the first time we arrive on 2
-							if (currentRepeatedPart == 1) {
-								pointerBarNumberStructure.pop();
-								alreadyAddedbars.pop();
-								barNumber = startBar - 1;
-								currentRepeatedPart++;
-							}
-						}
+					endingBar = parseInt(bm.getBar(barNumber).getEnding(), 10);
+					// case there is an ending
+					if (!isNaN(endingBar) && endingBar > 0) {
+						currentRepeatedPart = endingBar;
+						repeat--;
 					}
+					// case there is no ending found yet, we save this part
+					if (currentRepeatedPart === 0) {
+						repeatedPart.push(barNumber);
+					}
+					// case there is an ending, we add saved part to begining
+					if (!isNaN(endingBar) && endingBar > 1) {
+						pointerBarNumberStructure = pointerBarNumberStructure.concat(repeatedPart);
+					}
+					pointerBarNumberStructure.push(barNumber);
 				}
 				repeat--;
 			}
