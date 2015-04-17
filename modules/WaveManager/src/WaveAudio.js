@@ -37,7 +37,7 @@ define(function() {
 				self.source.buffer = self.buffer;
 				//source.playbackRate.value = playbackControl.value;
 				self.source.connect(self.audioCtx.destination);
-				waveMng.drawAudio(waveMng.song);
+				waveMng.drawer.drawAudio(waveMng.song);
 				//source.start(0)
 			},
 			function(e) {

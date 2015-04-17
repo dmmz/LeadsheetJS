@@ -1,5 +1,8 @@
-define(['modules/core/src/SongBarsIterator','modules/WaveManager/src/WaveAudio'],function(SongBarsIterator,WaveAudio) {
-	function WaveManager(song,cModel) {
+define(['modules/WaveManager/src/WaveAudio',
+        'modules/WaveManager/src/WaveDrawer'
+        ],function(SongBarsIterator, WaveAudio, WaveDrawer) {
+	function WaveManager(song,cModel,viewer) {
+
 		this.buffer = null;
 		this.source = null;
 		this.pixelRatio = window.devicePixelRatio;
@@ -10,12 +13,13 @@ define(['modules/core/src/SongBarsIterator','modules/WaveManager/src/WaveAudio']
         this.currBar = 0;
         this.song = song;
         this.cursorModel = cModel;
-
         this.audio = new WaveAudio();
+        console.log(viewer);
+        this.drawer = new WaveDrawer(viewer);
+        
 
-	}
-	WaveManager.prototype.load = function(url,viewer) {
-        this.viewer = viewer;
+    }
+    WaveManager.prototype.load = function(url) {
 		var xhr = new XMLHttpRequest();
 		var self = this;
 
@@ -53,7 +57,7 @@ define(['modules/core/src/SongBarsIterator','modules/WaveManager/src/WaveAudio']
                     timeStep += minBeatStep;    
                 }
                 
-                self.drawCursor(self.getPlayedTime());
+                self.drawer.drawCursor(this._getCursorPos(self.getPlayedTime()));
                 requestFrame(frame);
             }
         };
@@ -159,59 +163,14 @@ define(['modules/core/src/SongBarsIterator','modules/WaveManager/src/WaveAudio']
             newDim.w = dim.w;
             return newDim;
         }
+        time = time || 0;
         var currBar = getBarByTime(time);
         var dim = getCursorDims(currBar,time);
         return  dim;
 
     };
-    WaveManager.prototype.drawCursor = function(time) {
-        time = time || 0;
-        
-        dim = this._getCursorPos(time);
-       
-        this.ctx.clearRect(0,0,this.ctx.canvas.width,this.ctx.canvas.height);
-        this.ctx.beginPath();
-        this.ctx.moveTo(dim.x,dim.y);
-        this.ctx.lineTo(dim.x,dim.y+dim.h);
-        this.ctx.stroke(); 
+  
 
-    };
-    WaveManager.prototype.drawAudio = function(song) {
-        this.ctx = this.viewer.layerCtx;
-        var numBars = song.getComponent("bars").getTotal();
-        var songIt = new SongBarsIterator(song);
-        var area,dim,bar,barTime = 0,
-        sliceSong = 1 / numBars,
-        start = 0,
-        peaks,
-        toggleColor = 0,
-        color = ["#55F","#5A5"],
-        zoomH = 1.5
-        i = 0;
-        
-        while(songIt.hasNext()){
-            barTime = this.getBarTime(songIt,barTime);
-            this.barTimes.push(barTime);
-            dim = this.viewer.barWidthMng.getDimensions(songIt.getBarIndex());
-            area = {
-                x: dim.left,
-                y: dim.top - this.viewer.LINE_MARGIN_TOP - this.viewer.CHORDS_DISTANCE_STAVE,
-                w: dim.width,
-                h: this.viewer.LINE_MARGIN_TOP
-            };
-            this.waveBarDimensions.push(area);
-            peaks = this.audio.getPeaks(area.w,start,start+sliceSong);
-
-            this.drawPeaks(peaks,area,color[toggleColor],this.viewer.ctx,zoomH);
-            toggleColor = (toggleColor + 1) % 2;
-            
-            start += sliceSong;
-            songIt.next();
-            i++;
-        }
-
-        this.drawCursor(0);
-    };
     WaveManager.prototype.getPlayedTime = function() {
          //var dur = this.buffer.duration;
          return this.audio.audioCtx.currentTime - this.startTime;
