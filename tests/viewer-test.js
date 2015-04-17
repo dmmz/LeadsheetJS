@@ -1,6 +1,6 @@
 //Require and Qunit working, done following  http://www.nathandavison.com/article/17/using-qunit-and-requirejs-to-build-modular-unit-tests
 require.config({
-  baseUrl: "../",
+  baseUrl: "../../",
   paths: {
     jquery: 'external-libs/jquery-2.1.0.min',
     qunit: 'external-libs/qunit/qunit',
@@ -12,19 +12,12 @@ require.config({
 
   },
   shim: {
-    'qunit': {
-      exports: 'QUnit',
-      init: function() {
-        QUnit.config.autoload = false;
-        QUnit.config.autostart = false;
-      }
-    },
     'vexflow': {
       exports: 'Vex'
-    },
+    }/*,
     'Midijs': {
       exports: 'MIDI'
-    }
+    }*/
   }
 });
 
