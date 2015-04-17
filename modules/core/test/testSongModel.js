@@ -13,22 +13,27 @@ define([
 					var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
 					
 					// getUnfoldedSongComponents
+					console.log('----------------');
 					var unfoldedBars = song.getUnfoldedSongComponents("notes");
 					assert.equal(unfoldedBars.length,20,"getUnfoldedSongComponents: unfolded bars"); //we know there are 20 
 					assert.equal(unfoldedBars[14][0].pitchClass[0],"A","getUnfoldedSongComponents: note in 14th bar has pitch A");
+					console.log('----------------');
 					
 					var unfoldedSong = song.unfold();
 					
 					assert.deepEqual(
 						song.getComponent("notes").getNotesAsString(),
-						["Db/4-w", "E/4-w", "F/4-w", "A#/4-w", "C/5-w", "B/4-h", "A/4-h", "A/4-h", "qr", "qr", "B/4-w", "Ab/4-w", "G#/4-w", "D/5-w", "F/5-w", "E/5-w", "E/5-w"],
+						["Db/4-w", "E/4-w", "F/4-w", "A#/4-w", "C/5-w", "B/4-h", "A/4-h", "A/4-h", "qr", "qr", "B/4-w", "Ab/4-w", "G#/4-w",
+						"D/5-w", "F/5-w", "E/5-w", "E/5-w"],
 						"compare folded notes"
 					);
 
 					assert.deepEqual(
 						unfoldedSong.getComponent("notes").getNotesAsString(),
-						["Db/4-w", "E/4-w", "F/4-w", "A#/4-w", "C/5-w", "B/4-h", "A/4-h", "A/4-h", "qr", "qr", "B/4-w", 
-						"Db/4-w", "E/4-w", "F/4-w", "A#/4-w", "C/5-w", "B/4-h", "A/4-h", "Ab/4-w", "G#/4-w", 
+						["Db/4-w", "E/4-w", "F/4-w", "A#/4-w",
+						"Db/4-w", "E/4-w", "C/5-w", "B/4-h", "A/4-h",
+						"Db/4-w", "E/4-w", "A/4-h", "qr", "qr", "B/4-w",
+						"Db/4-w", "E/4-w", "Ab/4-w", "G#/4-w",
 						"D/5-w", "F/5-w", "E/5-w", "E/5-w"],
 						"compare unfolded notes"
 					);
@@ -41,7 +46,11 @@ define([
 
 					assert.deepEqual(
 						unfoldedSong.getComponent("chords").getChordsAsString(),
-						["Dm", "F7", "Am", "G7", "Dm", "F7","Am","E7", "F", "D", "G7", "CM7"],
+						["Dm", "F7",
+						"Dm", "Am",
+						"Dm", "G7",
+						"Dm","E7", "F",
+						"D", "G7", "CM7"],
 						"compare unfolded chords"
 					);
 				}
