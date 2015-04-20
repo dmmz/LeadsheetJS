@@ -29,8 +29,7 @@ require.config({
 });
 
 define(function(require) {
-  var Qunit = require('qunit');
-
+  var QUnit = require('qunit');
   // var testUserLog = require('utils/test/testUserlog');
   // var testAjaxUtils = require('utils/test/testAjaxUtils');
 

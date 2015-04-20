@@ -127,7 +127,7 @@ define(function(require) {
 	// tried for unfolding
 	// var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
 
-	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
+	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
 	// initPlayerModule(songModel);
 
 	var historyM = new HistoryModel();

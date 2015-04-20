@@ -217,6 +217,7 @@ define([
 		var nm = this.songModel.getComponent('notes');
 		var cm = this.songModel.getComponent('chords');
 		var beatDuration, numBeat, index, index2;
+		var section;
 		for (var i = selBars.length - 1; i > 0; i--) {
 			sectionNumber = this.songModel.getSectionNumberFromBarNumber(selBars[i]);
 			section = this.songModel.getSection(sectionNumber);

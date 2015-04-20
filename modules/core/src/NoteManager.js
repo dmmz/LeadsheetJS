@@ -369,7 +369,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 				}
 				if ($.inArray(currState, graph[prevState]) == -1) {
 
-					iToStartRemove = (currState == "no") ? i - 1 : i;
+					var iToStartRemove = (currState == "no") ? i - 1 : i;
 					intervalsToRemove.push(getRemoveSet(input, iToStartRemove));
 				}
 			}

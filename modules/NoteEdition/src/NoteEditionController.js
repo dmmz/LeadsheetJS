@@ -90,6 +90,7 @@ define([
 			if (note.isRest) {
 				note.setRest(false);
 			}
+			var newKey;
 			if (NoteUtils.getValidPitch(decalOrNote) !== -1) {
 				//find closest key
 				newKey = NoteUtils.getClosestKey(note.getPitch(), decalOrNote);
