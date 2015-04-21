@@ -73,7 +73,6 @@ define(['modules/core/src/SongBarsIterator'], function(SongBarsIterator) {
                 h: this.heightAudio
             };
 
-
             this.waveBarDimensions.push(area);
             peaks = waveMng.audio.getPeaks(area.w, start, start + sliceSong);
 
@@ -107,7 +106,7 @@ define(['modules/core/src/SongBarsIterator'], function(SongBarsIterator) {
         var halfH = height / 2;
         var length = peaks.length;
         var scale = 1;
-        var i, h;
+        var i, h, maxH;
         // if (this.params.fillParent && width != length) {
         //     scale = width / length;
         // }
@@ -131,7 +130,8 @@ define(['modules/core/src/SongBarsIterator'], function(SongBarsIterator) {
         ctx.moveTo(area.x + $, halfH + offsetY);
 
         for (i = 0; i < length; i++) {
-            h = Math.round(peaks[i] * halfH);
+            maxH = this.showHalfWave ? height : halfH;
+            h = Math.round(peaks[i] * maxH);
             ctx.lineTo(area.x + i * scale + $, halfH - h + offsetY);
         }
 

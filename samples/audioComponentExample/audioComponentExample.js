@@ -47,7 +47,7 @@ define(function(require) {
         var neC = new NoteEditionController(song, cM);
         var params = {
           lineMarginTop: 0,
-          showHalfWave: false,
+          showHalfWave: true,
           //drawMargins: true,
           topAudio: 80,
           heightAudio: 100/*,
