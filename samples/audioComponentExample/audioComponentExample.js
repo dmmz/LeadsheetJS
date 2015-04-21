@@ -46,8 +46,12 @@ define(function(require) {
         var cM = new CursorModel(song.getComponent('notes'));
         var neC = new NoteEditionController(song, cM);
         var params = {
-          lineMarginTop: 100,
-          showHalfWave: true
+          lineMarginTop: 0,
+          showHalfWave: false,
+          //drawMargins: true,
+          topAudio: 80,
+          heightAudio: 100/*,
+          marginCursor: 20*/
         };
         var waveMng = new WaveManager(song, cM, viewer, params);
         viewer.draw(song);  

@@ -16,9 +16,9 @@ define([
 		 * LSViewer Constructor
 		 * @param {domObject} jQuery divContainer ; e.g.: $("#divContainerId");
 		 * @param {Object} params, possible params:
-		 *  
+		 *
 		 *  - width: in pixels
-		 *  
+		 *
 		 *  - heightOverflow: "scroll" | "auto".
 		 *    If scroll, when canvas is larger than containing div, it will scroll, if not, it will change div width
 		 *  - typeResize: "scale" | "fluid",
@@ -26,7 +26,7 @@ define([
 		 *  - displayTitle
 		 *  - displayComposer   // TODO: possibility of combining both (scale partially and then fluid)
 		 *  - layer: true
-		 *  
+		 *
 		 */
 		function LSViewer(divContainer, params) {
 			params = params || {};
@@ -55,10 +55,10 @@ define([
 		};
 		/**
 		 * creates the layer if it does not exists
-		 * @return {canvas context} 
+		 * @return {canvas context}
 		 */
 		LSViewer.prototype._createLayer = function() {
-			if (!this.canvas){
+			if (!this.canvas) {
 				throw "LSViewer cannot create layer because canvas does not exist";
 			}
 			var canvasEl = $(this.canvas),
@@ -66,18 +66,18 @@ define([
 				idLayer = idCanvas + "-layer",
 				offset = canvasEl.offset(),
 				layersProps = {
-					position:"absolute",
-					left:offset.left,
-					top:offset.top
+					position: "absolute",
+					left: offset.left,
+					top: offset.top
 				};
 			var layerCanvas;
 			// we only create it if it does not exist
-			if ($("canvas#" + idLayer).length === 0){
-				$("<canvas id='"+ idLayer + "' width='" + canvasEl.width() + "' height='" + canvasEl.height() + "'></canvas>").insertAfter(canvasEl);
+			if ($("canvas#" + idLayer).length === 0) {
+				$("<canvas id='" + idLayer + "' width='" + canvasEl.width() + "' height='" + canvasEl.height() + "'></canvas>").insertAfter(canvasEl);
 				layerCanvas = $("#" + idLayer);
 				layerCanvas.css(layersProps);
-				layerCanvas.css('z-index',10);
-			}else{
+				layerCanvas.css('z-index', 10);
+			} else {
 				layerCanvas = $("canvas#" + idLayer);
 			}
 			return layerCanvas[0].getContext('2d');
@@ -130,10 +130,7 @@ define([
 			this.CHORDS_DISTANCE_STAVE = 20; //distance from stave
 			this.DISPLAY_TITLE = (params.displayTitle != undefined) ? params.displayTitle : true;
 			this.DISPLAY_COMPOSER = (params.displayComposer != undefined) ? params.displayComposer : true;
-
-			if (params.lineMarginTop){ 
-				this.setMaginTop(params.lineMarginTop);
-			}
+			this.LINE_MARGIN_TOP = 0;
 
 			this.heightOverflow = params.heightOverflow || "auto";
 			this.divContainer = divContainer;
@@ -151,7 +148,7 @@ define([
 				this._setWidth(width);
 			}
 
-			if (params.layer){
+			if (params.layer) {
 				this.layerCtx = this._createLayer();
 			}
 		};
@@ -197,8 +194,10 @@ define([
 			this.ctx.textAlign = oldTextAlign;
 
 		};
-		LSViewer.prototype.setLineMarginTop = function(lineMarginTop) {
-			this.MARGIN_TOP += lineMarginTop;
+		LSViewer.prototype.setLineMarginTop = function(lineMarginTop, bottom) {
+			if (!bottom){
+				this.MARGIN_TOP += lineMarginTop;	
+			}
 			this.LINE_HEIGHT += lineMarginTop;
 			this.LINE_MARGIN_TOP = lineMarginTop;
 		};
