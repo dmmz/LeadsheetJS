@@ -7,7 +7,7 @@ module.exports = function(grunt) {
         banner: '/*! <%= pkg.name %>, <%= pkg.version %> <%= pkg.description %> <%= grunt.template.today("yyyy-mm-dd") %> - Sony CSL */\n'
       },
       build: {
-        src: ['modules/**/*.js', '!modules/core/src/SongModel.old.js'],
+        src: ['modules/**/*.js', 'utils/**/*.js', '!modules/core/src/SongModel.old.js'],
         dest: 'build/<%= pkg.name %>-<%= pkg.version %>.min.js'
       }
     },
@@ -17,7 +17,7 @@ module.exports = function(grunt) {
     jshint: {
       all: ['Gruntfile.js', 'modules/**/*.js', 'tests/**/*.js']
     },
-    /*requirejs: {
+    requirejs: {
       compile: {
         options: {
           baseUrl: "modules",
@@ -37,7 +37,7 @@ module.exports = function(grunt) {
           }
         }
       }
-    }*/
+    },
     watch: {
       scripts: {
         files: ['modules/**/*.js', '!modules/core/src/SongModel.old.js'],
@@ -59,7 +59,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
 
   // Default task(s).
-  grunt.registerTask('qunit', ['qunit']);
+  grunt.registerTask('myQunit', ['qunit']);
+
+  grunt.registerTask('myJshint', ['jshint']);
+  grunt.registerTask('myRequirejs', ['requirejs']);
 
   grunt.registerTask('default', ['uglify']);
 

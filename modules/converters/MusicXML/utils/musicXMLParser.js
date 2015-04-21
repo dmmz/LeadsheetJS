@@ -501,7 +501,7 @@ define(function(require) {
 			if (!(i in this.attributes)) continue;
 			if (!(p in this.attributes[i])) continue;
 			var measureAttrs = this.attributes[i][p];
-			for (key in measureAttrs) {
+			for (var key in measureAttrs) {
 				var val = measureAttrs[key];
 				if (val instanceof Array) {
 					if (!(attrs[key] && attrs[key] instanceof Array))

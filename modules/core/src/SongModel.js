@@ -299,6 +299,7 @@ define([
 			var currentRepeatedPart = 0;
 			var repeatedPart = [];
 			var pointerBarNumberStructure = [];
+			var endingBar;
 			while (repeat >= 0 || whileSecurity > 1000) {
 				whileSecurity++;
 				// looping in all sections repeat

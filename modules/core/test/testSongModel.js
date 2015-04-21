@@ -7,17 +7,15 @@ define([
 	return {
 		run: function() {
 			
-			test("Song", function(assert) {
+			test("SongModel", function(assert) {
 				function unfold() {
 
 					var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
 					
 					// getUnfoldedSongComponents
-					console.log('----------------');
 					var unfoldedBars = song.getUnfoldedSongComponents("notes");
 					assert.equal(unfoldedBars.length,20,"getUnfoldedSongComponents: unfolded bars"); //we know there are 20 
 					assert.equal(unfoldedBars[14][0].pitchClass[0],"A","getUnfoldedSongComponents: note in 14th bar has pitch A");
-					console.log('----------------');
 					
 					var unfoldedSong = song.unfold();
 					

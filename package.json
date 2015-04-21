@@ -1,13 +1,13 @@
 {
   "name": "LeadsheetJS",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Helps you to create a Leadsheet",
-  "main": "tests/main-test.js",
+  "main": "",
   "directories": {
     "test": "tests"
   },
   "scripts": {
-    "test": "main-test.js"
+    "test": ""
   },
   "repository": {
     "type": "git",

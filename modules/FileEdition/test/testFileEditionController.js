@@ -14,7 +14,6 @@ define(['modules/core/src/SongModel',
 				var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
 				assert.deepEqual(fec.songModel, songModel, "importFromMusicCSLJSON");
 
-
 				var mxlParse = new MusicXMLParser();
 				var docString = mxlParse.fetch("/tests/ferme.xml");
 				fec.importMusicXML(docString);
