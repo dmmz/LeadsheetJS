@@ -131,10 +131,8 @@ define([
 			this.DISPLAY_TITLE = (params.displayTitle != undefined) ? params.displayTitle : true;
 			this.DISPLAY_COMPOSER = (params.displayComposer != undefined) ? params.displayComposer : true;
 
-			if (params.lineMarginTop){
-				this.MARGIN_TOP += params.lineMarginTop;
-				this.LINE_HEIGHT += params.lineMarginTop;
-				this.LINE_MARGIN_TOP = params.lineMarginTop;
+			if (params.lineMarginTop){ 
+				this.setMaginTop(params.lineMarginTop);
 			}
 
 			this.heightOverflow = params.heightOverflow || "auto";
@@ -198,6 +196,11 @@ define([
 			this.ctx.fillText(composer, this._getNonScaledWidth() - 20, 20, this._getNonScaledWidth());
 			this.ctx.textAlign = oldTextAlign;
 
+		};
+		LSViewer.prototype.setLineMarginTop = function(lineMarginTop) {
+			this.MARGIN_TOP += lineMarginTop;
+			this.LINE_HEIGHT += lineMarginTop;
+			this.LINE_MARGIN_TOP = lineMarginTop;
 		};
 		LSViewer.prototype.setHeight = function(song, barWidthMng) {
 			var totalNumBars = song.getComponent("bars").getTotal();

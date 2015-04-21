@@ -13,7 +13,7 @@ define([
 		});
 		//when 
 		$.subscribe("ToViewer-draw",function(el,songModel){
-			waveMng.drawAudio(songModel);
+			waveMng.drawer.drawAudio(waveMng);
 		});
 	}
 	return WaveManagerController;
