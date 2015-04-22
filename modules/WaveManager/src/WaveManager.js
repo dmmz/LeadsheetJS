@@ -12,6 +12,16 @@ define(['modules/WaveManager/src/WaveAudio',
      *   - heightAudio: height of the audio area, if 150 it will completely overwrite the current bar in the score
      */
     function WaveManager(song, cModel, viewer, params) {
+        if (!song){
+            throw "WaveManager - song not defined";
+        }
+        if (!cModel){
+            throw "WaveManager - cModel not defined";
+        }
+        if (!viewer){
+            throw "WaveManager - viewer not defined";
+        }
+
         params = params || {};
 
         this.waveBarDimensions = [];
@@ -20,13 +30,8 @@ define(['modules/WaveManager/src/WaveAudio',
         this.song = song;
         this.cursorModel = cModel;
 
-        if (params.topAudio > 0){
-           viewer.setLineMarginTop(params.topAudio);
-        }else if( params.heightAudio - params.topAudio  > viewer.LINE_HEIGHT ){
-            var distance = viewer.LINE_HEIGHT - params.heightAudio - params.topAudio;
-            viewer.setLineMarginTop(distance, true);
-        }
         this.audio = new WaveAudio();
+
         var paramsDrawer = {
             pixelRatio: window.devicePixelRatio,
             showHalfWave: params.showHalfWave,

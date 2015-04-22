@@ -4,17 +4,30 @@ define(['modules/core/src/SongBarsIterator'], function(SongBarsIterator) {
             if (!params.pixelRatio) {
                 throw "WaveDrawer - pixelRatio not defined";
             }
+
             this.pixelRatio = params.pixelRatio;
             this.showHalfWave = params.showHalfWave;
             this.marginCursor = params.marginCursor || 0;
             this.drawMargins = params.drawMargins; //for debugging
-            this.topAudio = params.topAudio;
-            this.heightAudio = params.heightAudio;
+            this.topAudio = params.topAudio || 80;  
+            this.heightAudio = params.heightAudio || 100;
             this.color = ["#55F", "#99F"];
             this.waveBarDimensions = [];
             this.viewer = viewer;
             this.ctx = viewer.layerCtx;
+            this._adaptViewer();       
     }
+    /**
+     * update viewer dimensions if needed (space between lines and margin top)
+     */
+    WaveDrawer.prototype._adaptViewer = function() {
+        if (this.topAudio > 0){
+           this.viewer.setLineMarginTop(this.topAudio);
+        }else if( this.heightAudio - this.topAudio  > this.viewer.LINE_HEIGHT ){
+            var distance = this.viewer.LINE_HEIGHT - this.heightAudio - this.topAudio;
+            this.viewer.setLineMarginTop(distance, true);
+        }
+    };
     /**
      * @params like in drawCursor
      * @return {Object}  {x: val  , y: valy, w: valw, h: valh };

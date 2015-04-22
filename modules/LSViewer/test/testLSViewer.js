@@ -46,21 +46,17 @@ define(['tests/DisplayTester',
 			viewer2.draw(songModel);
 			
 			dispTest.runTest(function(divContainer){
-				var viewer = new LSViewer(divContainer,{heightOverflow:'resizeDiv',lineMarginTop:150,layer:true});
+				var viewer = new LSViewer(divContainer,{heightOverflow:'resizeDiv',layer:true});
 				var song = SongModel_CSLJson.importFromMusicCSLJSON(Solar);
 				var cM = new CursorModel(song.getComponent('notes'));
 				var neC = new NoteEditionController(song, cM);
+				
+				var waveMng = new WaveManager(song, cM, viewer); //last parameter is called params and is not used here, so it's the default config
 				viewer.draw(song);	
+	
 				var noteSpaceManager = new NoteSpaceManager(song, cM);
 				noteSpaceManager.refresh(viewer);
-				var waveMng = new WaveManager(song, cM);
-				waveMng.load('/tests/audio/solar.wav',viewer);
-
-				// var wmv = new WaveManagerView(divContainer),
-				// 	wmc = new WaveManagerController(waveMng);
-
-				// wmv.render();
-
+				waveMng.load('/tests/audio/solar.wav');
 
 			},{width:1200,height:1000}, "Painting audio");
 			

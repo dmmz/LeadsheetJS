@@ -24,7 +24,7 @@ require.config({
 define(function(require) {
 
   var Qunit = require('qunit');
-
+  QUnit.config.autostart = false; // to prevent error in chrome  (Uncaught Error: pushFailure() assertion outside test context, was at F.QUnit.start)
 
   var testLSViewer = require('modules/LSViewer/test/testLSViewer');
   var testBarWidthManager  = require('modules/LSViewer/test/testBarWidthManager');
