@@ -48,8 +48,8 @@ define(function(require) {
         var params = {
           showHalfWave: true,
           //drawMargins: true,
-          topAudio: 80,
-          heightAudio: 100/*,
+          topAudio: -100,
+          heightAudio: 75/*,
           marginCursor: 20*/
         };
         var waveMng = new WaveManager(song, cM, viewer, params);

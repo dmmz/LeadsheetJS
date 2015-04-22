@@ -23,9 +23,11 @@ define(['modules/core/src/SongBarsIterator'], function(SongBarsIterator) {
     WaveDrawer.prototype._adaptViewer = function() {
         if (this.topAudio > 0){
            this.viewer.setLineMarginTop(this.topAudio);
-        }else if( this.heightAudio - this.topAudio  > this.viewer.LINE_HEIGHT ){
-            var distance = this.viewer.LINE_HEIGHT - this.heightAudio - this.topAudio;
-            this.viewer.setLineMarginTop(distance, true);
+        }else{
+            distance = this.viewer.LINE_HEIGHT + this.topAudio + this.heightAudio; 
+            if (distance < 0){
+                this.viewer.setLineMarginTop(distance, true);
+            }
         }
     };
     /**
