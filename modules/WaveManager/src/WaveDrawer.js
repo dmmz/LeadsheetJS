@@ -10,7 +10,7 @@ define(['modules/core/src/SongBarsIterator'], function(SongBarsIterator) {
             this.drawMargins = params.drawMargins; //for debugging
             this.topAudio = params.topAudio;
             this.heightAudio = params.heightAudio;
-            this.color = color = ["#55F", "#99F"];
+            this.color = ["#55F", "#99F"];
             this.waveBarDimensions = [];
             this.viewer = viewer;
             this.ctx = viewer.layerCtx;
@@ -76,7 +76,7 @@ define(['modules/core/src/SongBarsIterator'], function(SongBarsIterator) {
             this.waveBarDimensions.push(area);
             peaks = waveMng.audio.getPeaks(area.w, start, start + sliceSong);
 
-            this.drawPeaks(peaks, area, color[toggleColor], this.viewer.ctx);
+            this.drawPeaks(peaks, area, this.color[toggleColor], this.viewer.ctx);
             toggleColor = (toggleColor + 1) % 2;
 
             start += sliceSong;
