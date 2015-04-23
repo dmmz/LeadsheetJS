@@ -1,12 +1,14 @@
 define([], function() {
 
-	function NoteSpaceView(position) {
+	function NoteSpaceView(position,viewer) {
 		this.position = position;
+		this.viewer = viewer;
 	}
 
 	NoteSpaceView.prototype.isInPath = function(x, y) {
+		var pos = this.viewer.getScaledObj(this.position);
 		if (typeof x !== "undefined" && !isNaN(x) && typeof y !== "undefined" && !isNaN(y)) {
-			if (this.position.x <= x && x <= (this.position.x + this.position.xe) && this.position.y <= y && y <= (this.position.y + this.position.ye)) {
+			if (pos.x <= x && x <= (pos.x + pos.xe) && pos.y <= y && y <= (pos.y + pos.ye)) {
 				return true;
 			}
 		}

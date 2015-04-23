@@ -36,7 +36,44 @@ define([
 			this._initController();
 			this._initSubscribe();
 		}
+		LSViewer.prototype._init = function(divContainer, params) {
+			params = params || {};
+			this.DEFAULT_HEIGHT = 1000;
+			this.SCALE = 0.999; // fix vexflow bug that doesn't draw last pixel on end bar
+			this.CANVAS_DIV_WIDTH_PROPORTION = 0.8; //width proportion between canvas created and divContainer
 
+			this.NOTE_WIDTH = 20; // estimated note width in order to be more flexible
+			this.LINE_HEIGHT = 150;
+			this.LINE_WIDTH = 1160;
+			this.BARS_PER_LINE = 4;
+			this.ENDINGS_Y = 20; //0 -> thisChordsPosY==40, the greater the closer to stave 
+			this.LABELS_Y = 0; //like this.ENDINGS_Y
+			this.MARGIN_TOP = 100;
+			this.CHORDS_DISTANCE_STAVE = 20; //distance from stave
+			this.DISPLAY_TITLE = (params.displayTitle != undefined) ? params.displayTitle : true;
+			this.DISPLAY_COMPOSER = (params.displayComposer != undefined) ? params.displayComposer : true;
+			this.LINE_MARGIN_TOP = 0;
+
+			this.heightOverflow = params.heightOverflow || "auto";
+			this.divContainer = divContainer;
+
+			var idScore = "ls" + ($("canvas").length + 1),
+				width = (params.width) ? params.width : $(divContainer).width() * this.CANVAS_DIV_WIDTH_PROPORTION;
+
+			this.canvas = this._createCanvas(idScore, width, this.DEFAULT_HEIGHT);
+			var renderer = new Vex.Flow.Renderer(this.canvas, Vex.Flow.Renderer.Backends.CANVAS);
+			this.ctx = renderer.getContext("2d");
+
+			if (params.typeResize == 'scale') {
+				this.SCALE = (width / this.LINE_WIDTH) * 0.95;
+			} else { // typeResize == 'fluid'
+				this._setWidth(width);
+			}
+
+			if (params.layer) {
+				this.layerCtx = this._createLayer();
+			}
+		};
 		/**
 		 * Create and return a dom element
 		 */
@@ -114,58 +151,20 @@ define([
 			});
 		};
 
-		LSViewer.prototype._init = function(divContainer, params) {
-			params = params || {};
-			this.DEFAULT_HEIGHT = 1000;
-			this.SCALE = 0.999; // fix vexflow bug that doesn't draw last pixel on end bar
-			this.CANVAS_DIV_WIDTH_PROPORTION = 0.8; //width proportion between canvas created and divContainer
-
-			this.NOTE_WIDTH = 20; // estimated note width in order to be more flexible
-			this.LINE_HEIGHT = 150;
-			this.LINE_WIDTH = 1160;
-			this.BARS_PER_LINE = 4;
-			this.ENDINGS_Y = 20; //0 -> thisChordsPosY==40, the greater the closer to stave 
-			this.LABELS_Y = 0; //like this.ENDINGS_Y
-			this.MARGIN_TOP = 100;
-			this.CHORDS_DISTANCE_STAVE = 20; //distance from stave
-			this.DISPLAY_TITLE = (params.displayTitle != undefined) ? params.displayTitle : true;
-			this.DISPLAY_COMPOSER = (params.displayComposer != undefined) ? params.displayComposer : true;
-			this.LINE_MARGIN_TOP = 0;
-
-			this.heightOverflow = params.heightOverflow || "auto";
-			this.divContainer = divContainer;
-
-			var idScore = "ls" + ($("canvas").length + 1),
-				width = (params.width) ? params.width : $(divContainer).width() * this.CANVAS_DIV_WIDTH_PROPORTION;
-
-			this.canvas = this._createCanvas(idScore, width, this.DEFAULT_HEIGHT);
-			var renderer = new Vex.Flow.Renderer(this.canvas, Vex.Flow.Renderer.Backends.CANVAS);
-			this.ctx = renderer.getContext("2d");
-
-			if (params.typeResize == 'scale') {
-				this.SCALE = (width / this.LINE_WIDTH) * 0.95;
-			} else { // typeResize == 'fluid'
-				this._setWidth(width);
-			}
-
-			if (params.layer) {
-				this.layerCtx = this._createLayer();
-			}
-		};
+		
 
 		LSViewer.prototype._setWidth = function(width) {
 			var viewerWidth = width || this.LINE_WIDTH;
 			this.LINE_WIDTH = viewerWidth;
 		};
 
-		LSViewer.prototype._scale = function() {
-			this.ctx.scale(this.SCALE, this.SCALE);
-			//	this.ctx.translate((this.ctx.canvas.width * (1 -  this.SCALE)/2) , 0);
+		LSViewer.prototype._scale = function(ctx) {
+			ctx = ctx || this.ctx;
+			ctx.scale(this.SCALE, this.SCALE);
 		};
-
-		LSViewer.prototype._resetScale = function() {
-			//	this.ctx.translate(-(this.ctx.canvas.width * (1 -  this.SCALE)/2) , 0);
-			this.ctx.scale(1 / this.SCALE, 1 / this.SCALE);
+		LSViewer.prototype._resetScale = function(ctx) {
+			ctx = ctx || this.ctx;
+			ctx.scale(1 / this.SCALE, 1 / this.SCALE);
 		};
 		/**
 		 * function useful to be called in 'draw' function between this._scale() and this._resetScale().
@@ -213,42 +212,18 @@ define([
 			}
 		};
 		/**
-		 * Add a model that contains a draw function, this function will be called in the draw function
-		 * @param {object} model  should contain a draw function that will be call
-		 * @param {int} zIndex Notes and chords are on zIndex 10, if you want to draw before then use zIndex < 10 or after use z index > 10
+		 * function to scale plain objects, normally they will be positions
+		 * @param  {Object} obj normally in the form of {x: 23, y:130, xe: 33, ye: 23}
+		 * @return {[type]}     [description]
 		 */
-		LSViewer.prototype.addDrawableModel = function(model, zIndex) {
-			if (typeof model === "undefined") {
-				return;
+		LSViewer.prototype.getScaledObj = function(obj) {
+			var r = {};
+			for (var prop in obj){
+				r[prop] = obj[prop] * this.SCALE;
 			}
-			if (typeof zIndex === "undefined") {
-				zIndex = 11; // default value
-			}
-			this.drawableModel.push({
-				'elem': model,
-				'zIndex': zIndex
-			});
-			this.sortDrawableModel();
+			return r;
 		};
 
-		LSViewer.prototype.removeDrawableModel = function(model) {
-			for (var i = 0, c = this.drawableModel.length; i < c; i++) {
-				if (this.drawableModel[i].elem === model) {
-					this.drawableModel[i].slice(i, 1);
-					return;
-				}
-			}
-		};
-
-		LSViewer.prototype.sortDrawableModel = function(model, zIndex) {
-			this.drawableModel.sort(function(a, b) {
-				if (a.zIndex < b.zIndex)
-					return -1;
-				if (a.zIndex > b.zIndex)
-					return 1;
-				return 0;
-			});
-		};
 		LSViewer.prototype.draw = function(song) {
 			if (typeof song === "undefined") {
 				console.warn('song is empty'); // only for debug, remove after 1 week safe
@@ -341,17 +316,14 @@ define([
 						);
 					}
 					//console.timeEnd('getChords');
-
 					//console.time('beams');
 					vxfBeams = beamMng.getVexflowBeams(); // we need to do getVexflowBeams before drawing notes
 					//console.timeEnd('beams');
-
 					//console.time('stave');
 					Vex.Flow.Formatter.FormatAndDraw(self.ctx, barView.getVexflowStave(), bar, {
 						autobeam: false
 					});
 					//console.timeEnd('stave');
-
 					//console.time('draw');
 					beamMng.draw(self.ctx, vxfBeams); // and draw beams needs to be done after drawing notes
 					tupletMng.draw(self.ctx, vxfNotes);
@@ -366,14 +338,6 @@ define([
 			tieMng.draw(this.ctx, vxfNotes, nm, this.barWidthMng, song);
 			this.vxfNotes = vxfNotes;
 			this.vxfBars = vxfBars;
-			//this.lastDrawnSong = song;
-
-			// call drawable elem with zIndex > 10
-			// for (i = 0, c = this.drawableModel.length; i < c; i++) {
-			// 	if (this.drawableModel[i].zIndex >= 10 && typeof this.drawableModel[i].elem.draw === "function") {
-			// 		this.drawableModel[i].elem.draw(self);
-			// 	}
-			// }
 			this.ctx.fillStyle = "black";
 			this.ctx.strokeStyle = "black";
 			this._displayComposer(song.getComposer());
@@ -381,6 +345,17 @@ define([
 			this._resetScale();
 			//console.timeEnd('whole draw');
 			$.publish('LSViewer-drawEnd', this);
+		};
+		/**
+		 * When drawing an element from another module, it has to use this function
+		 * @param  {Function} drawFunc function that draws the element, uses context determined by the other param layer
+		 * @param  {Boolean} layer    if true, it uses the upper layer (this.layerCtx), if not, uses the basic layer (this.ctx)
+		 */
+		LSViewer.prototype.drawElem = function(drawFunc, layer) {
+			var ctx = layer ? this.layerCtx : this.ctx;
+			this._scale(ctx);
+			drawFunc(ctx);
+			this._resetScale(ctx);
 		};
 		return LSViewer;
 

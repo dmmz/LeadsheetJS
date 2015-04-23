@@ -13,10 +13,10 @@ define([
 		this.noteSpace = [];
 		this.initSubscribe();
 
-		this.CURSORHEIGHT = 80;
-		this.CURSORMARGINTOP = 20;
-		this.CURSORMARGINLEFT = 6;
-		this.CURSORMARGINRIGHT = 9;
+		this.CURSOR_HEIGHT = 80;
+		this.CURSOR_MARGIN_TOP = 20;
+		this.CURSOR_MARGIN_LEFT = 6;
+		this.CURSOR_MARGIN_RIGHT = 9;
 	}
 
 	/**
@@ -83,11 +83,7 @@ define([
 		return false;
 	};
 
-	/**
-	 * Function return several areas to indicate which notes are selected, usefull for cursor or selection
-	 * @param  {[Integer, Integer] } Array with initial position and end position
-	 * @return {Array of Objects}, Object in this form: {area.x, area.y, area.xe, area.ye}
-	 */
+
 	NoteSpaceManager.prototype.createNoteSpace = function(viewer) {
 		var noteSpace = [];
 		if (typeof viewer.vxfBars === "undefined") {
@@ -101,19 +97,19 @@ define([
 			currentNoteStaveY = currentNote.stave.y;
 			boundingBox = currentNote.getBoundingBox();
 			area = {
-				x: boundingBox.x - this.CURSORMARGINLEFT,
-				y: currentNoteStaveY + this.CURSORMARGINTOP,
-				xe: boundingBox.w + this.CURSORMARGINLEFT + this.CURSORMARGINRIGHT,
-				ye: this.CURSORHEIGHT
+				x: boundingBox.x - this.CURSOR_MARGIN_LEFT,
+				y: currentNoteStaveY + this.CURSOR_MARGIN_TOP,
+				xe: boundingBox.w + this.CURSOR_MARGIN_LEFT + this.CURSOR_MARGIN_RIGHT,
+				ye: this.CURSOR_HEIGHT
 			};
-			noteSpace.push(new NoteSpaceView(area));
+			noteSpace.push(new NoteSpaceView(area,viewer));
 		}
 		return noteSpace;
 	};
 
 
 	/**
-	 * Function return several areas to indicate which notes are selected, usefull for cursor or selection
+	 * Returns several areas to indicate which notes are selected, usefull for cursor or selection
 	 * @param  {[Integer, Integer] } Array with initial position and end position
 	 * @return {Array of Objects}, Object in this form: {area.x, area.y, area.xe, area.ye}
 	 */
@@ -137,13 +133,13 @@ define([
 			}
 			if (currentNoteStaveY != nextNoteStaveY || cInit == cEnd) {
 				lastNoteLine = currentNote.getBoundingBox();
-				xi = firstNoteLine.getBoundingBox().x - this.CURSORMARGINLEFT;
-				xe = lastNoteLine.x - xi + lastNoteLine.w + this.CURSORMARGINRIGHT;
+				xi = firstNoteLine.getBoundingBox().x - this.CURSOR_MARGIN_LEFT;
+				xe = lastNoteLine.x - xi + lastNoteLine.w + this.CURSOR_MARGIN_RIGHT;
 				areas.push({
 					x: xi,
-					y: currentNoteStaveY + this.CURSORMARGINTOP,
+					y: currentNoteStaveY + this.CURSOR_MARGIN_TOP,
 					xe: xe,
-					ye: this.CURSORHEIGHT
+					ye: this.CURSOR_HEIGHT
 				});
 				if (cInit != cEnd) {
 					firstNoteLine = viewer.vxfNotes[cInit + 1];
@@ -156,32 +152,37 @@ define([
 	};
 
 	NoteSpaceManager.prototype.draw = function(viewer) {
-		var position = this.cursor.getPos();
-		var saveFillColor = viewer.ctx.fillStyle;
-		viewer.ctx.fillStyle = "#0099FF";
-		viewer.ctx.globalAlpha = 0.2;
-		var currentNoteSpace;
-		var areas = [];
-		if (position[0] === position[1]) {
-			areas.push({
-				x: this.noteSpace[position[0]].position.x,
-				y: this.noteSpace[position[0]].position.y,
-				xe: this.noteSpace[position[0]].position.xe,
-				ye: this.noteSpace[position[0]].position.ye
-			});
-		} else {
-			areas = this.getNotesAreasFromCursor(viewer, position);
-		}
-		for (i = 0, c = areas.length; i < c; i++) {
-			viewer.ctx.fillRect(
-				areas[i].x,
-				areas[i].y,
-				areas[i].xe,
-				areas[i].ye
-			);
-		}
-		viewer.ctx.fillStyle = saveFillColor;
-		viewer.ctx.globalAlpha = 1;
+		var self = this;
+		var ctx = viewer.ctx ;
+		viewer.drawElem(function(ctx){
+		
+			var position = self.cursor.getPos();
+			var saveFillColor = ctx.fillStyle;
+			ctx.fillStyle = "#0099FF";
+			ctx.globalAlpha = 0.2;
+			var currentNoteSpace;
+			var areas = [];
+			if (position[0] === position[1]) {
+				areas.push({
+					x: self.noteSpace[position[0]].position.x,
+					y: self.noteSpace[position[0]].position.y,
+					xe: self.noteSpace[position[0]].position.xe,
+					ye: self.noteSpace[position[0]].position.ye
+				});
+			} else {
+				areas = self.getNotesAreasFromCursor(viewer, position);
+			}
+			for (i = 0, c = areas.length; i < c; i++) {
+				ctx.fillRect(
+					areas[i].x,
+					areas[i].y,
+					areas[i].xe,
+					areas[i].ye
+				);
+			}
+			ctx.fillStyle = saveFillColor;
+			ctx.globalAlpha = 1;
+		});
 	};
 
 	return NoteSpaceManager;

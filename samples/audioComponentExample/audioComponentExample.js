@@ -53,7 +53,7 @@ define(function(require) {
           marginCursor: 20*/
         };
         var waveMng = new WaveManager(song, cM, viewer, params);
-        viewer.draw(song);  
+        viewer.draw(song);
         var noteSpaceManager = new NoteSpaceManager(song, cM);
         noteSpaceManager.refresh(viewer);
         waveMng.load('/tests/audio/solar.wav');

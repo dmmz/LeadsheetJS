@@ -119,15 +119,14 @@ define([
 		var decalX;
 		var widthBeat;
 		var area;
-		var scale = viewer.SCALE;
 		for (var i = 0, c = viewer.vxfBars.length; i < c; i++) {
 			beatInBar = viewer.vxfBars[i].timeSignature.getBeats();
 			widthBeat = viewer.vxfBars[i].barDimensions.width / beatInBar;
 			for (var j = 0; j < beatInBar; j++) {
 				area = {
-					x: (viewer.vxfBars[i].barDimensions.left + widthBeat * j) * scale,
-					y: (viewer.vxfBars[i].barDimensions.top - 17) * scale,
-					xe: widthBeat * scale,
+					x: (viewer.vxfBars[i].barDimensions.left + widthBeat * j) ,
+					y: (viewer.vxfBars[i].barDimensions.top - 17) ,
+					xe: widthBeat ,
 					ye: 20
 				};
 				chordSpace.push(new ChordSpaceView(viewer, area, i, j + 1));
@@ -142,19 +141,23 @@ define([
 
 	ChordSpaceManager.prototype.draw = function(viewer) {
 		var position = this.cursor.getPos();
-		var saveStrokeColor = viewer.ctx.strokeStyle;
-		viewer.ctx.lineWidth = 0.7;
-		var selected = false;
-		this.undraw();
-		for (var i = 0, c = this.chordSpace.length; i < c; i++) {
-			if (position[0] <= i && i <= position[1]) {
-				selected = true;
-			} else {
-				selected = false;
-			}
-			this.chordSpace[i].draw(viewer, this.songModel, selected);
-		}
-		viewer.ctx.strokeStyle = saveStrokeColor;
+		var self = this;
+		viewer.drawElem(function(ctx){
+				var saveStrokeColor = ctx.strokeStyle;
+				ctx.lineWidth = 0.7;
+				var selected = false;
+				self.undraw();
+				for (var i = 0, c = self.chordSpace.length; i < c; i++) {
+					if (position[0] <= i && i <= position[1]) {
+						selected = true;
+					} else {
+						selected = false;
+					}
+					self.chordSpace[i].draw(self.songModel, selected);
+				}
+				ctx.strokeStyle = saveStrokeColor;
+		});
+
 	};
 
 	return ChordSpaceManager;

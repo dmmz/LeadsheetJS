@@ -14,7 +14,6 @@ define(['modules/core/src/SongBarsIterator'], function(SongBarsIterator) {
             this.color = ["#55F", "#99F"];
             this.waveBarDimensions = [];
             this.viewer = viewer;
-            this.ctx = viewer.layerCtx;
             this._adaptViewer();       
     }
     /**
@@ -58,11 +57,15 @@ define(['modules/core/src/SongBarsIterator'], function(SongBarsIterator) {
      */
     WaveDrawer.prototype.drawCursor = function(bar, barTimes, time) {
         var cursorPos = this._getCursorDims(bar, barTimes, time);
-        this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-        this.ctx.beginPath();
-        this.ctx.moveTo(cursorPos.x, cursorPos.y);
-        this.ctx.lineTo(cursorPos.x, cursorPos.y + cursorPos.h);
-        this.ctx.stroke();
+        
+        var self = this;
+        this.viewer.drawElem(function(ctx){
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.beginPath();
+            ctx.moveTo(cursorPos.x, cursorPos.y);
+            ctx.lineTo(cursorPos.x, cursorPos.y + cursorPos.h);
+            ctx.stroke();
+        },true);
 
     };
     WaveDrawer.prototype.drawAudio = function(waveMng) {
@@ -91,7 +94,7 @@ define(['modules/core/src/SongBarsIterator'], function(SongBarsIterator) {
             this.waveBarDimensions.push(area);
             peaks = waveMng.audio.getPeaks(area.w, start, start + sliceSong);
 
-            this.drawPeaks(peaks, area, this.color[toggleColor], this.viewer.ctx);
+            this.drawPeaks(peaks, area, this.color[toggleColor], this.viewer);
             toggleColor = (toggleColor + 1) % 2;
 
             start += sliceSong;
@@ -111,50 +114,55 @@ define(['modules/core/src/SongBarsIterator'], function(SongBarsIterator) {
         ctx.stroke();
         ctx.closePath();
     };
-    WaveDrawer.prototype.drawPeaks = function(peaks, area, color, ctx) {
+    WaveDrawer.prototype.drawPeaks = function(peaks, area, color, viewer) {
+        var ctx = viewer.ctx;
+        var self = this;
 
-        // A half-pixel offset makes lines crisp
-        var $ = 0.5 / this.pixelRatio;
-        var width = area.w;
-        var height = area.h;
-        var offsetY = area.y;
-        var halfH = height / 2;
-        var length = peaks.length;
-        var scale = 1;
-        var i, h, maxH;
-        // if (this.params.fillParent && width != length) {
-        //     scale = width / length;
-        // }
-        scale = width / length;
-        ctx.fillStyle = color;
-        if (this.drawMargins){
-            this._drawMargins(area, ctx);    
-        }
-        
-        ctx.beginPath();
-        ctx.moveTo(area.x + $, halfH + offsetY);
-        //Comment these 3 lines if we only want to print the superior half
-        if (!this.showHalfWave) {
-            for (i = 0; i < length; i++) {
-                h = Math.round(peaks[i] * halfH);
-                ctx.lineTo(area.x + i * scale + $, halfH + h + offsetY);
+        viewer.drawElem(function(){
+            // A half-pixel offset makes lines crisp
+            var $ = 0.5 / self.pixelRatio;
+            var width = area.w;
+            var height = area.h;
+            var offsetY = area.y;
+            var halfH = height / 2;
+            var length = peaks.length;
+            var scale = 1;
+            var i, h, maxH;
+            // if (self.params.fillParent && width != length) {
+            //     scale = width / length;
+            // }
+            scale = width / length;
+            ctx.fillStyle = color;
+            if (self.drawMargins){
+                self._drawMargins(area, ctx);    
             }
-        }
+            
+            ctx.beginPath();
+            ctx.moveTo(area.x + $, halfH + offsetY);
+            //Comment these 3 lines if we only want to print the superior half
+            if (!self.showHalfWave) {
+                for (i = 0; i < length; i++) {
+                    h = Math.round(peaks[i] * halfH);
+                    ctx.lineTo(area.x + i * scale + $, halfH + h + offsetY);
+                }
+            }
 
-        ctx.lineTo(area.x + width + $, halfH + offsetY);
-        ctx.moveTo(area.x + $, halfH + offsetY);
+            ctx.lineTo(area.x + width + $, halfH + offsetY);
+            ctx.moveTo(area.x + $, halfH + offsetY);
 
-        for (i = 0; i < length; i++) {
-            maxH = this.showHalfWave ? height : halfH;
-            h = Math.round(peaks[i] * maxH);
-            ctx.lineTo(area.x + i * scale + $, halfH - h + offsetY);
-        }
+            for (i = 0; i < length; i++) {
+                maxH = self.showHalfWave ? height : halfH;
+                h = Math.round(peaks[i] * maxH);
+                ctx.lineTo(area.x + i * scale + $, halfH - h + offsetY);
+            }
 
-        ctx.lineTo(area.x + width + $, halfH + offsetY);
-        ctx.closePath();
-        ctx.fill();
-        // Always draw a median line
-        ctx.fillRect(area.x, halfH + offsetY - $, width, $);
+            ctx.lineTo(area.x + width + $, halfH + offsetY);
+            ctx.closePath();
+            ctx.fill();
+            // Always draw a median line
+            ctx.fillRect(area.x, halfH + offsetY - $, width, $);
+        });
+      
     };
     return WaveDrawer;
 });
