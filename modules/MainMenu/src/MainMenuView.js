@@ -1,8 +1,9 @@
 define([
 	'modules/MainMenu/src/MainMenuModel',
 	'pubsub',
-	'mustache'
-], function(MainMenuModel, pubsub, Mustache) {
+	'mustache',
+	'text!modules/MainMenu/src/MainMenuTemplate.html'
+], function(MainMenuModel, pubsub, Mustache, MainMenuTemplate) {
 	/**
 	 * MainMenuView is the model containing a set of menu, each menu contain at least a title
 	 */
@@ -22,14 +23,14 @@ define([
 
 	MainMenuView.prototype.initView = function(parentHTML, callback) {
 		var self = this;
-		$.get('/modules/MainMenu/src/MainMenuTemplate.html', function(template) {
-			var rendered = Mustache.render(template);
+		//$.get('/modules/MainMenu/src/MainMenuTemplate.html', function(template) {
+			var rendered = Mustache.render(MainMenuTemplate);
 			parentHTML.innerHTML += rendered;
 			self.el = parentHTML;
 			if (typeof callback === "function") {
 				callback();
 			}
-		});
+		//});
 	};
 
 	MainMenuView.prototype.initSubscribe = function() {

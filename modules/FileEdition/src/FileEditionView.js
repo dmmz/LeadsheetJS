@@ -3,7 +3,8 @@ define([
 	'modules/core/src/SongModel',
 	'utils/UserLog',
 	'pubsub',
-], function(Mustache, SongModel, UserLog, pubsub) {
+	'text!modules/FileEdition/src/FileEditionTemplate.html',
+], function(Mustache, SongModel, UserLog, pubsub, FileEditionTemplate) {
 
 	function FileEditionView(parentHTML) {
 		this.el = undefined;
@@ -34,8 +35,8 @@ define([
 
 	FileEditionView.prototype.initView = function(parentHTML, callback) {
 		var self = this;
-		$.get('/modules/FileEdition/src/FileEditionTemplate.html', function(template) {
-			var rendered = Mustache.render(template);
+		//$.get('/modules/FileEdition/src/FileEditionTemplate.html', function(template) {
+			var rendered = Mustache.render(FileEditionTemplate);
 			if (typeof parentHTML !== "undefined") {
 				parentHTML.innerHTML = rendered;
 			}
@@ -43,7 +44,7 @@ define([
 			if (typeof callback === "function") {
 				callback();
 			}
-		});
+		//});
 	};
 
 	/**

@@ -9,9 +9,10 @@ define([
 		'modules/LSViewer/src/BarWidthManager',
 		'modules/core/src/SectionBarsIterator',
 		'modules/core/src/SongBarsIterator',
+		'jquery',
 		'pubsub'
 	],
-	function(Vex, LSNoteView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator, pubsub) {
+	function(Vex, LSNoteView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator, $, pubsub) {
 		/**
 		 * LSViewer Constructor
 		 * @param {domObject} jQuery divContainer ; e.g.: $("#divContainerId");

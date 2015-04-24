@@ -4,10 +4,12 @@ define([
 	'utils/UserLog',
 	'utils/NoteUtils',
 	'pubsub',
-], function(Mustache, SongModel, UserLog, NoteUtils, pubsub) {
+	'text!modules/NoteEdition/src/NoteEditionTemplate.html',
+], function(Mustache, SongModel, UserLog, NoteUtils, pubsub, NoteEditionTemplate) {
 
-	function NoteEditionView(parentHTML) {
+	function NoteEditionView(imgPath) {
 		this.el = undefined;
+		this.imgPath = imgPath;
 		this.initSubscribe();
 		this.initKeyboard();
 	}
@@ -35,8 +37,8 @@ define([
 
 	NoteEditionView.prototype.initView = function(parentHTML, callback) {
 		var self = this;
-		$.get('/modules/NoteEdition/src/NoteEditionTemplate.html', function(template) {
-			var rendered = Mustache.render(template);
+		//$.get('/modules/NoteEdition/src/NoteEditionTemplate.html', function(template) {
+			var rendered = Mustache.render(NoteEditionTemplate, {'imgPath': self.imgPath});
 			if (typeof parentHTML !== "undefined") {
 				parentHTML.innerHTML = rendered;
 			}
@@ -44,7 +46,7 @@ define([
 			if (typeof callback === "function") {
 				callback();
 			}
-		});
+		//});
 	};
 
 	/**

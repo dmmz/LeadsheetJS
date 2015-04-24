@@ -6,9 +6,8 @@ define([
 	/**
 	 * MainMenuController is the model containing a set of menu, each menu contain at least a title
 	 */
-	function MainMenuController(model, view) {
+	function MainMenuController(model) {
 		this.model = model || new MainMenuModel();
-		this.view = view;
 		var self = this;
 		$.subscribe('MainMenuView-active_menu', function(el, menuTitle) {
 			self.activeMenu(menuTitle);
