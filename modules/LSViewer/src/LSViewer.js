@@ -9,9 +9,11 @@ define([
 		'modules/LSViewer/src/BarWidthManager',
 		'modules/core/src/SectionBarsIterator',
 		'modules/core/src/SongBarsIterator',
+		'modules/LSViewer/src/CanvasLayer',
+		'modules/LSViewer/src/Scaler',
 		'pubsub'
 	],
-	function(Vex, LSNoteView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator, pubsub) {
+	function(Vex, LSNoteView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator, CanvasLayer, Scaler,pubsub) {
 		/**
 		 * LSViewer Constructor
 		 * @param {domObject} jQuery divContainer ; e.g.: $("#divContainerId");
@@ -29,19 +31,19 @@ define([
 		 *
 		 */
 		function LSViewer(divContainer, params) {
-			params = params || {};
-			this.el = divContainer;
 			this._init(divContainer, params);
-			this.drawableModel = [];
-			this._initController();
 			this._initSubscribe();
+			this.el = divContainer; 
 		}
 		LSViewer.prototype._init = function(divContainer, params) {
 			params = params || {};
 			this.DEFAULT_HEIGHT = 1000;
-			this.SCALE = 0.999; // fix vexflow bug that doesn't draw last pixel on end bar
-			this.CANVAS_DIV_WIDTH_PROPORTION = 0.8; //width proportion between canvas created and divContainer
+			this.scaler = new Scaler();	//object that scales objects. User in NoteSpaceView and ChordSpaceView
+			this.SCALE = null;		//scale from 0 to
+			//0.999  fixes vexflow bug that doesn't draw last pixel on end bar
+			this.setScale(0.999);
 
+			this.CANVAS_DIV_WIDTH_PROPORTION = 0.8; //width proportion between canvas created and divContainer
 			this.NOTE_WIDTH = 20; // estimated note width in order to be more flexible
 			this.LINE_HEIGHT = 150;
 			this.LINE_WIDTH = 1160;
@@ -65,17 +67,15 @@ define([
 			this.ctx = renderer.getContext("2d");
 
 			if (params.typeResize == 'scale') {
-				this.SCALE = (width / this.LINE_WIDTH) * 0.95;
+				this.setScale((width / this.LINE_WIDTH) * 0.95);
 			} else { // typeResize == 'fluid'
 				this._setWidth(width);
 			}
+			this.layer = params.layer;
 
-			if (params.layer) {
-				this.layerCtx = this._createLayer();
-			}
 		};
 		/**
-		 * Create and return a dom element
+		 * Creates and return a dom element
 		 */
 		LSViewer.prototype._createCanvas = function(idScore, width, height) {
 			var canvas = $("<canvas id='" + idScore + "'></canvas>");
@@ -90,68 +90,13 @@ define([
 			$(this.divContainer).css(divCss);
 			return canvas[0];
 		};
-		/**
-		 * creates the layer if it does not exists
-		 * @return {canvas context}
-		 */
-		LSViewer.prototype._createLayer = function() {
-			if (!this.canvas) {
-				throw "LSViewer cannot create layer because canvas does not exist";
-			}
-			var canvasEl = $(this.canvas),
-				idCanvas = $(this.canvas).attr('id'),
-				idLayer = idCanvas + "-layer",
-				offset = canvasEl.offset(),
-				layersProps = {
-					position: "absolute",
-					left: offset.left,
-					top: offset.top
-				};
-			var layerCanvas;
-			// we only create it if it does not exist
-			if ($("canvas#" + idLayer).length === 0) {
-				$("<canvas id='" + idLayer + "' width='" + canvasEl.width() + "' height='" + canvasEl.height() + "'></canvas>").insertAfter(canvasEl);
-				layerCanvas = $("#" + idLayer);
-				layerCanvas.css(layersProps);
-				layerCanvas.css('z-index', 10);
-			} else {
-				layerCanvas = $("canvas#" + idLayer);
-			}
-			return layerCanvas[0].getContext('2d');
-		};
-		/**
-		 * Publish event after receiving dom events
-		 */
-		LSViewer.prototype._initController = function() {
-			var self = this;
-
-			$(this.canvas).mousedown(function(evt) {
-				$.publish('LSViewer-mousedown', getXandY($(self.canvas), evt));
-			});
-			$(this.canvas).click(function(evt) {
-				$.publish('LSViewer-click', getXandY($(self.canvas), evt));
-			});
-			$(this.canvas).mousemove(function(evt) {
-				$.publish('LSViewer-mousemove', getXandY($(self.canvas), evt));
-			});
-
-			function getXandY(element, event) {
-				xpos = event.pageX - element.offset().left;
-				ypos = event.pageY - element.offset().top;
-				return {
-					x: xpos,
-					y: ypos
-				};
-			}
-		};
+		
 		LSViewer.prototype._initSubscribe = function() {
 			var self = this;
 			$.subscribe('ToViewer-draw', function(el, songModel) {
 				self.draw(songModel);
 			});
 		};
-
-		
 
 		LSViewer.prototype._setWidth = function(width) {
 			var viewerWidth = width || this.LINE_WIDTH;
@@ -193,9 +138,14 @@ define([
 			this.ctx.textAlign = oldTextAlign;
 
 		};
+		LSViewer.prototype.setScale = function(scale) {
+			this.SCALE = scale;
+			this.scaler.setScale(scale);
+
+		};
 		LSViewer.prototype.setLineMarginTop = function(lineMarginTop, bottom) {
-			if (!bottom){
-				this.MARGIN_TOP += lineMarginTop;	
+			if (!bottom) {
+				this.MARGIN_TOP += lineMarginTop;
 			}
 			this.LINE_HEIGHT += lineMarginTop;
 			this.LINE_MARGIN_TOP = lineMarginTop;
@@ -211,18 +161,7 @@ define([
 				$(this.divContainer).height(this.canvas.height);
 			}
 		};
-		/**
-		 * function to scale plain objects, normally they will be positions
-		 * @param  {Object} obj normally in the form of {x: 23, y:130, xe: 33, ye: 23}
-		 * @return {[type]}     [description]
-		 */
-		LSViewer.prototype.getScaledObj = function(obj) {
-			var r = {};
-			for (var prop in obj){
-				r[prop] = obj[prop] * this.SCALE;
-			}
-			return r;
-		};
+		
 
 		LSViewer.prototype.draw = function(song) {
 			if (typeof song === "undefined") {
@@ -344,6 +283,11 @@ define([
 			this._displayTitle(song.getTitle());
 			this._resetScale();
 			//console.timeEnd('whole draw');
+
+			if (this.layer && !this.canvasLayer) {
+				this.canvasLayer = new CanvasLayer(this).getCanvas();
+				this.layerCtx = this.canvasLayer.getContext('2d');
+			}
 			$.publish('LSViewer-drawEnd', this);
 		};
 		/**

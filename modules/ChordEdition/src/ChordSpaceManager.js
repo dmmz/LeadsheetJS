@@ -23,10 +23,10 @@ define([
 			self.updateChord(update.chordString, update.chordModel, update.chordSpace);
 			$.publish('ToViewer-draw', self.songModel);
 		});
-		$.subscribe('LSViewer-click', function(el, position) {
+		$.subscribe('CanvasLayer-selection', function(el, position) {
 			var inPath = self.isInPath(position.x, position.y);
 			if (inPath !== false) {
-				$.publish('ToAllCursor-setEditable', false);
+				$.publish('ToAllCursors-setEditable', false);
 				self.cursor.setEditable(true);
 				self.cursor.setPos(inPath);
 				$.publish('ToViewer-draw', self.songModel);
@@ -34,15 +34,16 @@ define([
 				self.undraw();
 			}
 		});
-		$.subscribe('LSViewer-mousemove', function(el, position) {
-			/*var inPath = self.isInPath(position.x, position.y);
+		$.subscribe('CanvasLayer-mousemove', function(el, position) {
+			if (!self.cursor.getEditable()) return;	
+			var inPath = self.isInPath(position.x, position.y);
 			if (inPath !== false) {
 				myApp.viewer.el.style.cursor = 'pointer';
 				//self.cursor.setPos(inPath);
 				//$.publish('ToViewer-draw', self.songModel);
 			} else {
 				myApp.viewer.el.style.cursor = 'default';
-			}*/
+			}
 		});
 		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
 			if (self.cursor.getEditable()) {

@@ -66,7 +66,7 @@ define([
 		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
 			self.draw(viewer);
 		});
-		/*$.subscribe('LSViewer-click', function(el, position) {
+		/*$.subscribe('CanvasLayer-mouseup', function(el, position) {
 			var inPath = self.isInPath(position.x, position.y);
 			console.log(inPath);
 			if (inPath !== false) {

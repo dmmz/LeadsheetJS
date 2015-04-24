@@ -162,7 +162,7 @@ define(function(require) {
 		};
 		initChordSequenceModule($('#chordSequence2')[0], songModel, optionChediak);*/
 
-	myApp.viewer = new LSViewer($("#canvas_container")[0]);
+	myApp.viewer = new LSViewer($("#canvas_container")[0],{layer:true});
 
 	$.subscribe('MainMenuView-render', function(el) {
 		// Edit notes on view

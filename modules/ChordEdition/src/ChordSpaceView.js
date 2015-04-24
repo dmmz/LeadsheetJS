@@ -28,7 +28,7 @@ define([
 	ChordSpaceView.prototype.initSubscribe = function() {};
 
 	ChordSpaceView.prototype.isInPath = function(x, y) {
-		var pos = this.viewer.getScaledObj(this.position);
+		var pos = this.viewer.scaler.getScaledObj(this.position);
 		if (typeof x !== "undefined" && !isNaN(x) && typeof y !== "undefined" && !isNaN(y)) {
 			if (pos.x <= x && x <= (pos.x + pos.xe) && pos.y <= y && y <= (pos.y + pos.ye)) {
 				return true;
@@ -71,7 +71,7 @@ define([
 					left: 0
 				};
 			}
-			var position = this.viewer.getScaledObj(this.position);
+			var position = this.viewer.scaler.getScaledObj(this.position);
 			var top = position.y - marginTop - 1;
 			var left = position.x + offset.left + window.pageXOffset - 1;
 			var width = position.xe - marginRight;
