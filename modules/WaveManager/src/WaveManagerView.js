@@ -19,7 +19,7 @@ define([],function(){
 		divButtons.css({
 			position:'absolute'
 		});
-		divButtons.appendTo($(parentHTML));
+		divButtons.prependTo($(parentHTML));
 		
 		$("<button id="+ this.playId +">Play</button>").appendTo(divButtons);
 		$("<button id="+ this.pauseId +">Pause</button>").appendTo(divButtons);

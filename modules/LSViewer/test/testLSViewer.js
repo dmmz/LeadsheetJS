@@ -1,5 +1,4 @@
 define(['tests/DisplayTester',
-	
 	'modules/LSViewer/src/LSViewer',
 	'modules/core/src/SongModel',
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
@@ -7,10 +6,32 @@ define(['tests/DisplayTester',
 	'modules/WaveManager/src/WaveManagerView',
 	'modules/WaveManager/src/WaveManagerController',
 	'modules/NoteEdition/src/NoteSpaceManager',
+	'modules/Cursor/src/CursorModel',
+	'modules/Cursor/src/CursorController',
+	'modules/Cursor/src/CursorView',
+	'modules/NoteEdition/src/NoteEditionController',
+	'modules/NoteEdition/src/NoteSpaceManager',
 	'tests/songs/allRhythmicFigures',
 	'tests/songs/AloneTogether',
 	'tests/songs/Solar',
-], function(DisplayTester,  LSViewer, SongModel, SongModel_CSLJson, WaveManager, WaveManagerView, WaveManagerController, NoteSpaceManager, allRhythmicFigures,AloneTogether,Solar) {
+], function(
+	DisplayTester,
+	LSViewer,
+	SongModel,
+	SongModel_CSLJson,
+	WaveManager,
+	WaveManagerView,
+	WaveManagerController,
+	NoteSpaceManager,
+	CursorModel,
+	CursorController,
+	CursorView,
+	NoteEditionController,
+	NoteSpaceManager,
+	allRhythmicFigures,
+	AloneTogether,
+	Solar) 
+	{
 	return {
 		run: function() {
 			
@@ -23,6 +44,21 @@ define(['tests/DisplayTester',
 
 			var viewer2 = new LSViewer($('#ls2')[0],{typeResize: 'scale'});
 			viewer2.draw(songModel);
+			
+			dispTest.runTest(function(divContainer){
+				var viewer = new LSViewer(divContainer,{heightOverflow:'resizeDiv',layer:true});
+				var song = SongModel_CSLJson.importFromMusicCSLJSON(Solar);
+				var cM = new CursorModel(song.getComponent('notes'));
+				var neC = new NoteEditionController(song, cM);
+				
+				var waveMng = new WaveManager(song, cM, viewer); //last parameter is called params and is not used here, so it's the default config
+				viewer.draw(song);	
+	
+				var noteSpaceManager = new NoteSpaceManager(song, cM);
+				noteSpaceManager.refresh(viewer);
+				waveMng.load('/tests/audio/solar.wav');
+
+			},{width:1200,height:1000}, "Painting audio");
 			
 			dispTest.runTest(
 				function(divContainer){
@@ -62,23 +98,7 @@ define(['tests/DisplayTester',
 			},
 			{width:1200,height:1000},
 			"Real song: AloneTogether resideDiv. Same canvas as previous test,  same div height (1000), but now div height is adapted. Also, creating a new layer");
-		
-			dispTest.runTest(function(divContainer){
-				var waveMng = new WaveManager();
-				var viewer = new LSViewer(divContainer,{heightOverflow:'resizeDiv',lineMarginTop:150,layer:true});
-				var song = SongModel_CSLJson.importFromMusicCSLJSON(Solar);
-				// var noteSpaceMng = new NoteSpaceManager(song);
-				// console.log(noteSpaceMng.getNotesAreasFromCursor(0,1));
-				viewer.draw(song);	
-				waveMng.load('/tests/audio/solar.wav',viewer,song);
-
-				var wmv = new WaveManagerView(divContainer),
-					wmc = new WaveManagerController(waveMng);
-
-				wmv.render();
-
-
-			},{width:1200,height:1000}, "Painting audio");
+			
 		}
 	};
 });

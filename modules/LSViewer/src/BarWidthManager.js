@@ -228,7 +228,8 @@ define(function() {
 					return {
 						left: left,
 						width: this.barsStruct[i][j],
-						top: currentLine * this.lineHeight + this.marginTop
+						top: currentLine * this.lineHeight + this.marginTop,
+						height: this.lineHeight
 					};
 				}
 				currentNumBar++;

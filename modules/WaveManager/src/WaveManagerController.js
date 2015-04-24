@@ -10,7 +10,10 @@ define([
 		});
 		$.subscribe("WaveManagerView-pause",function(){
 			waveMng.pause();
-
+		});
+		//when 
+		$.subscribe("ToViewer-draw",function(el,songModel){
+			waveMng.drawer.drawAudio(waveMng);
 		});
 	}
 	return WaveManagerController;

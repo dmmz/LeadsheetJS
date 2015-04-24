@@ -36,11 +36,17 @@ define([
 		$.subscribe('LSViewer-mousemove', function(el, position) {
 			var inPath = self.isInPath(position.x, position.y);
 			if (inPath !== false) {
-				myApp.viewer.el.style.cursor = 'pointer';
+				if (typeof myApp !== 'undefined'){	//TODO: refactor, get rid of 'myApp'
+					myApp.viewer.el.style.cursor = 'pointer';	
+				}
+				
 				//self.cursor.setPos(inPath);
 				//$.publish('ToViewer-draw', self.songModel);
 			} else {
-				myApp.viewer.el.style.cursor = 'default';
+				if (typeof myApp !== 'undefined'){
+					myApp.viewer.el.style.cursor = 'default';	
+				}
+				
 			}
 		});
 		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
