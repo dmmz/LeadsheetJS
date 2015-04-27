@@ -3,7 +3,7 @@ define([
 	'modules/MidiCSL/src/model/PlayerModel_MidiCSL',
 	'utils/UserLog',
 	'pubsub',
-], function(Mustache, PlayerModel_MidiCSL, PlayerAPI, UserLog, pubsub) {
+], function(Mustache, PlayerModel_MidiCSL, UserLog, pubsub) {
 
 	function PlayerController(model, view) {
 		this.model = model || new PlayerModel_MidiCSL();

@@ -2,8 +2,9 @@ define([
 	'mustache',
 	'modules/core/src/SongModel',
 	'utils/UserLog',
-	'pubsub'
-], function(Mustache, SongModel, UserLog, pubsub) {
+	'pubsub',
+	'text!modules/Harmonizer/src/HarmonizerTemplate.html',
+], function(Mustache, SongModel, UserLog, pubsub, HarmonizerTemplate) {
 
 	function HarmonizerView(parentHTML) {
 		this.el = undefined;
@@ -37,8 +38,8 @@ define([
 
 	HarmonizerView.prototype.initView = function(parentHTML, callback) {
 		var self = this;
-		$.get('/modules/Harmonizer/src/HarmonizerTemplate.html', function(template) {
-			var rendered = Mustache.render(template);
+		//$.get('/modules/Harmonizer/src/HarmonizerTemplate.html', function(template) {
+			var rendered = Mustache.render(HarmonizerTemplate);
 			if (typeof parentHTML !== "undefined") {
 				parentHTML.innerHTML = rendered;
 			}
@@ -46,7 +47,7 @@ define([
 			if (typeof callback === "function") {
 				callback();
 			}
-		});
+		//});
 	};
 
 	HarmonizerView.prototype.initController = function() {

@@ -10,6 +10,7 @@ require.config({
     pubsub: 'external-libs/tiny-pubsub.min',
     jsPDF: 'external-libs/jspdf/jspdf.min',
     mustache: 'external-libs/mustache',
+    text: 'external-libs/require-text',
   },
   shim: {
     'qunit': {

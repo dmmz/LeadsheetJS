@@ -3,15 +3,17 @@ define([
 	'utils/UserLog',
 	'pubsub',
 	'bootstrap',
-], function(Mustache, UserLog, pubsub, bootstrap) {
+	'text!modules/MidiCSL/src/PlayerTemplate_MidiCSL.html',
+], function(Mustache, UserLog, pubsub, bootstrap, PlayerTemplate_MidiCSL) {
 
-	function PlayerView(parentHTML, option) {
+	function PlayerView(parentHTML, imgPath, option) {
 		this.displayMetronome = (typeof(option) !== "undefined" && typeof(option.displayMetronome) !== "undefined") ? option.displayMetronome : false;
 		this.displayLoop = (typeof(option) !== "undefined" && typeof(option.displayLoop) !== "undefined") ? option.displayLoop : false;
 		this.displayTempo = (typeof(option) !== "undefined" && typeof(option.displayTempo) !== "undefined") ? option.displayTempo : false;
 		this.changeInstrument = (typeof(option) !== "undefined" && typeof(option.changeInstrument) !== "undefined") ? option.changeInstrument : false;
 		this.progressBar = (typeof(option) !== "undefined" && typeof(option.progressBar) !== "undefined") ? option.progressBar : false;
 		this.el = undefined;
+		this.imgPath = imgPath;
 		this.initSubscribe();
 		var self = this;
 		this.render(parentHTML, true);
@@ -41,8 +43,9 @@ define([
 
 	PlayerView.prototype.initView = function(parentHTML, callback) {
 		var self = this;
-		$.get('/modules/MidiCSL/src/PlayerTemplate_MidiCSL.html', function(template) {
-			var rendered = Mustache.render(template, {
+		//$.get('/modules/MidiCSL/src/PlayerTemplate_MidiCSL.html', function(template) {
+			var rendered = Mustache.render(PlayerTemplate_MidiCSL, {
+				imgPath: self.imgPath,
 				displayLoop: self.displayLoop,
 				displayMetronome: self.displayMetronome,
 				displayTempo: self.displayTempo,
@@ -56,20 +59,20 @@ define([
 			if (typeof callback === "function") {
 				callback();
 			}
-		});
+		//});
 	};
 
 	PlayerView.prototype.initTemplate = function() {
 		// init tempo
 		var tempo = this.getTempo();
 
-		if (typeof globalVariables !== "undefined" && globalVariables.tempo !== "undefined" && globalVariables.tempo !== null) {
+		/*if (typeof globalVariables !== "undefined" && globalVariables.tempo !== "undefined" && globalVariables.tempo !== null) {
 			var minTempo = parseInt(globalVariables.tempo['minTempo'], 10);
 			var maxTempo = parseInt(globalVariables.tempo['maxTempo'], 10);
 			var range = maxTempo - minTempo;
 			tempo = Math.round((Math.random() * range) + minTempo);
 			$('#tempo_container #tempo').val(tempo);
-		}
+		}*/
 	};
 
 	/**
@@ -257,13 +260,13 @@ define([
 
 	// ready
 	PlayerView.prototype.playerIsReady = function() {
-		$('#play_button img').attr('src', '/modules/MidiCSL/img/play.png');
+		$('#play_button img').attr('src', this.imgPath + '/play.png');
 		$('#play_button_container').css('color', 'black');
 		$('#play_button_container .player_text').html('Play');
 	};
 
 	PlayerView.prototype.playerIsNotReady = function() {
-		$('#play_button img').attr('src', '/modules/MidiCSL/img/play_grey.png');
+		$('#play_button img').attr('src', this.imgPath + '/play_grey.png');
 		$('#play_button_container').css('color', 'grey');
 		$('#play_button_container .player_text').html('Loading');
 	};
@@ -271,11 +274,11 @@ define([
 
 	// loop
 	PlayerView.prototype.activeLoop = function() {
-		$('#loop_button img').attr('src', '/modules/MidiCSL/img/loop.png').attr('title', 'Loop is on');
+		$('#loop_button img').attr('src', this.imgPath + '/loop.png').attr('title', 'Loop is on');
 	};
 
 	PlayerView.prototype.unactiveLoop = function() {
-		$('#loop_button img').attr('src', '/modules/MidiCSL/img/loop_grey.png').attr('title', 'Loop is off');
+		$('#loop_button img').attr('src', this.imgPath + '/loop_grey.png').attr('title', 'Loop is off');
 	};
 
 

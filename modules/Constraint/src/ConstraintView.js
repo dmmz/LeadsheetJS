@@ -1,9 +1,10 @@
 define([
 	'mustache',
+	'text!modules/Constraint/src/ConstraintTemplate.html',
 	'modules/core/src/SongModel',
 	'utils/UserLog',
 	'pubsub',
-], function(Mustache, SongModel, UserLog, pubsub) {
+], function(Mustache, ConstraintTemplate, SongModel, UserLog, pubsub) {
 
 	function ConstraintView() {
 		this.el = undefined;
@@ -34,8 +35,8 @@ define([
 
 	ConstraintView.prototype.initView = function(parentHTML, callback) {
 		var self = this;
-		$.get('/modules/Constraint/src/ConstraintTemplate.html', function(template) {
-			var rendered = Mustache.render(template);
+		//$.get('/modules/Constraint/src/ConstraintTemplate.html', function(template) {
+			var rendered = Mustache.render(ConstraintTemplate);
 			if (typeof parentHTML !== "undefined") {
 				parentHTML.innerHTML = rendered;
 			}
@@ -43,7 +44,7 @@ define([
 			if (typeof callback === "function") {
 				callback();
 			}
-		});
+		//});
 	};
 /*
 	ConstraintView.prototype.buildSongsetSelectInterface = function(idSelect, username) {

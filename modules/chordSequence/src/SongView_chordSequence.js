@@ -1,5 +1,5 @@
-define(['modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/core/src/BarManager', 'modules/core/src/BarModel', 'modules/core/src/ChordManager', 'modules/core/src/ChordModel'],
-	function(SongModel, SectionModel, BarManager, BarModel, ChordManager, ChordModel) {
+define(['jquery', 'modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/core/src/BarManager', 'modules/core/src/BarModel', 'modules/core/src/ChordManager', 'modules/core/src/ChordModel'],
+	function($, SongModel, SectionModel, BarManager, BarModel, ChordManager, ChordModel) {
 		function SongView_chordSequence(parentHTML, songModel, option) {
 			this.el = parentHTML;
 			// songModel

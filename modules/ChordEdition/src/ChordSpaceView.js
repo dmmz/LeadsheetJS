@@ -2,7 +2,7 @@ define([
 	'utils/ChordUtils',
 	'utils/UserLog',
 	'pubsub',
-	'jquery_autocomplete',
+	'jquery_autocomplete'
 ], function(ChordUtils, UserLog, pubsub, jquery_autocomplete) {
 
 	function ChordSpaceView(viewer, position, barNumber, beatNumber) {

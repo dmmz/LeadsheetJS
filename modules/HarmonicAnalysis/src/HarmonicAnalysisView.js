@@ -2,8 +2,9 @@ define([
 	'mustache',
 	'modules/core/src/SongModel',
 	'utils/UserLog',
-	'pubsub'
-], function(Mustache, SongModel, UserLog, pubsub) {
+	'pubsub',
+	'text!modules/HarmonicAnalysis/src/HarmonicAnalysisTemplate.html'
+], function(Mustache, SongModel, UserLog, pubsub, HarmonicAnalysisTemplate) {
 
 	function HarmonicAnalysisView(parentHTML) {
 		this.el = undefined;
@@ -37,8 +38,8 @@ define([
 
 	HarmonicAnalysisView.prototype.initView = function(parentHTML, callback) {
 		var self = this;
-		$.get('/modules/HarmonicAnalysis/src/HarmonicAnalysisTemplate.html', function(template) {
-			var rendered = Mustache.render(template);
+		//$.get('/modules/HarmonicAnalysis/src/HarmonicAnalysisTemplate.html', function(template) {
+			var rendered = Mustache.render(HarmonicAnalysisTemplate);
 			if (typeof parentHTML !== "undefined") {
 				parentHTML.innerHTML = rendered;
 			}
@@ -46,7 +47,7 @@ define([
 			if (typeof callback === "function") {
 				callback();
 			}
-		});
+		//});
 	};
 
 	HarmonicAnalysisView.prototype.initController = function() {

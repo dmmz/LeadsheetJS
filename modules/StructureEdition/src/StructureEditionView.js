@@ -3,12 +3,14 @@ define([
 	'modules/core/src/SongModel',
 	'utils/UserLog',
 	'pubsub',
-], function(Mustache, SongModel, UserLog, pubsub) {
+	'text!modules/StructureEdition/src/StructureEditionTemplate.html',
+], function(Mustache, SongModel, UserLog, pubsub, StructureEditionTemplate) {
 
-	function StructureEditionView(parentHTML) {
+	function StructureEditionView(imgPath) {
 		this.el = undefined;
 		this.initSubscribe();
 		this.initKeyboard();
+		this.imgPath = imgPath;
 	}
 
 	StructureEditionView.prototype.render = function(parentHTML, force, callback) {
@@ -34,8 +36,8 @@ define([
 
 	StructureEditionView.prototype.initView = function(parentHTML, callback) {
 		var self = this;
-		$.get('/modules/StructureEdition/src/StructureEditionTemplate.html', function(template) {
-			var rendered = Mustache.render(template);
+		//$.get('/modules/StructureEdition/src/StructureEditionTemplate.html', function(template) {
+			var rendered = Mustache.render(StructureEditionTemplate,{'imgPath':this.imgPath});
 			if (typeof parentHTML !== "undefined") {
 				parentHTML.innerHTML = rendered;
 			}
@@ -43,7 +45,7 @@ define([
 			if (typeof callback === "function") {
 				callback();
 			}
-		});
+		//});
 	};
 
 	/**

@@ -10,6 +10,7 @@ require.config({
 		Midijs: 'external-libs/Midijs/midijs.min',
 		pubsub: 'external-libs/tiny-pubsub.min',
 		mustache: 'external-libs/mustache',
+		text: 'external-libs/require-text',
 		bootstrap: 'external-libs/bootstrap/bootstrap.min',
 		jsPDF: 'external-libs/jspdf/jspdf.min',
 		//bootstrap: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min',
@@ -32,7 +33,7 @@ define(function(require) {
 
 	var UserLog = require('utils/UserLog');
 	var AjaxUtils = require('utils/AjaxUtils');
-
+	
 	/*var SongModel = require('modules/core/src/SongModel');
 	var ChordManager = require('modules/core/src/ChordManager');
 	var ChordModel = require('modules/core/src/ChordModel');
@@ -111,10 +112,8 @@ define(function(require) {
 	var PopIn = require('utils/PopIn');
 
 	var myApp = {};
+	window.myApp = myApp;
 
-	var menuM = new MainMenuModel();
-	var menuV = new MainMenuView(menuM, document.getElementById('menu-container'));
-	var menuC = new MainMenuController(menuM, menuV);
 
 	/*var popIn = new PopIn('Hello', 'Test<br />ok');
 	popIn.render();*/
@@ -164,6 +163,9 @@ define(function(require) {
 
 	myApp.viewer = new LSViewer($("#canvas_container")[0],{layer:true});
 
+	var menuM = new MainMenuModel();
+	var menuC = new MainMenuController(menuM);
+
 	$.subscribe('MainMenuView-render', function(el) {
 		// Edit notes on view
 		var cursorNoteController = initCursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow');
@@ -171,7 +173,7 @@ define(function(require) {
 		//myApp.viewer.addDrawableModel(cursorNoteController.view, 11);
 
 		// Edit notes menu
-		var neV = new NoteEditionView();
+		var neV = new NoteEditionView('/modules/NoteEdition/img');
 		var neC = new NoteEditionController(songModel, cursorNoteController.model);
 
 		// Edit chords on view
@@ -179,7 +181,7 @@ define(function(require) {
 		cursorChordController.model.setEditable(false);
 		var chordSpaceManager = new ChordSpaceManager(songModel, cursorChordController.model);
 		// Edit chords menu
-		var ceV = new ChordEditionView(undefined, cursorChordController.model);
+		var ceV = new ChordEditionView(undefined, cursorChordController.model, '/modules/ChordEdition/img');
 		var ceC = new ChordEditionController(songModel, cursorChordController.model, ceV);
 
 		// Harmonize menu
@@ -197,7 +199,7 @@ define(function(require) {
 		var cC = new ConstraintController(songModel);
 
 		// Edit bars menu
-		var seV = new StructureEditionView();
+		var seV = new StructureEditionView('/modules/StructureEdition/img');
 		var seM = new StructureEditionModel();
 		var seC = new StructureEditionController(songModel, cursorNoteController.model, seV, seM);
 
@@ -259,6 +261,8 @@ define(function(require) {
 		$.publish('ToViewer-draw', songModel);
 	});
 
+	var menuV = new MainMenuView(menuM, document.getElementById('menu-container'));
+
 
 	function initChordSequenceModule(parentHTML, songModel, option) {
 		var chordSequence = new SongView_chordSequence(parentHTML, songModel, option);
@@ -267,8 +271,8 @@ define(function(require) {
 
 	function initPlayerModule(songModel) {
 		// Create a song from testSong
-		var player = new PlayerModel_MidiCSL(songModel);
-		var pV = new PlayerView($('#player_test')[0], {
+		var player = new PlayerModel_MidiCSL(songModel, "../../external-libs/Midijs/soundfont/");
+		var pV = new PlayerView($('#player_test')[0], '/modules/MidiCSL/img', {
 			displayMetronome: true,
 			displayLoop: true,
 			displayTempo: true,
@@ -285,5 +289,4 @@ define(function(require) {
 		var cC = new CursorController(songModel, cM, cV);
 		return cC;
 	}
-	window.myApp = myApp;
 });
