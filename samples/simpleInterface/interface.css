@@ -16,7 +16,6 @@ body {
 	font-size: 1.2em;
 }
 
-
 /* VIEW MAIN MENU */
 /* Main menu is set as absolute on affix-top also so the score container will not scroll down too when position will be fixed */
 #view_main_menu {

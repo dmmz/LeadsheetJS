@@ -1,4 +1,4 @@
-/*
+/*==
 
 	DOMLoader.XMLHttp
 	--------------------------
@@ -46,7 +46,7 @@ if (typeof (XMLHttpRequest) === "undefined") {
 	})();
 }
 
-/*if (typeof ((new XMLHttpRequest()).responseText) === "undefined") {
+if (typeof ((new XMLHttpRequest()).responseText) === "undefined") {
 	// http://stackoverflow.com/questions/1919972/how-do-i-access-xhr-responsebody-for-binary-data-from-javascript-in-ie
     var IEBinaryToArray_ByteStr_Script =
     "<!-- IEBinaryToArray_ByteStr -->\r\n"+
@@ -127,4 +127,4 @@ if (typeof (XMLHttpRequest) === "undefined") {
 		req.send(conf.data);
 		return req;
 	};
-}*/
+}
