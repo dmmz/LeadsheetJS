@@ -2,9 +2,9 @@ define(['modules/WaveManager/src/WaveAudio',
     'modules/WaveManager/src/WaveDrawer'
 ], function(WaveAudio, WaveDrawer) {
     /**
-     * @param {SongModel} song   
-     * @param {CursorModel} cModel 
-     * @param {LSViewer} viewer 
+     * @param {SongModel} song
+     * @param {CursorModel} cModel
+     * @param {LSViewer} viewer
      * @param {Object} params :
      *   - showHalfWave: show only the half of the waveform like in soundcloud
      *   - drawMargins: show the margin of the are in which the audio is drawn (for debug purposes)
@@ -12,13 +12,13 @@ define(['modules/WaveManager/src/WaveAudio',
      *   - heightAudio: height of the audio area, if 150 it will completely overwrite the current bar in the score
      */
     function WaveManager(song, cModel, viewer, params) {
-        if (!song){
+        if (!song) {
             throw "WaveManager - song not defined";
         }
-        if (!cModel){
+        if (!cModel) {
             throw "WaveManager - cModel not defined";
         }
-        if (!viewer){
+        if (!viewer) {
             throw "WaveManager - viewer not defined";
         }
 
@@ -29,6 +29,7 @@ define(['modules/WaveManager/src/WaveAudio',
         this.currBar = 0;
         this.song = song;
         this.cursorModel = cModel;
+        this.isLoaded = false;
 
         this.audio = new WaveAudio();
 
@@ -41,27 +42,36 @@ define(['modules/WaveManager/src/WaveAudio',
             marginCursor: params.marginCursor
         };
         this.drawer = new WaveDrawer(viewer, paramsDrawer);
-
     }
+
+    WaveManager.prototype.isReady = function() {
+        return this.isLoaded;
+    };
+
     WaveManager.prototype._updateCurrBarByTime = function(time) {
         while (this.currBar < this.barTimes.length && this.barTimes[this.currBar] < time) {
             this.currBar++;
         }
         return this.currBar;
     };
-    WaveManager.prototype.load = function(url) {
+
+    WaveManager.prototype.load = function(url, callback) {
         var xhr = new XMLHttpRequest();
         var self = this;
 
         xhr.open("GET", url);
         xhr.responseType = 'arraybuffer';
+        xhr.withCredentials = false;
 
         xhr.onload = function() {
             var audioData = xhr.response;
-            self.audio.load(audioData, self, function(){
-                self.drawer.drawAudio(waveMng);
-                $.publish('WaveManager-onload');
-             });
+            self.audio.load(audioData, self, function() {
+                self.isLoaded = true;
+                self.drawer.drawAudio(self);
+                if (typeof callback !== "undefined") {
+                    callback();
+                }
+            });
         };
         xhr.send();
     };
@@ -79,7 +89,6 @@ define(['modules/WaveManager/src/WaveAudio',
         var timeStep = 0;
         var frame = function() {
             if (!self.isPause) {
-
                 if (self.getPlayedTime() >= timeStep + minBeatStep) {
                     iNote = noteMng.getPrevIndexNoteByBeat(self.getPlayedTime() / self.audio.beatDuration + 1);
                     if (iNote != prevINote) {
@@ -97,13 +106,13 @@ define(['modules/WaveManager/src/WaveAudio',
         };
         frame();
     };
-    WaveManager.prototype.play = function() {
 
+    WaveManager.prototype.play = function() {
         this.isPause = false;
         this.restartAnimationLoop();
         this.audio.play();
-
     };
+
     WaveManager.prototype.pause = function() {
         this.isPause = true;
         this.audio.pause();
@@ -114,9 +123,10 @@ define(['modules/WaveManager/src/WaveAudio',
         //var dur = this.buffer.duration;
         return this.audio.audioCtx.currentTime - this.startTime;
     };
-    WaveManager.prototype.getBarTime = function(songIt, barTime) {
 
+    WaveManager.prototype.getBarTime = function(songIt, barTime) {
         return barTime + songIt.getBarTimeSignature().getBeats() * this.audio.beatDuration;
     };
+
     return WaveManager;
 });

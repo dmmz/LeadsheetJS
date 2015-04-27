@@ -33,7 +33,7 @@ define(function(require) {
 
 	var UserLog = require('utils/UserLog');
 	var AjaxUtils = require('utils/AjaxUtils');
-	
+
 	/*var SongModel = require('modules/core/src/SongModel');
 	var ChordManager = require('modules/core/src/ChordManager');
 	var ChordModel = require('modules/core/src/ChordModel');
@@ -107,6 +107,10 @@ define(function(require) {
 	var CursorController = require('modules/Cursor/src/CursorController');
 	var CursorView = require('modules/Cursor/src/CursorView');
 
+	var WaveManager = require('modules/WaveManager/src/WaveManager');
+	var WaveManagerView = require('modules/WaveManager/src/WaveManagerView');
+	var WaveManagerController = require('modules/WaveManager/src/WaveManagerController');
+
 	var TagManager = require('modules/Tag/src/TagManager');
 
 	var PopIn = require('utils/PopIn');
@@ -161,7 +165,9 @@ define(function(require) {
 		};
 		initChordSequenceModule($('#chordSequence2')[0], songModel, optionChediak);*/
 
-	myApp.viewer = new LSViewer($("#canvas_container")[0],{layer:true});
+	myApp.viewer = new LSViewer($("#canvas_container")[0], {
+		layer: true
+	});
 
 	var menuM = new MainMenuModel();
 	var menuC = new MainMenuController(menuM);
@@ -192,7 +198,6 @@ define(function(require) {
 		var haV = new HarmonicAnalysisView();
 		var haC = new HarmonicAnalysisController(songModel, haV);
 
-
 		// Constraint menu
 		var cM = new ConstraintModel();
 		var cV = new ConstraintView();
@@ -203,9 +208,21 @@ define(function(require) {
 		var seM = new StructureEditionModel();
 		var seC = new StructureEditionController(songModel, cursorNoteController.model, seV, seM);
 
+
 		// Edit files menu
+		var params = {
+			showHalfWave: true,
+			//drawMargins: true,
+			topAudio: -100,
+			heightAudio: 75,
+			//marginCursor: 20
+		};
+		var waveMng = new WaveManager(songModel, cursorNoteController.model, myApp.viewer, params);
+		var wmc = new WaveManagerController(waveMng);
+
 		var feV = new FileEditionView();
-		var feC = new FileEditionController(songModel, myApp.viewer.canvas);
+		var feC = new FileEditionController(songModel, myApp.viewer.canvas, waveMng);
+
 
 		neV.render(undefined, true, function() {
 			menuM.addMenu({

@@ -3,17 +3,19 @@ define([
 	'modules/core/src/SongModel',
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
 	'modules/converters/MusicXML/src/SongModel_MusicXML',
+	'modules/WaveManager/src/WaveManager',
 	'modules/LSViewer/src/LSViewer',
 	'pubsub',
 	'utils/UserLog',
 	'utils/apiFlowMachines/ComposerServlet',
 	'utils/AjaxUtils',
 	'jsPDF',
-], function(Mustache, SongModel, SongModel_CSLJson, SongModel_MusicXML, LSViewer, pubsub, UserLog, ComposerServlet, AjaxUtils, jsPDF) {
+], function(Mustache, SongModel, SongModel_CSLJson, SongModel_MusicXML, WaveManager, LSViewer, pubsub, UserLog, ComposerServlet, AjaxUtils, jsPDF) {
 
-	function FileEditionController(songModel, viewerCanvas) {
+	function FileEditionController(songModel, viewerCanvas, waveManager) {
 		this.viewerCanvas = viewerCanvas;
 		this.songModel = songModel || new SongModel();
+		this.waveManager = waveManager;
 		this.initSubscribe();
 	}
 
@@ -97,7 +99,9 @@ define([
 	};
 
 	FileEditionController.prototype.loadWaveDisplay = function(path) {
-		
+		if (this.waveManager instanceof WaveManager) {
+			this.waveManager.load(path);
+		}
 	};
 
 	FileEditionController.prototype.exportAudioFile = function(JSONSong, tempo, exportType, chord, tick, style) {

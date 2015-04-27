@@ -38,6 +38,7 @@ define(function() {
 				//source.playbackRate.value = playbackControl.value;
 				self.source.connect(self.audioCtx.destination);
 				
+				console.log(self.buffer);
 				if (typeof callback !== "undefined") {
 					callback();
 				}
