@@ -271,7 +271,7 @@ define(function(require) {
 
 	function initPlayerModule(songModel) {
 		// Create a song from testSong
-		var player = new PlayerModel_MidiCSL(songModel);
+		var player = new PlayerModel_MidiCSL(songModel, "../../external-libs/Midijs/soundfont/");
 		var pV = new PlayerView($('#player_test')[0], '/modules/MidiCSL/img', {
 			displayMetronome: true,
 			displayLoop: true,

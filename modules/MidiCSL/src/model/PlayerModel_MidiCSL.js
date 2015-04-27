@@ -22,12 +22,13 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 			activeMetronome		// Boolean that indicates whether the metronome is active or not
 			volume				// Float Main volume for all instruments it vary between 0 and 1
 		*/
-		function PlayerModel_MidiCSL(songModel, option) {
+		function PlayerModel_MidiCSL(songModel, soundfontPath, option) {
 			this.isReady = false; // boolean that indicates if player is ready to be played
 			this.indexPosition = 0; // represent which notes have been lastly played
 			this.playState = false; // playState indicate if the player is currently playing or not, (paused player will return false)
 
 			this.songModel = songModel;
+			this.soundfontPath = soundfontPath;
 
 			var initVolume;
 			if ((typeof option !== "undefined" && typeof(option.volume) !== "undefined")) {
@@ -488,7 +489,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 			}
 			var self = this;
 			MIDI.loadPlugin({
-				soundfontUrl: "/external-libs/Midijs/soundfont/",
+				soundfontUrl: self.soundfontPath,
 				instruments: instruments,
 				callback: self.MidiPluginIsReady.bind(self)
 			});

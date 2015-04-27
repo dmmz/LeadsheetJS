@@ -66,13 +66,13 @@ define([
 		// init tempo
 		var tempo = this.getTempo();
 
-		if (typeof globalVariables !== "undefined" && globalVariables.tempo !== "undefined" && globalVariables.tempo !== null) {
+		/*if (typeof globalVariables !== "undefined" && globalVariables.tempo !== "undefined" && globalVariables.tempo !== null) {
 			var minTempo = parseInt(globalVariables.tempo['minTempo'], 10);
 			var maxTempo = parseInt(globalVariables.tempo['maxTempo'], 10);
 			var range = maxTempo - minTempo;
 			tempo = Math.round((Math.random() * range) + minTempo);
 			$('#tempo_container #tempo').val(tempo);
-		}
+		}*/
 	};
 
 	/**
@@ -260,13 +260,13 @@ define([
 
 	// ready
 	PlayerView.prototype.playerIsReady = function() {
-		$('#play_button img').attr('src', '/modules/MidiCSL/img/play.png');
+		$('#play_button img').attr('src', this.imgPath + '/play.png');
 		$('#play_button_container').css('color', 'black');
 		$('#play_button_container .player_text').html('Play');
 	};
 
 	PlayerView.prototype.playerIsNotReady = function() {
-		$('#play_button img').attr('src', '/modules/MidiCSL/img/play_grey.png');
+		$('#play_button img').attr('src', this.imgPath + '/play_grey.png');
 		$('#play_button_container').css('color', 'grey');
 		$('#play_button_container .player_text').html('Loading');
 	};
@@ -274,11 +274,11 @@ define([
 
 	// loop
 	PlayerView.prototype.activeLoop = function() {
-		$('#loop_button img').attr('src', '/modules/MidiCSL/img/loop.png').attr('title', 'Loop is on');
+		$('#loop_button img').attr('src', this.imgPath + '/loop.png').attr('title', 'Loop is on');
 	};
 
 	PlayerView.prototype.unactiveLoop = function() {
-		$('#loop_button img').attr('src', '/modules/MidiCSL/img/loop_grey.png').attr('title', 'Loop is off');
+		$('#loop_button img').attr('src', this.imgPath + '/loop_grey.png').attr('title', 'Loop is off');
 	};
 
 
