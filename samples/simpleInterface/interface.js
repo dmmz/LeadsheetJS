@@ -31,107 +31,26 @@ require.config({
 
 define(function(require) {
 
-	var UserLog = require('utils/UserLog');
-	var AjaxUtils = require('utils/AjaxUtils');
 	
-	/*var SongModel = require('modules/core/src/SongModel');
-	var ChordManager = require('modules/core/src/ChordManager');
-	var ChordModel = require('modules/core/src/ChordModel');
-	var NoteManager = require('modules/core/src/NoteManager');
-	var NoteModel = require('modules/core/src/NoteModel');
-	var TimeSignatureModel = require('modules/core/src/TimeSignatureModel');
-
-	var SongModel_CSLJson = require('modules/converters/MusicCSLJson/src/SongModel_CSLJson');
-	var SectionModel_CSLJson = require('modules/converters/MusicCSLJson/src/SectionModel_CSLJson');
-	var BarModel_CSLJson = require('modules/converters/MusicCSLJson/src/BarModel_CSLJson');
-	var ChordManager_CSLJson = require('modules/converters/MusicCSLJson/src/ChordManager_CSLJson');
-	var ChordModel_CSLJson = require('modules/converters/MusicCSLJson/src/ChordModel_CSLJson');
-	var NoteManager_CSLJson = require('modules/converters/MusicCSLJson/src/NoteManager_CSLJson');
-	var NoteModel_CSLJson = require('modules/converters/MusicCSLJson/src/NoteModel_CSLJson');
-
-	var SongView_chordSequence = require('modules/chordSequence/src/SongView_chordSequence');
-
-	var SongModel_midiCSL = require('modules/MidiCSL/src/model/SongModel_midiCSL');
-	var NoteModel_midiCSL = require('modules/MidiCSL/src/model/NoteModel_midiCSL');
-	var PlayerModel_MidiCSL = require('modules/MidiCSL/src/model/PlayerModel_MidiCSL');
-	var SongConverterMidi_MidiCSL = require('modules/MidiCSL/src/converters/SongConverterMidi_MidiCSL');
-
-	var LSViewer = require('modules/LSViewer/src/LSViewer');*/
-
-	var HarmonizerController = require('modules/Harmonizer/src/HarmonizerController');
-	var HarmonizerView = require('modules/Harmonizer/src/HarmonizerView');
-
-	var HarmonicAnalysisController = require('modules/HarmonicAnalysis/src/HarmonicAnalysisController');
-	var HarmonicAnalysisView = require('modules/HarmonicAnalysis/src/HarmonicAnalysisView');
-
-	var ConstraintModel = require('modules/Constraint/src/ConstraintModel');
-	var ConstraintView = require('modules/Constraint/src/ConstraintView');
-	var ConstraintController = require('modules/Constraint/src/ConstraintController');
-
-	var ModuleManager = require('modules/ModuleManager/src/ModuleManager');
-	var MainMenuModel = require('modules/MainMenu/src/MainMenuModel');
-	var MainMenuController = require('modules/MainMenu/src/MainMenuController');
-	var MainMenuView = require('modules/MainMenu/src/MainMenuView');
-
-	var HistoryModel = require('modules/History/src/HistoryModel');
-	var HistoryController = require('modules/History/src/HistoryController');
-	var HistoryView = require('modules/History/src/HistoryView');
-
-	var NoteSpaceManager = require('modules/NoteEdition/src/NoteSpaceManager');
-	var NoteEditionView = require('modules/NoteEdition/src/NoteEditionView');
-	var NoteEditionController = require('modules/NoteEdition/src/NoteEditionController');
-
-	var ChordSpaceManager = require('modules/ChordEdition/src/ChordSpaceManager');
-	var ChordEditionView = require('modules/ChordEdition/src/ChordEditionView');
-	var ChordEditionController = require('modules/ChordEdition/src/ChordEditionController');
-
-	var StructureEditionView = require('modules/StructureEdition/src/StructureEditionView');
-	var StructureEditionController = require('modules/StructureEdition/src/StructureEditionController');
-	var StructureEditionModel = require('modules/StructureEdition/src/StructureEditionModel');
-
-	var FileEditionView = require('modules/FileEdition/src/FileEditionView');
-	var FileEditionController = require('modules/FileEdition/src/FileEditionController');
-
-	var SongModel = require('modules/core/src/SongModel');
-	var SongModel_CSLJson = require('modules/converters/MusicCSLJson/src/SongModel_CSLJson');
-	var testSongs = require('tests/test-songs');
-
-	var LSViewer = require('modules/LSViewer/src/LSViewer');
-	var SongView_chordSequence = require('modules/chordSequence/src/SongView_chordSequence');
-
-	var PlayerModel_MidiCSL = require('modules/MidiCSL/src/model/PlayerModel_MidiCSL');
-	var PlayerController = require('modules/MidiCSL/src/PlayerController_MidiCSL');
-	var PlayerView = require('modules/MidiCSL/src/PlayerView_MidiCSL');
-
-	var CursorModel = require('modules/Cursor/src/CursorModel');
-	var CursorController = require('modules/Cursor/src/CursorController');
-	var CursorView = require('modules/Cursor/src/CursorView');
-
-	var TagManager = require('modules/Tag/src/TagManager');
-
-	var PopIn = require('utils/PopIn');
-	//var LJS = require('LJS');
+	var LJS = require('LJS');
 	var myApp = {};
 	window.myApp = myApp;
 
 
 	/*var popIn = new PopIn('Hello', 'Test<br />ok');
 	popIn.render();*/
-
 	//myApp.historyV.activeView();
 	/*myApp.historyM.addToHistory({},'Edit notes');
 	myApp.historyM.addToHistory({});
 	myApp.historyM.setCurrentPosition(1);*/
+	var testSongs = require('tests/test-songs');
 
-	// tried for unfolding
-	// var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
-
-	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
+	var songModel = LJS.converters.MusicCSLJson.SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
 	// initPlayerModule(songModel);
 
-	var historyM = new HistoryModel();
-	var historyV = new HistoryView();
-	var historyC = new HistoryController(historyM, songModel);
+	var historyM = new LJS.History.HistoryModel();
+	var historyV = new LJS.History.HistoryView();
+	var historyC = new LJS.History.HistoryController(historyM, songModel);
 
 	$.publish('ToHistory-add', {
 		'item': testSongs.simpleLeadSheet,
@@ -146,7 +65,7 @@ define(function(require) {
 		fillEmptyBar: true,
 		fillEmptyBarCharacter: "%",
 	};
-	initChordSequenceModule($('#chordSequence1')[0], songModel, option);
+	initChordSequenceModule(LJS,$('#chordSequence1')[0], songModel, option);
 	/*
 		var optionChediak = {
 			displayTitle: true,
@@ -161,51 +80,51 @@ define(function(require) {
 		};
 		initChordSequenceModule($('#chordSequence2')[0], songModel, optionChediak);*/
 
-	myApp.viewer = new LSViewer($("#canvas_container")[0],{layer:true});
+	myApp.viewer = new LJS.LSViewer.LSViewer($("#canvas_container")[0],{layer:true});
 
-	var menuM = new MainMenuModel();
-	var menuC = new MainMenuController(menuM);
+	var menuM = new LJS.MainMenu.MainMenuModel();
+	var menuC = new LJS.MainMenu.MainMenuController(menuM);
 
 	$.subscribe('MainMenuView-render', function(el) {
 		// Edit notes on view
 		var cursorNoteController = initCursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow');
-		var noteSpaceManager = new NoteSpaceManager(songModel, cursorNoteController.model);
+		var noteSpaceManager = new LJS.NoteEdition.NoteSpaceManager(songModel, cursorNoteController.model);
 		//myApp.viewer.addDrawableModel(cursorNoteController.view, 11);
 
 		// Edit notes menu
-		var neV = new NoteEditionView('/modules/NoteEdition/img');
-		var neC = new NoteEditionController(songModel, cursorNoteController.model);
+		var neV = new LJS.NoteEdition.NoteEditionView('/modules/NoteEdition/img');
+		var neC = new LJS.NoteEdition.NoteEditionController(songModel, cursorNoteController.model);
 
 		// Edit chords on view
 		var cursorChordController = initCursor(songModel.getSongTotalBeats(), songModel, 'chords', 'tab');
 		cursorChordController.model.setEditable(false);
-		var chordSpaceManager = new ChordSpaceManager(songModel, cursorChordController.model);
+		var chordSpaceManager = new LJS.ChordEdition.ChordSpaceManager(songModel, cursorChordController.model);
 		// Edit chords menu
-		var ceV = new ChordEditionView(undefined, cursorChordController.model, '/modules/ChordEdition/img');
-		var ceC = new ChordEditionController(songModel, cursorChordController.model, ceV);
+		var ceV = new LJS.ChordEdition.ChordEditionView(undefined, cursorChordController.model, '/modules/ChordEdition/img');
+		var ceC = new LJS.ChordEdition.ChordEditionController(songModel, cursorChordController.model, ceV);
 
 		// Harmonize menu
-		var hV = new HarmonizerView();
-		var hC = new HarmonizerController(songModel, hV);
+		var hV = new LJS.Harmonizer.HarmonizerView();
+		var hC = new LJS.Harmonizer.HarmonizerController(songModel, hV);
 
 		// Harmonic Analysis menu
-		var haV = new HarmonicAnalysisView();
-		var haC = new HarmonicAnalysisController(songModel, haV);
+		var haV = new LJS.HarmonicAnalysis.HarmonicAnalysisView();
+		var haC = new LJS.HarmonicAnalysis.HarmonicAnalysisController(songModel, haV);
 
 
 		// Constraint menu
-		var cM = new ConstraintModel();
-		var cV = new ConstraintView();
-		var cC = new ConstraintController(songModel);
+		var cM = new LJS.Constraint.ConstraintModel();
+		var cV = new LJS.Constraint.ConstraintView();
+		var cC = new LJS.Constraint.ConstraintController(songModel);
 
 		// Edit bars menu
-		var seV = new StructureEditionView('/modules/StructureEdition/img');
-		var seM = new StructureEditionModel();
-		var seC = new StructureEditionController(songModel, cursorNoteController.model, seV, seM);
+		var seV = new LJS.StructureEdition.StructureEditionView('/modules/StructureEdition/img');
+		var seM = new LJS.StructureEdition.StructureEditionModel();
+		var seC = new LJS.StructureEdition.StructureEditionController(songModel, cursorNoteController.model, seV, seM);
 
 		// Edit files menu
-		var feV = new FileEditionView();
-		var feC = new FileEditionController(songModel, myApp.viewer.canvas);
+		var feV = new LJS.FileEdition.FileEditionView();
+		var feC = new LJS.FileEdition.FileEditionController(songModel, myApp.viewer.canvas);
 
 		neV.render(undefined, function() {
 			menuM.addMenu({
@@ -261,11 +180,11 @@ define(function(require) {
 		$.publish('ToViewer-draw', songModel);
 	});
 
-	var menuV = new MainMenuView(menuM, document.getElementById('menu-container'));
+	var menuV = new LJS.MainMenu.MainMenuView(menuM, document.getElementById('menu-container'));
 
 
-	function initChordSequenceModule(parentHTML, songModel, option) {
-		var chordSequence = new SongView_chordSequence(parentHTML, songModel, option);
+	function initChordSequenceModule(LJS, parentHTML, songModel, option) {
+		var chordSequence = new LJS.chordSequence(parentHTML, songModel, option);
 		chordSequence.draw();
 	}
 
@@ -284,9 +203,9 @@ define(function(require) {
 	}
 
 	function initCursor(listElement, songModel, id, keyType) {
-		var cM = new CursorModel(listElement);
-		var cV = new CursorView(cM, id, keyType);
-		var cC = new CursorController(songModel, cM, cV);
+		var cM = new LJS.Cursor.CursorModel(listElement);
+		var cV = new LJS.Cursor.CursorView(cM, id, keyType);
+		var cC = new LJS.Cursor.CursorController(songModel, cM, cV);
 		return cC;
 	}
 });

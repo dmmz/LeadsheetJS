@@ -1,21 +1,22 @@
 define(['jquery', 'modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/core/src/BarManager', 'modules/core/src/BarModel', 'modules/core/src/ChordManager', 'modules/core/src/ChordModel'],
 	function($, SongModel, SectionModel, BarManager, BarModel, ChordManager, ChordModel) {
 		function SongView_chordSequence(parentHTML, songModel, option) {
+			option = option || {};
 			this.el = parentHTML;
 			// songModel
 			this.songModel = (typeof songModel !== "undefined" && songModel instanceof SongModel) ? songModel : undefined;
 
 			// display general option
-			this.displayTitle = (typeof option !== "undefined" && typeof option.displayTitle !== "undefined") ? option.displayTitle : true;
-			this.classTitle = (typeof option !== "undefined" && typeof option.classTitle !== "undefined") ? option.classTitle : 'song_view-title';
-			this.displayComposer = (typeof option !== "undefined" && typeof option.displayComposer !== "undefined") ? option.displayComposer : true;
-			this.displayBar = (typeof option !== "undefined" && typeof option.displayBar !== "undefined") ? option.displayBar : true;
-			this.delimiterBar = (typeof option !== "undefined" && typeof option.delimiterBar !== "undefined") ? option.delimiterBar : "|";
-			this.delimiterNewLine = (typeof option !== "undefined" && typeof option.delimiterNewLine !== "undefined") ? option.delimiterNewLine : "<br />";
-			this.delimiterBeat = (typeof option !== "undefined" && typeof option.delimiterBeat !== "undefined") ? option.delimiterBeat : "";
-			this.displaySection = (typeof option !== "undefined" && typeof option.displaySection !== "undefined") ? option.displaySection : true;
-			this.fillEmptyBar = (typeof option !== "undefined" && typeof option.fillEmptyBar !== "undefined") ? option.fillEmptyBar : true;
-			this.fillEmptyBarCharacter = (typeof option !== "undefined" && typeof option.fillEmptyBarCharacter !== "undefined") ? option.fillEmptyBarCharacter : "%";
+			this.displayTitle = (typeof option.displayTitle !== "undefined") ? option.displayTitle : true;
+			this.classTitle = (typeof option.classTitle !== "undefined") ? option.classTitle : 'song_view-title';
+			this.displayComposer = (typeof option.displayComposer !== "undefined") ? option.displayComposer : true;
+			this.displayBar = (typeof option.displayBar !== "undefined") ? option.displayBar : true;
+			this.delimiterBar = (typeof option.delimiterBar !== "undefined") ? option.delimiterBar : "|";
+			this.delimiterNewLine = (typeof option.delimiterNewLine !== "undefined") ? option.delimiterNewLine : "<br />";
+			this.delimiterBeat = (typeof option.delimiterBeat !== "undefined") ? option.delimiterBeat : "";
+			this.displaySection = (typeof option.displaySection !== "undefined") ? option.displaySection : true;
+			this.fillEmptyBar = (typeof option.fillEmptyBar !== "undefined") ? option.fillEmptyBar : true;
+			this.fillEmptyBarCharacter = (typeof option.fillEmptyBarCharacter !== "undefined") ? option.fillEmptyBarCharacter : "%";
 
 			this._initSubscribe();
 		}
