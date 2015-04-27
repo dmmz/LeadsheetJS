@@ -58,7 +58,10 @@ define(['modules/WaveManager/src/WaveAudio',
 
         xhr.onload = function() {
             var audioData = xhr.response;
-            self.audio.load(audioData, self);
+            self.audio.load(audioData, self, function(){
+                self.drawer.drawAudio(waveMng);
+                $.publish('WaveManager-onload');
+             });
         };
         xhr.send();
     };

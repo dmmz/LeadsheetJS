@@ -56,7 +56,7 @@ define([
 			self.toggleLoop();
 		});
 
-		$.subscribe('PlayerView-render', function(el){
+		$.subscribe('PlayerView-render', function(el) {
 			self.initView();
 		});
 	};
@@ -117,10 +117,9 @@ define([
 	};
 
 	PlayerController.prototype.onVolumeChange = function(volume) {
-		if(volume === 0) {
+		if (volume === 0) {
 			this.model.mute();
-		}
-		else{
+		} else {
 			this.model.setVolume(volume);
 		}
 	};

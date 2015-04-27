@@ -96,6 +96,10 @@ define([
 		export_link.remove();
 	};
 
+	FileEditionController.prototype.loadWaveDisplay = function(path) {
+		
+	};
+
 	FileEditionController.prototype.exportAudioFile = function(JSONSong, tempo, exportType, chord, tick, style) {
 		var self = this;
 		var idLog = UserLog.log('info', 'Computing...');
@@ -112,7 +116,8 @@ define([
 					}
 					UserLog.logAutoFade('error', message);
 				} else {
-					self.promptFile(self.songModel.getTitle() + '.' + exportType, data.file);
+					self.loadWaveDisplay(data.file);
+					// self.promptFile(self.songModel.getTitle() + '.' + exportType, data.file);
 				}
 			}
 		});
