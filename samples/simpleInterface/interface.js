@@ -110,7 +110,7 @@ define(function(require) {
 	var TagManager = require('modules/Tag/src/TagManager');
 
 	var PopIn = require('utils/PopIn');
-
+	//var LJS = require('LJS');
 	var myApp = {};
 	window.myApp = myApp;
 
@@ -207,7 +207,7 @@ define(function(require) {
 		var feV = new FileEditionView();
 		var feC = new FileEditionController(songModel, myApp.viewer.canvas);
 
-		neV.render(undefined, true, function() {
+		neV.render(undefined, function() {
 			menuM.addMenu({
 				title: 'Notes',
 				view: neV,
@@ -215,21 +215,21 @@ define(function(require) {
 			});
 			menuC.activeMenu('Notes');
 		});
-		ceV.render(undefined, true, function() {
+		ceV.render(undefined, function() {
 			menuM.addMenu({
 				title: 'Chords',
 				view: ceV,
 				order: 3
 			});
 		});
-		seV.render(undefined, true, function() {
+		seV.render(undefined, function() {
 			menuM.addMenu({
 				title: 'Structure',
 				view: seV,
 				order: 4
 			});
 		});
-		cV.render(undefined, false, function() {
+		cV.render(undefined, function() {
 			menuM.addMenu({
 				title: 'Constraint',
 				view: cV,
@@ -237,21 +237,21 @@ define(function(require) {
 			});
 			// menuC.activeMenu('Constraint');
 		});
-		hV.render(undefined, true, function() {
+		hV.render(undefined, function() {
 			menuM.addMenu({
 				title: 'Harmonizer',
 				view: hV,
 				order: 6
 			});
 		});
-		haV.render(undefined, true, function() {
+		haV.render(undefined, function() {
 			menuM.addMenu({
 				title: 'Harmonic Analysis',
 				view: haV,
 				order: 7
 			});
 		});
-		feV.render(undefined, true, function() {
+		feV.render(undefined, function() {
 			menuM.addMenu({
 				title: 'File',
 				view: feV,

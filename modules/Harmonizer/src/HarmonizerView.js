@@ -15,39 +15,20 @@ define([
 		});*/
 	}
 
-	HarmonizerView.prototype.render = function(parentHTML, force, callback) {
-		force = force || false;
+	HarmonizerView.prototype.render = function(parentHTML, callback) {
 		// case el has never been rendered
-		var self = this;
-		if (typeof this.el === "undefined" || (typeof this.el !== "undefined" && force === true)) {
-			this.initView(parentHTML, function() {
-				self.initController();
-				$.publish('HarmonizerView-render');
-				if (typeof callback === "function") {
-					callback();
-				}
-				return;
-			});
-		} else {
-			if (typeof callback === "function") {
-				callback();
-			}
-			return;
+		//if (typeof this.el === "undefined" || (typeof this.el !== "undefined" && force === true)) {
+		var rendered = Mustache.render(HarmonizerTemplate);
+		if (typeof parentHTML !== "undefined") {
+			parentHTML.innerHTML = rendered;
 		}
-	};
-
-	HarmonizerView.prototype.initView = function(parentHTML, callback) {
-		var self = this;
-		//$.get('/modules/Harmonizer/src/HarmonizerTemplate.html', function(template) {
-			var rendered = Mustache.render(HarmonizerTemplate);
-			if (typeof parentHTML !== "undefined") {
-				parentHTML.innerHTML = rendered;
-			}
-			self.el = rendered;
-			if (typeof callback === "function") {
-				callback();
-			}
-		//});
+		this.el = rendered;
+		this.initController();
+		//$.publish('HarmonizerView-render');
+		if (typeof callback === "function") {
+			callback();
+		}
+		return;
 	};
 
 	HarmonizerView.prototype.initController = function() {

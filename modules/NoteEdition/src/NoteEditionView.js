@@ -14,40 +14,22 @@ define([
 		this.initKeyboard();
 	}
 
-	NoteEditionView.prototype.render = function(parentHTML, force, callback) {
-		force = force || false;
-		// case el has never been rendered
-		var self = this;
-		if (typeof this.el === "undefined" || (typeof this.el !== "undefined" && force === true)) {
-			this.initView(parentHTML, function() {
-				self.initController();
-				$.publish('NoteEditionView-render');
-				if (typeof callback === "function") {
-					callback();
-				}
-				return;
-			});
-		} else {
-			if (typeof callback === "function") {
-				callback();
-			}
-			return;
+	NoteEditionView.prototype.render = function(parentHTML, callback) {
+		//if (typeof this.el === "undefined" || (typeof this.el !== "undefined" && force === true)) {
+		var rendered = Mustache.render(NoteEditionTemplate, {'imgPath': this.imgPath});
+		if (typeof parentHTML !== "undefined") {
+			parentHTML.innerHTML = rendered;
 		}
+		this.el = rendered;
+		this.initController();
+		//$.publish('NoteEditionView-render');
+		if (typeof callback === "function") {
+			callback();
+		}
+		return;
+		//}
 	};
 
-	NoteEditionView.prototype.initView = function(parentHTML, callback) {
-		var self = this;
-		//$.get('/modules/NoteEdition/src/NoteEditionTemplate.html', function(template) {
-			var rendered = Mustache.render(NoteEditionTemplate, {'imgPath': self.imgPath});
-			if (typeof parentHTML !== "undefined") {
-				parentHTML.innerHTML = rendered;
-			}
-			self.el = rendered;
-			if (typeof callback === "function") {
-				callback();
-			}
-		//});
-	};
 
 	/**
 	 * Publish event after receiving dom events

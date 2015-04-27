@@ -15,39 +15,19 @@ define([
 		});*/
 	}
 
-	HarmonicAnalysisView.prototype.render = function(parentHTML, force, callback) {
-		force = force || false;
-		// case el has never been rendered
-		var self = this;
-		if (typeof this.el === "undefined" || (typeof this.el !== "undefined" && force === true)) {
-			this.initView(parentHTML, function() {
-				self.initController();
-				$.publish('HarmonicAnalysisView-render');
-				if (typeof callback === "function") {
-					callback();
-				}
-				return;
-			});
-		} else {
-			if (typeof callback === "function") {
-				callback();
-			}
-			return;
+	HarmonicAnalysisView.prototype.render = function(parentHTML, callback) {
+		//if (typeof this.el === "undefined" || (typeof this.el !== "undefined" && force === true)) {
+		var rendered = Mustache.render(HarmonicAnalysisTemplate);
+		if (typeof parentHTML !== "undefined") {
+			parentHTML.innerHTML = rendered;
 		}
-	};
-
-	HarmonicAnalysisView.prototype.initView = function(parentHTML, callback) {
-		var self = this;
-		//$.get('/modules/HarmonicAnalysis/src/HarmonicAnalysisTemplate.html', function(template) {
-			var rendered = Mustache.render(HarmonicAnalysisTemplate);
-			if (typeof parentHTML !== "undefined") {
-				parentHTML.innerHTML = rendered;
-			}
-			self.el = rendered;
-			if (typeof callback === "function") {
-				callback();
-			}
-		//});
+		this.el = rendered;
+		this.initController();
+		//$.publish('HarmonicAnalysisView-render');
+		if (typeof callback === "function") {
+			callback();
+		}
+		return;
 	};
 
 	HarmonicAnalysisView.prototype.initController = function() {

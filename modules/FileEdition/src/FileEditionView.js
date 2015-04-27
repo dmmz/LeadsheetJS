@@ -12,41 +12,19 @@ define([
 		this.initKeyboard();
 	}
 
-	FileEditionView.prototype.render = function(parentHTML, force, callback) {
-		force = force || false;
-		// case el has never been rendered
-		var self = this;
-		if (typeof this.el === "undefined" || (typeof this.el !== "undefined" && force === true)) {
-			this.initView(parentHTML, function() {
-				self.initController();
-				$.publish('FileEditionView-render');
-				if (typeof callback === "function") {
-					callback();
-				}
-				return;
-			});
-		} else {
-			if (typeof callback === "function") {
-				callback();
-			}
-			return;
+	FileEditionView.prototype.render = function(parentHTML, callback) {
+		var rendered = Mustache.render(FileEditionTemplate);
+		if (typeof parentHTML !== "undefined") {
+			parentHTML.innerHTML = rendered;
 		}
+		this.el = rendered;
+		this.initController();
+	//	$.publish('FileEditionView-render');
+		if (typeof callback === "function") {
+			callback();
+		}
+		return;	
 	};
-
-	FileEditionView.prototype.initView = function(parentHTML, callback) {
-		var self = this;
-		//$.get('/modules/FileEdition/src/FileEditionTemplate.html', function(template) {
-			var rendered = Mustache.render(FileEditionTemplate);
-			if (typeof parentHTML !== "undefined") {
-				parentHTML.innerHTML = rendered;
-			}
-			self.el = rendered;
-			if (typeof callback === "function") {
-				callback();
-			}
-		//});
-	};
-
 	/**
 	 * Publish event after receiving dom events
 	 */

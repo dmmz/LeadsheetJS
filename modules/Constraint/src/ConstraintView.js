@@ -10,42 +10,23 @@ define([
 		this.el = undefined;
 	}
 
-	ConstraintView.prototype.render = function(parentHTML, force, callback) {
-		force = force || false;
-		var self = this;
+	ConstraintView.prototype.render = function(parentHTML, callback) {
 		// case el has never been rendered
-		if (typeof this.el === "undefined" || (typeof this.el !== "undefined" && force === true)) {
-			this.initView(parentHTML, function() {
-				if (typeof parentHTML !== "undefined") {
-					self.initController();
-					$.publish('ConstraintView-render');
-				}
-				if (typeof callback === "function") {
-					callback();
-				}
-				return;
-			});
-		} else {
-			if (typeof callback === "function") {
-				callback();
-			}
-			return;
+		//if (typeof this.el === "undefined" || (typeof this.el !== "undefined" && force === true)) {
+		var rendered = Mustache.render(ConstraintTemplate);
+		if (typeof parentHTML !== "undefined") {
+			parentHTML.innerHTML = rendered;
 		}
+		this.el = rendered;
+		this.initController();
+		//$.publish('ConstraintView-render');
+		if (typeof callback === "function") {
+			callback();
+		}
+		return;
 	};
 
-	ConstraintView.prototype.initView = function(parentHTML, callback) {
-		var self = this;
-		//$.get('/modules/Constraint/src/ConstraintTemplate.html', function(template) {
-			var rendered = Mustache.render(ConstraintTemplate);
-			if (typeof parentHTML !== "undefined") {
-				parentHTML.innerHTML = rendered;
-			}
-			self.el = rendered;
-			if (typeof callback === "function") {
-				callback();
-			}
-		//});
-	};
+	
 /*
 	ConstraintView.prototype.buildSongsetSelectInterface = function(idSelect, username) {
 		getSongsetsByAuthor(username, function(data) {

@@ -13,40 +13,19 @@ define([
 		this.imgPath = imgPath;
 	}
 
-	ChordEditionView.prototype.render = function(parentHTML, force, callback) {
-		force = force || false;
-		// case el has never been rendered
-		var self = this;
-		if (typeof this.el === "undefined" || (typeof this.el !== "undefined" && force === true)) {
-			this.initView(parentHTML, function() {
-				self.initController();
-				self.initKeyboard();
-				$.publish('ChordEditionView-render');
-				if (typeof callback === "function") {
-					callback();
-				}
-				return;
-			});
-		} else {
-			if (typeof callback === "function") {
-				callback();
-			}
-			return;
+	ChordEditionView.prototype.render = function(parentHTML, callback) {
+		var rendered = Mustache.render(ChordEditionTemplate,{'imgPath':this.imgPath});
+		if (typeof parentHTML !== "undefined") {
+			parentHTML.innerHTML = rendered;
 		}
-	};
-
-	ChordEditionView.prototype.initView = function(parentHTML, callback) {
-		var self = this;
-		//$.get('/modules/ChordEdition/src/ChordEditionTemplate.html', function(template) {
-			var rendered = Mustache.render(ChordEditionTemplate,{'imgPath':self.imgPath});
-			if (typeof parentHTML !== "undefined") {
-				parentHTML.innerHTML = rendered;
-			}
-			self.el = rendered;
-			if (typeof callback === "function") {
-				callback();
-			}
-		//});
+		this.el = rendered;
+		this.initController();
+		this.initKeyboard();
+		//	$.publish('ChordEditionView-render');
+		if (typeof callback === "function") {
+			callback();
+		}
+		return;
 	};
 
 	/**
