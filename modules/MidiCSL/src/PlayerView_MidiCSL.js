@@ -3,15 +3,17 @@ define([
 	'utils/UserLog',
 	'pubsub',
 	'bootstrap',
-], function(Mustache, UserLog, pubsub, bootstrap) {
+	'text!modules/MidiCSL/src/PlayerTemplate_MidiCSL.html',
+], function(Mustache, UserLog, pubsub, bootstrap, PlayerTemplate_MidiCSL) {
 
-	function PlayerView(parentHTML, option) {
+	function PlayerView(parentHTML, imgPath, option) {
 		this.displayMetronome = (typeof(option) !== "undefined" && typeof(option.displayMetronome) !== "undefined") ? option.displayMetronome : false;
 		this.displayLoop = (typeof(option) !== "undefined" && typeof(option.displayLoop) !== "undefined") ? option.displayLoop : false;
 		this.displayTempo = (typeof(option) !== "undefined" && typeof(option.displayTempo) !== "undefined") ? option.displayTempo : false;
 		this.changeInstrument = (typeof(option) !== "undefined" && typeof(option.changeInstrument) !== "undefined") ? option.changeInstrument : false;
 		this.progressBar = (typeof(option) !== "undefined" && typeof(option.progressBar) !== "undefined") ? option.progressBar : false;
 		this.el = undefined;
+		this.imgPath = imgPath;
 		this.initSubscribe();
 		var self = this;
 		this.render(parentHTML, true);
@@ -41,8 +43,9 @@ define([
 
 	PlayerView.prototype.initView = function(parentHTML, callback) {
 		var self = this;
-		$.get('/modules/MidiCSL/src/PlayerTemplate_MidiCSL.html', function(template) {
-			var rendered = Mustache.render(template, {
+		//$.get('/modules/MidiCSL/src/PlayerTemplate_MidiCSL.html', function(template) {
+			var rendered = Mustache.render(PlayerTemplate_MidiCSL, {
+				imgPath: self.imgPath,
 				displayLoop: self.displayLoop,
 				displayMetronome: self.displayMetronome,
 				displayTempo: self.displayTempo,
@@ -56,7 +59,7 @@ define([
 			if (typeof callback === "function") {
 				callback();
 			}
-		});
+		//});
 	};
 
 	PlayerView.prototype.initTemplate = function() {

@@ -3,12 +3,14 @@ define([
 	'modules/core/src/SongModel',
 	'utils/UserLog',
 	'pubsub',
-], function(Mustache, SongModel, UserLog, pubsub) {
+	'text!modules/ChordEdition/src/ChordEditionTemplate.html',
+], function(Mustache, SongModel, UserLog, pubsub, ChordEditionTemplate) {
 
-	function ChordEditionView(parentHTML, cursor) {
+	function ChordEditionView(parentHTML, cursor, imgPath) {
 		this.cursor = cursor;
 		this.el = undefined;
 		this.initSubscribe();
+		this.imgPath = imgPath;
 	}
 
 	ChordEditionView.prototype.render = function(parentHTML, force, callback) {
@@ -35,8 +37,8 @@ define([
 
 	ChordEditionView.prototype.initView = function(parentHTML, callback) {
 		var self = this;
-		$.get('/modules/ChordEdition/src/ChordEditionTemplate.html', function(template) {
-			var rendered = Mustache.render(template);
+		//$.get('/modules/ChordEdition/src/ChordEditionTemplate.html', function(template) {
+			var rendered = Mustache.render(ChordEditionTemplate,{'imgPath':self.imgPath});
 			if (typeof parentHTML !== "undefined") {
 				parentHTML.innerHTML = rendered;
 			}
@@ -44,7 +46,7 @@ define([
 			if (typeof callback === "function") {
 				callback();
 			}
-		});
+		//});
 	};
 
 	/**
