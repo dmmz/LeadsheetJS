@@ -28,8 +28,9 @@ define([
 	ChordSpaceView.prototype.initSubscribe = function() {};
 
 	ChordSpaceView.prototype.isInPath = function(x, y) {
+		var pos = this.viewer.scaler.getScaledObj(this.position);
 		if (typeof x !== "undefined" && !isNaN(x) && typeof y !== "undefined" && !isNaN(y)) {
-			if (this.position.x <= x && x <= (this.position.x + this.position.xe) && this.position.y <= y && y <= (this.position.y + this.position.ye)) {
+			if (pos.x <= x && x <= (pos.x + pos.xe) && pos.y <= y && y <= (pos.y + pos.ye)) {
 				return true;
 			}
 		}
@@ -46,8 +47,8 @@ define([
 	};
 
 
-	ChordSpaceView.prototype.draw = function(viewer, songModel, selected) {
-		var cursorHeight = 20;
+	ChordSpaceView.prototype.draw = function(songModel, selected) {
+		
 		var marginTop = 5;
 		var marginRight = 5;
 		if (!!selected) {
@@ -70,11 +71,11 @@ define([
 					left: 0
 				};
 			}
-			// viewer.ctx.strokeStyle = "#0077FF";
-			var top = this.position.y - marginTop - 1;
-			var left = this.position.x + offset.left + window.pageXOffset - 1;
-			var width = this.position.xe - marginRight;
-			var height = cursorHeight + marginTop;
+			var position = this.viewer.scaler.getScaledObj(this.position);
+			var top = position.y - marginTop - 1;
+			var left = position.x + offset.left + window.pageXOffset - 1;
+			var width = position.xe - marginRight;
+			var height = position.ye + marginTop;
 			var input = $('<input/>').attr({
 				type: 'text',
 				style: "position:absolute; z-index: 11000;left:" + left + "px;top:" + top + "px; width:" + width + "px; height:" + height + "px",
@@ -137,13 +138,14 @@ define([
 				$(this).val(self.filterFunction($(this).val()));
 			});
 		}
-		viewer.ctx.strokeStyle = "#999999";
 
-		viewer.ctx.strokeRect(
+		//Drawing chord space boxes. We don't need to scale because this function is called by ChordSpaceManager.draw, which uses viewer.drawElem
+		this.viewer.ctx.strokeStyle = "#999999";
+		this.viewer.ctx.strokeRect(
 			this.position.x,
 			this.position.y - marginTop,
 			this.position.xe - marginRight,
-			cursorHeight + marginTop
+			this.position.ye + marginTop
 		);
 	};
 

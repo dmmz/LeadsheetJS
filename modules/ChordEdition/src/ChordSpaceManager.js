@@ -23,10 +23,10 @@ define([
 			self.updateChord(update.chordString, update.chordModel, update.chordSpace);
 			$.publish('ToViewer-draw', self.songModel);
 		});
-		$.subscribe('LSViewer-click', function(el, position) {
+		$.subscribe('CanvasLayer-selection', function(el, position) {
 			var inPath = self.isInPath(position.x, position.y);
 			if (inPath !== false) {
-				$.publish('ToAllCursor-setEditable', false);
+				$.publish('ToAllCursors-setEditable', false);
 				self.cursor.setEditable(true);
 				self.cursor.setPos(inPath);
 				$.publish('ToViewer-draw', self.songModel);
@@ -34,15 +34,16 @@ define([
 				self.undraw();
 			}
 		});
-		$.subscribe('LSViewer-mousemove', function(el, position) {
-			/*var inPath = self.isInPath(position.x, position.y);
+		$.subscribe('CanvasLayer-mousemove', function(el, position) {
+			if (!self.cursor.getEditable()) return;	
+			var inPath = self.isInPath(position.x, position.y);
 			if (inPath !== false) {
 				myApp.viewer.el.style.cursor = 'pointer';
 				//self.cursor.setPos(inPath);
 				//$.publish('ToViewer-draw', self.songModel);
 			} else {
 				myApp.viewer.el.style.cursor = 'default';
-			}*/
+			}
 		});
 		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
 			if (self.cursor.getEditable()) {
@@ -119,15 +120,14 @@ define([
 		var decalX;
 		var widthBeat;
 		var area;
-		var scale = viewer.SCALE;
 		for (var i = 0, c = viewer.vxfBars.length; i < c; i++) {
 			beatInBar = viewer.vxfBars[i].timeSignature.getBeats();
 			widthBeat = viewer.vxfBars[i].barDimensions.width / beatInBar;
 			for (var j = 0; j < beatInBar; j++) {
 				area = {
-					x: (viewer.vxfBars[i].barDimensions.left + widthBeat * j) * scale,
-					y: (viewer.vxfBars[i].barDimensions.top - 17) * scale,
-					xe: widthBeat * scale,
+					x: (viewer.vxfBars[i].barDimensions.left + widthBeat * j) ,
+					y: (viewer.vxfBars[i].barDimensions.top - 17) ,
+					xe: widthBeat ,
 					ye: 20
 				};
 				chordSpace.push(new ChordSpaceView(viewer, area, i, j + 1));
@@ -142,19 +142,23 @@ define([
 
 	ChordSpaceManager.prototype.draw = function(viewer) {
 		var position = this.cursor.getPos();
-		var saveStrokeColor = viewer.ctx.strokeStyle;
-		viewer.ctx.lineWidth = 0.7;
-		var selected = false;
-		this.undraw();
-		for (var i = 0, c = this.chordSpace.length; i < c; i++) {
-			if (position[0] <= i && i <= position[1]) {
-				selected = true;
-			} else {
-				selected = false;
-			}
-			this.chordSpace[i].draw(viewer, this.songModel, selected);
-		}
-		viewer.ctx.strokeStyle = saveStrokeColor;
+		var self = this;
+		viewer.drawElem(function(ctx){
+				var saveStrokeColor = ctx.strokeStyle;
+				ctx.lineWidth = 0.7;
+				var selected = false;
+				self.undraw();
+				for (var i = 0, c = self.chordSpace.length; i < c; i++) {
+					if (position[0] <= i && i <= position[1]) {
+						selected = true;
+					} else {
+						selected = false;
+					}
+					self.chordSpace[i].draw(self.songModel, selected);
+				}
+				ctx.strokeStyle = saveStrokeColor;
+		});
+
 	};
 
 	return ChordSpaceManager;

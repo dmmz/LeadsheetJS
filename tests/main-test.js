@@ -67,6 +67,7 @@ define(function(require) {
   var testHistoryController = require('modules/History/test/testHistoryController');
 
   var testNoteEditionController  = require('modules/NoteEdition/test/testNoteEditionController');
+  var testNoteSpaceView  = require('modules/NoteEdition/test/testNoteSpaceView');
   var testStructureEditionController  = require('modules/StructureEdition/test/testStructureEditionController');
   var testFileEditionController  = require('modules/FileEdition/test/testFileEditionController');
 
@@ -110,6 +111,7 @@ define(function(require) {
 
   // Note Edition
   testNoteEditionController.run();
+  testNoteSpaceView.run();
 
   // Structure Edition
   testStructureEditionController.run();
@@ -118,8 +120,7 @@ define(function(require) {
   testFileEditionController.run();
 
   // //LSViewer Module
-  // //console.log(
-  testBarWidthManager.run();
+  testBarWidthManager.run(); 
 
   // Midi sound model Module
  // testPlayerModel_MidiCSL.run();

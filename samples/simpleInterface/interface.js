@@ -161,7 +161,7 @@ define(function(require) {
 		};
 		initChordSequenceModule($('#chordSequence2')[0], songModel, optionChediak);*/
 
-	myApp.viewer = new LSViewer($("#canvas_container")[0]);
+	myApp.viewer = new LSViewer($("#canvas_container")[0],{layer:true});
 
 	var menuM = new MainMenuModel();
 	var menuC = new MainMenuController(menuM);

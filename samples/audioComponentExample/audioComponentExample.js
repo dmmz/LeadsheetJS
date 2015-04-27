@@ -48,12 +48,12 @@ define(function(require) {
         var params = {
           showHalfWave: true,
           //drawMargins: true,
-          topAudio: 80,
-          heightAudio: 100/*,
+          topAudio: -100,
+          heightAudio: 75/*,
           marginCursor: 20*/
         };
         var waveMng = new WaveManager(song, cM, viewer, params);
-        viewer.draw(song);  
+        viewer.draw(song);
         var noteSpaceManager = new NoteSpaceManager(song, cM);
         noteSpaceManager.refresh(viewer);
         waveMng.load('/tests/audio/solar.wav');

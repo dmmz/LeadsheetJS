@@ -9,10 +9,12 @@ define([
 		'modules/LSViewer/src/BarWidthManager',
 		'modules/core/src/SectionBarsIterator',
 		'modules/core/src/SongBarsIterator',
+		'modules/LSViewer/src/CanvasLayer',
+		'modules/LSViewer/src/Scaler',
 		'jquery',
 		'pubsub'
 	],
-	function(Vex, LSNoteView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator, $, pubsub) {
+	function(Vex, LSNoteView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator, CanvasLayer, Scaler, $, pubsub) {
 		/**
 		 * LSViewer Constructor
 		 * @param {domObject} jQuery divContainer ; e.g.: $("#divContainerId");
@@ -30,97 +32,19 @@ define([
 		 *
 		 */
 		function LSViewer(divContainer, params) {
-			params = params || {};
-			this.el = divContainer;
 			this._init(divContainer, params);
-			this.drawableModel = [];
-			this._initController();
 			this._initSubscribe();
+			this.el = divContainer; 
 		}
-
-		/**
-		 * Create and return a dom element
-		 */
-		LSViewer.prototype._createCanvas = function(idScore, width, height) {
-			var canvas = $("<canvas id='" + idScore + "'></canvas>");
-			canvas[0].width = width;
-			canvas[0].height = height;
-			canvas.appendTo(this.divContainer);
-			var divCss = {
-				textAlign: "center"
-			};
-			this.barWidthMng = null;
-
-			$(this.divContainer).css(divCss);
-			return canvas[0];
-		};
-		/**
-		 * creates the layer if it does not exists
-		 * @return {canvas context}
-		 */
-		LSViewer.prototype._createLayer = function() {
-			if (!this.canvas) {
-				throw "LSViewer cannot create layer because canvas does not exist";
-			}
-			var canvasEl = $(this.canvas),
-				idCanvas = $(this.canvas).attr('id'),
-				idLayer = idCanvas + "-layer",
-				offset = canvasEl.offset(),
-				layersProps = {
-					position: "absolute",
-					left: offset.left,
-					top: offset.top
-				};
-			var layerCanvas;
-			// we only create it if it does not exist
-			if ($("canvas#" + idLayer).length === 0) {
-				$("<canvas id='" + idLayer + "' width='" + canvasEl.width() + "' height='" + canvasEl.height() + "'></canvas>").insertAfter(canvasEl);
-				layerCanvas = $("#" + idLayer);
-				layerCanvas.css(layersProps);
-				layerCanvas.css('z-index', 10);
-			} else {
-				layerCanvas = $("canvas#" + idLayer);
-			}
-			return layerCanvas[0].getContext('2d');
-		};
-		/**
-		 * Publish event after receiving dom events
-		 */
-		LSViewer.prototype._initController = function() {
-			var self = this;
-
-			$(this.canvas).mousedown(function(evt) {
-				$.publish('LSViewer-mousedown', getXandY($(self.canvas), evt));
-			});
-			$(this.canvas).click(function(evt) {
-				$.publish('LSViewer-click', getXandY($(self.canvas), evt));
-			});
-			$(this.canvas).mousemove(function(evt) {
-				$.publish('LSViewer-mousemove', getXandY($(self.canvas), evt));
-			});
-
-			function getXandY(element, event) {
-				xpos = event.pageX - element.offset().left;
-				ypos = event.pageY - element.offset().top;
-				return {
-					x: xpos,
-					y: ypos
-				};
-			}
-		};
-		LSViewer.prototype._initSubscribe = function() {
-			var self = this;
-			$.subscribe('ToViewer-draw', function(el, songModel) {
-				self.draw(songModel);
-			});
-		};
-
 		LSViewer.prototype._init = function(divContainer, params) {
 			params = params || {};
 			this.DEFAULT_HEIGHT = 1000;
-			this.SCALE = 0.999; // fix vexflow bug that doesn't draw last pixel on end bar
-			this.CANVAS_DIV_WIDTH_PROPORTION = 0.8; //width proportion between canvas created and divContainer
+			this.scaler = new Scaler();	//object that scales objects. User in NoteSpaceView and ChordSpaceView
+			this.SCALE = null;		//scale from 0 to
+			//0.999  fixes vexflow bug that doesn't draw last pixel on end bar
+			this.setScale(0.999);
 
+			this.CANVAS_DIV_WIDTH_PROPORTION = 0.8; //width proportion between canvas created and divContainer
 			this.NOTE_WIDTH = 20; // estimated note width in order to be more flexible
 			this.LINE_HEIGHT = 150;
 			this.LINE_WIDTH = 1160;
@@ -144,14 +68,35 @@ define([
 			this.ctx = renderer.getContext("2d");
 
 			if (params.typeResize == 'scale') {
-				this.SCALE = (width / this.LINE_WIDTH) * 0.95;
+				this.setScale((width / this.LINE_WIDTH) * 0.95);
 			} else { // typeResize == 'fluid'
 				this._setWidth(width);
 			}
+			this.layer = params.layer;
 
-			if (params.layer) {
-				this.layerCtx = this._createLayer();
-			}
+		};
+		/**
+		 * Creates and return a dom element
+		 */
+		LSViewer.prototype._createCanvas = function(idScore, width, height) {
+			var canvas = $("<canvas id='" + idScore + "'></canvas>");
+			canvas[0].width = width;
+			canvas[0].height = height;
+			canvas.appendTo(this.divContainer);
+			var divCss = {
+				textAlign: "center"
+			};
+			this.barWidthMng = null;
+
+			$(this.divContainer).css(divCss);
+			return canvas[0];
+		};
+		
+		LSViewer.prototype._initSubscribe = function() {
+			var self = this;
+			$.subscribe('ToViewer-draw', function(el, songModel) {
+				self.draw(songModel);
+			});
 		};
 
 		LSViewer.prototype._setWidth = function(width) {
@@ -159,14 +104,13 @@ define([
 			this.LINE_WIDTH = viewerWidth;
 		};
 
-		LSViewer.prototype._scale = function() {
-			this.ctx.scale(this.SCALE, this.SCALE);
-			//	this.ctx.translate((this.ctx.canvas.width * (1 -  this.SCALE)/2) , 0);
+		LSViewer.prototype._scale = function(ctx) {
+			ctx = ctx || this.ctx;
+			ctx.scale(this.SCALE, this.SCALE);
 		};
-
-		LSViewer.prototype._resetScale = function() {
-			//	this.ctx.translate(-(this.ctx.canvas.width * (1 -  this.SCALE)/2) , 0);
-			this.ctx.scale(1 / this.SCALE, 1 / this.SCALE);
+		LSViewer.prototype._resetScale = function(ctx) {
+			ctx = ctx || this.ctx;
+			ctx.scale(1 / this.SCALE, 1 / this.SCALE);
 		};
 		/**
 		 * function useful to be called in 'draw' function between this._scale() and this._resetScale().
@@ -195,9 +139,14 @@ define([
 			this.ctx.textAlign = oldTextAlign;
 
 		};
+		LSViewer.prototype.setScale = function(scale) {
+			this.SCALE = scale;
+			this.scaler.setScale(scale);
+
+		};
 		LSViewer.prototype.setLineMarginTop = function(lineMarginTop, bottom) {
-			if (!bottom){
-				this.MARGIN_TOP += lineMarginTop;	
+			if (!bottom) {
+				this.MARGIN_TOP += lineMarginTop;
 			}
 			this.LINE_HEIGHT += lineMarginTop;
 			this.LINE_MARGIN_TOP = lineMarginTop;
@@ -213,43 +162,8 @@ define([
 				$(this.divContainer).height(this.canvas.height);
 			}
 		};
-		/**
-		 * Add a model that contains a draw function, this function will be called in the draw function
-		 * @param {object} model  should contain a draw function that will be call
-		 * @param {int} zIndex Notes and chords are on zIndex 10, if you want to draw before then use zIndex < 10 or after use z index > 10
-		 */
-		LSViewer.prototype.addDrawableModel = function(model, zIndex) {
-			if (typeof model === "undefined") {
-				return;
-			}
-			if (typeof zIndex === "undefined") {
-				zIndex = 11; // default value
-			}
-			this.drawableModel.push({
-				'elem': model,
-				'zIndex': zIndex
-			});
-			this.sortDrawableModel();
-		};
+		
 
-		LSViewer.prototype.removeDrawableModel = function(model) {
-			for (var i = 0, c = this.drawableModel.length; i < c; i++) {
-				if (this.drawableModel[i].elem === model) {
-					this.drawableModel[i].slice(i, 1);
-					return;
-				}
-			}
-		};
-
-		LSViewer.prototype.sortDrawableModel = function(model, zIndex) {
-			this.drawableModel.sort(function(a, b) {
-				if (a.zIndex < b.zIndex)
-					return -1;
-				if (a.zIndex > b.zIndex)
-					return 1;
-				return 0;
-			});
-		};
 		LSViewer.prototype.draw = function(song) {
 			if (typeof song === "undefined") {
 				console.warn('song is empty'); // only for debug, remove after 1 week safe
@@ -342,17 +256,14 @@ define([
 						);
 					}
 					//console.timeEnd('getChords');
-
 					//console.time('beams');
 					vxfBeams = beamMng.getVexflowBeams(); // we need to do getVexflowBeams before drawing notes
 					//console.timeEnd('beams');
-
 					//console.time('stave');
 					Vex.Flow.Formatter.FormatAndDraw(self.ctx, barView.getVexflowStave(), bar, {
 						autobeam: false
 					});
 					//console.timeEnd('stave');
-
 					//console.time('draw');
 					beamMng.draw(self.ctx, vxfBeams); // and draw beams needs to be done after drawing notes
 					tupletMng.draw(self.ctx, vxfNotes);
@@ -367,21 +278,29 @@ define([
 			tieMng.draw(this.ctx, vxfNotes, nm, this.barWidthMng, song);
 			this.vxfNotes = vxfNotes;
 			this.vxfBars = vxfBars;
-			//this.lastDrawnSong = song;
-
-			// call drawable elem with zIndex > 10
-			// for (i = 0, c = this.drawableModel.length; i < c; i++) {
-			// 	if (this.drawableModel[i].zIndex >= 10 && typeof this.drawableModel[i].elem.draw === "function") {
-			// 		this.drawableModel[i].elem.draw(self);
-			// 	}
-			// }
 			this.ctx.fillStyle = "black";
 			this.ctx.strokeStyle = "black";
 			this._displayComposer(song.getComposer());
 			this._displayTitle(song.getTitle());
 			this._resetScale();
 			//console.timeEnd('whole draw');
+
+			if (this.layer && !this.canvasLayer) {
+				this.canvasLayer = new CanvasLayer(this).getCanvas();
+				this.layerCtx = this.canvasLayer.getContext('2d');
+			}
 			$.publish('LSViewer-drawEnd', this);
+		};
+		/**
+		 * When drawing an element from another module, it has to use this function
+		 * @param  {Function} drawFunc function that draws the element, uses context determined by the other param layer
+		 * @param  {Boolean} layer    if true, it uses the upper layer (this.layerCtx), if not, uses the basic layer (this.ctx)
+		 */
+		LSViewer.prototype.drawElem = function(drawFunc, layer) {
+			var ctx = layer ? this.layerCtx : this.ctx;
+			this._scale(ctx);
+			drawFunc(ctx);
+			this._resetScale(ctx);
 		};
 		return LSViewer;
 

@@ -7,8 +7,10 @@ define([
 		"modules/LSViewer/src/LSViewer",
 		"modules/LSViewer/src/TieManager",
 		"modules/LSViewer/src/TupletManager",
+		"modules/LSViewer/src/Scaler",
+		"modules/LSViewer/src/CanvasLayer",
 	],
-	function(BarWidthManager, BeamManager, LSBarView, LSChordView, LSNoteView, LSViewer, TieManager, TupletManager) {
+	function(BarWidthManager, BeamManager, LSBarView, LSChordView, LSNoteView, LSViewer, TieManager, TupletManager, Scaler, CanvasLayer) {
 		return {
 			"BarWidthManager": BarWidthManager,
 			"BeamManager": BeamManager,
@@ -17,7 +19,9 @@ define([
 			"LSNoteView": LSNoteView,
 			"LSViewer": LSViewer,
 			"TieManager": TieManager,
-			"TupletManager": TupletManager
+			"TupletManager": TupletManager,
+			"Scaler": Scaler,
+			"CanvasLayer": CanvasLayer
 		};
 	}
 );

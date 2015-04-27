@@ -114,8 +114,6 @@ define(['modules/core/src/NoteModel',
 				assert.equal(nec.getSelectedNotes()[1].getTuplet(), "middle", 'type tuplet with 3 notes selected - middle');
 				assert.equal(nec.getSelectedNotes()[2].getTuplet(), "stop", 'type tuplet with 3 notes selected - stop');
 
-
-
 				var selNotes = nec.getSelectedNotes().toString();
 				nec.copyNotes();
 				assert.equal(nec.buffer.toString(), selNotes, 'copy Notes');

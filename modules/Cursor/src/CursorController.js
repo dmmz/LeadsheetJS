@@ -17,7 +17,7 @@ define([
 	 */
 	CursorController.prototype.initSubscribe = function() {
 		var self = this;
-		$.subscribe('ToAllCursor-setEditable', function(el, isEditable) {
+		$.subscribe('ToAllCursors-setEditable', function(el, isEditable) {
 			self.setEditable(isEditable);
 		});
 		$.subscribe('CursorView-setCursor' + this.view.id, function(el, index) {
