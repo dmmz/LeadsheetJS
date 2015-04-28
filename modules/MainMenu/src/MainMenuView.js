@@ -12,11 +12,11 @@ define([
 		this.el = undefined;
 		this.selectedClassName = 'main_menu_first_level_selected';
 		var self = this;
+
 		if (typeof parentHTML !== "undefined") {
 			this.initView(parentHTML, function() {
 				self.initSubscribe();
 				self.initController();
-				$.publish('MainMenuView-render');
 			});
 		}
 	}

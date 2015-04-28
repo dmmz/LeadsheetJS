@@ -5,9 +5,9 @@ define([
 	],function(MainMenuController,MainMenuModel,MainMenuView){
 	
 	function MainMenu(elemContainer){
-		this.model = new LJS.MainMenu.MainMenuModel();
-		this.controller = LJS.MainMenu.MainMenuController(this.model);
-		new LJS.MainMenu.MainMenuView(this.model, elemContainer);
+		this.model = new MainMenuModel();
+		this.controller = new MainMenuController(this.model);
+		new MainMenuView(this.model, elemContainer);
 	}
 	return MainMenu;
 });

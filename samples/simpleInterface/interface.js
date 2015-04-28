@@ -86,10 +86,10 @@ define(function(require) {
 	myApp.viewer = new LJS.LSViewer.LSViewer($("#canvas_container")[0],{layer:true});
 
 	var menu = new LJS.MainMenu(document.getElementById('menu-container'));
+
 	
 
-	$.subscribe('MainMenuView-render', function(el) {
-		// Edit notes on view
+	// Edit notes on view
 		var cursorNote = new LJS.Cursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow');
 		var noteEdition = new LJS.NoteEdition(songModel,cursorNote.controller.model,'/modules/NoteEdition/img');
 
@@ -121,7 +121,7 @@ define(function(require) {
 				view: noteEdition.view,
 				order: 2
 			});
-			menuC.activeMenu('Notes');
+			menu.controller.activeMenu('Notes');
 		});
 		chordEdition.view.render(undefined, function() {
 			menu.model.addMenu({
@@ -167,9 +167,6 @@ define(function(require) {
 			});
 		});
 		$.publish('ToViewer-draw', songModel);
-	});
-
-	
 
 
 

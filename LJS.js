@@ -10,7 +10,7 @@ define([
 		"modules/HarmonicAnalysis/src/HarmonicAnalysis",
 		"modules/Harmonizer/src/Harmonizer",
 		"modules/LSViewer/src/main",
-		"modules/MainMenu/src/main",
+		"modules/MainMenu/src/MainMenu",
 		"modules/MidiCSL/src/main",
 		"modules/NoteEdition/src/NoteEdition",
 		"modules/StructureEdition/src/StructureEdition",
