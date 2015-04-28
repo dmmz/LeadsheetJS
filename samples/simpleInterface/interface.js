@@ -54,16 +54,21 @@ define(function(require) {
 		'item': testSongs.simpleLeadSheet,
 		'title': 'Open song - ' + songModel.getTitle()
 	});
-	var option = {
-		displayTitle: true,
-		displayComposer: true,
-		displaySection: true,
-		displayBar: true,
-		delimiterBar: "|",
-		fillEmptyBar: true,
-		fillEmptyBarCharacter: "%",
-	};
-	initChordSequenceModule(LJS,$('#chordSequence1')[0], songModel, option);
+	
+	new LJS.chordSequence(
+		$('#chordSequence1')[0], 
+		songModel, 
+		{
+			displayTitle: true,
+			displayComposer: true,
+			displaySection: true,
+			displayBar: true,
+			delimiterBar: "|",
+			fillEmptyBar: true,
+			fillEmptyBarCharacter: "%"
+		}
+	);
+
 	/*
 		var optionChediak = {
 			displayTitle: true,
@@ -85,21 +90,14 @@ define(function(require) {
 
 	$.subscribe('MainMenuView-render', function(el) {
 		// Edit notes on view
-		var cursorNoteController = initCursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow');
-		var noteSpaceManager = new LJS.NoteEdition.NoteSpaceManager(songModel, cursorNoteController.model);
-		//myApp.viewer.addDrawableModel(cursorNoteController.view, 11);
-
-		// Edit notes menu
-		var neV = new LJS.NoteEdition.NoteEditionView('/modules/NoteEdition/img');
-		var neC = new LJS.NoteEdition.NoteEditionController(songModel, cursorNoteController.model);
+		var cursorNote = new LJS.Cursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow');
+		var noteEdition = new LJS.NoteEdition(songModel,cursorNote.controller.model,'/modules/NoteEdition/img');
 
 		// Edit chords on view
-		var cursorChordController = initCursor(songModel.getSongTotalBeats(), songModel, 'chords', 'tab');
-		cursorChordController.model.setEditable(false);
-		var chordSpaceManager = new LJS.ChordEdition.ChordSpaceManager(songModel, cursorChordController.model);
-		// Edit chords menu
-		var ceV = new LJS.ChordEdition.ChordEditionView(undefined, cursorChordController.model, '/modules/ChordEdition/img');
-		var ceC = new LJS.ChordEdition.ChordEditionController(songModel, cursorChordController.model, ceV);
+		var cursorChord = new LJS.Cursor(songModel.getSongTotalBeats(), songModel, 'chords', 'tab');
+		cursorChord.controller.model.setEditable(false);
+
+		var chordEdition = new LJS.ChordEdition(songModel,cursorChord.controller.model,'/modules/NoteEdition/img');
 
 		// Harmonize menu
 		var harm = new LJS.Harmonizer(songModel,menuM);
@@ -108,47 +106,42 @@ define(function(require) {
 		var haV = new LJS.HarmonicAnalysis.HarmonicAnalysisView();
 		var haC = new LJS.HarmonicAnalysis.HarmonicAnalysisController(songModel, haV);
 
-
 		// Constraint menu
-		var cM = new LJS.Constraint.ConstraintModel();
-		var cV = new LJS.Constraint.ConstraintView();
-		var cC = new LJS.Constraint.ConstraintController(songModel);
-
-		// Edit bars menu
-		var seV = new LJS.StructureEdition.StructureEditionView('/modules/StructureEdition/img');
-		var seM = new LJS.StructureEdition.StructureEditionModel();
-		var seC = new LJS.StructureEdition.StructureEditionController(songModel, cursorNoteController.model, seV, seM);
+		var constraint = new LJS.Constraint(songModel);
+		
+		//bars edition 
+		var structEdition = new LJS.StructureEdition(songModel, cursorNote.controller.model, '/modules/StructureEdition/img');
 
 		// Edit files menu
 		var feV = new LJS.FileEdition.FileEditionView();
 		var feC = new LJS.FileEdition.FileEditionController(songModel, myApp.viewer.canvas);
 
-		neV.render(undefined, function() {
+		noteEdition.view.render(undefined, function() {
 			menuM.addMenu({
 				title: 'Notes',
-				view: neV,
+				view: noteEdition.view,
 				order: 2
 			});
 			menuC.activeMenu('Notes');
 		});
-		ceV.render(undefined, function() {
+		chordEdition.view.render(undefined, function() {
 			menuM.addMenu({
 				title: 'Chords',
-				view: ceV,
+				view: chordEdition.view,
 				order: 3
 			});
 		});
-		seV.render(undefined, function() {
+		structEdition.view.render(undefined, function() {
 			menuM.addMenu({
 				title: 'Structure',
-				view: seV,
+				view: structEdition.view,
 				order: 4
 			});
 		});
-		cV.render(undefined, function() {
+		constraint.view.render(undefined, function() {
 			menuM.addMenu({
 				title: 'Constraint',
-				view: cV,
+				view: constraint.view,
 				order: 5
 			});
 			// menuC.activeMenu('Constraint');
@@ -180,10 +173,7 @@ define(function(require) {
 	var menuV = new LJS.MainMenu.MainMenuView(menuM, document.getElementById('menu-container'));
 
 
-	function initChordSequenceModule(LJS, parentHTML, songModel, option) {
-		var chordSequence = new LJS.chordSequence(parentHTML, songModel, option);
-		chordSequence.draw();
-	}
+
 
 	function initPlayerModule(songModel) {
 		// Create a song from testSong
@@ -197,12 +187,5 @@ define(function(require) {
 			progressBar: true
 		});
 		var pC = new PlayerController(player, pV);
-	}
-
-	function initCursor(listElement, songModel, id, keyType) {
-		var cM = new LJS.Cursor.CursorModel(listElement);
-		var cV = new LJS.Cursor.CursorView(cM, id, keyType);
-		var cC = new LJS.Cursor.CursorController(songModel, cM, cV);
-		return cC;
 	}
 });

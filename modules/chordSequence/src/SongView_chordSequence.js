@@ -17,7 +17,6 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/core/src/SectionModel',
 			this.displaySection = (typeof option.displaySection !== "undefined") ? option.displaySection : true;
 			this.fillEmptyBar = (typeof option.fillEmptyBar !== "undefined") ? option.fillEmptyBar : true;
 			this.fillEmptyBarCharacter = (typeof option.fillEmptyBarCharacter !== "undefined") ? option.fillEmptyBarCharacter : "%";
-
 			this._initSubscribe();
 		}
 

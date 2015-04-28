@@ -1,10 +1,10 @@
 define([
-		"modules/ChordEdition/src/main",
+		"modules/ChordEdition/src/ChordEdition",
 		"modules/chordSequence/src/SongView_chordSequence",
-		"modules/Constraint/src/main",
+		"modules/Constraint/src/Constraint",
 		"modules/converters/MusicCSLJson/src/main",
 		"modules/core/src/main", // most important module
-		"modules/Cursor/src/main",
+		"modules/Cursor/src/Cursor",
 		"modules/FileEdition/src/main",
 		"modules/History/src/HistoryC",
 		"modules/HarmonicAnalysis/src/main",
@@ -12,8 +12,8 @@ define([
 		"modules/LSViewer/src/main",
 		"modules/MainMenu/src/main",
 		"modules/MidiCSL/src/main",
-		"modules/NoteEdition/src/main",
-		"modules/StructureEdition/src/main",
+		"modules/NoteEdition/src/NoteEdition",
+		"modules/StructureEdition/src/StructureEdition",
 		"modules/Tag/src/main",
 		"modules/WaveManager/src/main"
 	],
