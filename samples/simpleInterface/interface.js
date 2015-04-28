@@ -48,9 +48,7 @@ define(function(require) {
 	var songModel = LJS.converters.MusicCSLJson.SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
 	// initPlayerModule(songModel);
 
-	var historyM = new LJS.History.HistoryModel();
-	var historyV = new LJS.History.HistoryView();
-	var historyC = new LJS.History.HistoryController(historyM, songModel);
+	new LJS.HistoryC(songModel);
 
 	$.publish('ToHistory-add', {
 		'item': testSongs.simpleLeadSheet,
@@ -104,9 +102,8 @@ define(function(require) {
 		var ceC = new LJS.ChordEdition.ChordEditionController(songModel, cursorChordController.model, ceV);
 
 		// Harmonize menu
-		var hV = new LJS.Harmonizer.HarmonizerView();
-		var hC = new LJS.Harmonizer.HarmonizerController(songModel, hV);
-
+		var harm = new LJS.Harmonizer(songModel,menuM);
+		
 		// Harmonic Analysis menu
 		var haV = new LJS.HarmonicAnalysis.HarmonicAnalysisView();
 		var haC = new LJS.HarmonicAnalysis.HarmonicAnalysisController(songModel, haV);
@@ -156,10 +153,10 @@ define(function(require) {
 			});
 			// menuC.activeMenu('Constraint');
 		});
-		hV.render(undefined, function() {
+		harm.view.render(undefined, function() {
 			menuM.addMenu({
 				title: 'Harmonizer',
-				view: hV,
+				view: harm.view,
 				order: 6
 			});
 		});

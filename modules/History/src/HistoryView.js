@@ -42,7 +42,7 @@ define([
 		}
 		history += '</ul>';
 		this.parentHTML.html(history);
-		$.publish('HistoryView-render');
+		//$.publish('HistoryView-render');
 	};
 
 	HistoryView.prototype.initKeyboard = function(evt) {
