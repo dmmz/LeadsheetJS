@@ -85,8 +85,8 @@ define(function(require) {
 
 	myApp.viewer = new LJS.LSViewer.LSViewer($("#canvas_container")[0],{layer:true});
 
-	var menuM = new LJS.MainMenu.MainMenuModel();
-	var menuC = new LJS.MainMenu.MainMenuController(menuM);
+	var menu = new LJS.MainMenu(document.getElementById('menu-container'));
+	
 
 	$.subscribe('MainMenuView-render', function(el) {
 		// Edit notes on view
@@ -100,11 +100,10 @@ define(function(require) {
 		var chordEdition = new LJS.ChordEdition(songModel,cursorChord.controller.model,'/modules/NoteEdition/img');
 
 		// Harmonize menu
-		var harm = new LJS.Harmonizer(songModel,menuM);
+		var harm = new LJS.Harmonizer(songModel,menu.model);
 		
 		// Harmonic Analysis menu
-		var haV = new LJS.HarmonicAnalysis.HarmonicAnalysisView();
-		var haC = new LJS.HarmonicAnalysis.HarmonicAnalysisController(songModel, haV);
+		var harmAn = new LJS.HarmonicAnalysis(songModel);
 
 		// Constraint menu
 		var constraint = new LJS.Constraint(songModel);
@@ -113,11 +112,11 @@ define(function(require) {
 		var structEdition = new LJS.StructureEdition(songModel, cursorNote.controller.model, '/modules/StructureEdition/img');
 
 		// Edit files menu
-		var feV = new LJS.FileEdition.FileEditionView();
-		var feC = new LJS.FileEdition.FileEditionController(songModel, myApp.viewer.canvas);
-
+		var fileEdition = new LJS.FileEdition(songModel, myApp.viewer.canvas);
+		
+		
 		noteEdition.view.render(undefined, function() {
-			menuM.addMenu({
+			menu.model.addMenu({
 				title: 'Notes',
 				view: noteEdition.view,
 				order: 2
@@ -125,21 +124,21 @@ define(function(require) {
 			menuC.activeMenu('Notes');
 		});
 		chordEdition.view.render(undefined, function() {
-			menuM.addMenu({
+			menu.model.addMenu({
 				title: 'Chords',
 				view: chordEdition.view,
 				order: 3
 			});
 		});
 		structEdition.view.render(undefined, function() {
-			menuM.addMenu({
+			menu.model.addMenu({
 				title: 'Structure',
 				view: structEdition.view,
 				order: 4
 			});
 		});
 		constraint.view.render(undefined, function() {
-			menuM.addMenu({
+			menu.model.addMenu({
 				title: 'Constraint',
 				view: constraint.view,
 				order: 5
@@ -147,45 +146,36 @@ define(function(require) {
 			// menuC.activeMenu('Constraint');
 		});
 		harm.view.render(undefined, function() {
-			menuM.addMenu({
+			menu.model.addMenu({
 				title: 'Harmonizer',
 				view: harm.view,
 				order: 6
 			});
 		});
-		haV.render(undefined, function() {
-			menuM.addMenu({
+		harmAn.view.render(undefined, function() {
+			menu.model.addMenu({
 				title: 'Harmonic Analysis',
-				view: haV,
+				view: harmAn.view,
 				order: 7
 			});
 		});
-		feV.render(undefined, function() {
-			menuM.addMenu({
+		fileEdition.view.render(undefined, function() {
+			menu.model.addMenu({
 				title: 'File',
-				view: feV,
+				view: fileEdition.view,
 				order: 1
 			});
 		});
 		$.publish('ToViewer-draw', songModel);
 	});
 
-	var menuV = new LJS.MainMenu.MainMenuView(menuM, document.getElementById('menu-container'));
+	
 
 
 
 
 	function initPlayerModule(songModel) {
 		// Create a song from testSong
-		var player = new PlayerModel_MidiCSL(songModel, "../../external-libs/Midijs/soundfont/");
-		var pV = new PlayerView($('#player_test')[0], '/modules/MidiCSL/img', {
-			displayMetronome: true,
-			displayLoop: true,
-			displayTempo: true,
-			changeInstrument: true,
-			autoload: false,
-			progressBar: true
-		});
-		var pC = new PlayerController(player, pV);
+		
 	}
 });

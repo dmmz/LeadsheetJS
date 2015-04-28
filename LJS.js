@@ -5,9 +5,9 @@ define([
 		"modules/converters/MusicCSLJson/src/main",
 		"modules/core/src/main", // most important module
 		"modules/Cursor/src/Cursor",
-		"modules/FileEdition/src/main",
+		"modules/FileEdition/src/FileEdition",
 		"modules/History/src/HistoryC",
-		"modules/HarmonicAnalysis/src/main",
+		"modules/HarmonicAnalysis/src/HarmonicAnalysis",
 		"modules/Harmonizer/src/Harmonizer",
 		"modules/LSViewer/src/main",
 		"modules/MainMenu/src/main",
