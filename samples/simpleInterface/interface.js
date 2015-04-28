@@ -31,6 +31,10 @@ require.config({
 
 define(function(require) {
 
+   var WaveManager = require('modules/WaveManager/src/WaveManager');
+   var WaveManagerView = require('modules/WaveManager/src/WaveManagerView');
+   var WaveManagerController = require('modules/WaveManager/src/WaveManagerController');
+
 	
 	var LJS = require('LJS');
 	var myApp = {};
@@ -45,8 +49,11 @@ define(function(require) {
 	myApp.historyM.setCurrentPosition(1);*/
 	var testSongs = require('tests/test-songs');
 
+	// tried for unfolding
+	// var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
 	var songModel = LJS.converters.MusicCSLJson.SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
-	// initPlayerModule(songModel);
+	initPlayerModule(songModel);
+
 
 	new LJS.HistoryC(songModel);
 
@@ -83,7 +90,9 @@ define(function(require) {
 		};
 		initChordSequenceModule($('#chordSequence2')[0], songModel, optionChediak);*/
 
+
 	myApp.viewer = new LJS.LSViewer.LSViewer($("#canvas_container")[0],{layer:true});
+
 
 	var menu = new LJS.MainMenu(document.getElementById('menu-container'));
 
@@ -103,6 +112,7 @@ define(function(require) {
 		var harm = new LJS.Harmonizer(songModel,menu.model);
 		
 		// Harmonic Analysis menu
+
 		var harmAn = new LJS.HarmonicAnalysis(songModel);
 
 		// Constraint menu
@@ -111,7 +121,9 @@ define(function(require) {
 		//bars edition 
 		var structEdition = new LJS.StructureEdition(songModel, cursorNote.controller.model, '/modules/StructureEdition/img');
 
+
 		// Edit files menu
+
 		var fileEdition = new LJS.FileEdition(songModel, myApp.viewer.canvas);
 		
 		
@@ -123,6 +135,19 @@ define(function(require) {
 			});
 			menu.controller.activeMenu('Notes');
 		});
+
+		var params = {
+			showHalfWave: true,
+			//drawMargins: true,
+			topAudio: -100,
+			heightAudio: 75,
+			//marginCursor: 20
+		};
+		var waveMng = new WaveManager(songModel, cursorNote.controller.model, myApp.viewer, params);
+		var wmc = new WaveManagerController(waveMng);
+
+
+
 		chordEdition.view.render(undefined, function() {
 			menu.model.addMenu({
 				title: 'Chords',

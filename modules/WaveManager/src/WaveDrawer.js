@@ -1,20 +1,20 @@
 define(['modules/core/src/SongBarsIterator'], function(SongBarsIterator) {
     function WaveDrawer(viewer, params) {
-            params = params || {};
-            if (!params.pixelRatio) {
-                throw "WaveDrawer - pixelRatio not defined";
-            }
+        params = params || {};
+        if (!params.pixelRatio) {
+            throw "WaveDrawer - pixelRatio not defined";
+        }
 
-            this.pixelRatio = params.pixelRatio;
-            this.showHalfWave = params.showHalfWave;
-            this.marginCursor = params.marginCursor || 0;
-            this.drawMargins = params.drawMargins; //for debugging
-            this.topAudio = params.topAudio || 80;  
-            this.heightAudio = params.heightAudio || 100;
-            this.color = ["#55F", "#99F"];
-            this.waveBarDimensions = [];
-            this.viewer = viewer;
-            this._adaptViewer();       
+        this.pixelRatio = params.pixelRatio;
+        this.showHalfWave = params.showHalfWave;
+        this.marginCursor = params.marginCursor || 0;
+        this.drawMargins = params.drawMargins; //for debugging
+        this.topAudio = params.topAudio || 80;
+        this.heightAudio = params.heightAudio || 100;
+        this.color = ["#55F", "#99F"];
+        this.waveBarDimensions = [];
+        this.viewer = viewer;
+        this._adaptViewer();
     }
     /**
      * update viewer dimensions if needed (space between lines and margin top)
@@ -23,7 +23,7 @@ define(['modules/core/src/SongBarsIterator'], function(SongBarsIterator) {
         if (this.topAudio > 0){
            this.viewer.setLineMarginTop(this.topAudio);
         }else{
-            distance = this.viewer.LINE_HEIGHT + this.topAudio + this.heightAudio; 
+            distance = this.viewer.LINE_HEIGHT + this.topAudio + this.heightAudio;
             if (distance < 0){
                 this.viewer.setLineMarginTop(distance, true);
             }

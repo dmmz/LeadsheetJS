@@ -82,17 +82,17 @@ define([
 		var self = this;
 		$('#play_button_container').click(function() {
 			var tempo = self.getTempo();
-			$.publish('PlayerView-play', tempo);
+			$.publish('ToPlayer-play', tempo);
 		});
 		$('#stop_button_container').click(function() {
-			$.publish('PlayerView-stop');
+			$.publish('ToPlayer-stop');
 		});
 		$('#pause_button_container').click(function() {
-			$.publish('PlayerView-pause');
+			$.publish('ToPlayer-pause');
 		});
 
 		$('#loop_button_container').click(function() {
-			$.publish('PlayerView-toggleLoop');
+			$.publish('ToPlayer-toggleLoop');
 		});
 
 		// .on('input') Event is fired every time the input changes (work with paste, delete, type things)
@@ -100,26 +100,26 @@ define([
 			var tempo = $(this).val();
 			$('#pause_button_container').hide();
 			$('#play_button_container').show();
-			$.publish('PlayerView-onTempo', tempo);
+			$.publish('ToPlayer-onTempo', tempo);
 		});
 
 		$('#metronome_container').click(function() {
 			if ($('#metronome_container .metronome_on').is(":visible")) {
 				//mute
-				$.publish('PlayerView-onToggleMetronome', false);
+				$.publish('ToPlayer-onToggleMetronome', false);
 
 			} else {
 				//unmute
-				$.publish('PlayerView-onToggleMetronome', true);
+				$.publish('ToPlayer-onToggleMetronome', true);
 			}
 		});
 
 		// volume - toggle mute icons
 		$('#volume_container').click(function() {
 			if ($('#volume_container .sound_off').is(":visible")) {
-				$.publish('PlayerView-onToggleMute');
+				$.publish('ToPlayer-onToggleMute');
 			} else {
-				$.publish('PlayerView-onToggleMute', 0);
+				$.publish('ToPlayer-onToggleMute', 0);
 			}
 		});
 
@@ -162,18 +162,18 @@ define([
 
 		// instument selection
 		$('#chords_instrument_container select').change(function() {
-			$.publish('PlayerView-onChordInstrumentChange', $(this).val());
+			$.publish('ToPlayer-onChordInstrumentChange', $(this).val());
 		});
 
 		$('#melody_instrument_container select').change(function() {
-			$.publish('PlayerView-onMelodyInstrumentChange', $(this).val());
+			$.publish('ToPlayer-onMelodyInstrumentChange', $(this).val());
 		});
 
 		$('.progress_bar_player').click(function(e) {
 			var width = $(this).width();
 			var relX = e.pageX - $(this).parent().offset().left;
 			var tempo = self.getTempo();
-			$.publish('PlayerView-playFromPercent', {
+			$.publish('ToPlayer-playFromPercent', {
 				'tempo': tempo,
 				'percent': relX / width
 			});
@@ -186,7 +186,7 @@ define([
 				var d = evt.srcElement || evt.target;
 				if (!(d.tagName.toUpperCase() === 'TEXTAREA' || (d.tagName.toUpperCase() === 'INPUT' && (d.type.toUpperCase() === 'TEXT' || d.type.toUpperCase() === 'PASSWORD' || d.type.toUpperCase() === 'FILE')))) {
 					var tempo = self.getTempo();
-					$.publish('PlayerView-play-pause', tempo);
+					$.publish('ToPlayer-play-pause', tempo);
 					evt.preventDefault();
 				}
 			}

@@ -17,46 +17,46 @@ define([
 	 */
 	PlayerController.prototype.initSubscribe = function() {
 		var self = this;
-		$.subscribe('PlayerView-play', function(el, tempo) {
+		$.subscribe('ToPlayer-play', function(el, tempo) {
 			self.play(tempo);
 		});
-		$.subscribe('PlayerView-playFromPercent', function(el, obj) {
+		$.subscribe('ToPlayer-playFromPercent', function(el, obj) {
 			self.playFromPercent(obj.tempo, obj.percent);
 		});
 
-		$.subscribe('PlayerView-stop', function(el) {
+		$.subscribe('ToPlayer-stop', function(el) {
 			self.stop();
 		});
 
-		$.subscribe('PlayerView-pause', function(el) {
+		$.subscribe('ToPlayer-pause', function(el) {
 			self.pause();
 		});
 
-		$.subscribe('PlayerView-playPause', function(el, tempo) {
+		$.subscribe('ToPlayer-playPause', function(el, tempo) {
 			self.pause();
 		});
 
-		$.subscribe('PlayerView-onToggleMute', function(el, volume) {
+		$.subscribe('ToPlayer-onToggleMute', function(el, volume) {
 			self.toggleMute(volume);
 		});
-		$.subscribe('PlayerView-onVolume', function(el, volume) {
+		$.subscribe('ToPlayer-onVolume', function(el, volume) {
 			self.onVolumeChange(volume);
 		});
-		$.subscribe('PlayerView-onToggleMetronome', function(el, isMetronome) {
+		$.subscribe('ToPlayer-onToggleMetronome', function(el, isMetronome) {
 			self.metronomeChange(isMetronome);
 		});
-		$.subscribe('PlayerView-onTempo', function(el, tempo) {});
-		$.subscribe('PlayerView-onChordInstrumentChange', function(el, instrument) {
+		$.subscribe('ToPlayer-onTempo', function(el, tempo) {});
+		$.subscribe('ToPlayer-onChordInstrumentChange', function(el, instrument) {
 			self.onChordInstrumentChange(instrument);
 		});
-		$.subscribe('PlayerView-onMelodyInstrumentChange', function(el, instrument) {
+		$.subscribe('ToPlayer-onMelodyInstrumentChange', function(el, instrument) {
 			self.onMelodyInstrumentChange(instrument);
 		});
-		$.subscribe('PlayerView-toggleLoop', function(el) {
+		$.subscribe('ToPlayer-toggleLoop', function(el) {
 			self.toggleLoop();
 		});
 
-		$.subscribe('PlayerView-render', function(el){
+		$.subscribe('PlayerView-render', function(el) {
 			self.initView();
 		});
 	};
@@ -117,10 +117,9 @@ define([
 	};
 
 	PlayerController.prototype.onVolumeChange = function(volume) {
-		if(volume === 0) {
+		if (volume === 0) {
 			this.model.mute();
-		}
-		else{
+		} else {
 			this.model.setVolume(volume);
 		}
 	};

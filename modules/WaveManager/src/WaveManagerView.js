@@ -9,7 +9,7 @@ define([],function(){
 		// case el has never been rendered
 		var self = this;
 		this.initView(this.parentHTML, function() {
-			self.initController();		
+			self.initController();
 		});
 		
 	};
@@ -31,11 +31,11 @@ define([],function(){
 		var self = this;
 		$("#"+ this.playId).click(function(e){
 			e.preventDefault();
-			$.publish('WaveManagerView-play');
+			$.publish('ToPlayer-play');
 		});
 		$("#"+this.pauseId).click(function(e){
 			e.preventDefault();
-			$.publish('WaveManagerView-pause');
+			$.publish('ToPlayer-pause');
 		});
 	};
 	return WaveManagerView;

@@ -28,7 +28,7 @@ define(function() {
 		this.source.stop(0);
 	};
 
-	WaveAudio.prototype.load = function(audioData, waveMng) {
+	WaveAudio.prototype.load = function(audioData, waveMng, callback) {
 		var self = this;
 		this.audioCtx.decodeAudioData(audioData, function(buffer) {
 				self.buffer = buffer;
@@ -37,7 +37,10 @@ define(function() {
 				self.source.buffer = self.buffer;
 				//source.playbackRate.value = playbackControl.value;
 				self.source.connect(self.audioCtx.destination);
-				waveMng.drawer.drawAudio(waveMng);
+				
+				if (typeof callback !== "undefined") {
+					callback();
+				}
 				//source.start(0)
 			},
 			function(e) {
