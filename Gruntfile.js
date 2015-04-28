@@ -6,7 +6,7 @@ module.exports = function(grunt) {
 			options: {
 				// wrap: true,
 				sourceMap: true,
-				optimize: "uglify2",
+				optimize: "none",
 				uglify2: {
 					mangle: false
 				},

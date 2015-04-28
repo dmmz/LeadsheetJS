@@ -56,13 +56,11 @@ define(['modules/WaveManager/src/WaveAudio',
     };
 
     WaveManager.prototype.load = function(url, callback) {
-        var xhr = new XMLHttpRequest();
         var self = this;
-
+        var xhr = new XMLHttpRequest();
         xhr.open("GET", url);
         xhr.responseType = 'arraybuffer';
         xhr.withCredentials = false;
-
         xhr.onload = function() {
             var audioData = xhr.response;
             self.audio.load(audioData, self, function() {
