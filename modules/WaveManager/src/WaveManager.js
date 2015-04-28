@@ -60,7 +60,7 @@ define(['modules/WaveManager/src/WaveAudio',
         var xhr = new XMLHttpRequest();
         xhr.open("GET", url);
         xhr.responseType = 'arraybuffer';
-        xhr.withCredentials = false;
+        
         xhr.onload = function() {
             var audioData = xhr.response;
             self.audio.load(audioData, self, function() {
