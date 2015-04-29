@@ -92,14 +92,14 @@ define(['modules/WaveManager/src/WaveAudio',
                     iNote = noteMng.getPrevIndexNoteByBeat(self.getPlayedTime() / self.audio.beatDuration + 1);
                     if (iNote != prevINote) {
                         self.cursorModel.setPos(iNote);
-                        $.publish('ToViewer-draw', self.song);
                         prevINote = iNote;
                     }
                     timeStep += minBeatStep;
                 }
                 time = self.getPlayedTime();
                 self._updateCurrBarByTime(time);
-                self.drawer.drawCursor(self.currBar, self.barTimes, time);
+                self.drawer._updateCursor(self.currBar, self.barTimes, time);
+                self.drawer.viewer.canvasLayer.refresh();
                 requestFrame(frame);
             }
         };

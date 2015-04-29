@@ -8,8 +8,8 @@ define([
 ], function(SongModel, NoteModel, NoteSpaceView, CursorModel, UserLog, pubsub) {
 
 	function NoteSpaceManager(songModel, cursor, viewer) {
-		
-		if (!viewer || typeof viewer === 'string'){
+
+		if (!viewer || typeof viewer === 'string') {
 			throw "NoteSpaceManager - missing viewer ";
 		}
 		this.songModel = songModel || new SongModel();
@@ -22,6 +22,7 @@ define([
 		this.CURSOR_MARGIN_TOP = 20;
 		this.CURSOR_MARGIN_LEFT = 6;
 		this.CURSOR_MARGIN_RIGHT = 9;
+
 	}
 
 	/**
@@ -35,23 +36,26 @@ define([
 			if (self.isInPath(position) !== false) {
 				self.viewer.el.style.cursor = 'pointer';
 			} else {
-				self.viewer.el.style.cursor = 'default';	
+				self.viewer.el.style.cursor = 'default';
 			}
 		});
 
-		$.subscribe('CanvasLayer-selection',function(el,coords){
+		$.subscribe('CanvasLayer-selection', function(el, coords) {
 			$.publish('ToAllCursors-setEditable', false);
 			var notes = self.getNotesInPath(coords);
-			if (notes){
+			if (notes) {
 				self.cursor.setEditable(true);
 				self.cursor.setPos(notes);
-				self.draw();
+				self.viewer.canvasLayer.refresh();
 			}
 		});
 
 		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
+
 			if (self.cursor.getEditable()) {
-				self.refresh(true);
+				self.viewer.canvasLayer.addElement('scoreCursor', self);
+				self.noteSpace = self.createNoteSpace(self.viewer);
+				//self.refresh(true);
 			}
 		});
 	};
@@ -68,22 +72,22 @@ define([
 	};
 	/**
 	 * [refresh description]
-	 * @param  {LSViewer} viewer 
+	 * @param  {LSViewer} viewer
 	 * @param  {Boolean} clear  if true, we will clear (remove elements drawn before by ctx). We used when loading page, as ToViewer-draw is called two times. One on loading, and the second one when the notes edition menu is rendered
 	 */
 	NoteSpaceManager.prototype.refresh = function(clear) {
-		this.noteSpace = this.createNoteSpace(this.viewer);
-		this.draw(this.viewer,clear);
+
+		//	this.draw(this.viewer,clear);
 	};
 	/**
-	 * 
+	 *
 	 * @param  {Object}  area can be in two forms :
 	 *                        {x: 10, y: 10, xe: 20, ye: 20} / xe and ye are absolute positions (not relative to x and y)
 	 *                        {x: 10, y:10}
-	 * @return {Boolean}      
+	 * @return {Boolean}
 	 */
 	NoteSpaceManager.prototype.isInPath = function(area) {
-		
+
 		for (var i in this.noteSpace) {
 			if (typeof this.noteSpace[i] !== "undefined") {
 				if (this.noteSpace[i].isInPath(area)) {
@@ -94,17 +98,17 @@ define([
 		return false;
 	};
 	NoteSpaceManager.prototype.getNotesInPath = function(coords) {
-		var note, 
+		var note,
 			min = null,
 			max = null;
 		for (var i in this.noteSpace) {
 			if (this.noteSpace[i].isInPath(coords)) {
-				if (min == null){
-					min = Number(i);	
+				if (min == null) {
+					min = Number(i);
 				}
-				if (max == null || max < i){
-					max = Number(i);	
-				} 
+				if (max == null || max < i) {
+					max = Number(i);
+				}
 			}
 		}
 		return (min === null && max === null) ? false : [min, max];
@@ -127,7 +131,7 @@ define([
 				w: boundingBox.w + this.CURSOR_MARGIN_LEFT + this.CURSOR_MARGIN_RIGHT,
 				h: this.CURSOR_HEIGHT
 			};
-			noteSpace.push(new NoteSpaceView(area,viewer.scaler));
+			noteSpace.push(new NoteSpaceView(area, viewer.scaler));
 		}
 		return noteSpace;
 	};
@@ -176,39 +180,36 @@ define([
 		return areas;
 	};
 
-	NoteSpaceManager.prototype.draw = function(clear) {
+	NoteSpaceManager.prototype.draw = function(ctx) {
 		var self = this;
-		this.viewer.drawElem(function(ctx){
-			if (clear){
-				ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
-			}
-			var position = self.cursor.getPos();
-			var saveFillColor = ctx.fillStyle;
-			ctx.fillStyle = "#0099FF";
-			ctx.globalAlpha = 0.2;
-			var currentNoteSpace;
-			var areas = [];
-			if (position[0] === position[1]) {
-				areas.push({
-					x: self.noteSpace[position[0]].position.x,
-					y: self.noteSpace[position[0]].position.y,
-					w: self.noteSpace[position[0]].position.w,
-					h: self.noteSpace[position[0]].position.h
-				});
-			} else {
-				areas = self.getNotesAreasFromCursor(self.viewer, position);
-			}
-			for (i = 0, c = areas.length; i < c; i++) {
-				ctx.fillRect(
-					areas[i].x,
-					areas[i].y,
-					areas[i].w,
-					areas[i].h
-				);
-			}
-			ctx.fillStyle = saveFillColor;
-			ctx.globalAlpha = 1;
-		},true);
+		if (this.noteSpace.length == 0) return;
+		var position = self.cursor.getPos();
+		var saveFillColor = ctx.fillStyle;
+		ctx.fillStyle = "#0099FF";
+		ctx.globalAlpha = 0.2;
+		var currentNoteSpace;
+		var areas = [];
+		if (position[0] === position[1]) {
+			areas.push({
+				x: self.noteSpace[position[0]].position.x,
+				y: self.noteSpace[position[0]].position.y,
+				w: self.noteSpace[position[0]].position.w,
+				h: self.noteSpace[position[0]].position.h
+			});
+		} else {
+			areas = self.getNotesAreasFromCursor(self.viewer, position);
+		}
+		for (i = 0, c = areas.length; i < c; i++) {
+			ctx.fillRect(
+				areas[i].x,
+				areas[i].y,
+				areas[i].w,
+				areas[i].h
+			);
+		}
+		ctx.fillStyle = saveFillColor;
+		ctx.globalAlpha = 1;
+
 	};
 
 	return NoteSpaceManager;

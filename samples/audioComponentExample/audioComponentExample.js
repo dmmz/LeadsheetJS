@@ -41,9 +41,11 @@ define(function(require) {
           WaveManagerController = require('modules/WaveManager/src/WaveManagerController');
 
         var viewer = new LSViewer($("#audioExample")[0],{heightOverflow:'resizeDiv',layer:true});
-
         var song = SongModel_CSLJson.importFromMusicCSLJSON(Solar);
         var cM = new CursorModel(song.getComponent('notes'));
+        var noteSpaceManager = new NoteSpaceManager(song, cM, viewer);
+        viewer.draw(song);
+        
         var neC = new NoteEditionController(song, cM);
         var params = {
           showHalfWave: true,
@@ -53,9 +55,9 @@ define(function(require) {
           marginCursor: 20*/
         };
         var waveMng = new WaveManager(song, cM, viewer, params);
-        viewer.draw(song);
-        var noteSpaceManager = new NoteSpaceManager(song, cM, viewer);
-        noteSpaceManager.refresh();
+
+        
+        //noteSpaceManager.refresh();
         waveMng.load('/tests/audio/solar.wav');
 
         var wmv = new WaveManagerView($("#main-container")[0]),
