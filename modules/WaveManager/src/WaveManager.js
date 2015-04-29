@@ -55,7 +55,7 @@ define(['modules/WaveManager/src/WaveAudio',
         return this.currBar;
     };
 
-    WaveManager.prototype.load = function(url /*, callback*/) {
+    WaveManager.prototype.load = function(url /*, callback*/ ) {
         var self = this;
         var xhr = new XMLHttpRequest();
         xhr.open("GET", url);
@@ -107,15 +107,19 @@ define(['modules/WaveManager/src/WaveAudio',
     };
 
     WaveManager.prototype.play = function() {
-        this.isPause = false;
-        this.restartAnimationLoop();
-        this.audio.play();
+        if (this.isReady()) {
+            this.isPause = false;
+            this.restartAnimationLoop();
+            this.audio.play();
+        }
     };
 
     WaveManager.prototype.pause = function() {
-        this.isPause = true;
-        this.audio.pause();
-        this.currBar = 0;
+        if (this.isReady()) {
+            this.isPause = true;
+            this.audio.pause();
+            this.currBar = 0;
+        }
     };
 
     WaveManager.prototype.getPlayedTime = function() {

@@ -42,14 +42,14 @@ define([
 	 * When content is available (in case it's not a template) it's directly inserted
 	 */
 	PopIn.prototype.initView = function() {
-		var backgroundPopin = '<div class="backgroundPopin" style="opacity:' + this.backgroundOpacity + '"></div>';
-		document.body.innerHTML += backgroundPopin;
+		var backgroundPopin = '<div class="backgroundPopin" style="display:none;opacity:' + this.backgroundOpacity + '"></div>';
+		$(document.body).append(backgroundPopin);
 		var content = '';
 		if (!this.isTemplate) {
 			content = this.content;
 		}
 		var txt = '';
-		txt += '<div class="modal foregroundPopin" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">';
+		txt += '<div style="display:none" class="modal foregroundPopin" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">';
 		txt += '<div class="modal-dialog">';
 		txt += '<div class="modal-content">';
 		txt += '<div class="modal-header">';
@@ -60,7 +60,7 @@ define([
 		txt += '</div>';
 		txt += '</div>';
 		txt += '</div>';
-		document.body.innerHTML += txt;
+		$(document.body).append(txt);
 	};
 
 	/**

@@ -53,7 +53,6 @@ define([
 		$('body').on('click', '.main_menu_item', function() {
 			var menuTitle = $(this).attr('data-menuTitle');
 			$.publish('MainMenuView-active_menu', menuTitle);
-
 		});
 	};
 
@@ -89,6 +88,7 @@ define([
 			menu = this.model.getMenu(i);
 			menu.view.initController();
 		}
+		$.publish('MainMenuView-render');
 	};
 
 	MainMenuView.prototype.removeMenu = function(menuTitle) {
