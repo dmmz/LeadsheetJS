@@ -4,8 +4,8 @@ define([
 		"modules/NoteEdition/src/NoteSpaceManager"
 	],function(NoteEditionController, NoteEditionView, NoteSpaceManager){
 	
-	function NoteEdition (songModel,cursorModel,imgPath) {
-		new NoteSpaceManager(songModel, cursorModel);
+	function NoteEdition (songModel, cursorModel, viewer, imgPath) {
+		new NoteSpaceManager(songModel, cursorModel, viewer);
 		new NoteEditionController(songModel, cursorModel);
 		this.view = new NoteEditionView(imgPath);
 	}
