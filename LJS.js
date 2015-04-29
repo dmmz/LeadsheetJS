@@ -15,7 +15,8 @@ define([
 		"modules/NoteEdition/src/NoteEdition",
 		"modules/StructureEdition/src/StructureEdition",
 		"modules/Tag/src/main",
-		"modules/WaveManager/src/main"
+		"modules/WaveManager/src/main",
+		"utils/main"
 	],
 	function(
 		ChordEdition,
@@ -34,7 +35,8 @@ define([
 		NoteEdition,
 		StructureEdition,
 		Tag,
-		WaveManager
+		WaveManager,
+		utils
 	) {
 		return {
 			"ChordEdition": ChordEdition,
@@ -56,6 +58,7 @@ define([
 			"StructureEdition": StructureEdition,
 			"Tag": Tag,
 			"WaveManager": WaveManager,
+			"utils": utils
 		};
 	}
 );

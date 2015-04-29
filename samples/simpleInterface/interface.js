@@ -123,7 +123,6 @@ define(function(require) {
 
 
 		// Edit files menu
-
 		var fileEdition = new LJS.FileEdition(songModel, myApp.viewer.canvas);
 		
 		
