@@ -55,7 +55,7 @@ define(['modules/WaveManager/src/WaveAudio',
         return this.currBar;
     };
 
-    WaveManager.prototype.load = function(url, callback) {
+    WaveManager.prototype.load = function(url /*, callback*/) {
         var self = this;
         var xhr = new XMLHttpRequest();
         xhr.open("GET", url);
@@ -67,9 +67,9 @@ define(['modules/WaveManager/src/WaveAudio',
             self.audio.load(audioData, self, function() {
                 self.isLoaded = true;
                 self.drawer.drawAudio(self);
-                if (typeof callback !== "undefined") {
-                    callback();
-                }
+                // if (typeof callback !== "undefined") {
+                //     callback();
+                // }
             });
         };
         xhr.send();

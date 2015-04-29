@@ -54,8 +54,8 @@ define(function(require) {
         };
         var waveMng = new WaveManager(song, cM, viewer, params);
         viewer.draw(song);
-        var noteSpaceManager = new NoteSpaceManager(song, cM);
-        noteSpaceManager.refresh(viewer);
+        var noteSpaceManager = new NoteSpaceManager(song, cM, viewer);
+        noteSpaceManager.refresh();
         waveMng.load('/tests/audio/solar.wav');
 
         var wmv = new WaveManagerView($("#main-container")[0]),

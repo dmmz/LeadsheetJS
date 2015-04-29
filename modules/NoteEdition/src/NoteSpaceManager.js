@@ -7,9 +7,14 @@ define([
 	'pubsub',
 ], function(SongModel, NoteModel, NoteSpaceView, CursorModel, UserLog, pubsub) {
 
-	function NoteSpaceManager(songModel, cursor) {
+	function NoteSpaceManager(songModel, cursor, viewer) {
+		
+		if (!viewer || typeof viewer === 'string'){
+			throw "NoteSpaceManager - missing viewer ";
+		}
 		this.songModel = songModel || new SongModel();
 		this.cursor = cursor || new CursorModel();
+		this.viewer = viewer;
 		this.noteSpace = [];
 		this.initSubscribe();
 
@@ -28,30 +33,25 @@ define([
 		$.subscribe('CanvasLayer-mousemove', function(el, position) {
 
 			if (self.isInPath(position) !== false) {
-				if (typeof myApp !== 'undefined'){	//TODO: refactor, get rid of 'myApp'
-					myApp.viewer.el.style.cursor = 'pointer';
-				}
-
+				self.viewer.el.style.cursor = 'pointer';
 			} else {
-				if (typeof myApp !== 'undefined'){
-					myApp.viewer.el.style.cursor = 'default';	
-				}
-
+				self.viewer.el.style.cursor = 'default';	
 			}
 		});
+
 		$.subscribe('CanvasLayer-selection',function(el,coords){
 			$.publish('ToAllCursors-setEditable', false);
 			var notes = self.getNotesInPath(coords);
 			if (notes){
 				self.cursor.setEditable(true);
 				self.cursor.setPos(notes);
-				$.publish('ToViewer-draw', self.songModel);
+				self.draw();
 			}
 		});
 
 		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
 			if (self.cursor.getEditable()) {
-				self.refresh(viewer);
+				self.refresh(true);
 			}
 		});
 	};
@@ -66,10 +66,14 @@ define([
 		}
 		noteModel.setnoteFromString(noteString);
 	};
-
-	NoteSpaceManager.prototype.refresh = function(viewer) {
-		this.noteSpace = this.createNoteSpace(viewer);
-		this.draw(viewer);
+	/**
+	 * [refresh description]
+	 * @param  {LSViewer} viewer 
+	 * @param  {Boolean} clear  if true, we will clear (remove elements drawn before by ctx). We used when loading page, as ToViewer-draw is called two times. One on loading, and the second one when the notes edition menu is rendered
+	 */
+	NoteSpaceManager.prototype.refresh = function(clear) {
+		this.noteSpace = this.createNoteSpace(this.viewer);
+		this.draw(this.viewer,clear);
 	};
 	/**
 	 * 
@@ -172,11 +176,12 @@ define([
 		return areas;
 	};
 
-	NoteSpaceManager.prototype.draw = function(viewer) {
+	NoteSpaceManager.prototype.draw = function(clear) {
 		var self = this;
-		var ctx = viewer.ctx ;
-		viewer.drawElem(function(ctx){
-		
+		this.viewer.drawElem(function(ctx){
+			if (clear){
+				ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
+			}
 			var position = self.cursor.getPos();
 			var saveFillColor = ctx.fillStyle;
 			ctx.fillStyle = "#0099FF";
@@ -191,7 +196,7 @@ define([
 					h: self.noteSpace[position[0]].position.h
 				});
 			} else {
-				areas = self.getNotesAreasFromCursor(viewer, position);
+				areas = self.getNotesAreasFromCursor(self.viewer, position);
 			}
 			for (i = 0, c = areas.length; i < c; i++) {
 				ctx.fillRect(
@@ -203,7 +208,7 @@ define([
 			}
 			ctx.fillStyle = saveFillColor;
 			ctx.globalAlpha = 1;
-		});
+		},true);
 	};
 
 	return NoteSpaceManager;

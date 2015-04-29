@@ -99,9 +99,10 @@ define([
 	};
 
 	FileEditionController.prototype.loadWaveDisplay = function(path) {
-		if (this.waveManager instanceof WaveManager) {
-			this.waveManager.load(path);
+		if (!this.waveManager instanceof WaveManager){
+			throw "FileEditionController -- this.waveManager is incorrect";
 		}
+		this.waveManager.load(path);
 	};
 
 	FileEditionController.prototype.exportAudioFile = function(JSONSong, tempo, exportType, chord, tick, style) {

@@ -54,8 +54,8 @@ define(['tests/DisplayTester',
 				var waveMng = new WaveManager(song, cM, viewer); //last parameter is called params and is not used here, so it's the default config
 				viewer.draw(song);	
 	
-				var noteSpaceManager = new NoteSpaceManager(song, cM);
-				noteSpaceManager.refresh(viewer);
+				var noteSpaceManager = new NoteSpaceManager(song, cM, viewer);
+				noteSpaceManager.refresh();
 				waveMng.load('/tests/audio/solar.wav');
 
 			},{width:1200,height:1000}, "Painting audio");
