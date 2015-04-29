@@ -374,7 +374,7 @@ define([
 		}
 		var volume = 1 - ((relativePosition - decal) / realHeight);
 		//this.setControllerPosition((relativePosition - decal) / realHeight);
-		$.publish('PlayerView-onVolume', volume);
+		$.publish('ToPlayer-onVolume', volume);
 	};
 
 	/**
