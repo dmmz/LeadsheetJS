@@ -59,7 +59,6 @@ define(function() {
 		function selection() {
 			var elemsActives = [];
 			var cursorPos;
-			console.log(self.elems);
 			for (var name in self.elems) {
 				self.elems[name].updateCursor(self.coords);
 				//check elems actives

@@ -152,16 +152,17 @@ define([
 		);
 	};
 	ChordSpaceView.prototype.draw = function(ctx) {
-		var marginTop = 5;
-		var marginRight = 5;
+		var pos = this.viewer.scaler.getScaledObj(this.position);
+		var marginTop = this.viewer.scaler.getScaledObj(5);
+		var marginRight = this.viewer.scaler.getScaledObj(5);
 		var style = ctx.fillStyle;
 		ctx.fillStyle = "#0099FF";
 		ctx.globalAlpha = 0.2;
 		ctx.fillRect(
-			this.position.x,
-			this.position.y - marginTop,
-			this.position.w - marginRight,
-			this.position.h + marginTop
+			pos.x,
+			pos.y - marginTop,
+			pos.w - marginRight,
+			pos.h + marginTop
 		);
 		ctx.fillStyle = style;
 		ctx.globalAlpha = 1;

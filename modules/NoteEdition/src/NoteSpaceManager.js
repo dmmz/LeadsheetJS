@@ -110,7 +110,7 @@ define([
 			return;
 		}
 		var area;
-		var scale = viewer.SCALE;
+
 		for (var i = 0, c = viewer.vxfNotes.length; i < c; i++) {
 			currentNote = viewer.vxfNotes[i];
 			currentNoteStaveY = currentNote.stave.y;
@@ -134,6 +134,7 @@ define([
 	 */
 	NoteSpaceManager.prototype.getNotesAreasFromCursor = function(viewer, cursor) {
 		var areas = [];
+		var area;
 		var cInit = cursor[0];
 		var cEnd = cursor[1];
 		if (typeof viewer.vxfNotes[cInit] === "undefined") {
@@ -154,12 +155,14 @@ define([
 				lastNoteLine = currentNote.getBoundingBox();
 				x = firstNoteLine.getBoundingBox().x - this.CURSOR_MARGIN_LEFT;
 				xe = lastNoteLine.x - x + lastNoteLine.w + this.CURSOR_MARGIN_RIGHT;
-				areas.push({
+				area = {
 					x: x,
 					y: currentNoteStaveY + this.CURSOR_MARGIN_TOP,
 					w: xe,
 					h: this.CURSOR_HEIGHT
-				});
+				};
+
+				areas.push(this.viewer.scaler.getScaledObj(area));
 				if (cInit != cEnd) {
 					firstNoteLine = viewer.vxfNotes[cInit + 1];
 				}

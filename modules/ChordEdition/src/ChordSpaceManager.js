@@ -56,7 +56,7 @@ define([
 		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
 			self.viewer.canvasLayer.addElement(self.elemName, self);
 			if (self.cursor.getEditable()) {
-				self.refresh(viewer);
+				//self.refresh(viewer);
 			} else if (self.chordSpace.length === 0) {
 				// case chordspace have never been drawn, we create it so isInPath function can work
 				self.chordSpace = self.createChordSpace(viewer);
@@ -92,10 +92,10 @@ define([
 		chordModel.setChordFromString(chordString);
 	};
 
-	ChordSpaceManager.prototype.refresh = function(viewer) {
-		this.chordSpace = this.createChordSpace(viewer);
-		this.draw(viewer);
-	};
+	// ChordSpaceManager.prototype.refresh = function(viewer) {
+	// 	this.chordSpace = this.createChordSpace(viewer);
+	// 	this.draw(viewer);
+	// };
 
 	ChordSpaceManager.prototype.isInPath = function(x, y) {
 		for (var i = 0, c = this.chordSpace.length; i < c; i++) {
