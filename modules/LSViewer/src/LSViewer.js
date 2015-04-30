@@ -286,21 +286,18 @@ define([
 			//console.timeEnd('whole draw');
 
 			if (this.layer && !this.canvasLayer) {
-				this.canvasLayer = new CanvasLayer(this).getCanvas();
-				this.layerCtx = this.canvasLayer.getContext('2d');
+				this.canvasLayer = new CanvasLayer(this);
 			}
 			$.publish('LSViewer-drawEnd', this);
 		};
 		/**
 		 * When drawing an element from another module, it has to use this function
 		 * @param  {Function} drawFunc function that draws the element, uses context determined by the other param layer
-		 * @param  {Boolean} layer    if true, it uses the upper layer (this.layerCtx), if not, uses the basic layer (this.ctx)
 		 */
-		LSViewer.prototype.drawElem = function(drawFunc, layer) {
-			var ctx = layer ? this.layerCtx : this.ctx;
-			this._scale(ctx);
-			drawFunc(ctx);
-			this._resetScale(ctx);
+		LSViewer.prototype.drawElem = function(drawFunc) {
+			this._scale(this.ctx);
+			drawFunc(this.ctx);
+			this._resetScale(this.ctx);
 		};
 		return LSViewer;
 

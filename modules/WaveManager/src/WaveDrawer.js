@@ -30,7 +30,7 @@ define(['modules/core/src/SongBarsIterator'], function(SongBarsIterator) {
         }
     };
     /**
-     * @params like in drawCursor
+     * @params like in draw
      * @return {Object}  {x: val  , y: valy, w: valw, h: valh };
      */
     WaveDrawer.prototype._getCursorDims = function(bar, barTimes, time) {
@@ -47,6 +47,9 @@ define(['modules/core/src/SongBarsIterator'], function(SongBarsIterator) {
         newDim.w = dim.w;
         return newDim;
     };
+    WaveDrawer.prototype._updateCursor = function(bar, barTimes, time) {
+        this.cursorPos = this._getCursorDims(bar, barTimes, time);
+    };
 
     /**
      *
@@ -55,17 +58,13 @@ define(['modules/core/src/SongBarsIterator'], function(SongBarsIterator) {
      * @param {Float} time played (in milleconds)
      * @
      */
-    WaveDrawer.prototype.drawCursor = function(bar, barTimes, time) {
-        var cursorPos = this._getCursorDims(bar, barTimes, time);
+    WaveDrawer.prototype.draw = function(ctx) {
         
-        var self = this;
-        this.viewer.drawElem(function(ctx){
-            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
             ctx.beginPath();
-            ctx.moveTo(cursorPos.x, cursorPos.y);
-            ctx.lineTo(cursorPos.x, cursorPos.y + cursorPos.h);
+            ctx.moveTo(this.cursorPos.x, this.cursorPos.y);
+            ctx.lineTo(this.cursorPos.x, this.cursorPos.y + this.cursorPos.h);
             ctx.stroke();
-        },true);
+        
 
     };
     WaveDrawer.prototype.drawAudio = function(waveMng) {
@@ -101,7 +100,10 @@ define(['modules/core/src/SongBarsIterator'], function(SongBarsIterator) {
             songIt.next();
             i++;
         }
-        this.drawCursor(waveMng.currBar, waveMng.barTimes, 0);
+
+        this.viewer.canvasLayer.addElement('audioCursor',this);
+        this._updateCursor(waveMng.currBar, waveMng.barTimes, 0);
+        this.viewer.canvasLayer.refresh();
     };
     WaveDrawer.prototype._drawMargins = function(area, ctx) {
         ctx.beginPath();

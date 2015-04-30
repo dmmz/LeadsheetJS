@@ -90,10 +90,10 @@ define(['tests/DisplayTester',
 				viewer.draw(song);
 				//test drawing on layer 
 				
-				viewer.layerCtx.font = "18px lato Verdana";
-				viewer.layerCtx.fillText(" This square is drawn in a new layer (canvas) placed on top of the main canvas", 65, 30);
-				viewer.layerCtx.fillStyle = "rgb(200,0,0)";
-				viewer.layerCtx.fillRect (10, 10, 55, 50);
+				viewer.canvasLayer.ctx.font = "18px lato Verdana";
+				viewer.canvasLayer.ctx.fillText(" This square is drawn in a new layer (canvas) placed on top of the main canvas", 65, 30);
+				viewer.canvasLayer.ctx.fillStyle = "rgb(200,0,0)";
+				viewer.canvasLayer.ctx.fillRect (10, 10, 55, 50);
 
 			},
 			{width:1200,height:1000},
