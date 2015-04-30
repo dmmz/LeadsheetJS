@@ -8,10 +8,13 @@ define([
 	 * @param {String}  content    Can be the content or the link to a template to load (in case it's a template set istemplate to true)
 	 * @param {Boolean} isTemplate If true, the url will be loaded as a template, otherwise content will be directly included
 	 */
-	function PopIn(title, content, isTemplate) {
+	function PopIn(title, content, options) {
 		this.title = title;
 		this.content = content;
-		if (typeof isTemplate !== "undefined" && isTemplate === true) {
+
+		this.classTitle = (typeof options.classTitle !== "undefined") ? options.classTitle : '';
+		this.footerButtonTitle = (typeof options.footerButtonTitle !== "undefined") ? options.footerButtonTitle : 'Ok';
+		if (typeof options.isTemplate !== "undefined" && options.isTemplate === true) {
 			this.isTemplate = true;
 			this.template = content;
 		} else {
@@ -31,7 +34,6 @@ define([
 				self.initKeyboard();
 			});
 		} else {
-			this.initView();
 			this.initController();
 			this.initKeyboard();
 		}
@@ -49,7 +51,7 @@ define([
 			content = this.content;
 		}
 		var txt = '';
-		txt += '<div style="display:none" class="modal foregroundPopin" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">';
+		txt += '<div style="display:none" class="modal foregroundPopin ' + this.classTitle + '" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">';
 		txt += '<div class="modal-dialog">';
 		txt += '<div class="modal-content">';
 		txt += '<div class="modal-header">';
@@ -57,6 +59,10 @@ define([
 		txt += '<h4 class="modal-title">' + this.title + '</h4>';
 		txt += '</div>';
 		txt += '<div class="modal-body contentPopIn">' + content + '</div>';
+
+		txt += '<div class="modal-footer"><button type="button" class="btn btn-default popin_close">Close</button>';
+		txt += ' <button type="button" class="btn btn-primary popin_close modal_submit">' + this.footerButtonTitle + '</button></div>';
+
 		txt += '</div>';
 		txt += '</div>';
 		txt += '</div>';

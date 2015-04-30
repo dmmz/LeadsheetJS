@@ -133,7 +133,6 @@ define(function(require) {
 			view: noteEdition.view,
 			order: 2
 		});
-		menu.controller.activeMenu('Notes');
 	});
 
 	var params = {
@@ -190,6 +189,7 @@ define(function(require) {
 			view: fileEdition.view,
 			order: 1
 		});
+		menu.controller.loadStateTab();
 	});
 	$.publish('ToViewer-draw', songModel);
 
