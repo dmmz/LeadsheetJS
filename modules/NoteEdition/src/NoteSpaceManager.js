@@ -40,26 +40,25 @@ define([
 			}
 		});
 
-		$.subscribe('CanvasLayer-selection', function(el, coords) {
-			$.publish('ToAllCursors-setEditable', false);
-			var notes = self.getNotesInPath(coords);
-			if (notes) {
-				self.cursor.setEditable(true);
-				self.cursor.setPos(notes);
-				self.viewer.canvasLayer.refresh();
-			}
-		});
-
 		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
-
+			self.viewer.canvasLayer.addElement('scoreCursor', self);
 			if (self.cursor.getEditable()) {
-				self.viewer.canvasLayer.addElement('scoreCursor', self);
 				self.noteSpace = self.createNoteSpace(self.viewer);
+				
 				//self.refresh(true);
 			}
 		});
 	};
-
+	//CANVASLAYER ELEMENT METHOD
+	NoteSpaceManager.prototype.updateCursor = function(coords) {
+		this.cursor.setPos(null);
+		var notes = this.getNotesInPath(coords);
+		if (notes) {
+			this.cursor.setEditable(true);
+			this.cursor.setPos(notes);
+			//$.publish('ToViewer-draw',self.songModel);
+		}
+	};
 	NoteSpaceManager.prototype.updateNote = function(noteString, noteModel, noteSpace) {
 		if (typeof noteModel === "undefined" && typeof noteSpace !== "undefined") {
 			noteModel = new NoteModel({
@@ -69,15 +68,6 @@ define([
 			this.songModel.getComponent('notes').addnote(noteModel);
 		}
 		noteModel.setnoteFromString(noteString);
-	};
-	/**
-	 * [refresh description]
-	 * @param  {LSViewer} viewer
-	 * @param  {Boolean} clear  if true, we will clear (remove elements drawn before by ctx). We used when loading page, as ToViewer-draw is called two times. One on loading, and the second one when the notes edition menu is rendered
-	 */
-	NoteSpaceManager.prototype.refresh = function(clear) {
-
-		//	this.draw(this.viewer,clear);
 	};
 	/**
 	 *
@@ -179,7 +169,7 @@ define([
 		}
 		return areas;
 	};
-
+	//CANVASLAYER ELEMENT METHOD
 	NoteSpaceManager.prototype.draw = function(ctx) {
 		var self = this;
 		if (this.noteSpace.length == 0) return;
@@ -189,26 +179,28 @@ define([
 		ctx.globalAlpha = 0.2;
 		var currentNoteSpace;
 		var areas = [];
-		if (position[0] === position[1]) {
-			areas.push({
-				x: self.noteSpace[position[0]].position.x,
-				y: self.noteSpace[position[0]].position.y,
-				w: self.noteSpace[position[0]].position.w,
-				h: self.noteSpace[position[0]].position.h
-			});
-		} else {
-			areas = self.getNotesAreasFromCursor(self.viewer, position);
+		if (position[0] !== null){
+			if (position[0] === position[1]) {
+				areas.push({
+					x: self.noteSpace[position[0]].position.x,
+					y: self.noteSpace[position[0]].position.y,
+					w: self.noteSpace[position[0]].position.w,
+					h: self.noteSpace[position[0]].position.h
+				});
+			} else {
+				areas = self.getNotesAreasFromCursor(self.viewer, position);
+			}
+			for (i = 0, c = areas.length; i < c; i++) {
+				ctx.fillRect(
+					areas[i].x,
+					areas[i].y,
+					areas[i].w,
+					areas[i].h
+				);
+			}
+			ctx.fillStyle = saveFillColor;
+			ctx.globalAlpha = 1;
 		}
-		for (i = 0, c = areas.length; i < c; i++) {
-			ctx.fillRect(
-				areas[i].x,
-				areas[i].y,
-				areas[i].w,
-				areas[i].h
-			);
-		}
-		ctx.fillStyle = saveFillColor;
-		ctx.globalAlpha = 1;
 
 	};
 

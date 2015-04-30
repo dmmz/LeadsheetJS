@@ -27,14 +27,17 @@ define([
 	 */
 	ChordSpaceView.prototype.initSubscribe = function() {};
 
-	ChordSpaceView.prototype.isInPath = function(x, y) {
-		var pos = this.viewer.scaler.getScaledObj(this.position);
-		if (typeof x !== "undefined" && !isNaN(x) && typeof y !== "undefined" && !isNaN(y)) {
-			if (pos.x <= x && x <= (pos.x + pos.xe) && pos.y <= y && y <= (pos.y + pos.ye)) {
-				return true;
-			}
-		}
-		return false;
+	ChordSpaceView.prototype.isInPath = function(area) {
+		area.xe = area.xe || area.x; 
+		area.ye = area.ye || area.y; //in case xe and ye are not defined, they take the same value a x and y respectively
+		var pos = this.viewer.scaler.getScaledObj(this.position),
+		posXe = pos.x + pos.w,
+		posYe = pos.y + pos.h;
+		// console.log("area");
+		// console.log(area);
+		// console.log("position");
+		// console.log(this.position);
+		return (area.x < posXe && area.xe > pos.x) && (area.y < posYe && area.ye > pos.y);
 	};
 
 	ChordSpaceView.prototype.onChange = function(chord, value) {
@@ -47,7 +50,7 @@ define([
 	};
 
 
-	ChordSpaceView.prototype.draw = function(songModel, selected) {
+	ChordSpaceView.prototype.drawEditableChord = function(songModel, selected) {
 		
 		var marginTop = 5;
 		var marginRight = 5;
@@ -74,8 +77,8 @@ define([
 			var position = this.viewer.scaler.getScaledObj(this.position);
 			var top = position.y - marginTop - 1;
 			var left = position.x + offset.left + window.pageXOffset - 1;
-			var width = position.xe - marginRight;
-			var height = position.ye + marginTop;
+			var width = position.w - marginRight;
+			var height = position.h + marginTop;
 			var input = $('<input/>').attr({
 				type: 'text',
 				style: "position:absolute; z-index: 11000;left:" + left + "px;top:" + top + "px; width:" + width + "px; height:" + height + "px",
@@ -144,11 +147,25 @@ define([
 		this.viewer.ctx.strokeRect(
 			this.position.x,
 			this.position.y - marginTop,
-			this.position.xe - marginRight,
-			this.position.ye + marginTop
+			this.position.w - marginRight,
+			this.position.h + marginTop
 		);
 	};
-
+	ChordSpaceView.prototype.draw = function(ctx) {
+		var marginTop = 5;
+		var marginRight = 5;
+		var style = ctx.fillStyle;
+		ctx.fillStyle = "#0099FF";
+		ctx.globalAlpha = 0.2;
+		ctx.fillRect(
+			this.position.x,
+			this.position.y - marginTop,
+			this.position.w - marginRight,
+			this.position.h + marginTop
+		);
+		ctx.fillStyle = style;
+		ctx.globalAlpha = 1;
+	};
 	/**
 	 * Set to upper case first notes, add a lot of replacement for french or not keyboard
 	 * @param  {String} s input string

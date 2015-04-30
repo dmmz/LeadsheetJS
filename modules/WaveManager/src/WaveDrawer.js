@@ -47,7 +47,7 @@ define(['modules/core/src/SongBarsIterator'], function(SongBarsIterator) {
         newDim.w = dim.w;
         return newDim;
     };
-    WaveDrawer.prototype._updateCursor = function(bar, barTimes, time) {
+    WaveDrawer.prototype.updateCursor = function(bar, barTimes, time) {
         this.cursorPos = this._getCursorDims(bar, barTimes, time);
     };
 
@@ -102,7 +102,7 @@ define(['modules/core/src/SongBarsIterator'], function(SongBarsIterator) {
         }
 
         this.viewer.canvasLayer.addElement('audioCursor',this);
-        this._updateCursor(waveMng.currBar, waveMng.barTimes, 0);
+        this.updateCursor(waveMng.currBar, waveMng.barTimes, 0);
         this.viewer.canvasLayer.refresh();
     };
     WaveDrawer.prototype._drawMargins = function(area, ctx) {

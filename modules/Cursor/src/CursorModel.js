@@ -28,6 +28,7 @@ define([
 	 * or a single value that will be converted to an array [value, value]
 	 */
 	CursorModel.prototype.setPos = function(pos) {
+
 		if (!this.isEditable) {
 			return;
 		}

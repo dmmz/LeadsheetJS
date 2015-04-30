@@ -7,11 +7,13 @@ define([
 	'pubsub',
 ], function(SongModel, ChordModel, ChordSpaceView, CursorModel, UserLog, pubsub) {
 
-	function ChordSpaceManager(songModel, cursor) {
+	function ChordSpaceManager(songModel, cursor, viewer) {
 		this.songModel = songModel || new SongModel();
 		this.cursor = cursor || new CursorModel();
 		this.chordSpace = [];
+		this.elemName = 'chordCursor';
 		this.initSubscribe();
+		this.viewer = viewer;
 	}
 
 	/**
@@ -23,7 +25,13 @@ define([
 			self.updateChord(update.chordString, update.chordModel, update.chordSpace);
 			$.publish('ToViewer-draw', self.songModel);
 		});
-		$.subscribe('CanvasLayer-selection', function(el, position) {
+		$.subscribe(this.elemName+"-selection", function(el,cursor){
+			if (cursor[0] !== false && cursor[1] !== false && cursor[0] == cursor[1]){
+				self.drawEditableChord();
+				//$.publish('ToViewer-draw', self.songModel);
+			}			
+		});
+		/*$.subscribe('CanvasLayer-selection', function(el, position) {
 			var inPath = self.isInPath(position.x, position.y);
 			if (inPath !== false) {
 				$.publish('ToAllCursors-setEditable', false);
@@ -31,28 +39,29 @@ define([
 				self.cursor.setPos(inPath);
 				$.publish('ToViewer-draw', self.songModel);
 			} else {
-				self.undraw();
+				self.undrawEditableChord();
 			}
-		});
+		});*/
 		$.subscribe('CanvasLayer-mousemove', function(el, position) {
 			if (!self.cursor.getEditable()) return;	
-			var inPath = self.isInPath(position.x, position.y);
+			var inPath = self.isInPath({x:position.x, y:position.y});
 			if (inPath !== false) {
-				myApp.viewer.el.style.cursor = 'pointer';
+				self.viewer.el.style.cursor = 'pointer';
 				//self.cursor.setPos(inPath);
 				//$.publish('ToViewer-draw', self.songModel);
 			} else {
-				myApp.viewer.el.style.cursor = 'default';
+				self.viewer.el.style.cursor = 'default';
 			}
 		});
 		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
+			self.viewer.canvasLayer.addElement(self.elemName, self);
 			if (self.cursor.getEditable()) {
 				self.refresh(viewer);
 			} else if (self.chordSpace.length === 0) {
-				// case chordspace have never been drawn, we create it so isInPath function can works
+				// case chordspace have never been drawn, we create it so isInPath function can work
 				self.chordSpace = self.createChordSpace(viewer);
 			} else {
-				self.undraw(); // maybe we should call it only once
+				self.undrawEditableChord(); // maybe we should call it only once
 			}
 		});
 		// cursor view subscribe
@@ -60,7 +69,18 @@ define([
 			self.moveCursorByBar(inc);
 		});
 	};
-
+	//CANVASLAYER ELEMENT METHOD
+	ChordSpaceManager.prototype.updateCursor = function(coords) {
+		this.undrawEditableChord(this.view);
+		var inPath = this.getChordsInPath(coords);
+		
+		if (inPath[0] !== null) {
+			//$.publish('ToAllCursors-setEditable', false);
+			this.cursor.setEditable(true);
+			this.cursor.setPos(inPath);
+			//$.publish('ToViewer-draw', self.songModel);
+		} 
+	};
 	ChordSpaceManager.prototype.updateChord = function(chordString, chordModel, chordSpace) {
 		if (typeof chordModel === "undefined" && typeof chordSpace !== "undefined") {
 			chordModel = new ChordModel({
@@ -86,6 +106,22 @@ define([
 			}
 		}
 		return false;
+	};
+	ChordSpaceManager.prototype.getChordsInPath = function(coords) {
+		var note,
+			min = null,
+			max = null;
+		for (var i in this.chordSpace) {
+			if (this.chordSpace[i].isInPath(coords)) {
+				if (min == null) {
+					min = Number(i);
+				}
+				if (max == null || max < i) {
+					max = Number(i);
+				}
+			}
+		}
+		return (min === null && max === null) ? false : [min, max];
 	};
 
 	ChordSpaceManager.prototype.moveCursorByBar = function(inc) {
@@ -127,8 +163,8 @@ define([
 				area = {
 					x: (viewer.vxfBars[i].barDimensions.left + widthBeat * j) ,
 					y: (viewer.vxfBars[i].barDimensions.top - 17) ,
-					xe: widthBeat ,
-					ye: 20
+					w: widthBeat ,
+					h: 20
 				};
 				chordSpace.push(new ChordSpaceView(viewer, area, i, j + 1));
 			}
@@ -136,29 +172,37 @@ define([
 		return chordSpace;
 	};
 
-	ChordSpaceManager.prototype.undraw = function(viewer) {
+	ChordSpaceManager.prototype.undrawEditableChord = function(viewer) {
 		$('#canvas_container .chordSpaceInput').devbridgeAutocomplete('dispose').remove();
 	};
-
-	ChordSpaceManager.prototype.draw = function(viewer) {
+	/* draws input box ...etc. for the moment is not called, because we are fucking refactoring*/
+	ChordSpaceManager.prototype.drawEditableChord = function() {
 		var position = this.cursor.getPos();
 		var self = this;
-		viewer.drawElem(function(ctx){
+		this.viewer.drawElem(function(ctx){
 				var saveStrokeColor = ctx.strokeStyle;
 				ctx.lineWidth = 0.7;
 				var selected = false;
-				self.undraw();
+				self.undrawEditableChord();
 				for (var i = 0, c = self.chordSpace.length; i < c; i++) {
 					if (position[0] <= i && i <= position[1]) {
 						selected = true;
 					} else {
 						selected = false;
 					}
-					self.chordSpace[i].draw(self.songModel, selected);
+					self.chordSpace[i].drawEditableChord(self.songModel, selected);
 				}
 				ctx.strokeStyle = saveStrokeColor;
 		});
 
+	};
+	ChordSpaceManager.prototype.draw = function(ctx) {
+		var pos = this.cursor.getPos();
+		if (pos[0]!== false){
+			for (var i = pos[0]; i <= pos[1]; i++) {
+				this.chordSpace[i].draw(ctx);
+			}		
+		}
 	};
 
 	return ChordSpaceManager;

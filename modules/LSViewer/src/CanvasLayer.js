@@ -56,6 +56,22 @@ define(function() {
 			coords;
 		this.mouseDown = false;
 
+		function selection() {
+			var elemsActives = [];
+			var cursorPos;
+			console.log(self.elems);
+			for (var name in self.elems) {
+				self.elems[name].updateCursor(self.coords);
+				//check elems actives
+				cursorPos = self.elems[name].cursor.getPos();
+
+				if (cursorPos[0] !== null && cursorPos[1] !== null && self.mouseDown === false) {
+					$.publish(name+'-selection', [cursorPos]);
+				}
+			}
+			self.viewer.canvasLayer.refresh();
+
+		}
 		$(this.canvasLayer).mousedown(function(evt) {
 			coords = self._getXandY($(this), evt);
 			self.mouseCoordsIni = [coords.x, coords.y];
@@ -64,8 +80,7 @@ define(function() {
 		});
 		$(this.canvasLayer).mouseup(function(evt) {
 			self.mouseDown = false;
-			//reset selection area
-			$.publish('CanvasLayer-selection', self.coords);
+			selection();
 		});
 		$(this.canvasLayer).mousemove(function(evt) {
 			//draw cursor selection
@@ -74,10 +89,7 @@ define(function() {
 				var ctx = self.ctx;
 				self.mouseCoordsEnd = [xy.x, xy.y];
 				self._setCoords(self.mouseCoordsIni, self.mouseCoordsEnd);
-
-				ctx.strokeStyle = self.color;
-
-				$.publish('CanvasLayer-selection', self.coords);
+				selection();
 			}
 			$.publish('CanvasLayer-mousemove', xy);
 		});
@@ -123,7 +135,15 @@ define(function() {
 			this.elems[name].draw(this.ctx);
 		}
 		if (this.mouseDown) {
-			this.ctx.strokeRect(this.coords.x, this.coords.y, this.coords.xe - this.coords.x, this.coords.ye - this.coords.y);
+			var style = this.ctx.strokeStyle;
+			this.ctx.strokeStyle = this.color;
+			this.ctx.strokeRect(
+				this.coords.x,
+				this.coords.y,
+				this.coords.xe - this.coords.x,
+				this.coords.ye - this.coords.y
+			);
+			this.ctx.strokeStyle = style;
 		}
 	};
 	return CanvasLayer;
