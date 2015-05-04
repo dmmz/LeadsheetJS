@@ -162,7 +162,7 @@ define([
 					h: this.CURSOR_HEIGHT
 				};
 
-				areas.push(this.viewer.scaler.getScaledObj(area));
+				areas.push(area);
 				if (cInit != cEnd) {
 					firstNoteLine = viewer.vxfNotes[cInit + 1];
 				}

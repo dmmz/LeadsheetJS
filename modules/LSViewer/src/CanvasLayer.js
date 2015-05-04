@@ -60,6 +60,10 @@ define(function() {
 			var elemsActives = [];
 			var cursorPos;
 			for (var name in self.elems) {
+				if (name == 'audioCursor'){
+					console.warn(" audioCursor ignored");
+					continue;
+				}  
 				self.elems[name].updateCursor(self.coords);
 				//check elems actives
 				cursorPos = self.elems[name].cursor.getPos();
@@ -130,9 +134,11 @@ define(function() {
 	};
 	CanvasLayer.prototype.refresh = function() {
 		this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+		this.viewer._scale(this.ctx);
 		for (var name in this.elems) {
 			this.elems[name].draw(this.ctx);
 		}
+		this.viewer._resetScale(this.ctx);
 		if (this.mouseDown) {
 			var style = this.ctx.strokeStyle;
 			this.ctx.strokeStyle = this.color;
@@ -144,6 +150,7 @@ define(function() {
 			);
 			this.ctx.strokeStyle = style;
 		}
+
 	};
 	return CanvasLayer;
 });

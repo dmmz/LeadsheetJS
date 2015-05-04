@@ -98,7 +98,7 @@ define(['modules/WaveManager/src/WaveAudio',
                 }
                 time = self.getPlayedTime();
                 self._updateCurrBarByTime(time);
-                self.drawer._updateCursor(self.currBar, self.barTimes, time);
+                self.drawer.updateCursor(self.currBar, self.barTimes, time);
                 self.drawer.viewer.canvasLayer.refresh();
                 requestFrame(frame);
             }

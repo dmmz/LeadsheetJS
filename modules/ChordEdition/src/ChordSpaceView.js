@@ -30,13 +30,14 @@ define([
 	ChordSpaceView.prototype.isInPath = function(area) {
 		area.xe = area.xe || area.x; 
 		area.ye = area.ye || area.y; //in case xe and ye are not defined, they take the same value a x and y respectively
-		var pos = this.viewer.scaler.getScaledObj(this.position),
-		posXe = pos.x + pos.w,
+		var pos = this.viewer.scaler.getScaledObj(this.position);
+		var posXe = pos.x + pos.w,
 		posYe = pos.y + pos.h;
+
 		// console.log("area");
 		// console.log(area);
 		// console.log("position");
-		// console.log(this.position);
+		// console.log(pos);
 		return (area.x < posXe && area.xe > pos.x) && (area.y < posYe && area.ye > pos.y);
 	};
 
@@ -74,11 +75,11 @@ define([
 					left: 0
 				};
 			}
-			var position = this.viewer.scaler.getScaledObj(this.position);
-			var top = position.y - marginTop - 1;
-			var left = position.x + offset.left + window.pageXOffset - 1;
-			var width = position.w - marginRight;
-			var height = position.h + marginTop;
+			var pos =  this.viewer.scaler.getScaledObj(this.position);
+			var top = pos.y - marginTop - 1;
+			var left = pos.x + offset.left + window.pageXOffset - 1;
+			var width = pos.w - marginRight;
+			var height = pos.h + marginTop;
 			var input = $('<input/>').attr({
 				type: 'text',
 				style: "position:absolute; z-index: 11000;left:" + left + "px;top:" + top + "px; width:" + width + "px; height:" + height + "px",
@@ -152,17 +153,17 @@ define([
 		);
 	};
 	ChordSpaceView.prototype.draw = function(ctx) {
-		var pos = this.viewer.scaler.getScaledObj(this.position);
-		var marginTop = this.viewer.scaler.getScaledObj(5);
-		var marginRight = this.viewer.scaler.getScaledObj(5);
+		
+		var marginTop = 5;
+		var marginRight = 5;
 		var style = ctx.fillStyle;
 		ctx.fillStyle = "#0099FF";
 		ctx.globalAlpha = 0.2;
 		ctx.fillRect(
-			pos.x,
-			pos.y - marginTop,
-			pos.w - marginRight,
-			pos.h + marginTop
+			this.position.x,
+			this.position.y - marginTop,
+			this.position.w - marginRight,
+			this.position.h + marginTop
 		);
 		ctx.fillStyle = style;
 		ctx.globalAlpha = 1;

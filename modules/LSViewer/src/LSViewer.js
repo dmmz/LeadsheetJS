@@ -42,7 +42,7 @@ define([
 			this.scaler = new Scaler();	//object that scales objects. User in NoteSpaceView and ChordSpaceView
 			this.SCALE = null;		//scale from 0 to
 			//0.999  fixes vexflow bug that doesn't draw last pixel on end bar
-			this.setScale(0.999);
+			this.setScale(0.599);
 
 			this.CANVAS_DIV_WIDTH_PROPORTION = 0.8; //width proportion between canvas created and divContainer
 			this.NOTE_WIDTH = 20; // estimated note width in order to be more flexible
@@ -284,7 +284,7 @@ define([
 			this._displayTitle(song.getTitle());
 			this._resetScale();
 			//console.timeEnd('whole draw');
-
+			// if we requesteed to have a layer and we haven't already created it
 			if (this.layer && !this.canvasLayer) {
 				this.canvasLayer = new CanvasLayer(this);
 			}
