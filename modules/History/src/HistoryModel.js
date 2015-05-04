@@ -1,8 +1,9 @@
 define([
 	'mustache',
+	'jquery',
 	'utils/UserLog',
 	'pubsub',
-], function(Mustache, SongModel, UserLog, pubsub) {
+], function(Mustache, $, UserLog, pubsub) {
 	/**
 	 * HistoryModel is an array of state, it allow a high level management of Historys
 	 * @param {object} options

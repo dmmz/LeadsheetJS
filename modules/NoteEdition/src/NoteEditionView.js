@@ -1,11 +1,12 @@
 define([
+	'jquery',
 	'mustache',
 	'modules/core/src/SongModel',
 	'utils/UserLog',
 	'utils/NoteUtils',
 	'pubsub',
 	'text!modules/NoteEdition/src/NoteEditionTemplate.html',
-], function(Mustache, SongModel, UserLog, NoteUtils, pubsub, NoteEditionTemplate) {
+], function($, Mustache, SongModel, UserLog, NoteUtils, pubsub, NoteEditionTemplate) {
 
 	function NoteEditionView(imgPath) {
 		this.el = undefined;
@@ -16,7 +17,9 @@ define([
 
 	NoteEditionView.prototype.render = function(parentHTML, callback) {
 		//if (typeof this.el === "undefined" || (typeof this.el !== "undefined" && force === true)) {
-		var rendered = Mustache.render(NoteEditionTemplate, {'imgPath': this.imgPath});
+		var rendered = Mustache.render(NoteEditionTemplate, {
+			'imgPath': this.imgPath
+		});
 		if (typeof parentHTML !== "undefined") {
 			parentHTML.innerHTML = rendered;
 		}

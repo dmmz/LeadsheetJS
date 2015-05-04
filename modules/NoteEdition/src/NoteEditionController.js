@@ -5,8 +5,9 @@ define([
 	'modules/Cursor/src/CursorModel',
 	'utils/NoteUtils',
 	'utils/UserLog',
+	'jquery',
 	'pubsub',
-], function(Mustache, SongModel, NoteManager, CursorModel, NoteUtils, UserLog, pubsub) {
+], function(Mustache, SongModel, NoteManager, CursorModel, NoteUtils, UserLog, $, pubsub) {
 
 	function NoteEditionController(songModel, cursor) {
 		this.songModel = songModel || new SongModel();
@@ -282,9 +283,10 @@ define([
 		for (var i = 0; i < selNotes.length; i++) {
 			note = selNotes[i];
 			if (note.tie === "stop" || note.tie === "start") {
-				console.warn("Can't convert to silence a tied note");
+				note.tie = undefined;
+				/*console.warn("Can't convert to silence a tied note");
 				UserLog.logAutoFade('warn', "Can't convert to silence a tied note");
-				continue;
+				continue;*/
 			}
 			if (!note.isRest) note.setRest(true);
 		}

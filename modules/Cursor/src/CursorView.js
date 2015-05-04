@@ -1,9 +1,10 @@
 define([
+	'jquery',
 	'mustache',
 	'modules/core/src/SongModel',
 	'utils/UserLog',
 	'pubsub',
-], function(Mustache, SongModel, UserLog, pubsub) {
+], function($, Mustache, SongModel, UserLog, pubsub) {
 
 	function CursorView(model, id, keyToNext) {
 		this.id = id;
@@ -42,7 +43,7 @@ define([
 				}
 			}
 			if (self.keyToNext === 'tab') {
-				if(keyCode==9) {
+				if (keyCode == 9) {
 					inc = (evt.shiftKey) ? -1 : 1;
 					$.publish('CursorView-moveCursorByElement' + self.id, inc);
 					stopEvent(evt);
@@ -56,8 +57,7 @@ define([
 					} else {
 						if (evt.ctrlKey) {
 							$.publish('CursorView-moveCursorByElement' + self.id, inc);
-						}
-						else{
+						} else {
 							$.publish('CursorView-moveCursor' + self.id, inc);
 						}
 					}

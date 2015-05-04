@@ -3,8 +3,9 @@ define([
 	'modules/core/src/SongModel',
 	'modules/Cursor/src/CursorModel',
 	'utils/UserLog',
+	'jquery',
 	'pubsub',
-], function(Mustache, CursorModel, SongModel, UserLog, pubsub) {
+], function(Mustache, CursorModel, SongModel, UserLog, $, pubsub) {
 
 	function ChordEditionController(songModel, cursor, view) {
 		this.songModel = songModel || new SongModel();

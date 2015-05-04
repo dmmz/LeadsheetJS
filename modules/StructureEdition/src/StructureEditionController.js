@@ -1,4 +1,5 @@
 define([
+	'jquery',
 	'mustache',
 	'modules/Cursor/src/CursorModel',
 	'modules/core/src/SongModel',
@@ -7,7 +8,7 @@ define([
 	'modules/core/src/NoteModel',
 	'utils/UserLog',
 	'pubsub',
-], function(Mustache, CursorModel, SongModel, SectionModel, NoteManager, NoteModel, UserLog, pubsub) {
+], function($, Mustache, CursorModel, SongModel, SectionModel, NoteManager, NoteModel, UserLog, pubsub) {
 
 	function StructureEditionController(songModel, cursor, view, structEditionModel) {
 		this.songModel = songModel || new SongModel();

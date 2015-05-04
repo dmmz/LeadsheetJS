@@ -1,8 +1,9 @@
 define([
 	'modules/MainMenu/src/MainMenuModel',
+	'jquery',
 	'pubsub',
 	'mustache'
-], function(MainMenuModel, pubsub, Mustache) {
+], function(MainMenuModel, $, pubsub, Mustache) {
 	/**
 	 * MainMenuController is the model containing a set of menu, each menu contain at least a title
 	 */
