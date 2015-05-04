@@ -21,6 +21,7 @@ define([
 			this.isTemplate = false;
 			this.content = content;
 		}
+		this.onSubmitFunction = (typeof options.onSubmit !== "undefined") ? options.onSubmit : undefined;
 		this.backgroundOpacity = 0.5;
 	}
 
@@ -60,7 +61,7 @@ define([
 		txt += '</div>';
 		txt += '<div class="modal-body contentPopIn">' + content + '</div>';
 
-		txt += '<div class="modal-footer"><button type="button" class="btn btn-default popin_close">Close</button>';
+		txt += '<div class="modal-footer"><span class="modal-footer-text"></span><button type="button" class="btn btn-default popin_close">Close</button>';
 		txt += ' <button type="button" class="btn btn-primary popin_close modal_submit">' + this.footerButtonTitle + '</button></div>';
 
 		txt += '</div>';
@@ -90,6 +91,11 @@ define([
 		var self = this;
 		$('.backgroundPopin, .popin_close').click(function() {
 			self.hide();
+		});
+		$('.modal_submit').click(function() {
+			if(typeof self.onSubmitFunction !== "undefined"){
+				self.onSubmitFunction();
+			}
 		});
 	};
 
