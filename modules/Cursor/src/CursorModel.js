@@ -3,12 +3,12 @@ define([
 ], function(pubsub) {
 
 	/**
-	 * Cursor consists of a pos array that contain index start and index end of position
-	 * @param {Int|Array|Object} listElement allow to get size of a list, must be an int, or an array, or an object, if it's an object then getTotal function will be call to get list length
+	 * Cursor consists of a pos array that contains index start and index end of position
+	 * @param {Int|Array|Object} listElements allows to get size of a list, must be an int, or an array, or an object, if it's an object then getTotal function will be called to get list length
 	 * @param {Array} optCursor gets a cursor as an array of two positions [start,end]
 	 */
-	function CursorModel(listElement, optCursor, isEditable) {
-		this.listElement = listElement;
+	function CursorModel(listElements, optCursor, isEditable) {
+		this.listElements = listElements;
 		optCursor = optCursor || [0, 0];
 		if (!(optCursor instanceof Array)) optCursor = [optCursor, optCursor];
 
@@ -60,7 +60,7 @@ define([
 		}
 		pos = this._checkPosition(pos)[0];
 		this.pos[index] = pos;
-		$.publish('CursorModel-setPos', this.pos);
+		//$.publish('CursorModel-setPos', this.pos);
 	};
 
 	/**
@@ -69,11 +69,16 @@ define([
 	 * @return {Array}     A new position array clamped
 	 */
 	CursorModel.prototype._checkPosition = function(position) {
+		function isFloat (n) {
+			return	n===Number(n)  && n%1!==0;
+		}
 		if (!(position instanceof Array)) position = [position, position];
-		var numNotes = this.getListLength();
+		var numElems = this.getListLength();
 		for (var i = 0; i < position.length; i++) {
 			if (position[i] < 0) position[i] = 0;
-			if (position[i] >= numNotes) position[i] = numNotes - 1;
+			if (position[i] >= numElems){
+				position[i] = isFloat(numElems) ? numElems - 0.01 : numElems - 1;	
+			} 
 		}
 		return position;
 	};
@@ -121,14 +126,14 @@ define([
 	};
 
 	CursorModel.prototype.getListLength = function() {
-		if (typeof this.listElement === 'object') {
-			return this.listElement.getTotal();
+		if (typeof this.listElements === 'object') {
+			return this.listElements.getTotal();
 		}
-		if (this.listElement.constructor === Array) {
-			return this.listElement.length;
+		if (this.listElements.constructor === Array) {
+			return this.listElements.length;
 		}
-		if (this.listElement.constructor === Number) {
-			return this.listElement;
+		if (this.listElements.constructor === Number) {
+			return this.listElements;
 		}
 	};
 

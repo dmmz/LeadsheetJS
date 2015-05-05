@@ -60,10 +60,10 @@ define(function() {
 			var elemsActives = [];
 			var cursorPos;
 			for (var name in self.elems) {
-				if (name == 'audioCursor'){
-					console.warn(" audioCursor ignored");
-					continue;
-				}  
+				// if (name == 'audioCursor'){
+				// 	console.warn(" audioCursor ignored");
+				// 	continue;
+				// }  
 				self.elems[name].updateCursor(self.coords);
 				//check elems actives
 				cursorPos = self.elems[name].cursor.getPos();
@@ -137,6 +137,10 @@ define(function() {
 		this.viewer._scale(this.ctx);
 		for (var name in this.elems) {
 			this.elems[name].draw(this.ctx);
+			//TODO refactor, we are doing this only to make it work, but it's bad code
+			if (typeof this.elems[name].drawSelection === 'function'){
+				this.elems[name].drawSelection(this.ctx);
+			}
 		}
 		this.viewer._resetScale(this.ctx);
 		if (this.mouseDown) {

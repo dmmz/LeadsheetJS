@@ -3,7 +3,7 @@ define(['modules/WaveManager/src/WaveAudio',
 ], function(WaveAudio, WaveDrawer) {
     /**
      * @param {SongModel} song
-     * @param {CursorModel} cModel
+     * @param {cursorNotes} cModel     // notes cursor, it is updated when playing
      * @param {LSViewer} viewer
      * @param {Object} params :
      *   - showHalfWave: show only the half of the waveform like in soundcloud
@@ -24,13 +24,12 @@ define(['modules/WaveManager/src/WaveAudio',
 
         params = params || {};
 
-        this.waveBarDimensions = [];
         this.barTimes = [];
         this.currBar = 0;
         this.song = song;
-        this.cursorModel = cModel;
+        this.cursorNotes = cModel;
         this.isLoaded = false;
-
+        
         this.audio = new WaveAudio();
 
         var paramsDrawer = {
@@ -41,7 +40,7 @@ define(['modules/WaveManager/src/WaveAudio',
             heightAudio: params.heightAudio,
             marginCursor: params.marginCursor
         };
-        this.drawer = new WaveDrawer(viewer, paramsDrawer);
+        this.drawer = new WaveDrawer(viewer, paramsDrawer, this);
     }
 
     WaveManager.prototype.isReady = function() {
@@ -55,7 +54,7 @@ define(['modules/WaveManager/src/WaveAudio',
         return this.currBar;
     };
 
-    WaveManager.prototype.load = function(url /*, callback*/ ) {
+    WaveManager.prototype.load = function(url ) {
         var self = this;
         var xhr = new XMLHttpRequest();
         xhr.open("GET", url);
@@ -67,9 +66,6 @@ define(['modules/WaveManager/src/WaveAudio',
             self.audio.load(audioData, self, function() {
                 self.isLoaded = true;
                 self.drawer.drawAudio(self);
-                // if (typeof callback !== "undefined") {
-                //     callback();
-                // }
             });
         };
         xhr.send();
@@ -91,14 +87,14 @@ define(['modules/WaveManager/src/WaveAudio',
                 if (self.getPlayedTime() >= timeStep + minBeatStep) {
                     iNote = noteMng.getPrevIndexNoteByBeat(self.getPlayedTime() / self.audio.beatDuration + 1);
                     if (iNote != prevINote) {
-                        self.cursorModel.setPos(iNote);
+                        self.cursorNotes.setPos(iNote);
                         prevINote = iNote;
                     }
                     timeStep += minBeatStep;
                 }
                 time = self.getPlayedTime();
                 self._updateCurrBarByTime(time);
-                self.drawer.updateCursor(self.currBar, self.barTimes, time);
+                self.drawer.updateCursorPlaying(self.currBar, self.barTimes, time);
                 self.drawer.viewer.canvasLayer.refresh();
                 requestFrame(frame);
             }

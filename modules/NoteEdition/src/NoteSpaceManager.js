@@ -4,8 +4,9 @@ define([
 	'modules/NoteEdition/src/NoteSpaceView',
 	'modules/Cursor/src/CursorModel',
 	'utils/UserLog',
+	'utils/EditionUtils',
 	'pubsub',
-], function(SongModel, NoteModel, NoteSpaceView, CursorModel, UserLog, pubsub) {
+], function(SongModel, NoteModel, NoteSpaceView, CursorModel, UserLog, EditionUtils, pubsub) {
 
 	function NoteSpaceManager(songModel, cursor, viewer) {
 
@@ -111,67 +112,20 @@ define([
 		}
 		var area;
 
-		for (var i = 0, c = viewer.vxfNotes.length; i < c; i++) {
-			currentNote = viewer.vxfNotes[i];
-			currentNoteStaveY = currentNote.stave.y;
-			boundingBox = currentNote.getBoundingBox();
-			area = {
-				x: boundingBox.x - this.CURSOR_MARGIN_LEFT,
-				y: currentNoteStaveY + this.CURSOR_MARGIN_TOP,
-				w: boundingBox.w + this.CURSOR_MARGIN_LEFT + this.CURSOR_MARGIN_RIGHT,
-				h: this.CURSOR_HEIGHT
-			};
+		for (var i = 0, c = viewer.noteViews.length; i < c; i++) {
+			currentNote = viewer.noteViews[i];
+			area = currentNote.getArea();
+			//apply cursor margin changes
+			area.x -= this.CURSOR_MARGIN_LEFT;
+			area.y += this.CURSOR_MARGIN_TOP;
+			area.w += this.CURSOR_MARGIN_LEFT + this.CURSOR_MARGIN_RIGHT;
+			area.h = this.CURSOR_HEIGHT;
 			noteSpace.push(new NoteSpaceView(area, viewer.scaler));
 		}
 		return noteSpace;
 	};
 
 
-	/**
-	 * Returns several areas to indicate which notes are selected, usefull for cursor or selection
-	 * @param  {[Integer, Integer] } Array with initial position and end position
-	 * @return {Array of Objects}, Object in this form: {area.x, area.y, area.xe, area.ye}
-	 */
-	NoteSpaceManager.prototype.getNotesAreasFromCursor = function(viewer, cursor) {
-		var areas = [];
-		var area;
-		var cInit = cursor[0];
-		var cEnd = cursor[1];
-		if (typeof viewer.vxfNotes[cInit] === "undefined") {
-			return areas;
-		}
-		var x, y, xe;
-
-		var currentNote, currentNoteStaveY, nextNoteStaveY;
-		var firstNoteLine, lastNoteLine;
-		firstNoteLine = viewer.vxfNotes[cInit];
-		while (cInit <= cEnd) {
-			currentNote = viewer.vxfNotes[cInit];
-			currentNoteStaveY = currentNote.stave.y;
-			if (typeof viewer.vxfNotes[cInit + 1] !== "undefined") {
-				nextNoteStaveY = viewer.vxfNotes[cInit + 1].stave.y;
-			}
-			if (currentNoteStaveY != nextNoteStaveY || cInit == cEnd) {
-				lastNoteLine = currentNote.getBoundingBox();
-				x = firstNoteLine.getBoundingBox().x - this.CURSOR_MARGIN_LEFT;
-				xe = lastNoteLine.x - x + lastNoteLine.w + this.CURSOR_MARGIN_RIGHT;
-				area = {
-					x: x,
-					y: currentNoteStaveY + this.CURSOR_MARGIN_TOP,
-					w: xe,
-					h: this.CURSOR_HEIGHT
-				};
-
-				areas.push(area);
-				if (cInit != cEnd) {
-					firstNoteLine = viewer.vxfNotes[cInit + 1];
-				}
-			}
-
-			cInit++;
-		}
-		return areas;
-	};
 	//CANVASLAYER ELEMENT METHOD
 	NoteSpaceManager.prototype.draw = function(ctx) {
 		var self = this;
@@ -191,7 +145,13 @@ define([
 					h: self.noteSpace[position[0]].position.h
 				});
 			} else {
-				areas = self.getNotesAreasFromCursor(self.viewer, position);
+				var cursorDims = {
+					right: this.CURSOR_MARGIN_RIGHT,
+					left: this.CURSOR_MARGIN_LEFT,
+					top: this.CURSOR_MARGIN_TOP,
+					height: this.CURSOR_HEIGHT
+				};
+				areas = EditionUtils.getElementsAreaFromCursor(self.viewer.noteViews, position, cursorDims);
 			}
 			for (i = 0, c = areas.length; i < c; i++) {
 				ctx.fillRect(

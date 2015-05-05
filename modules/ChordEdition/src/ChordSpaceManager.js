@@ -8,8 +8,11 @@ define([
 ], function(SongModel, ChordModel, ChordSpaceView, CursorModel, UserLog, pubsub) {
 
 	function ChordSpaceManager(songModel, cursor, viewer) {
-		this.songModel = songModel || new SongModel();
-		this.cursor = cursor || new CursorModel();
+		if (!songModel || !cursor){
+			throw "ChordSpaceManager missing params";
+		}
+		this.songModel = songModel;
+		this.cursor = cursor;
 		this.chordSpace = [];
 		this.elemName = 'chordCursor';
 		this.initSubscribe();
