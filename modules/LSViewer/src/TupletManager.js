@@ -26,14 +26,21 @@ define(['vexflow'], function(Vex) {
 	};
 	/**
 	 * @param  {Context} ctx          
-	 * @param  {Array} vexflowNotes Array of Vex.Flow.StaveNote
+	 * @param  {Array} noteViews Array of Vex.Flow.StaveNote
 	 */
-	TupletManager.prototype.draw = function(ctx, vexflowNotes) {
+	TupletManager.prototype.draw = function(ctx, noteViews) {
+		function convertToVxfNotes (noteViews) {
+			var vxfNotes = [];
+			for (var i in noteViews){
+				vxfNotes.push(noteViews[i].getVexflowNote());
+			}
+			return vxfNotes;
+		}
 		var vexflowTuplet,
 		tupletNotes;
 		for (var i in this.tuplets) {
-			tupletNotes = vexflowNotes.slice(this.tuplets[i][0], this.tuplets[i][1] + 1);
-			vexflowTuplet = new Vex.Flow.Tuplet(tupletNotes);
+			tupletNotes = noteViews.slice(this.tuplets[i][0], this.tuplets[i][1] + 1);
+			vexflowTuplet = new Vex.Flow.Tuplet(convertToVxfNotes(tupletNotes));
 			vexflowTuplet.setContext(ctx).draw();
 		}
 	};

@@ -95,6 +95,7 @@ define([
 		LSViewer.prototype._initSubscribe = function() {
 			var self = this;
 			$.subscribe('ToViewer-draw', function(el, songModel) {
+				//console.log("subscr ToViewer-draw");
 				self.draw(songModel);
 			});
 		};
@@ -186,8 +187,7 @@ define([
 				iNote = 0,
 				stave,
 				vxfBeams,
-				vxfNote,
-				vxfNotes = [],
+				noteViews = [],
 				vxfBars = [],
 				barDimensions,
 				tieMng = new TieManager();
@@ -227,9 +227,9 @@ define([
 						tupletMng.checkTuplet(barNotes[j], iNote);
 						noteView = new LSNoteView(barNotes[j]);
 						beamMng.checkBeam(nm, iNote, noteView);
-						vxfNote = noteView.getVexflowNote();
-						bar.push(vxfNote);
-						vxfNotes.push(vxfNote);
+						
+						bar.push(noteView.getVexflowNote());
+						noteViews.push(noteView);
 						iNote++;
 					}
 					//console.timeEnd('drawNotes');
@@ -266,7 +266,7 @@ define([
 					//console.timeEnd('stave');
 					//console.time('draw');
 					beamMng.draw(self.ctx, vxfBeams); // and draw beams needs to be done after drawing notes
-					tupletMng.draw(self.ctx, vxfNotes);
+					tupletMng.draw(self.ctx, noteViews);
 					//console.timeEnd('draw');
 
 					songIt.next();
@@ -275,8 +275,8 @@ define([
 				}
 				numSection++;
 			});
-			tieMng.draw(this.ctx, vxfNotes, nm, this.barWidthMng, song);
-			this.vxfNotes = vxfNotes;
+			tieMng.draw(this.ctx, noteViews, nm, this.barWidthMng, song);
+			this.noteViews = noteViews;
 			this.vxfBars = vxfBars;
 			this.ctx.fillStyle = "black";
 			this.ctx.strokeStyle = "black";
