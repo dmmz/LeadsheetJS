@@ -109,7 +109,7 @@ define(['modules/WaveManager/src/WaveAudio',
                 }
                 time = self.getPlayedTime();
                 self.barTimesMng.updateCurrBarByTime(time);
-                self.drawer.updateCursorPlaying(self.barTimesMng, time);
+                self.drawer.updateCursorPlaying(time);
                 self.drawer.viewer.canvasLayer.refresh();
                 requestFrame(frame);
             }

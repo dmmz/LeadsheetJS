@@ -21,8 +21,6 @@ define([
             this.viewer = viewer;
             this.waveMng = waveMng;
             this._adaptViewer();
-
-
         }
     /**
      * update viewer dimensions if needed (space between lines and margin top)
@@ -37,36 +35,53 @@ define([
             }
         }
     };
-
-    WaveDrawer.prototype._getCursorPosFromTime = function(first_argument) {
-        // body...
-    };
-    WaveDrawer.prototype._getCursorTimeFromPos = function(first_argument) {
-        // body...
-    };
-
     /**
-     * @params like in draw
-     * @return {Object}  {x: val  , y: valy, w: valw, h: valh };
+     * @param  {Float} time      in seconds (e.g. 4.54)
+     * @param  {Integer} barIndex number of bar in which the cursor is (should be previously calculated) 
+     * @return {Object}          e.g. { x: 12, y: 23, w:5, h:5}
      */
-    WaveDrawer.prototype._getCursorDims = function(barTimesMng, time, barIndex) {
-        barIndex = barIndex || barTimesMng.index;
-        var newDim = {};
-        var timeBoundaries = barTimesMng.getTimeLimits(barIndex);
-        
-        var dim = this.waveBarDimensions[barIndex];
-        
+    WaveDrawer.prototype._getAudioPosFromTime = function(time, barIndex) {
+        var timeBoundaries = this.waveMng.barTimesMng.getTimeLimits(barIndex);
         var timeDist = timeBoundaries.end - timeBoundaries.start;
+        var dim = this.waveBarDimensions[barIndex];
         var percent = (time - timeBoundaries.start) / (timeBoundaries.end - timeBoundaries.start);
-
+        var newDim = {};
         newDim.y = dim.y + this.marginCursor;
         newDim.h = dim.h - this.marginCursor * 2;
         newDim.x = dim.x + percent * dim.w;
         newDim.w = dim.w;
         return newDim;
     };
-    WaveDrawer.prototype.updateCursorPlaying = function(barTimesMng, time) {
-        this.cursorPos = this._getCursorDims(barTimesMng, time);
+
+    /**
+     * @param  {Integer} x        coordinate x
+     * @param  {Integer} barIndex number of bar in which the cursor is (should be previously calculated) 
+     * @return {Float}  time in seconds (e.g. 3.94)          
+     */
+    WaveDrawer.prototype._getAudioTimeFromPos = function(x, barIndex) {
+        var timeBoundaries = this.waveMng.barTimesMng.getTimeLimits(barIndex);
+        var timeDist = timeBoundaries.end - timeBoundaries.start;
+
+        var barDim = this.viewer.scaler.getScaledObj(this.waveBarDimensions[barIndex]);
+        var percentPos = (x - barDim.x) / barDim.w;
+
+        return percentPos * timeDist + timeBoundaries.start;
+    };
+
+    /**
+     * 
+     * @param  {Float} time     in seconds (e.g. 1.23)
+     * @param  {Integer} barIndex number of bar in which the cursor is (should be previously calculated) 
+     *                            if not specfied, it will take current bar number from barTimesMng (this is used for example, when playing)
+     * @return {Object}          e.g. { x: 12, y: 23, w:5, h:5}
+     */
+    WaveDrawer.prototype._getCursorDims = function(time, barIndex) {
+        barIndex = barIndex || this.waveMng.barTimesMng.index;
+        return this._getAudioPosFromTime(time,barIndex);
+        
+    };
+    WaveDrawer.prototype.updateCursorPlaying = function(time) {
+        this.cursorPos = this._getCursorDims(time);
     };
 
     WaveDrawer.prototype.getAreasFromCursor = function() {
@@ -77,8 +92,8 @@ define([
         var endBar = barTimesMng.getIndexByTime(endTime);
         var areas = EditionUtils.getElementsAreaFromCursor(this.waveBarDimensions, [startBar, endBar]);
 
-        var cursor1 = this._getCursorDims(barTimesMng, startTime, startBar);
-        var cursor2 = this._getCursorDims(barTimesMng, endTime, endBar);
+        var cursor1 = this._getCursorDims(startTime, startBar);
+        var cursor2 = this._getCursorDims(endTime, endBar);
 
         if (cursor1.x != cursor2.x) {
             if (cursor1.x > areas[0].x && cursor1.x < areas[0].x + areas[0].w) {
@@ -143,7 +158,7 @@ define([
             toggleColor = (toggleColor + 1) % 2;
         }
          this.viewer.canvasLayer.addElement('audioCursor', this);
-        this.updateCursorPlaying(barTimesMng, 0);
+        this.updateCursorPlaying(0);
         this.viewer.canvasLayer.refresh();
     };
  
@@ -237,21 +252,11 @@ define([
                 return (min === null && max === null) ? false : [min, max];
             }
             //Doing the inverse of what we do in getCursorDims
-        function getCoordsTime(x, barNum) {
-            
-            var timeBoundaries = self.waveMng.barTimesMng.getTimeLimits(barNum);
-            var timeDist = timeBoundaries.end - timeBoundaries.start;
-
-            var barDim = self.viewer.scaler.getScaledObj(self.waveBarDimensions[barNum]);
-            var percentPos = (x - barDim.x) / barDim.w;
-
-            return percentPos * timeDist + timeBoundaries.start;
-        }
         var cursorBars = getBarsInPath(coords);
 
         if (cursorBars[0] != null && cursorBars[1] != null) {
-            var pos1 = getCoordsTime(coords.x, cursorBars[0]);
-            var pos2 = getCoordsTime(coords.xe, cursorBars[1]);
+            var pos1 = this._getAudioTimeFromPos(coords.x, cursorBars[0]);
+            var pos2 = this._getAudioTimeFromPos(coords.xe, cursorBars[1]);
             this.cursor.setPos([pos1, pos2]);
         }
 
