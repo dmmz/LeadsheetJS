@@ -1,6 +1,8 @@
 define(['modules/WaveManager/src/WaveAudio',
-    'modules/WaveManager/src/WaveDrawer'
-], function(WaveAudio, WaveDrawer) {
+    'modules/WaveManager/src/WaveDrawer',
+    'modules/WaveManager/src/BarTimesManager',
+    'modules/core/src/SongBarsIterator'
+], function(WaveAudio, WaveDrawer, BarTimesManager, SongBarsIterator) {
     /**
      * @param {SongModel} song
      * @param {cursorNotes} cModel     // notes cursor, it is updated when playing
@@ -24,8 +26,7 @@ define(['modules/WaveManager/src/WaveAudio',
 
         params = params || {};
 
-        this.barTimes = [];
-        this.currBar = 0;
+        this.barTimesMng = new BarTimesManager();
         this.song = song;
         this.cursorNotes = cModel;
         this.isLoaded = false;
@@ -47,11 +48,24 @@ define(['modules/WaveManager/src/WaveAudio',
         return this.isLoaded;
     };
 
-    WaveManager.prototype._updateCurrBarByTime = function(time) {
-        while (this.currBar < this.barTimes.length && this.barTimes[this.currBar] < time) {
-            this.currBar++;
+
+    
+    WaveManager.prototype._getBarTime = function(songIt, barTime) {
+        return barTime + songIt.getBarTimeSignature().getBeats() * this.audio.beatDuration;
+    };
+
+    WaveManager.prototype.calculateBarTimes = function() {
+        var numBars = this.song.getComponent("bars").getTotal(),
+        songIt = new SongBarsIterator(this.song),
+        barTime = 0,
+        barTimes = [];
+
+        while (songIt.hasNext()) {
+            barTime = this._getBarTime(songIt, barTime);
+            barTimes.push(barTime);
+            songIt.next();
         }
-        return this.currBar;
+        return barTimes;
     };
 
     WaveManager.prototype.load = function(url ) {
@@ -65,7 +79,8 @@ define(['modules/WaveManager/src/WaveAudio',
             var audioData = xhr.response;
             self.audio.load(audioData, self, function() {
                 self.isLoaded = true;
-                self.drawer.drawAudio(self);
+                self.barTimesMng.setBarTimes(self.calculateBarTimes());
+                self.drawer.drawAudio(self.audio, self.barTimesMng);
             });
         };
         xhr.send();
@@ -93,8 +108,8 @@ define(['modules/WaveManager/src/WaveAudio',
                     timeStep += minBeatStep;
                 }
                 time = self.getPlayedTime();
-                self._updateCurrBarByTime(time);
-                self.drawer.updateCursorPlaying(self.currBar, self.barTimes, time);
+                self.barTimesMng.updateCurrBarByTime(time);
+                self.drawer.updateCursorPlaying(self.barTimesMng, time);
                 self.drawer.viewer.canvasLayer.refresh();
                 requestFrame(frame);
             }
@@ -123,9 +138,7 @@ define(['modules/WaveManager/src/WaveAudio',
         return this.audio.audioCtx.currentTime - this.startTime;
     };
 
-    WaveManager.prototype.getBarTime = function(songIt, barTime) {
-        return barTime + songIt.getBarTimeSignature().getBeats() * this.audio.beatDuration;
-    };
+   
 
     return WaveManager;
 });
