@@ -54,8 +54,21 @@ define([
 			self.updateCursor(coords);
 		});
 	};
+	NoteSpaceManager.prototype.getYs = function(coords) {
+		var notes = this.getNotesInPath(coords);
+		if (notes){
+			return {
+				topY: this.viewer.noteViews[notes[0]].getArea().y,
+				bottomY: this.viewer.noteViews[notes[1]].getArea().y
+			};
+		}
+		else{
+			return false;
+		}
+	};
+
 	NoteSpaceManager.prototype.updateCursor = function(coords) {
-		this.cursor.setPos(null);
+		
 		var notes = this.getNotesInPath(coords);
 
 		if (notes) {

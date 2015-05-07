@@ -43,6 +43,7 @@ define([
 		}
 
 		this.model.setPos(index);
+		//TODO: change by 'canvaslayer-refresh', working for notes but cannot do it yet because we need to solve some problems for the chords editions
 		$.publish('ToViewer-draw', this.songModel);
 	};
 

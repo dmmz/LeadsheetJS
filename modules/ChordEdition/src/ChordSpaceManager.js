@@ -76,6 +76,18 @@ define([
 			self.moveCursorByBar(inc);
 		});
 	};
+	ChordSpaceManager.prototype.getYs = function(coords) {
+		var cursorChords = this.getChordsInPath(coords);
+		if (cursorChords){
+			return {
+				topY: this.chordSpace[cursorChords[0]].position.y,
+				bottomY: this.chordSpace[cursorChords[1]].position.y
+			};
+		}
+		else{
+			return false;
+		}
+	};
 	//CANVASLAYER ELEMENT METHOD
 	ChordSpaceManager.prototype.updateCursor = function(coords) {
 		this.undrawEditableChord(this.view);

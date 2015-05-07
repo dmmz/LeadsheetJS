@@ -59,17 +59,38 @@ define(function() {
 		function selection() {
 			var elemsActives = [];
 			var cursorPos;
-			$.publish('CanvasLayer-updateCursors',self.coords);
+			//$.publish('CanvasLayer-updateCursors',self.coords);
+			var minY = 999999, maxY = 0, minName, maxName, ys;
 			for (var name in self.elems) {
-
+				//self.elems[name].updateCursor([null,null]);
+				if (typeof self.elems[name].getYs === 'function'){
+					ys = self.elems[name].getYs(self.coords);
+					if (ys.topY < minY){
+						minY = ys.topY;
+						minName = name;
+					}
+					if (ys.bottomY > maxY){
+						maxY = ys.bottomY;
+						maxName = name;	
+					}
+				}
+				self.elems[name].cursor.setPos(null);
+				if (minName && maxName){
+					
+					self.elems[minName].updateCursor(self.coords);
+					self.elems[minName].cursor.setEditable(true);
+					if (maxName != minName){
+						self.elems[maxName].updateCursor(self.coords);
+						self.elems[maxName].cursor.setEditable(true);
+					}
+				}
 				//check elems actives
 				cursorPos = self.elems[name].cursor.getPos();
-
 				if (cursorPos[0] !== null && cursorPos[1] !== null && self.mouseDown === false) {
 					$.publish(name+'-selection', [cursorPos]);
 				}
 			}
-			self.viewer.canvasLayer.refresh();
+			self.viewer.canvasLayer.refresh(minName,maxName);
 
 		}
 		$(this.canvasLayer).mousedown(function(evt) {
@@ -133,11 +154,17 @@ define(function() {
 	CanvasLayer.prototype.removeElement = function(name) {
 		delete this.elems[name];
 	};
-	CanvasLayer.prototype.refresh = function() {
+	CanvasLayer.prototype.refresh = function(name1,name2) {
 		this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 		this.viewer._scale(this.ctx);
+		if (name1){
+			this.elems[name1].draw(this.ctx);
+		}
+		if (name2 && name2 != name1){
+			this.elems[name2].draw(this.ctx);
+		}
 		for (var name in this.elems) {
-			this.elems[name].draw(this.ctx);
+		//	this.elems[name].draw(this.ctx);
 			//TODO refactor, we are doing this only to make it work, but it's bad code
 			if (typeof this.elems[name].drawSelection === 'function'){
 				this.elems[name].drawSelection(this.ctx);

@@ -235,42 +235,52 @@ define([
         });
 
     };
-    WaveDrawer.prototype.updateCursor = function(coords) {
-        var self = this;
-
-        function isInPath(area, i) {
-                area.xe = area.xe || area.x;
-                area.ye = area.ye || area.y; //in case xe and ye are not defined, they take the same value a x and y respectively
-                pos = self.viewer.scaler.getScaledObj(self.waveBarDimensions[i].getArea());
-                var posXe = pos.x + pos.w,
-                    posYe = pos.y + pos.h;
-                return (area.x < posXe && area.xe > pos.x) && (area.y < posYe && area.ye > pos.y);
-            }
-            // TODO, refactor: these functions are present in NoteSpaceManager and in ChordSpaceManager
-        function getBarsInPath(coords) {
-                var note,
-                    min = null,
-                    max = null;
-                for (var i in self.waveBarDimensions) {
-                    if (isInPath(coords, i)) {
-                        if (min == null) {
-                            min = Number(i);
-                        }
-                        if (max == null || max < i) {
-                            max = Number(i);
-                        }
-                    }
+    WaveDrawer.prototype.getYs = function(coords) {
+        
+        var cursorBars = this.getBarsInPath(coords);
+      
+        if (cursorBars){
+            return {
+                topY: this.waveBarDimensions[cursorBars[0]].getArea().y,
+                bottomY : this.waveBarDimensions[cursorBars[1]].getArea().y
+            };
+        }else{
+            return false;
+        }
+    };
+    // TODO, refactor: these functions are present in NoteSpaceManager and in ChordSpaceManager
+    WaveDrawer.prototype.getBarsInPath = function(coords) {
+         var note,
+            min = null,
+            max = null;
+        for (var i in this.waveBarDimensions) {
+            if (this.isInPath(coords, i)) {
+                if (min == null) {
+                    min = Number(i);
                 }
-                return (min === null && max === null) ? false : [min, max];
+                if (max == null || max < i) {
+                    max = Number(i);
+                }
             }
+        }
+        return (min === null && max === null) ? false : [min, max];
+    };
+    WaveDrawer.prototype.isInPath = function(area,i) {
+        area.xe = area.xe || area.x;
+        area.ye = area.ye || area.y; //in case xe and ye are not defined, they take the same value a x and y respectively
+        pos = this.viewer.scaler.getScaledObj(this.waveBarDimensions[i].getArea());
+        var posXe = pos.x + pos.w,
+            posYe = pos.y + pos.h;
+        return (area.x < posXe && area.xe > pos.x) && (area.y < posYe && area.ye > pos.y);
+    };
+    WaveDrawer.prototype.updateCursor = function(coords) {
             //Doing the inverse of what we do in getCursorDims
-        var cursorBars = getBarsInPath(coords);
+        var cursorBars = this.getBarsInPath(coords);
         if (cursorBars[0] != null && cursorBars[1] != null) {
             var pos1 = this._getAudioTimeFromPos(coords.x, cursorBars[0]);
             var pos2 = this._getAudioTimeFromPos(coords.xe, cursorBars[1]);
             this.cursor.setPos([pos1, pos2]);
         }
-
     };
     return WaveDrawer;
 });
