@@ -30,7 +30,7 @@ define(['modules/WaveManager/src/WaveAudio',
         this.song = song;
         this.cursorNotes = cModel;
         this.isLoaded = false;
-        
+
         this.audio = new WaveAudio();
 
         var paramsDrawer = {
@@ -49,16 +49,16 @@ define(['modules/WaveManager/src/WaveAudio',
     };
 
 
-    
+
     WaveManager.prototype._getBarTime = function(songIt, barTime) {
         return barTime + songIt.getBarTimeSignature().getBeats() * this.audio.beatDuration;
     };
 
     WaveManager.prototype.calculateBarTimes = function() {
         var numBars = this.song.getComponent("bars").getTotal(),
-        songIt = new SongBarsIterator(this.song),
-        barTime = 0,
-        barTimes = [];
+            songIt = new SongBarsIterator(this.song),
+            barTime = 0,
+            barTimes = [];
 
         while (songIt.hasNext()) {
             barTime = this._getBarTime(songIt, barTime);
@@ -68,7 +68,11 @@ define(['modules/WaveManager/src/WaveAudio',
         return barTimes;
     };
 
-    WaveManager.prototype.load = function(url ) {
+    WaveManager.prototype.load = function(url, tempo) {
+        if (isNaN(tempo) || tempo <= 0) {
+            tempo = 120;
+        }
+        // TODO Use tempo to compute length
         var self = this;
         var xhr = new XMLHttpRequest();
         xhr.open("GET", url);
@@ -139,7 +143,7 @@ define(['modules/WaveManager/src/WaveAudio',
         return this.audio.audioCtx.currentTime - this.startTime;
     };
 
-   
+
 
     return WaveManager;
 });
