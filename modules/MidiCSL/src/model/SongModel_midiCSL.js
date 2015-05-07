@@ -105,9 +105,9 @@ define(['modules/MidiCSL/src/model/NoteModel_MidiCSL'], function(NoteModel_MidiC
 		}
 		for (var i = 0, c = 200; i < c; i++) {
 			if (i % timeSig === 0) {
-				notes = [105]; // C8
+				notes = [105]; // A7
 			} else {
-				notes = [93]; // C7
+				notes = [93]; // A6
 			}
 			duration = 0.5;
 			noteObject = new NoteModel_MidiCSL({

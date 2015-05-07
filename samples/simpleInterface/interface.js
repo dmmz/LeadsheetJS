@@ -52,7 +52,7 @@ define(function(require) {
 	// tried for unfolding
 	// var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
 	var songModel = LJS.converters.MusicCSLJson.SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
-	// initPlayerModule(songModel);
+	initPlayerModule(songModel);
 
 
 	new LJS.HistoryC(songModel);
