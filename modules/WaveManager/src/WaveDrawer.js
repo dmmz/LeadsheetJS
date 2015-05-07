@@ -147,7 +147,8 @@ define([
         this.cursor = new CursorModel(audio.getDuration());
     };
     WaveDrawer.prototype.drawAudio = function(barTimesMng) {
-        
+        //important to reset each time we draw
+        this.waveBarDimensions = [];
         var numBars = barTimesMng.getLength();
         var area, dim, bar, barTime = 0,
             sliceSong = 1 / numBars,
@@ -264,7 +265,6 @@ define([
             }
             //Doing the inverse of what we do in getCursorDims
         var cursorBars = getBarsInPath(coords);
-
         if (cursorBars[0] != null && cursorBars[1] != null) {
             var pos1 = this._getAudioTimeFromPos(coords.x, cursorBars[0]);
             var pos2 = this._getAudioTimeFromPos(coords.xe, cursorBars[1]);
