@@ -190,6 +190,9 @@ define(function(require) {
 			order: 1
 		});
 		menu.controller.loadStateTab();
+		if (typeof menu.model.getCurrentMenu() === "undefined") {
+			menu.controller.activeMenu('File');
+		}
 	});
 	$.publish('ToViewer-draw', songModel);
 

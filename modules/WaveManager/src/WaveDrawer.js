@@ -1,10 +1,11 @@
 define([
+    'jquery',
     'modules/core/src/SongBarsIterator',
     'modules/Cursor/src/CursorModel',
     'utils/EditionUtils',
     'modules/WaveManager/src/WaveBarView',
     'pubsub'
-], function(SongBarsIterator, CursorModel, EditionUtils, WaveBarView,pubsub) {
+], function($, SongBarsIterator, CursorModel, EditionUtils, WaveBarView, pubsub) {
     function WaveDrawer(viewer, params, waveMng) {
             params = params || {};
             if (!params.pixelRatio) {
@@ -24,9 +25,9 @@ define([
             this._adaptViewer();
             this._initSubscribe();
         }
-    /**
-     * update viewer dimensions if needed (space between lines and margin top)
-     */
+        /**
+         * update viewer dimensions if needed (space between lines and margin top)
+         */
     WaveDrawer.prototype._adaptViewer = function() {
         if (this.topAudio > 0) {
             this.viewer.setLineMarginTop(this.topAudio);
@@ -39,13 +40,13 @@ define([
     };
     WaveDrawer.prototype._initSubscribe = function() {
         var self = this;
-        $.subscribe('CanvasLayer-updateCursors',function(el,coords){
+        $.subscribe('CanvasLayer-updateCursors', function(el, coords) {
             self.updateCursor(coords);
         });
     };
     /**
      * @param  {Float} time      in seconds (e.g. 4.54)
-     * @param  {Integer} barIndex number of bar in which the cursor is (should be previously calculated) 
+     * @param  {Integer} barIndex number of bar in which the cursor is (should be previously calculated)
      * @return {Object}          e.g. { x: 12, y: 23, w:5, h:5}
      */
     WaveDrawer.prototype._getAudioPosFromTime = function(time, barIndex) {
@@ -63,8 +64,8 @@ define([
 
     /**
      * @param  {Integer} x        coordinate x
-     * @param  {Integer} barIndex number of bar in which the cursor is (should be previously calculated) 
-     * @return {Float}  time in seconds (e.g. 3.94)          
+     * @param  {Integer} barIndex number of bar in which the cursor is (should be previously calculated)
+     * @return {Float}  time in seconds (e.g. 3.94)
      */
     WaveDrawer.prototype._getAudioTimeFromPos = function(x, barIndex) {
         var timeBoundaries = this.waveMng.barTimesMng.getTimeLimits(barIndex);
@@ -77,16 +78,16 @@ define([
     };
 
     /**
-     * 
+     *
      * @param  {Float} time     in seconds (e.g. 1.23)
-     * @param  {Integer} barIndex number of bar in which the cursor is (should be previously calculated) 
+     * @param  {Integer} barIndex number of bar in which the cursor is (should be previously calculated)
      *                            if not specfied, it will take current bar number from barTimesMng (this is used for example, when playing)
      * @return {Object}          e.g. { x: 12, y: 23, w:5, h:5}
      */
     WaveDrawer.prototype._getCursorDims = function(time, barIndex) {
         barIndex = barIndex || this.waveMng.barTimesMng.index;
-        return this._getAudioPosFromTime(time,barIndex);
-        
+        return this._getAudioPosFromTime(time, barIndex);
+
     };
     WaveDrawer.prototype.updateCursorPlaying = function(time) {
         this.cursorPos = this._getCursorDims(time);
@@ -94,8 +95,8 @@ define([
 
     WaveDrawer.prototype.getAreasFromCursor = function() {
         var barTimesMng = this.waveMng.barTimesMng,
-        startTime = this.cursor.getStart(),
-        endTime = this.cursor.getEnd();
+            startTime = this.cursor.getStart(),
+            endTime = this.cursor.getEnd();
         var startBar = barTimesMng.getIndexByTime(startTime);
         var endBar = barTimesMng.getIndexByTime(endTime);
         var areas = EditionUtils.getElementsAreaFromCursor(this.waveBarDimensions, [startBar, endBar]);
@@ -127,7 +128,7 @@ define([
         ctx.stroke();
     };
     WaveDrawer.prototype.drawSelection = function(ctx) {
-       var saveFillColor = ctx.fillStyle;
+        var saveFillColor = ctx.fillStyle;
         ctx.fillStyle = "#9900FF";
         ctx.globalAlpha = 0.2;
         var areas = this.getAreasFromCursor();
@@ -141,13 +142,13 @@ define([
         }
         ctx.fillStyle = saveFillColor;
         ctx.globalAlpha = 1;
-    
+
     };
     WaveDrawer.prototype.newCursor = function(audio) {
         this.cursor = new CursorModel(audio.getDuration());
     };
     WaveDrawer.prototype.drawAudio = function(barTimesMng) {
-        
+
         var numBars = barTimesMng.getLength();
         var area, dim, bar, barTime = 0,
             sliceSong = 1 / numBars,
@@ -168,11 +169,11 @@ define([
             this.drawPeaks(peaks, area, this.color[toggleColor], this.viewer);
             toggleColor = (toggleColor + 1) % 2;
         }
-         this.viewer.canvasLayer.addElement('audioCursor', this);
+        this.viewer.canvasLayer.addElement('audioCursor', this);
         this.updateCursorPlaying(0);
         this.viewer.canvasLayer.refresh();
     };
- 
+
     WaveDrawer.prototype._drawMargins = function(area, ctx) {
         ctx.beginPath();
         ctx.moveTo(area.x, area.y);
