@@ -62,6 +62,7 @@ define([
 		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
 			self.viewer.canvasLayer.addElement(self.elemName, self);
 			if (self.cursor.getEditable()) {
+				self.drawEditableChord();
 				//self.refresh(viewer);
 			} else if (self.chordSpace.length === 0) {
 				// case chordspace have never been drawn, we create it so isInPath function can work
@@ -135,7 +136,7 @@ define([
 			return;
 		}
 		var barNum = this.chordSpace[this.cursor.getPos()[0]].barNumber;
-		var startBeat = this.songModel.getStartBeatFromBarNumber(barNum+inc) - 1;
+		var startBeat = this.songModel.getStartBeatFromBarNumber(barNum + inc) - 1;
 
 		if (barNum === 0 && inc === -1) {
 			this.cursor.setPos(0);
@@ -202,6 +203,10 @@ define([
 		});
 
 	};
+	/**
+	 * Draws blue cursor on chords (called by CanvasLayer)
+	 * @param  {CanvasContext} ctx 
+	 */
 	ChordSpaceManager.prototype.draw = function(ctx) {
 		var pos = this.cursor.getPos();
 		if (pos[0]!== false){

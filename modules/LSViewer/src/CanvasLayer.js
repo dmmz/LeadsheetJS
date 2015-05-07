@@ -94,6 +94,7 @@ define(function() {
 			$.publish('CanvasLayer-mousemove', xy);
 		});
 		$.subscribe('CanvasLayer-refresh',function(){
+			//console.log("CanvasLayer-refresh");
 			self.viewer.canvasLayer.refresh();
 		});
 
