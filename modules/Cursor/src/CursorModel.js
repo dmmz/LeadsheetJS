@@ -64,7 +64,7 @@ define([
 	};
 
 	/**
-	 * This function check that a position is valid, it means that it's between 0 and listLength
+	 * This function checks that a position is valid, it means that it's between 0 and listLength
 	 * @param  {Int|Array} position can be a int or an array of two Int
 	 * @return {Array}     A new position array clamped
 	 */
@@ -110,10 +110,10 @@ define([
 		this.setIndexPos(this.sideSelected, newPos);
 	};
 
-	CursorModel.prototype.getRelativeCursor = function(index) {
+/*	CursorModel.prototype.getRelativeCursor = function(index) {
 		var newSelected = [this.pos[0] - index, this.pos[1] - index];
 		return new CursorModel(newSelected);
-	};
+	};*/
 
 	CursorModel.prototype.reset = function() {
 		this.setPos([0, 0]);

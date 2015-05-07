@@ -34,6 +34,9 @@ define([
 				//$.publish('ToViewer-draw', self.songModel);
 			}			
 		});
+		$.subscribe('CanvasLayer-updateCursors',function(el,coords){
+			self.updateCursor(coords);
+		});
 		/*$.subscribe('CanvasLayer-selection', function(el, position) {
 			var inPath = self.isInPath(position.x, position.y);
 			if (inPath !== false) {

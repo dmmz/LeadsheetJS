@@ -80,7 +80,8 @@ define(['modules/WaveManager/src/WaveAudio',
             self.audio.load(audioData, self, function() {
                 self.isLoaded = true;
                 self.barTimesMng.setBarTimes(self.calculateBarTimes());
-                self.drawer.drawAudio(self.audio, self.barTimesMng);
+                self.drawer.newCursor(self.audio);
+                self.drawer.drawAudio(self.barTimesMng);
             });
         };
         xhr.send();

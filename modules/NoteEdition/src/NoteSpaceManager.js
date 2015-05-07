@@ -42,6 +42,7 @@ define([
 		});
 
 		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
+			
 			self.viewer.canvasLayer.addElement('scoreCursor', self);
 			if (self.cursor.getEditable()) {
 				self.noteSpace = self.createNoteSpace(self.viewer);
@@ -49,11 +50,14 @@ define([
 				//self.refresh(true);
 			}
 		});
+		$.subscribe('CanvasLayer-updateCursors',function(el,coords){
+			self.updateCursor(coords);
+		});
 	};
-	//CANVASLAYER ELEMENT METHOD
 	NoteSpaceManager.prototype.updateCursor = function(coords) {
 		this.cursor.setPos(null);
 		var notes = this.getNotesInPath(coords);
+
 		if (notes) {
 			this.cursor.setEditable(true);
 			this.cursor.setPos(notes);
@@ -128,21 +132,21 @@ define([
 
 	//CANVASLAYER ELEMENT METHOD
 	NoteSpaceManager.prototype.draw = function(ctx) {
-		var self = this;
 		if (this.noteSpace.length == 0) return;
-		var position = self.cursor.getPos();
+		var position = this.cursor.getPos();
 		var saveFillColor = ctx.fillStyle;
 		ctx.fillStyle = "#0099FF";
 		ctx.globalAlpha = 0.2;
 		var currentNoteSpace;
 		var areas = [];
+
 		if (position[0] !== null){
 			if (position[0] === position[1]) {
 				areas.push({
-					x: self.noteSpace[position[0]].position.x,
-					y: self.noteSpace[position[0]].position.y,
-					w: self.noteSpace[position[0]].position.w,
-					h: self.noteSpace[position[0]].position.h
+					x: this.noteSpace[position[0]].position.x,
+					y: this.noteSpace[position[0]].position.y,
+					w: this.noteSpace[position[0]].position.w,
+					h: this.noteSpace[position[0]].position.h
 				});
 			} else {
 				var cursorDims = {
@@ -151,7 +155,7 @@ define([
 					top: this.CURSOR_MARGIN_TOP,
 					height: this.CURSOR_HEIGHT
 				};
-				areas = EditionUtils.getElementsAreaFromCursor(self.viewer.noteViews, position, cursorDims);
+				areas = EditionUtils.getElementsAreaFromCursor(this.viewer.noteViews, position, cursorDims);
 			}
 			for (i = 0, c = areas.length; i < c; i++) {
 				ctx.fillRect(

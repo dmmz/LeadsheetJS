@@ -3,7 +3,8 @@ define([
     'modules/Cursor/src/CursorModel',
     'utils/EditionUtils',
     'modules/WaveManager/src/WaveBarView',
-], function(SongBarsIterator, CursorModel, EditionUtils, WaveBarView) {
+    'pubsub'
+], function(SongBarsIterator, CursorModel, EditionUtils, WaveBarView,pubsub) {
     function WaveDrawer(viewer, params, waveMng) {
             params = params || {};
             if (!params.pixelRatio) {
@@ -21,6 +22,7 @@ define([
             this.viewer = viewer;
             this.waveMng = waveMng;
             this._adaptViewer();
+            this._initSubscribe();
         }
     /**
      * update viewer dimensions if needed (space between lines and margin top)
@@ -34,6 +36,12 @@ define([
                 this.viewer.setLineMarginTop(distance, true);
             }
         }
+    };
+    WaveDrawer.prototype._initSubscribe = function() {
+        var self = this;
+        $.subscribe('CanvasLayer-updateCursors',function(el,coords){
+            self.updateCursor(coords);
+        });
     };
     /**
      * @param  {Float} time      in seconds (e.g. 4.54)
@@ -135,8 +143,11 @@ define([
         ctx.globalAlpha = 1;
     
     };
-    WaveDrawer.prototype.drawAudio = function(audio, barTimesMng) {
+    WaveDrawer.prototype.newCursor = function(audio) {
         this.cursor = new CursorModel(audio.getDuration());
+    };
+    WaveDrawer.prototype.drawAudio = function(barTimesMng) {
+        
         var numBars = barTimesMng.getLength();
         var area, dim, bar, barTime = 0,
             sliceSong = 1 / numBars,
@@ -153,7 +164,7 @@ define([
             );
             this.waveBarDimensions.push(waveBarView);
             area = waveBarView.getArea();
-            peaks = audio.getPeaks(area.w, start, start + sliceSong);
+            peaks = this.waveMng.audio.getPeaks(area.w, start, start + sliceSong);
             this.drawPeaks(peaks, area, this.color[toggleColor], this.viewer);
             toggleColor = (toggleColor + 1) % 2;
         }

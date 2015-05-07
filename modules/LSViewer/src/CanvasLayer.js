@@ -59,12 +59,9 @@ define(function() {
 		function selection() {
 			var elemsActives = [];
 			var cursorPos;
+			$.publish('CanvasLayer-updateCursors',self.coords);
 			for (var name in self.elems) {
-				// if (name == 'audioCursor'){
-				// 	console.warn(" audioCursor ignored");
-				// 	continue;
-				// }  
-				self.elems[name].updateCursor(self.coords);
+
 				//check elems actives
 				cursorPos = self.elems[name].cursor.getPos();
 
@@ -95,6 +92,9 @@ define(function() {
 				selection();
 			}
 			$.publish('CanvasLayer-mousemove', xy);
+		});
+		$.subscribe('CanvasLayer-refresh',function(){
+			self.viewer.canvasLayer.refresh();
 		});
 
 	};
@@ -142,6 +142,7 @@ define(function() {
 				this.elems[name].drawSelection(this.ctx);
 			}
 		}
+
 		this.viewer._resetScale(this.ctx);
 		if (this.mouseDown) {
 			var style = this.ctx.strokeStyle;

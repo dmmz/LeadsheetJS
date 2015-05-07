@@ -1,4 +1,7 @@
 define(function() {
+	/**
+	 * We save the time in which each bar finishes
+	 */
 	function BarTimesManager() {
 		this.index = 0;
 		this.barTimes = [];
