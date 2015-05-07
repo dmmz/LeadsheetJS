@@ -52,7 +52,7 @@ define(function(require) {
 	// tried for unfolding
 	// var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
 	var songModel = LJS.converters.MusicCSLJson.SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
-	initPlayerModule(songModel);
+	// initPlayerModule(songModel);
 
 
 	new LJS.HistoryC(songModel);
@@ -133,7 +133,6 @@ define(function(require) {
 			view: noteEdition.view,
 			order: 2
 		});
-		menu.controller.activeMenu('Notes');
 	});
 
 	var params = {
@@ -190,6 +189,7 @@ define(function(require) {
 			view: fileEdition.view,
 			order: 1
 		});
+		menu.controller.loadStateTab();
 	});
 	$.publish('ToViewer-draw', songModel);
 

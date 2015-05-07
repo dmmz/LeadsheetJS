@@ -4,8 +4,9 @@ define([
 	'modules/ChordEdition/src/ChordSpaceView',
 	'modules/Cursor/src/CursorModel',
 	'utils/UserLog',
+	'jquery',
 	'pubsub',
-], function(SongModel, ChordModel, ChordSpaceView, CursorModel, UserLog, pubsub) {
+], function(SongModel, ChordModel, ChordSpaceView, CursorModel, UserLog, $, pubsub) {
 
 	function ChordSpaceManager(songModel, cursor) {
 		this.songModel = songModel || new SongModel();

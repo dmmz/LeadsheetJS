@@ -5,8 +5,9 @@ define([
 	'modules/HarmonicAnalysis/src/HarmonicAnalysisAPI',
 	'modules/Tag/src/TagManager',
 	'utils/UserLog',
+	'jquery',
 	'pubsub',
-], function(Mustache, SongModel, SongModel_CSLJson, HarmonicAnalysisAPI, TagManager, UserLog, pubsub) {
+], function(Mustache, SongModel, SongModel_CSLJson, HarmonicAnalysisAPI, TagManager, UserLog, $, pubsub) {
 
 	function HarmonicAnalysisController(songModel, view) {
 		this.songModel = songModel;

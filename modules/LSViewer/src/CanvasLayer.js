@@ -1,4 +1,4 @@
-define(function() {
+define(['jquery','pubsub'], function($, pubsub) {
 	function CanvasLayer(viewer) {
 		if (!viewer.canvas) {
 			throw "LSViewer cannot create layer because canvas does not exist";

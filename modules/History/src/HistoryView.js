@@ -1,8 +1,9 @@
 define([
 	'mustache',
 	'utils/UserLog',
+	'jquery',
 	'pubsub',
-], function(Mustache, SongModel, UserLog, pubsub) {
+], function(Mustache, UserLog, $, pubsub) {
 
 	function HistoryView(parentHTML) {
 		this.el = undefined;
@@ -90,7 +91,7 @@ define([
 	HistoryView.prototype.initController = function() {
 		var self = this;
 		this.parentHTML.on('click', ".history_ul li", function() {
-			var indexItem = parseInt($(this).attr('data-history'),10);
+			var indexItem = parseInt($(this).attr('data-history'), 10);
 			$.publish('HistoryView-selectHistory', indexItem);
 		});
 	};

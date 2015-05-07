@@ -1,9 +1,10 @@
 define([
+	"jquery",
 	'mustache',
 	'modules/core/src/SongModel',
 	'utils/UserLog',
 	'pubsub',
-], function(Mustache, SongModel, UserLog, pubsub) {
+], function($, Mustache, SongModel, UserLog, pubsub) {
 
 	function CursorController(songModel, model, view) {
 		this.songModel = songModel;

@@ -2,9 +2,10 @@ define([
 	'mustache',
 	'modules/core/src/SongModel',
 	'utils/UserLog',
+	'jquery',
 	'pubsub',
 	'text!modules/StructureEdition/src/StructureEditionTemplate.html',
-], function(Mustache, SongModel, UserLog, pubsub, StructureEditionTemplate) {
+], function(Mustache, SongModel, UserLog, $, pubsub, StructureEditionTemplate) {
 
 	function StructureEditionView(imgPath) {
 		this.el = undefined;
@@ -15,7 +16,9 @@ define([
 
 	StructureEditionView.prototype.render = function(parentHTML, callback) {
 		//if (typeof this.el === "undefined" || (typeof this.el !== "undefined" && force === true)) {
-		var rendered = Mustache.render(StructureEditionTemplate,{'imgPath':this.imgPath});
+		var rendered = Mustache.render(StructureEditionTemplate, {
+			'imgPath': this.imgPath
+		});
 		if (typeof parentHTML !== "undefined") {
 			parentHTML.innerHTML = rendered;
 		}

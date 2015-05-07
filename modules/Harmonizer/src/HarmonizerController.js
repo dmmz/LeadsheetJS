@@ -4,8 +4,9 @@ define([
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
 	'modules/Harmonizer/src/HarmonizerAPI',
 	'utils/UserLog',
+	'jquery',
 	'pubsub',
-], function(Mustache, SongModel, SongModel_CSLJson, HarmonizerAPI, UserLog, pubsub) {
+], function(Mustache, SongModel, SongModel_CSLJson, HarmonizerAPI, UserLog, $, pubsub) {
 
 	function HarmonizerController(songModel, view) {
 		this.songModel = songModel;

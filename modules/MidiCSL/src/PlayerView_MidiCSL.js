@@ -1,10 +1,11 @@
 define([
+	'jquery',
 	'mustache',
 	'utils/UserLog',
 	'pubsub',
 	'bootstrap',
 	'text!modules/MidiCSL/src/PlayerTemplate_MidiCSL.html',
-], function(Mustache, UserLog, pubsub, bootstrap, PlayerTemplate_MidiCSL) {
+], function($, Mustache, UserLog, pubsub, bootstrap, PlayerTemplate_MidiCSL) {
 
 	function PlayerView(parentHTML, imgPath, option) {
 		this.displayMetronome = (typeof(option) !== "undefined" && typeof(option.displayMetronome) !== "undefined") ? option.displayMetronome : false;

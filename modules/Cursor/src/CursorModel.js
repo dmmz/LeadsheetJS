@@ -1,6 +1,7 @@
 define([
+	'jquery',
 	'pubsub',
-], function(pubsub) {
+], function($, pubsub) {
 
 	/**
 	 * Cursor consists of a pos array that contain index start and index end of position
@@ -13,7 +14,7 @@ define([
 		if (!(optCursor instanceof Array)) optCursor = [optCursor, optCursor];
 
 		this.sideSelected = 1;
-		this.isEditable = (typeof isEditable !== "undefined") ? isEditable: true;
+		this.isEditable = (typeof isEditable !== "undefined") ? isEditable : true;
 		this.setPos(optCursor);
 		// this.color = color || "#0099FF";
 	}
