@@ -17,7 +17,7 @@ define([
 		//when 
 		$.subscribe("ToViewer-draw", function(el, songModel) {
 			if (waveMng.isReady()) {
-				waveMng.drawer.drawAudio(waveMng);
+				waveMng.drawer.drawAudio(waveMng.barTimesMng);
 			}
 		});
 	}

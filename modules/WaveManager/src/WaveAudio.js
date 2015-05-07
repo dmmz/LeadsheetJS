@@ -48,6 +48,9 @@ define(function() {
 			}
 		);
 	};
+	WaveAudio.prototype.getDuration = function() {
+		return this.buffer.duration;
+	};
 	WaveAudio.prototype.getPeaks = function(length, startPoint, endPoint) {
 
 		startPoint = startPoint || 0;

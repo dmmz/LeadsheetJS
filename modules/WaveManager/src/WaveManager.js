@@ -1,9 +1,11 @@
 define(['modules/WaveManager/src/WaveAudio',
-    'modules/WaveManager/src/WaveDrawer'
-], function(WaveAudio, WaveDrawer) {
+    'modules/WaveManager/src/WaveDrawer',
+    'modules/WaveManager/src/BarTimesManager',
+    'modules/core/src/SongBarsIterator'
+], function(WaveAudio, WaveDrawer, BarTimesManager, SongBarsIterator) {
     /**
      * @param {SongModel} song
-     * @param {CursorModel} cModel
+     * @param {cursorNotes} cModel     // notes cursor, it is updated when playing
      * @param {LSViewer} viewer
      * @param {Object} params :
      *   - showHalfWave: show only the half of the waveform like in soundcloud
@@ -24,13 +26,11 @@ define(['modules/WaveManager/src/WaveAudio',
 
         params = params || {};
 
-        this.waveBarDimensions = [];
-        this.barTimes = [];
-        this.currBar = 0;
+        this.barTimesMng = new BarTimesManager();
         this.song = song;
-        this.cursorModel = cModel;
+        this.cursorNotes = cModel;
         this.isLoaded = false;
-
+        
         this.audio = new WaveAudio();
 
         var paramsDrawer = {
@@ -41,21 +41,34 @@ define(['modules/WaveManager/src/WaveAudio',
             heightAudio: params.heightAudio,
             marginCursor: params.marginCursor
         };
-        this.drawer = new WaveDrawer(viewer, paramsDrawer);
+        this.drawer = new WaveDrawer(viewer, paramsDrawer, this);
     }
 
     WaveManager.prototype.isReady = function() {
         return this.isLoaded;
     };
 
-    WaveManager.prototype._updateCurrBarByTime = function(time) {
-        while (this.currBar < this.barTimes.length && this.barTimes[this.currBar] < time) {
-            this.currBar++;
-        }
-        return this.currBar;
+
+    
+    WaveManager.prototype._getBarTime = function(songIt, barTime) {
+        return barTime + songIt.getBarTimeSignature().getBeats() * this.audio.beatDuration;
     };
 
-    WaveManager.prototype.load = function(url /*, callback*/ ) {
+    WaveManager.prototype.calculateBarTimes = function() {
+        var numBars = this.song.getComponent("bars").getTotal(),
+        songIt = new SongBarsIterator(this.song),
+        barTime = 0,
+        barTimes = [];
+
+        while (songIt.hasNext()) {
+            barTime = this._getBarTime(songIt, barTime);
+            barTimes.push(barTime);
+            songIt.next();
+        }
+        return barTimes;
+    };
+
+    WaveManager.prototype.load = function(url ) {
         var self = this;
         var xhr = new XMLHttpRequest();
         xhr.open("GET", url);
@@ -66,10 +79,9 @@ define(['modules/WaveManager/src/WaveAudio',
             var audioData = xhr.response;
             self.audio.load(audioData, self, function() {
                 self.isLoaded = true;
-                self.drawer.drawAudio(self);
-                // if (typeof callback !== "undefined") {
-                //     callback();
-                // }
+                self.barTimesMng.setBarTimes(self.calculateBarTimes());
+                self.drawer.newCursor(self.audio);
+                self.drawer.drawAudio(self.barTimesMng);
             });
         };
         xhr.send();
@@ -91,14 +103,14 @@ define(['modules/WaveManager/src/WaveAudio',
                 if (self.getPlayedTime() >= timeStep + minBeatStep) {
                     iNote = noteMng.getPrevIndexNoteByBeat(self.getPlayedTime() / self.audio.beatDuration + 1);
                     if (iNote != prevINote) {
-                        self.cursorModel.setPos(iNote);
+                        self.cursorNotes.setPos(iNote);
                         prevINote = iNote;
                     }
                     timeStep += minBeatStep;
                 }
                 time = self.getPlayedTime();
-                self._updateCurrBarByTime(time);
-                self.drawer._updateCursor(self.currBar, self.barTimes, time);
+                self.barTimesMng.updateCurrBarByTime(time);
+                self.drawer.updateCursorPlaying(time);
                 self.drawer.viewer.canvasLayer.refresh();
                 requestFrame(frame);
             }
@@ -127,9 +139,7 @@ define(['modules/WaveManager/src/WaveAudio',
         return this.audio.audioCtx.currentTime - this.startTime;
     };
 
-    WaveManager.prototype.getBarTime = function(songIt, barTime) {
-        return barTime + songIt.getBarTimeSignature().getBeats() * this.audio.beatDuration;
-    };
+   
 
     return WaveManager;
 });
