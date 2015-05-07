@@ -166,8 +166,8 @@ define(function() {
 		for (var name in this.elems) {
 		//	this.elems[name].draw(this.ctx);
 			//TODO refactor, we are doing this only to make it work, but it's bad code
-			if (typeof this.elems[name].drawSelection === 'function'){
-				this.elems[name].drawSelection(this.ctx);
+			if (typeof this.elems[name].drawCursor === 'function'){
+				this.elems[name].drawCursor(this.ctx);
 			}
 		}
 

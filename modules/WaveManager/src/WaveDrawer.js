@@ -120,13 +120,13 @@ define([
         return areas;
     };
     //CANVASLAYER ELEMENT METHOD
-    WaveDrawer.prototype.draw = function(ctx) {
+    WaveDrawer.prototype.drawCursor = function(ctx) {
         ctx.beginPath();
         ctx.moveTo(this.cursorPos.x, this.cursorPos.y);
         ctx.lineTo(this.cursorPos.x, this.cursorPos.y + this.cursorPos.h);
         ctx.stroke();
     };
-    WaveDrawer.prototype.drawSelection = function(ctx) {
+    WaveDrawer.prototype.draw = function(ctx) {
        var saveFillColor = ctx.fillStyle;
         ctx.fillStyle = "#9900FF";
         ctx.globalAlpha = 0.2;
