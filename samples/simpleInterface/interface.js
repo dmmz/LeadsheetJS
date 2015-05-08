@@ -31,6 +31,10 @@ require.config({
 
 define(function(require) {
 
+	var KeyboardManager = require('modules/Edition/src/KeyboardManager');
+	new KeyboardManager(true); 
+
+
 	var WaveManager = require('modules/WaveManager/src/WaveManager');
 	var WaveManagerView = require('modules/WaveManager/src/WaveManagerView');
 	var WaveManagerController = require('modules/WaveManager/src/WaveManagerController');
@@ -98,13 +102,13 @@ define(function(require) {
 
 	// Edit notes on view
 	var cursorNote = new LJS.Cursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow');
-	var noteEdition = new LJS.NoteEdition(songModel, cursorNote.controller.model, myApp.viewer, '/modules/NoteEdition/img');
+	// var noteEdition = new LJS.NoteEdition(songModel, cursorNote.controller.model, myApp.viewer, '/modules/NoteEdition/img');
 
-	// Edit chords on view
-	var cursorChord = new LJS.Cursor(songModel.getSongTotalBeats(), songModel, 'chords', 'tab');
-	cursorChord.controller.model.setEditable(false);
+	// // Edit chords on view
+	// var cursorChord = new LJS.Cursor(songModel.getSongTotalBeats(), songModel, 'chords', 'tab');
+	// cursorChord.controller.model.setEditable(false);
 
-	var chordEdition = new LJS.ChordEdition(songModel, cursorChord.controller.model, myApp.viewer, '/modules/NoteEdition/img');
+	// var chordEdition = new LJS.ChordEdition(songModel, cursorChord.controller.model, myApp.viewer, '/modules/NoteEdition/img');
 
 	// Harmonize menu
 	var harm = new LJS.Harmonizer(songModel, menu.model);
@@ -117,7 +121,7 @@ define(function(require) {
 	var constraint = new LJS.Constraint(songModel);
 
 	//bars edition 
-	var structEdition = new LJS.StructureEdition(songModel, cursorNote.controller.model, '/modules/StructureEdition/img');
+//	var structEdition = new LJS.StructureEdition(songModel, cursorNote.controller.model, '/modules/StructureEdition/img');
 
 
 	// Edit files menu
@@ -130,34 +134,34 @@ define(function(require) {
       heightAudio: 75/*,
       marginCursor: 20*/
     };
-    var waveMng = new WaveManager(songModel, cursorNote.controller.model, myApp.viewer, params);
-    //noteSpaceManager.refresh();
-    waveMng.load('/tests/audio/solar.wav');
-	var wmc = new WaveManagerController(waveMng);
+ //    var waveMng = new WaveManager(songModel, cursorNote.controller.model, myApp.viewer, params);
+ //    //noteSpaceManager.refresh();
+ //    waveMng.load('/tests/audio/solar.wav');
+	// var wmc = new WaveManagerController(waveMng);
 
-	noteEdition.view.render(undefined, function() {
-		menu.model.addMenu({
-			title: 'Notes',
-			view: noteEdition.view,
-			order: 2
-		});
-		menu.controller.activeMenu('Notes');
-	});
+	// noteEdition.view.render(undefined, function() {
+	// 	menu.model.addMenu({
+	// 		title: 'Notes',
+	// 		view: noteEdition.view,
+	// 		order: 2
+	// 	});
+	// 	menu.controller.activeMenu('Notes');
+	// });
 
-	chordEdition.view.render(undefined, function() {
-		menu.model.addMenu({
-			title: 'Chords',
-			view: chordEdition.view,
-			order: 3
-		});
-	});
-	structEdition.view.render(undefined, function() {
-		menu.model.addMenu({
-			title: 'Structure',
-			view: structEdition.view,
-			order: 4
-		});
-	});
+	// chordEdition.view.render(undefined, function() {
+	// 	menu.model.addMenu({
+	// 		title: 'Chords',
+	// 		view: chordEdition.view,
+	// 		order: 3
+	// 	});
+	// });
+	// structEdition.view.render(undefined, function() {
+	// 	menu.model.addMenu({
+	// 		title: 'Structure',
+	// 		view: structEdition.view,
+	// 		order: 4
+	// 	});
+	// });
 	constraint.view.render(undefined, function() {
 		menu.model.addMenu({
 			title: 'Constraint',
