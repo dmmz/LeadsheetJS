@@ -102,7 +102,7 @@ define(function(require) {
 
 	// Edit notes on view
 	var cursorNote = new LJS.Cursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow');
-	// var noteEdition = new LJS.NoteEdition(songModel, cursorNote.controller.model, myApp.viewer, '/modules/NoteEdition/img');
+	var noteEdition = new LJS.NoteEdition(songModel, cursorNote.controller.model, myApp.viewer, '/modules/NoteEdition/img');
 
 	// // Edit chords on view
 	// var cursorChord = new LJS.Cursor(songModel.getSongTotalBeats(), songModel, 'chords', 'tab');

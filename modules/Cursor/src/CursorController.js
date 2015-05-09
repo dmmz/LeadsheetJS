@@ -16,17 +16,15 @@ define([
 	 */
 	CursorController.prototype.initSubscribe = function() {
 		var self = this;
-		$.subscribe('ToAllCursors-setEditable', function(el, isEditable) {
-			self.setEditable(isEditable);
-		});
-		$.subscribe('Cursor-setCursor' + this.view.id, function(el, index) {
-			self.setCursor(index);
-		});
-		$.subscribe('Cursor-expandSelected' + this.view.id, function(el, inc) {
-			self.expandSelected(inc);
-		});
-		$.subscribe('Cursor-moveCursor' + this.view.id, function(el, inc) {
-			self.moveCursor(inc);
+		
+		// TODO: revise
+		//  $.subscribe('ToAllCursors-setEditable', function(el, isEditable) {
+		// 	self.setEditable(isEditable);
+		// });
+		$.subscribe('Cursor-' + this.view.id, function(el, fn, param) {
+			self[fn].call(self,param);
+			$.publish('CanvasLayer-refresh', 'scoreCursor');
+
 		});
 	};
 
@@ -43,7 +41,6 @@ define([
 
 		this.model.setPos(index);
 		//TODO: change by 'canvaslayer-refresh', working for notes but cannot do it yet because we need to solve some problems for the chords editions
-		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	CursorController.prototype.expandSelected = function(inc) {
@@ -51,13 +48,12 @@ define([
 			throw 'CursorController - expandSelected - inc is not correct ' + inc;
 		}
 		this.model.expand(inc);
-		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	CursorController.prototype.moveCursor = function(inc) {
 		this.setCursor(this.model.getEnd() + inc);
 	};
-
+	//TODO: setEditable???
 	CursorController.prototype.setEditable = function(isEditable) {
 		this.model.setEditable(isEditable);
 	};

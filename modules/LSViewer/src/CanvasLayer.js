@@ -61,6 +61,7 @@ define(function() {
 			var cursorPos;
 			//$.publish('CanvasLayer-updateCursors',self.coords);
 			var minY = 999999, maxY = 0, minName, maxName, ys;
+			
 			for (var name in self.elems) {
 				//self.elems[name].updateCursor([null,null]);
 				if (typeof self.elems[name].getYs === 'function'){
@@ -75,6 +76,8 @@ define(function() {
 					}
 				}
 				self.elems[name].cursor.setPos(null);
+				console.log(name);
+				console.log(self.elems[name].cursor.getPos());
 				if (minName && maxName){
 					
 					self.elems[minName].updateCursor(self.coords);
@@ -90,6 +93,8 @@ define(function() {
 					$.publish(name+'-selection', [cursorPos]);
 				}
 			}
+			// console.log(minName);
+			// console.log(maxName);
 			self.viewer.canvasLayer.refresh(minName,maxName);
 
 		}
@@ -114,9 +119,10 @@ define(function() {
 			}
 			$.publish('CanvasLayer-mousemove', xy);
 		});
-		$.subscribe('CanvasLayer-refresh',function(){
+		$.subscribe('CanvasLayer-refresh',function(el,name){
 			//console.log("CanvasLayer-refresh");
-			self.viewer.canvasLayer.refresh();
+
+			self.viewer.canvasLayer.refresh(name);
 		});
 
 	};
@@ -151,12 +157,15 @@ define(function() {
 	CanvasLayer.prototype.addElement = function(name, elem) {
 		this.elems[name] = elem;
 	};
-	CanvasLayer.prototype.removeElement = function(name) {
-		delete this.elems[name];
-	};
+	// CanvasLayer.prototype.removeElement = function(name) {
+	// 	delete this.elems[name];
+	// };
 	CanvasLayer.prototype.refresh = function(name1,name2) {
+		//console.log('refresh');
 		this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 		this.viewer._scale(this.ctx);
+		// console.log(name1+","+name2);
+		// console.log(this.elems);
 		if (name1){
 			this.elems[name1].draw(this.ctx);
 		}

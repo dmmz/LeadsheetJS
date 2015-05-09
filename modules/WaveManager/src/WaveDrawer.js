@@ -1,10 +1,9 @@
 define([
     'modules/core/src/SongBarsIterator',
     'modules/Cursor/src/CursorModel',
-    'utils/EditionUtils',
     'modules/WaveManager/src/WaveBarView',
     'pubsub'
-], function(SongBarsIterator, CursorModel, EditionUtils, WaveBarView,pubsub) {
+], function(SongBarsIterator, CursorModel, WaveBarView,pubsub) {
     function WaveDrawer(viewer, params, waveMng) {
             params = params || {};
             if (!params.pixelRatio) {

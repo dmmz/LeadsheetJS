@@ -4,18 +4,25 @@ define([
 	'modules/NoteEdition/src/NoteSpaceView',
 	'modules/Cursor/src/CursorModel',
 	'utils/UserLog',
-	'utils/EditionUtils',
+	'modules/Edition/src/ElementManager',
 	'pubsub',
-], function(SongModel, NoteModel, NoteSpaceView, CursorModel, UserLog, EditionUtils, pubsub) {
+], function(SongModel, NoteModel, NoteSpaceView, CursorModel, UserLog, ElementManager, pubsub) {
 
 	function NoteSpaceManager(songModel, cursor, viewer) {
 
-		if (!viewer || typeof viewer === 'string') {
-			throw "NoteSpaceManager - missing viewer ";
+		if (!songModel) {
+			throw "NoteSpaceManager - missing songModel";
 		}
-		this.songModel = songModel || new SongModel();
-		this.cursor = cursor || new CursorModel();
+		if (!cursor) {
+			throw "NoteSpaceManager - missing cursor";
+		}
+		if (!viewer) {
+			throw "NoteSpaceManager - missing viewer";
+		}
+		this.songModel = songModel;
+		this.cursor = cursor;
 		this.viewer = viewer;
+		this.elemMng= new ElementManager();
 		this.noteSpace = [];
 		this.initSubscribe();
 
@@ -32,44 +39,55 @@ define([
 	NoteSpaceManager.prototype.initSubscribe = function() {
 
 		var self = this;
-		$.subscribe('CanvasLayer-mousemove', function(el, position) {
+		// $.subscribe('CanvasLayer-mousemove', function(el, position) {
 
-			if (self.isInPath(position) !== false) {
-				self.viewer.el.style.cursor = 'pointer';
-			} else {
-				self.viewer.el.style.cursor = 'default';
-			}
-		});
+		// 	if (self.isInPath(position) !== false) {
+		// 		self.viewer.el.style.cursor = 'pointer';
+		// 	} else {
+		// 		self.viewer.el.style.cursor = 'default';
+		// 	}
+		// });
 
 		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
 			
 			self.viewer.canvasLayer.addElement('scoreCursor', self);
-			if (self.cursor.getEditable()) {
-				self.noteSpace = self.createNoteSpace(self.viewer);
-				
-				//self.refresh(true);
-			}
+			//if (self.cursor.getEditable()) {
+			self.noteSpace = self.createNoteSpace(self.viewer);
+			//TODO: refactor
+			self.viewer.canvasLayer.refresh('scoreCursor');
 		});
-		$.subscribe('CanvasLayer-updateCursors',function(el,coords){
-			self.updateCursor(coords);
-		});
+		// $.subscribe('CanvasLayer-updateCursors',function(el,coords){
+		// 	self.updateCursor(coords);
+		// });
 	};
+	NoteSpaceManager.prototype.createNoteSpace = function(viewer) {
+		var noteSpace = [];
+		if (typeof viewer.vxfBars === "undefined") {
+			return;
+		}
+		var area;
+
+		for (var i = 0, c = viewer.noteViews.length; i < c; i++) {
+			currentNote = viewer.noteViews[i];
+			area = currentNote.getArea();
+			//apply cursor margin changes
+			area.x -= this.CURSOR_MARGIN_LEFT;
+			area.y += this.CURSOR_MARGIN_TOP;
+			area.w += this.CURSOR_MARGIN_LEFT + this.CURSOR_MARGIN_RIGHT;
+			area.h = this.CURSOR_HEIGHT;
+			noteSpace.push(new NoteSpaceView(area, viewer.scaler));
+		}
+		return noteSpace;
+	};
+
 	NoteSpaceManager.prototype.getYs = function(coords) {
-		var notes = this.getNotesInPath(coords);
-		if (notes){
-			return {
-				topY: this.viewer.noteViews[notes[0]].getArea().y,
-				bottomY: this.viewer.noteViews[notes[1]].getArea().y
-			};
-		}
-		else{
-			return false;
-		}
+		return this.elemMng.getYs(this.noteSpace, coords);
 	};
+
 
 	NoteSpaceManager.prototype.updateCursor = function(coords) {
 		
-		var notes = this.getNotesInPath(coords);
+		var notes = this.elemMng.getElemsInPath(this.noteSpace, coords);
 
 		if (notes) {
 			this.cursor.setEditable(true);
@@ -94,53 +112,8 @@ define([
 	 *                        {x: 10, y:10}
 	 * @return {Boolean}
 	 */
-	NoteSpaceManager.prototype.isInPath = function(area) {
 
-		for (var i in this.noteSpace) {
-			if (typeof this.noteSpace[i] !== "undefined") {
-				if (this.noteSpace[i].isInPath(area)) {
-					return i;
-				}
-			}
-		}
-		return false;
-	};
-	NoteSpaceManager.prototype.getNotesInPath = function(coords) {
-		var note,
-			min = null,
-			max = null;
-		for (var i in this.noteSpace) {
-			if (this.noteSpace[i].isInPath(coords)) {
-				if (min == null) {
-					min = Number(i);
-				}
-				if (max == null || max < i) {
-					max = Number(i);
-				}
-			}
-		}
-		return (min === null && max === null) ? false : [min, max];
-	};
 
-	NoteSpaceManager.prototype.createNoteSpace = function(viewer) {
-		var noteSpace = [];
-		if (typeof viewer.vxfBars === "undefined") {
-			return;
-		}
-		var area;
-
-		for (var i = 0, c = viewer.noteViews.length; i < c; i++) {
-			currentNote = viewer.noteViews[i];
-			area = currentNote.getArea();
-			//apply cursor margin changes
-			area.x -= this.CURSOR_MARGIN_LEFT;
-			area.y += this.CURSOR_MARGIN_TOP;
-			area.w += this.CURSOR_MARGIN_LEFT + this.CURSOR_MARGIN_RIGHT;
-			area.h = this.CURSOR_HEIGHT;
-			noteSpace.push(new NoteSpaceView(area, viewer.scaler));
-		}
-		return noteSpace;
-	};
 
 
 	//CANVASLAYER ELEMENT METHOD
@@ -165,10 +138,10 @@ define([
 				var cursorDims = {
 					right: this.CURSOR_MARGIN_RIGHT,
 					left: this.CURSOR_MARGIN_LEFT,
-					top: this.CURSOR_MARGIN_TOP,
+					top: 0,
 					height: this.CURSOR_HEIGHT
 				};
-				areas = EditionUtils.getElementsAreaFromCursor(this.viewer.noteViews, position, cursorDims);
+				areas = this.elemMng.getElementsAreaFromCursor(this.noteSpace, position, cursorDims);
 			}
 			for (i = 0, c = areas.length; i < c; i++) {
 				ctx.fillRect(
