@@ -10,8 +10,7 @@ define([
 	function NoteEditionView(imgPath) {
 		this.el = undefined;
 		this.imgPath = imgPath;
-		this.initSubscribe();
-		this.initController();
+		this.initKeyboardController();
 	}
 
 	NoteEditionView.prototype.render = function(parentHTML, callback) {
@@ -21,111 +20,22 @@ define([
 			parentHTML.innerHTML = rendered;
 		}
 		this.el = rendered;
-		
-		//$.publish('NoteEditionView-render');
 		if (typeof callback === "function") {
-			callback();
+				callback();
 		}
 		return;
-		//}
 	};
 
-
 	/**
-	 * Publish event after receiving dom events
+	 * manages events that come from the keyboard
 	 */
-	NoteEditionView.prototype.initController = function() {
-		// pitch
-		$('#aug-note').click(function() {
-			$.publish('NoteEditionView-setPitch', 1);
-		});
-		$('#sub-note').click(function() {
-			$.publish('NoteEditionView-setPitch', -1);
-		});
-
-		// Alteration
-		$('#double_flat').click(function() {
-			$.publish('NoteEditionView-addAccidental', {
-				'acc': 'b',
-				'double': true
-			});
-		});
-		$('#flat').click(function() {
-			$.publish('NoteEditionView-addAccidental', 'b');
-		});
-		$('#natural').click(function() {
-			$.publish('NoteEditionView-addAccidental', 'n');
-		});
-		$('#sharp').click(function() {
-			$.publish('NoteEditionView-addAccidental', '#');
-		});
-		$('#double_sharp').click(function() {
-			$.publish('NoteEditionView-addAccidental', {
-				'acc': '#',
-				'double': true
-			});
-		});
-		// Rhythm
-		$('#whole-note').click(function() {
-			$.publish('NoteEditionView-setCurrDuration', 7);
-		});
-		$('#half-note').click(function() {
-			$.publish('NoteEditionView-setCurrDuration', 6);
-		});
-		$('#quarter-note').click(function() {
-			$.publish('NoteEditionView-setCurrDuration', 5);
-		});
-		$('#eight-note').click(function() {
-			$.publish('NoteEditionView-setCurrDuration', 4);
-		});
-		$('#sixteenth-note').click(function() {
-			$.publish('NoteEditionView-setCurrDuration', 3);
-		});
-		$('#thirty-second-note').click(function() {
-			$.publish('NoteEditionView-setCurrDuration', 2);
-		});
-		$('#sixty-four-note').click(function() {
-			$.publish('NoteEditionView-setCurrDuration', 1);
-		});
-		$('#dot').click(function() {
-			$.publish('NoteEditionView-setDot');
-		});
-
-		// Symbol
-		$('#tie-note').click(function() {
-			$.publish('NoteEditionView-setTie');
-		});
-		$('#tuplet').click(function() {
-			$.publish('NoteEditionView-setTuplet', true);
-		});
-
-		// Note
-		$('#silent-note').click(function() {
-			$.publish('NoteEditionView-setSilence');
-		});
-		$('#regular-note').click(function() {
-			$.publish('NoteEditionView-setPitch', 0);
-		});
-		$('#delete-note').click(function() {
-			$.publish('NoteEditionView-setSilence'); // in our editor we want to replace note by silence and not delete note
-		});
-		$('#add-note').click(function() {
-			$.publish('NoteEditionView-addNote');
-		});
-
-		// Selection
-		$('#copy-note').click(function() {
-			$.publish('NoteEditionView-copyNotes');
-		});
-		$('#paste-note').click(function() {
-			$.publish('NoteEditionView-pasteNotes');
-		});
-		var fn;
-		$.subscribe('updown-arrows', function(el,inc){
+	NoteEditionView.prototype.initKeyboardController = function() {
+			$.subscribe('updown-arrows', function(el,inc){
 			fn = 'setPitch';
 			$.publish('NoteEditionView', [fn, inc]);
 		});
 		$.subscribe('pitch-letter-key', function(el,key){
+			console.log('letter-key');
 			fn = 'setPitch';
 			$.publish('NoteEditionView', [fn, key]);
 		});
@@ -141,9 +51,9 @@ define([
 			fn = 'setCurrDuration';
 			$.publish('NoteEditionView', [fn, key]);
 		});
-		$.subscribe('dot-key', function(el,inc){
+		$.subscribe('dot-key', function(el){
 			fn = 'setDot';
-			$.publish('NoteEditionView', [fn, inc]);
+			$.publish('NoteEditionView', fn);
 		});
 		$.subscribe('shift-t-key', function(el){
 			fn = 'setTuplet';
@@ -173,22 +83,130 @@ define([
 			fn = 'pasteNotes';
 			$.publish('NoteEditionView', fn);
 		});
+
 	};
-
-
 	/**
-	 * Subscribe to model events
+	 * Manages events clicked from the menu
+	 * this function is called by MainMenuView, after view is rendered
+	 * 
 	 */
-	NoteEditionView.prototype.initSubscribe = function() {};
+	NoteEditionView.prototype.initController = function() {
+		// pitch
+		var fn;
+		$('#aug-note').click(function() {
+			fn = 'setPitch';
+			$.publish('NoteEditionView', [fn, 1]);
+		});
+		$('#sub-note').click(function() {
+			fn = 'setPitch';
+			$.publish('NoteEditionView', [fn, -1]);
+		});
 
+		// Alteration
+		$('#double_flat').click(function() {
+			fn = 'addAccidental';
+			$.publish('NoteEditionView', [fn, ['b', true]]);
+		});
+		$('#flat').click(function() {
+			fn = 'addAccidental';
+			$.publish('NoteEditionView', [fn, ['b', false]]);
+		});
+		$('#natural').click(function() {
+			fn = 'addAccidental';
+			$.publish('NoteEditionView', [fn, ['n', false]]);
+		});
+		$('#sharp').click(function() {
+			fn = 'addAccidental';
+			$.publish('NoteEditionView', [fn, ['#', false]]);
+		});
+		$('#double_sharp').click(function() {
+			fn = 'addAccidental';
+			$.publish('NoteEditionView', [fn, ['#', true]]);
+		});
+		// Rhythm
+		$('#whole-note').click(function() {
+			fn = 'setCurrDuration';
+			$.publish('NoteEditionView', [fn, 7]);
+		});
+		$('#half-note').click(function() {
+			fn = 'setCurrDuration';
+			$.publish('NoteEditionView', [fn, 6]);
+		});
+		$('#quarter-note').click(function() {
+			fn = 'setCurrDuration';
+			$.publish('NoteEditionView', [fn, 5]);
+		});
+		$('#eight-note').click(function() {
+			fn = 'setCurrDuration';
+			$.publish('NoteEditionView', [fn, 4]);
+		});
+		$('#sixteenth-note').click(function() {
+			fn = 'setCurrDuration';
+			$.publish('NoteEditionView', [fn, 3]);
+		});
+		$('#thirty-second-note').click(function() {
+			fn = 'setCurrDuration';
+			$.publish('NoteEditionView', [fn, 2]);
+		});
+		$('#sixty-four-note').click(function() {
+			fn = 'setCurrDuration';
+			$.publish('NoteEditionView', [fn, 1]);
+		});
+		$('#dot').click(function() {
+			fn = 'setDot';
+			$.publish('NoteEditionView', fn);
+		});
 
-	NoteEditionView.prototype.isEditMode = function(mode) {
-		if (this.editMode === mode) {
-			return true;
-		}
-		return false;
+		// Symbol
+		$('#tie-note').click(function() {
+			fn = 'setTie';
+			$.publish('NoteEditionView', fn);
+		});
+		$('#tuplet').click(function() {
+			fn = 'setTuplet';
+			$.publish('NoteEditionView', fn);
+		});
+
+		// Note
+		$('#silent-note').click(function() {
+			fn = 'setSilence';
+			$.publish('NoteEditionView', fn);
+		});
+		$('#regular-note').click(function() {
+			fn = 'setPitch';
+			$.publish('NoteEditionView', [fn, 0]);
+		});
+		$('#delete-note').click(function() {
+		 	// in our editor we want to replace note by silence and not delete note
+			fn = 'setSilence';
+			$.publish('NoteEditionView', fn);
+		});
+		$('#add-note').click(function() {
+			fn = 'addNote';
+			$.publish('NoteEditionView', fn);
+		});
+
+		// Selection
+		$('#copy-note').click(function() {
+			fn = 'copyNotes';
+			$.publish('NoteEditionView', fn);
+		});
+		$('#paste-note').click(function() {
+			fn = 'pasteNotes';
+			$.publish('NoteEditionView', fn);
+		});
 	};
 
+
+
+	// NoteEditionView.prototype.isEditMode = function(mode) {
+	// 	if (this.editMode === mode) {
+	// 		return true;
+	// 	}
+	// 	return false;
+	// };
+
+	//TODO: useful?? 
 	NoteEditionView.prototype.unactiveView = function(idElement) {
 		this.editMode = '';
 		$.publish('NoteEditionView-unactiveView');

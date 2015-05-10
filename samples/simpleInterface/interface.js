@@ -32,7 +32,7 @@ require.config({
 define(function(require) {
 
 	var KeyboardManager = require('modules/Edition/src/KeyboardManager');
-	new KeyboardManager(true); 
+	new KeyboardManager(false); 
 
 
 	var WaveManager = require('modules/WaveManager/src/WaveManager');
@@ -139,14 +139,14 @@ define(function(require) {
  //    waveMng.load('/tests/audio/solar.wav');
 	// var wmc = new WaveManagerController(waveMng);
 
-	// noteEdition.view.render(undefined, function() {
-	// 	menu.model.addMenu({
-	// 		title: 'Notes',
-	// 		view: noteEdition.view,
-	// 		order: 2
-	// 	});
-	// 	menu.controller.activeMenu('Notes');
-	// });
+	noteEdition.view.render(undefined, function() {
+		menu.model.addMenu({
+			title: 'Notes',
+			view: noteEdition.view,
+			order: 2
+		});
+		menu.controller.activeMenu('Notes');
+	});
 
 	// chordEdition.view.render(undefined, function() {
 	// 	menu.model.addMenu({
