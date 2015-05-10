@@ -75,27 +75,32 @@ define(function() {
 						maxName = name;	
 					}
 				}
-				self.elems[name].cursor.setPos(null);
-				console.log(name);
-				console.log(self.elems[name].cursor.getPos());
-				if (minName && maxName){
-					
-					self.elems[minName].updateCursor(self.coords);
-					self.elems[minName].cursor.setEditable(true);
-					if (maxName != minName){
-						self.elems[maxName].updateCursor(self.coords);
-						self.elems[maxName].cursor.setEditable(true);
-					}
-				}
-				//check elems actives
-				cursorPos = self.elems[name].cursor.getPos();
-				if (cursorPos[0] !== null && cursorPos[1] !== null && self.mouseDown === false) {
-					$.publish(name+'-selection', [cursorPos]);
+
+				self.elems[name].cursor.setEditable(false);
+				self.elems[name].disable();
+
+				// console.log(name);
+				// console.log(self.elems[name].cursor.getPos());
+				
+				// if (cursorPos[0] !== null && cursorPos[1] !== null && self.mouseDown === false) {
+				// 	$.publish(name+'-selection', [cursorPos]);
+				// }
+			}
+			if (minName && maxName){
+				self.elems[minName].updateCursor(self.coords);
+				self.elems[minName].cursor.setEditable(true);
+				self.elems[minName].enable();
+				if (maxName != minName){
+					self.elems[maxName].updateCursor(self.coords);
+					self.elems[maxName].cursor.setEditable(true);
+					self.elems[maxName].enable();
 				}
 			}
+			//check elems actives
+			//cursorPos = self.elems[name].cursor.getPos();
 			// console.log(minName);
 			// console.log(maxName);
-			self.viewer.canvasLayer.refresh(minName,maxName);
+			self.viewer.canvasLayer.refresh();
 
 		}
 		$(this.canvasLayer).mousedown(function(evt) {
@@ -154,30 +159,30 @@ define(function() {
 	 * @param {String} name
 	 * @param {Model} elem any model that has a draw function receiving a ctx
 	 */
-	CanvasLayer.prototype.addElement = function(name, elem) {
-		this.elems[name] = elem;
+	CanvasLayer.prototype.addElement = function(elem) {
+		if (!elem || !elem.name){
+			throw 'CanvasLayer element needs name property';
+		}
+		this.elems[elem.name] = elem;
 	};
 	// CanvasLayer.prototype.removeElement = function(name) {
 	// 	delete this.elems[name];
 	// };
-	CanvasLayer.prototype.refresh = function(name1,name2) {
+	CanvasLayer.prototype.refresh = function() {
 		//console.log('refresh');
 		this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 		this.viewer._scale(this.ctx);
 		// console.log(name1+","+name2);
 		// console.log(this.elems);
-		if (name1){
-			this.elems[name1].draw(this.ctx);
-		}
-		if (name2 && name2 != name1){
-			this.elems[name2].draw(this.ctx);
-		}
 		for (var name in this.elems) {
-		//	this.elems[name].draw(this.ctx);
+			if (this.elems[name].isEnabled()){
+				this.elems[name].draw(this.ctx);	
+			}
 			//TODO refactor, we are doing this only to make it work, but it's bad code
 			if (typeof this.elems[name].drawCursor === 'function'){
 				this.elems[name].drawCursor(this.ctx);
 			}
+			
 		}
 
 		this.viewer._resetScale(this.ctx);

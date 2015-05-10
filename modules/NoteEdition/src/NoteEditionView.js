@@ -11,7 +11,7 @@ define([
 		this.el = undefined;
 		this.imgPath = imgPath;
 		this.initSubscribe();
-		this.initKeyboard();
+		this.initController();
 	}
 
 	NoteEditionView.prototype.render = function(parentHTML, callback) {
@@ -21,7 +21,7 @@ define([
 			parentHTML.innerHTML = rendered;
 		}
 		this.el = rendered;
-		this.initController();
+		
 		//$.publish('NoteEditionView-render');
 		if (typeof callback === "function") {
 			callback();
@@ -65,7 +65,6 @@ define([
 				'double': true
 			});
 		});
-
 		// Rhythm
 		$('#whole-note').click(function() {
 			$.publish('NoteEditionView-setCurrDuration', 7);
@@ -121,96 +120,59 @@ define([
 		$('#paste-note').click(function() {
 			$.publish('NoteEditionView-pasteNotes');
 		});
-	};
-
-	NoteEditionView.prototype.initKeyboard = function(evt) {
-		var self = this;
-		var ACC_KEYS = {
-			"s": "#",
-			"v": "b",
-			"n": "n"
-		};
-		$(document).keydown(function(evt) {
-			if (self.editing === false) {
-				return;
-			}
-			var keyCode = (evt === null) ? event.keyCode : evt.keyCode;
-			var key = String.fromCharCode(keyCode).toLowerCase();
-			var metaKey = !!evt.metaKey;
-
-
-			var d = evt.srcElement || evt.target;
-			//prevent backspace
-			if (keyCode === 8) {
-				var doPrevent = false;
-				if (d.tagName.toUpperCase() === 'TEXTAREA' || (d.tagName.toUpperCase() === 'INPUT' && (d.type.toUpperCase() === 'TEXT' || d.type.toUpperCase() === 'PASSWORD' || d.type.toUpperCase() === 'FILE'))) {
-					doPrevent = d.readOnly || d.disabled;
-				} else {
-					doPrevent = true;
-				}
-				if (doPrevent) {
-					stopEvent(evt);
-				}
-			}
-
-			doListenToEvent = true;
-			if (d.tagName.toUpperCase() === 'TEXTAREA' || (d.tagName.toUpperCase() === 'INPUT' && (d.type.toUpperCase() === 'TEXT' || d.type.toUpperCase() === 'PASSWORD' || d.type.toUpperCase() === 'FILE'))) {
-				doListenToEvent = false;
-			}
-			//Functions for Notes
-			if (doListenToEvent) {
-				if (keyCode == 38 || keyCode == 40) { // up & down arrows
-					var inc = (keyCode == 38) ? 1 : -1;
-					$.publish('NoteEditionView-setPitch', inc);
-					stopEvent(evt);
-				} else if (NoteUtils.getValidPitch(key) != -1 && (!evt.ctrlKey)) {
-					$.publish('NoteEditionView-setPitch', key.toUpperCase());
-					stopEvent(evt);
-				} else if (ACC_KEYS.hasOwnProperty(key) && (!evt.ctrlKey)) {
-					var acc = ACC_KEYS[key];
-					// console.log(acc);
-					$.publish('NoteEditionView-addAccidental', {
-						'acc': acc,
-						'double': evt.shiftKey
-					});
-					stopEvent(evt);
-				} else if (parseInt(key, null) >= 1 && parseInt(key, null) <= 9) {
-					$.publish('NoteEditionView-setCurrDuration', key);
-					stopEvent(evt);
-				} else if (keyCode == 190) {
-					$.publish('NoteEditionView-setDot', evt.shiftKey);
-					stopEvent(evt);
-				} else if (keyCode == 84) { // T be carefull, set key to t will be call on F5 also
-					if (evt.shiftKey) {
-						$.publish('NoteEditionView-setTuplet');
-					} else {
-						$.publish('NoteEditionView-setTie');
-					}
-					stopEvent(evt);
-				} else if (keyCode == 82) { // R
-					$.publish('NoteEditionView-setSilence');
-					stopEvent(evt);
-				} else if (keyCode == 46) { //supr
-					$.publish('NoteEditionView-setSilence'); // in our editor we want to replace note by silence and not delete note
-					stopEvent(evt);
-				} else if (keyCode == 13) { //enter
-					$.publish('NoteEditionView-addNote');
-					stopEvent(evt);
-				} else if ((keyCode == 67 && evt.ctrlKey) || (keyCode == 67 && metaKey)) { // Ctrl + c or Command + c (mac or windows specific key)
-					$.publish('NoteEditionView-copyNotes');
-					stopEvent(evt);
-				} else if ((keyCode == 86 && evt.ctrlKey) || (keyCode == 86 && metaKey)) { // Ctrl + v or Command + v (mac or windows specific key)
-					$.publish('NoteEditionView-pasteNotes');
-					stopEvent(evt);
-				}
-			}
+		var fn;
+		$.subscribe('updown-arrows', function(el,inc){
+			fn = 'setPitch';
+			$.publish('NoteEditionView', [fn, inc]);
 		});
-
-		function stopEvent(evt) {
-			evt.preventDefault();
-			evt.stopPropagation();
-			return false;
-		}
+		$.subscribe('pitch-letter-key', function(el,key){
+			fn = 'setPitch';
+			$.publish('NoteEditionView', [fn, key]);
+		});
+		$.subscribe('accidental-key', function(el,acc){
+			fn = 'addAccidental';
+			$.publish('NoteEditionView', [fn, [acc, false]]);
+		});
+		$.subscribe('shift-accidental-key', function(el,acc){
+			fn = 'addAccidental';
+			$.publish('NoteEditionView', [fn, [acc, true]]);
+		});
+		$.subscribe('number-key', function(el,key){
+			fn = 'setCurrDuration';
+			$.publish('NoteEditionView', [fn, key]);
+		});
+		$.subscribe('dot-key', function(el,inc){
+			fn = 'setDot';
+			$.publish('NoteEditionView', [fn, inc]);
+		});
+		$.subscribe('shift-t-key', function(el){
+			fn = 'setTuplet';
+			$.publish('NoteEditionView', fn);
+		});
+		$.subscribe('t-key', function(el){
+			fn = 'setTie';
+			$.publish('NoteEditionView', fn);
+		});
+		$.subscribe('R-key', function(el){
+			fn = 'setSilence';
+			$.publish('NoteEditionView', fn);
+		});
+		$.subscribe('supr-key', function(el){
+			fn = 'setSilence';
+			$.publish('NoteEditionView', fn);
+		});
+		$.subscribe('enter-key', function(el){
+			fn = 'addNote';
+			$.publish('NoteEditionView', fn);
+		});
+		$.subscribe('ctrl-c-key', function(el){
+			fn = 'copyNotes';
+			$.publish('NoteEditionView', fn);
+		});	
+		$.subscribe('ctrl-v-key', function(el){
+			fn = 'pasteNotes';
+			$.publish('NoteEditionView', fn);
+		});
 	};
 
 

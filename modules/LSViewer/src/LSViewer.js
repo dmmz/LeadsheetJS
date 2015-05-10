@@ -95,7 +95,6 @@ define([
 		LSViewer.prototype._initSubscribe = function() {
 			var self = this;
 			$.subscribe('ToViewer-draw', function(el, songModel) {
-				//console.log("subscr ToViewer-draw");
 				self.draw(songModel);
 			});
 		};

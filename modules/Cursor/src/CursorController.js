@@ -1,11 +1,9 @@
 define([
-	'modules/core/src/SongModel',
 	'utils/UserLog',
 	'pubsub',
-], function(songModel, UserLog, pubsub) {
+], function(UserLog, pubsub) {
 
-	function CursorController(songModel, model, view) {
-		this.songModel = songModel;
+	function CursorController(model, view) {
 		this.model = model || new CursorModel();
 		this.view = view;
 		this.initSubscribe();
@@ -22,8 +20,10 @@ define([
 		// 	self.setEditable(isEditable);
 		// });
 		$.subscribe('Cursor-' + this.view.id, function(el, fn, param) {
-			self[fn].call(self,param);
-			$.publish('CanvasLayer-refresh', 'scoreCursor');
+			if (self.model.getEditable()){
+				self[fn].call(self,param);
+				$.publish('CanvasLayer-refresh');				
+			}
 
 		});
 	};

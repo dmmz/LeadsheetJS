@@ -28,10 +28,6 @@ define([
 	 * or a single value that will be converted to an array [value, value]
 	 */
 	CursorModel.prototype.setPos = function(pos) {
-
-		if (!this.isEditable) {
-			return;
-		}
 		if (!(pos instanceof Array)) pos = [pos, pos];
 		pos = this._checkPosition(pos);
 		this.pos = pos;
@@ -52,9 +48,6 @@ define([
 	 * @param {int} pos   cursor position
 	 */
 	CursorModel.prototype.setIndexPos = function(index, pos) {
-		if (!this.isEditable) {
-			return;
-		}
 		if ((index !== 0 && index !== 1) || isNaN(pos)) {
 			throw 'CursorModel - setIndexPos, arguments not well defined ' + 'index:' + index + ' - pos:' + pos;
 		}

@@ -4,10 +4,10 @@ define([
 		"modules/Cursor/src/CursorListener"
 		], function(CursorController, CursorModel, CursorListener){
 
-		function Cursor (listElement, songModel, id, keyType) {
+		function Cursor (listElement, id, keyType) {
 			var cM = new CursorModel(listElement);
 			var cV = new CursorListener(keyType);
-			this.controller = new CursorController(songModel, cM, cV);
+			this.controller = new CursorController(cM, cV);
 		}
 		return Cursor;
 });

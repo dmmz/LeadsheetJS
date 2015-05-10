@@ -8,9 +8,10 @@ define([
 	'pubsub',
 ], function(Mustache, SongModel, NoteManager, CursorModel, NoteUtils, UserLog, pubsub) {
 
-	function NoteEditionController(songModel, cursor) {
+	function NoteEditionController(songModel, cursor, noteSpaceMng) {
 		this.songModel = songModel || new SongModel();
 		this.cursor = cursor || new CursorModel();
+		this.noteSpaceMng = noteSpaceMng;
 		this.initSubscribe();
 	}
 
@@ -76,6 +77,14 @@ define([
 			self.moveCursorByBar(inc);
 		});
 
+		$.subscribe('NoteEditionView', function(el, fn, param) {
+			if (self.noteSpaceMng.isEnabled()){
+				self[fn].call(self,param);
+				$.publish('ToViewer-draw', self.songModel);
+			}
+
+		});
+
 	};
 
 	/**
@@ -100,12 +109,13 @@ define([
 				note.setNoteFromString(newKey);
 			}
 		}
-		$.publish('ToViewer-draw', this.songModel);
 	};
 
 
 
-	NoteEditionController.prototype.addAccidental = function(accidental, doubleAccidental) {
+	NoteEditionController.prototype.addAccidental = function(acc) {
+		var accidental = acc[0];
+		var doubleAccidental = acc[1];
 		var selNotes = this.getSelectedNotes();
 		var note;
 		if (typeof doubleAccidental !== "undefined" && doubleAccidental === true && accidental !== "n") {
@@ -120,7 +130,6 @@ define([
 				note.setAccidental(accidental);
 			}
 		}
-		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	/**
@@ -151,7 +160,6 @@ define([
 			durAfter += selNotes[i].getDuration();
 		}
 		this.checkDuration(durBefore, durAfter);
-		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	NoteEditionController.prototype.setDot = function() {
@@ -171,7 +179,6 @@ define([
 			durAfter += selNotes[i].getDuration();
 		}
 		this.checkDuration(durBefore, durAfter);
-		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	NoteEditionController.prototype.setTie = function() {
@@ -193,7 +200,6 @@ define([
 				}
 			}
 		}
-		$.publish('ToViewer-draw', this.songModel);
 	};
 
 
@@ -271,7 +277,6 @@ define([
 				}
 			}
 		}
-		$.publish('ToViewer-draw', this.songModel);
 	};
 
 
@@ -288,7 +293,6 @@ define([
 			}
 			if (!note.isRest) note.setRest(true);
 		}
-		$.publish('ToViewer-draw', this.songModel);
 	};
 
 
@@ -303,7 +307,6 @@ define([
 		this.checkDuration(durBefore, 0);
 		var numNotes = noteManager.getTotal();
 		this.cursor.revisePos(numNotes);
-		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	NoteEditionController.prototype.addNote = function() {
@@ -314,14 +317,12 @@ define([
 		noteManager.insertNote(pos, cloned);
 		this.checkDuration(0, noteToClone.getDuration());
 		// this.cursor.setPos(pos + 1);
-		$.publish('ToViewer-draw', this.songModel);
 	};
 
 
 	NoteEditionController.prototype.copyNotes = function() {
 		var noteManager = this.songModel.getComponent('notes');
 		this.buffer = noteManager.cloneElems(this.cursor.getStart(), this.cursor.getEnd() + 1);
-		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	NoteEditionController.prototype.pasteNotes = function(notesToPaste) {
@@ -333,7 +334,6 @@ define([
 		var noteManager = this.songModel.getComponent('notes');
 		//this.checkDuration(0, noteManager.getTotalDuration());
 		noteManager.notesSplice(this.cursor.getPos(), notesToPaste);
-		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	NoteEditionController.prototype.moveCursorByBar = function(inc) {

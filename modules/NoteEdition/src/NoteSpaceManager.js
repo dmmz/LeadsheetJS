@@ -1,13 +1,12 @@
 define([
-	'modules/core/src/SongModel',
 	'modules/core/src/NoteModel',
 	'modules/NoteEdition/src/NoteSpaceView',
 	'modules/Cursor/src/CursorModel',
 	'utils/UserLog',
 	'modules/Edition/src/ElementManager',
 	'pubsub',
-], function(SongModel, NoteModel, NoteSpaceView, CursorModel, UserLog, ElementManager, pubsub) {
-
+], function(NoteModel, NoteSpaceView, CursorModel, UserLog, ElementManager, pubsub) {
+	//TODO: remove songModel ???
 	function NoteSpaceManager(songModel, cursor, viewer) {
 
 		if (!songModel) {
@@ -19,12 +18,14 @@ define([
 		if (!viewer) {
 			throw "NoteSpaceManager - missing viewer";
 		}
+		this.name = 'NotesCursor';
 		this.songModel = songModel;
 		this.cursor = cursor;
 		this.viewer = viewer;
 		this.elemMng= new ElementManager();
 		this.noteSpace = [];
 		this.initSubscribe();
+		this.enabled = true;
 
 		this.CURSOR_HEIGHT = 80;
 		this.CURSOR_MARGIN_TOP = 20;
@@ -49,12 +50,15 @@ define([
 		// });
 
 		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
+			if (!self.viewer.canvasLayer){
+				throw "NoteSpaceManager needs CanvasLayer";
+			}
 			
-			self.viewer.canvasLayer.addElement('scoreCursor', self);
+			self.viewer.canvasLayer.addElement(self);
 			//if (self.cursor.getEditable()) {
 			self.noteSpace = self.createNoteSpace(self.viewer);
 			//TODO: refactor
-			self.viewer.canvasLayer.refresh('scoreCursor');
+			self.viewer.canvasLayer.refresh();
 		});
 		// $.subscribe('CanvasLayer-updateCursors',function(el,coords){
 		// 	self.updateCursor(coords);
@@ -90,7 +94,6 @@ define([
 		var notes = this.elemMng.getElemsInPath(this.noteSpace, coords);
 
 		if (notes) {
-			this.cursor.setEditable(true);
 			this.cursor.setPos(notes);
 			//$.publish('ToViewer-draw',self.songModel);
 		}
@@ -105,16 +108,6 @@ define([
 		}
 		noteModel.setnoteFromString(noteString);
 	};
-	/**
-	 *
-	 * @param  {Object}  area can be in two forms :
-	 *                        {x: 10, y: 10, xe: 20, ye: 20} / xe and ye are absolute positions (not relative to x and y)
-	 *                        {x: 10, y:10}
-	 * @return {Boolean}
-	 */
-
-
-
 
 	//CANVASLAYER ELEMENT METHOD
 	NoteSpaceManager.prototype.draw = function(ctx) {
@@ -155,6 +148,15 @@ define([
 			ctx.globalAlpha = 1;
 		}
 
+	};
+	NoteSpaceManager.prototype.isEnabled = function() {
+		return this.enabled;
+	};
+	NoteSpaceManager.prototype.enable = function() {
+		this.enabled = true;
+	};
+	NoteSpaceManager.prototype.disable = function() {
+		this.enabled = false;
 	};
 
 	return NoteSpaceManager;
