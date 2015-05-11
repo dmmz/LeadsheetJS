@@ -148,13 +148,13 @@ define(function(require) {
 		menu.controller.activeMenu('Notes');
 	});
 
-	// chordEdition.view.render(undefined, function() {
-	// 	menu.model.addMenu({
-	// 		title: 'Chords',
-	// 		view: chordEdition.view,
-	// 		order: 3
-	// 	});
-	// });
+	chordEdition.view.render(undefined, function() {
+		menu.model.addMenu({
+			title: 'Chords',
+			view: chordEdition.view,
+			order: 3
+		});
+	});
 	// structEdition.view.render(undefined, function() {
 	// 	menu.model.addMenu({
 	// 		title: 'Structure',
