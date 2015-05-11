@@ -22,7 +22,7 @@ define([
 		this.songModel = songModel;
 		this.cursor = cursor;
 		this.viewer = viewer;
-		this.elemMng= new ElementManager();
+		this.elemMng = new ElementManager();
 		this.noteSpace = [];
 		this.initSubscribe();
 		this.enabled = true;
@@ -86,7 +86,6 @@ define([
 	NoteSpaceManager.prototype.getYs = function(coords) {
 		return this.elemMng.getYs(this.noteSpace, coords);
 	};
-
 
 	NoteSpaceManager.prototype.updateCursor = function(coords) {
 		

@@ -2,44 +2,31 @@ define([
 	'utils/ChordUtils',
 	'utils/UserLog',
 	'pubsub',
-	'jquery_autocomplete'
-], function(ChordUtils, UserLog, pubsub, jquery_autocomplete) {
+	'jquery_autocomplete',
+	'modules/Edition/src/ElementView'
+], function(ChordUtils, UserLog, pubsub, jquery_autocomplete, ElementView) {
 
-	function ChordSpaceView(viewer, position, barNumber, beatNumber) {
+	function ChordSpaceView(viewer, position, barNumber, beatNumber,viewerScaler) {
 		this.viewer = viewer;
-		this.initSubscribe();
 		this.position = position;
 		this.barNumber = barNumber;
 		this.beatNumber = beatNumber;
+		this.scaler = viewerScaler;
 	}
 
 	/**
-	 * Publish event after receiving dom events
+	 * @interface
 	 */
-	ChordSpaceView.prototype.initController = function() {
-		// there are two controllers, one on input onselect, the other on blur event
+	ChordSpaceView.prototype.isInPath = function(coords) {
+		return ElementView.isInPath(coords, this.position, this.scaler);
 	};
-
-	ChordSpaceView.prototype.initKeyboard = function(evt) {};
-
 	/**
-	 * Subscribe to model events
+	 * @interface
 	 */
-	ChordSpaceView.prototype.initSubscribe = function() {};
-
-	ChordSpaceView.prototype.isInPath = function(area) {
-		area.xe = area.xe || area.x; 
-		area.ye = area.ye || area.y; //in case xe and ye are not defined, they take the same value a x and y respectively
-		var pos = this.viewer.scaler.getScaledObj(this.position);
-		var posXe = pos.x + pos.w,
-		posYe = pos.y + pos.h;
-
-		// console.log("area");
-		// console.log(area);
-		// console.log("position");
-		// console.log(pos);
-		return (area.x < posXe && area.xe > pos.x) && (area.y < posYe && area.ye > pos.y);
+	ChordSpaceView.prototype.getArea = function() {
+		return this.position;
 	};
+
 
 	ChordSpaceView.prototype.onChange = function(chord, value) {
 		var chordInfos = {
@@ -51,10 +38,7 @@ define([
 	};
 
 
-	ChordSpaceView.prototype.drawEditableChord = function(songModel, selected) {
-		
-		var marginTop = 5;
-		var marginRight = 5;
+	ChordSpaceView.prototype.drawEditableChord = function(songModel, selected, marginTop, marginRight) {
 		if (!!selected) {
 			var self = this;
 
@@ -67,7 +51,7 @@ define([
 				}
 			}
 
-			// Then we create input
+			// // Then we create input
 			var offset = $("#canvas_container canvas").offset();
 			if (typeof offset === "undefined" || isNaN(offset.top) || isNaN(offset.left)) {
 				offset = {
@@ -116,7 +100,7 @@ define([
 			});
 			input.focus(); // this focus allow setting cursor on end carac
 			input.val(inputVal);
-			input.focus(); // this focus launch autocomplete firectly when value is not empty
+			input.focus(); // this focus launch autocomplete directly when value is not empty
 			// on blur event we change the value, blur is launched when we enter and click somewhere else
 			input.on('blur', function() {
 				//console.log('blur');
@@ -144,18 +128,10 @@ define([
 		}
 
 		//Drawing chord space boxes. We don't need to scale because this function is called by ChordSpaceManager.draw, which uses viewer.drawElem
-		this.viewer.ctx.strokeStyle = "#999999";
-		this.viewer.ctx.strokeRect(
-			this.position.x,
-			this.position.y - marginTop,
-			this.position.w - marginRight,
-			this.position.h + marginTop
-		);
-	};
-	ChordSpaceView.prototype.draw = function(ctx) {
 		
-		var marginTop = 5;
-		var marginRight = 5;
+	};
+	ChordSpaceView.prototype.draw = function(ctx,marginTop, marginRight) {
+		
 		var style = ctx.fillStyle;
 		ctx.fillStyle = "#0099FF";
 		ctx.globalAlpha = 0.2;

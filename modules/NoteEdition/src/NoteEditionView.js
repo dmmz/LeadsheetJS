@@ -30,12 +30,11 @@ define([
 	 * manages events that come from the keyboard
 	 */
 	NoteEditionView.prototype.initKeyboard = function() {
-			$.subscribe('updown-arrows', function(el,inc){
+		$.subscribe('updown-arrows', function(el,inc){
 			fn = 'setPitch';
 			$.publish('NoteEditionView', [fn, inc]);
 		});
 		$.subscribe('pitch-letter-key', function(el,key){
-			console.log('letter-key');
 			fn = 'setPitch';
 			$.publish('NoteEditionView', [fn, key]);
 		});

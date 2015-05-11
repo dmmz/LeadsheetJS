@@ -3,6 +3,21 @@ define(function() {
 		if (!viewer.canvas) {
 			throw "LSViewer cannot create layer because canvas does not exist";
 		}
+		
+		this.viewer = viewer;
+		var canvasLayer = this._createLayer(viewer);
+		this.canvasLayer = canvasLayer[0];
+		this.ctx = canvasLayer[0].getContext('2d');
+		this.color = "rgba(0,0,255,1)";
+		this.mouseCoordsIni = null;
+		this.mouseCoordsEnd = null;
+		this.coords = {};
+		this.mouseDown = false;
+		this._listenEvents(canvasLayer);
+		this.elems = {};
+	}
+
+	CanvasLayer.prototype._createLayer = function(viewer) {
 		var canvasEl = $(viewer.canvas),
 			idCanvas = canvasEl.attr('id'),
 			idLayer = idCanvas + "-layer",
@@ -26,19 +41,8 @@ define(function() {
 		} else {
 			canvasLayer = $("canvas#" + idLayer);
 		}
-		this.viewer = viewer;
-		this.canvasLayer = canvasLayer[0];
-		this.ctx = canvasLayer[0].getContext('2d');
-		this.color = "rgba(0,0,255,1)";
-		this.mouseCoordsIni = null;
-		this.mouseCoordsEnd = null;
-		this.coords = {};
-		this.mouseDown = false;
-		this._listenEvents(canvasLayer);
-		this.elems = {};
-	}
-
-
+		return canvasLayer;
+	};
 	CanvasLayer.prototype._getXandY = function(element, event) {
 		xpos = event.pageX - element.offset().left;
 		ypos = event.pageY - element.offset().top;
@@ -56,7 +60,8 @@ define(function() {
 			coords;
 		this.mouseDown = false;
 
-		function selection() {
+		function selection(mouseUp) {
+
 			var elemsActives = [];
 			var cursorPos;
 			//$.publish('CanvasLayer-updateCursors',self.coords);
@@ -87,11 +92,11 @@ define(function() {
 				// }
 			}
 			if (minName && maxName){
-				self.elems[minName].updateCursor(self.coords);
+				self.elems[minName].updateCursor(self.coords,mouseUp);
 				self.elems[minName].cursor.setEditable(true);
 				self.elems[minName].enable();
 				if (maxName != minName){
-					self.elems[maxName].updateCursor(self.coords);
+					self.elems[maxName].updateCursor(self.coords,mouseUp);
 					self.elems[maxName].cursor.setEditable(true);
 					self.elems[maxName].enable();
 				}
@@ -111,7 +116,7 @@ define(function() {
 		});
 		$(this.canvasLayer).mouseup(function(evt) {
 			self.mouseDown = false;
-			selection();
+			selection(true);
 		});
 		$(this.canvasLayer).mousemove(function(evt) {
 			//draw cursor selection

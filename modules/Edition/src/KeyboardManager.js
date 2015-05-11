@@ -51,7 +51,7 @@ define(['utils/NoteUtils',
 			if (keyCode === 8) {
 				preventBackspace(evt, d);
 			}
-			if (isInHtmlInput(d)) {
+			if (isInHtmlInput(d) && keyCode != 9) { //if it's tab, we do run the event, even if it's in html, as this helps in chord edition
 				//do not do anything
 				return;
 			}

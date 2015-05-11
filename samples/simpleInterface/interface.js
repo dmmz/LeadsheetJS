@@ -105,10 +105,10 @@ define(function(require) {
 	var noteEdition = new LJS.NoteEdition(songModel, cursorNote.controller.model, myApp.viewer, '/modules/NoteEdition/img');
 
 	// // Edit chords on view
-	// var cursorChord = new LJS.Cursor(songModel.getSongTotalBeats(), songModel, 'chords', 'tab');
-	// cursorChord.controller.model.setEditable(false);
+	var cursorChord = new LJS.Cursor(songModel.getSongTotalBeats(), 'chords', 'tab');
+	cursorChord.controller.model.setEditable(false);
 
-	// var chordEdition = new LJS.ChordEdition(songModel, cursorChord.controller.model, myApp.viewer, '/modules/NoteEdition/img');
+	var chordEdition = new LJS.ChordEdition(songModel, cursorChord.controller.model, myApp.viewer, '/modules/NoteEdition/img');
 
 	// Harmonize menu
 	var harm = new LJS.Harmonizer(songModel, menu.model);
