@@ -20,8 +20,8 @@ define([
 	 */
 	NoteEditionController.prototype.initSubscribe = function() {
 		var self = this;
-		
-		//TODO: revise these two functions
+
+		//TODO: these two function are not verified / tested after refactoring
 		$.subscribe('NoteEditionView-activeView', function(el) {
 			self.changeEditMode(true);
 			$.publish('ToViewer-draw', self.songModel);
@@ -32,15 +32,15 @@ define([
 
 		// cursor view subscribe
 		$.subscribe('Cursor-moveCursorByElement-notes', function(el, inc) {
-			if (self.cursor.getEditable()){
+			if (self.cursor.getEditable()) {
 				self.moveCursorByBar(inc);
 				$.publish('CanvasLayer-refresh');
 			}
 		});
 		// All functions related with note edition go here
 		$.subscribe('NoteEditionView', function(el, fn, param) {
-			if (self.noteSpaceMng.isEnabled()){
-				self[fn].call(self,param);
+			if (self.noteSpaceMng.isEnabled()) {
+				self[fn].call(self, param);
 				$.publish('ToViewer-draw', self.songModel);
 			}
 		});

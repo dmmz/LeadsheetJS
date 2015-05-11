@@ -13,7 +13,7 @@ define([
 		if (!(optCursor instanceof Array)) optCursor = [optCursor, optCursor];
 
 		this.sideSelected = 1;
-		this.isEditable = (typeof isEditable !== "undefined") ? isEditable: true;
+		this.isEditable = (typeof isEditable !== "undefined") ? isEditable : true;
 		this.setPos(optCursor);
 		// this.color = color || "#0099FF";
 	}
@@ -53,7 +53,6 @@ define([
 		}
 		pos = this._checkPosition(pos)[0];
 		this.pos[index] = pos;
-		//$.publish('CursorModel-setPos', this.pos);
 	};
 
 	/**
@@ -62,16 +61,16 @@ define([
 	 * @return {Array}     A new position array clamped
 	 */
 	CursorModel.prototype._checkPosition = function(position) {
-		function isFloat (n) {
-			return	n===Number(n)  && n%1!==0;
+		function isFloat(n) {
+			return n === Number(n) && n % 1 !== 0;
 		}
 		if (!(position instanceof Array)) position = [position, position];
 		var numElems = this.getListLength();
 		for (var i = 0; i < position.length; i++) {
 			if (position[i] < 0) position[i] = 0;
-			if (position[i] >= numElems){
-				position[i] = isFloat(numElems) ? numElems - 0.01 : numElems - 1;	
-			} 
+			if (position[i] >= numElems) {
+				position[i] = isFloat(numElems) ? numElems - 0.01 : numElems - 1;
+			}
 		}
 		return position;
 	};
@@ -103,10 +102,10 @@ define([
 		this.setIndexPos(this.sideSelected, newPos);
 	};
 
-/*	CursorModel.prototype.getRelativeCursor = function(index) {
-		var newSelected = [this.pos[0] - index, this.pos[1] - index];
-		return new CursorModel(newSelected);
-	};*/
+	/*	CursorModel.prototype.getRelativeCursor = function(index) {
+			var newSelected = [this.pos[0] - index, this.pos[1] - index];
+			return new CursorModel(newSelected);
+		};*/
 
 	CursorModel.prototype.reset = function() {
 		this.setPos([0, 0]);

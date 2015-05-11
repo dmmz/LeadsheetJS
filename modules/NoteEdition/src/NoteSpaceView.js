@@ -7,11 +7,17 @@ define(['modules/Edition/src/ElementView'], function(ElementView) {
 		this.position = position;
 		this.scaler = viewerScaler;
 	}
-
+	/**
+	 * @interface
+	 * @param  {Object}  coords [description]
+	 * @return {Boolean}        [description]
+	 */
 	NoteSpaceView.prototype.isInPath = function(coords) {
 		return ElementView.isInPath(coords, this.position, this.scaler);
 	};
-
+	/**
+	 * @interface
+	 */
 	NoteSpaceView.prototype.getArea = function() {
 		return this.position;
 	};

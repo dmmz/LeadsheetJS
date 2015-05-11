@@ -1,7 +1,14 @@
-define(function(){
-	function ElementManager () {
-		
-	};
+define(function() {
+	/**
+	 * Abstraction class, used by NoteSpaceManager and ChordSpaceManager (by composition rather than heritage)
+	 */
+	function ElementManager() {}
+		/**
+		 *
+		 * @param  {Array} elems  array of elements; e.g. 'NoteSpaceView'
+		 * @param  {[type]} coords
+		 * @return {Array}  of two positions [min, max], or booelan false if nothing found
+		 */
 	ElementManager.prototype.getElemsInPath = function(elems, coords) {
 		var note,
 			min = null,
@@ -18,27 +25,30 @@ define(function(){
 		}
 		return (min === null && max === null) ? false : [min, max];
 	};
+	/**
+	 * function to determine how high elements are situated
+	 * @param  {Array} elems  array of elements; e.g. 'NoteSpaceView'
+	 * @param  {Object} coords
+	 */
 	ElementManager.prototype.getYs = function(elems, coords) {
 		var cursor = this.getElemsInPath(elems, coords);
-		if (cursor){
+		if (cursor) {
 			return {
 				topY: elems[cursor[0]].getArea().y,
 				bottomY: elems[cursor[1]].getArea().y
 			};
-		}
-		else{
+		} else {
 			return false;
 		}
 	};
 	/**
-	 * [getElementsAreaFromCursor description]
 	 * @param  {Array} elems      [description]
 	 * @param  {[Integer, Integer]} cursor     [description]
 	 * @param  {Object} cursorDims
 	 * @return {Array of Objects}    Object in this form: {area.x, area.y, area.xe, area.ye}
 	 */
 	ElementManager.prototype.getElementsAreaFromCursor = function(elems, cursor, cursorDims) {
-		
+
 		var areas = [],
 			area,
 			cInit = cursor[0],
@@ -62,7 +72,7 @@ define(function(){
 		firstElemLine = elems[cInit];
 		while (cInit <= cEnd) {
 			currElem = elems[cInit];
-			if (typeof currElem.getArea !== 'function'){
+			if (typeof currElem.getArea !== 'function') {
 				throw "ElementManager - Error: element passed has no getArea() function";
 			}
 			currElemY = currElem.getArea().y;
@@ -89,5 +99,5 @@ define(function(){
 		}
 		return areas;
 	};
-	return ElementManager;	
+	return ElementManager;
 });

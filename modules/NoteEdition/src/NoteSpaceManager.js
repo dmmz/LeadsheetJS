@@ -6,12 +6,9 @@ define([
 	'modules/Edition/src/ElementManager',
 	'pubsub',
 ], function(NoteModel, NoteSpaceView, CursorModel, UserLog, ElementManager, pubsub) {
-	//TODO: remove songModel ???
-	function NoteSpaceManager(songModel, cursor, viewer) {
 
-		if (!songModel) {
-			throw "NoteSpaceManager - missing songModel";
-		}
+	function NoteSpaceManager(cursor, viewer) {
+
 		if (!cursor) {
 			throw "NoteSpaceManager - missing cursor";
 		}
@@ -19,7 +16,6 @@ define([
 			throw "NoteSpaceManager - missing viewer";
 		}
 		this.name = 'NotesCursor';
-		this.songModel = songModel;
 		this.cursor = cursor;
 		this.viewer = viewer;
 		this.elemMng = new ElementManager();
@@ -38,26 +34,27 @@ define([
 	 * Subscribe to view events
 	 */
 	NoteSpaceManager.prototype.initSubscribe = function() {
-
 		var self = this;
-		// $.subscribe('CanvasLayer-mousemove', function(el, position) {
+		$.subscribe('CanvasLayer-mousemove', function(el, position) {
 
-		// 	if (self.isInPath(position) !== false) {
-		// 		self.viewer.el.style.cursor = 'pointer';
-		// 	} else {
-		// 		self.viewer.el.style.cursor = 'default';
-		// 	}
-		// });
+
+			var inPath = self.elemMng.getElemsInPath(self.noteSpace, position);
+			if (inPath) {
+				self.viewer.el.style.cursor = 'pointer';
+			} else {
+				self.viewer.el.style.cursor = 'default';
+			}
+		});
 
 		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
-			if (!self.viewer.canvasLayer){
+			if (!self.viewer.canvasLayer) {
 				throw "NoteSpaceManager needs CanvasLayer";
 			}
-			
+
 			//if (self.cursor.getEditable()) {
 			self.noteSpace = self.createNoteSpace(self.viewer);
 			self.viewer.canvasLayer.addElement(self); //addElement refreshes canvasLayer
-			
+
 		});
 		// $.subscribe('CanvasLayer-updateCursors',function(el,coords){
 		// 	self.updateCursor(coords);
@@ -88,24 +85,13 @@ define([
 	};
 
 	NoteSpaceManager.prototype.updateCursor = function(coords) {
-		
+
 		var notes = this.elemMng.getElemsInPath(this.noteSpace, coords);
 
 		if (notes) {
 			this.cursor.setPos(notes);
 			//$.publish('ToViewer-draw',self.songModel);
 		}
-	};
-	NoteSpaceManager.prototype.updateNote = function(noteString, noteModel, noteSpace) {
-		console.warn("function updateNote");
-		if (typeof noteModel === "undefined" && typeof noteSpace !== "undefined") {
-			noteModel = new NoteModel({
-				'beat': noteSpace.beatNumber,
-				'barNumber': noteSpace.barNumber,
-			});
-			this.songModel.getComponent('notes').addnote(noteModel);
-		}
-		noteModel.setnoteFromString(noteString);
 	};
 
 	//CANVASLAYER ELEMENT METHOD
@@ -118,7 +104,7 @@ define([
 		var currentNoteSpace;
 		var areas = [];
 
-		if (position[0] !== null){
+		if (position[0] !== null) {
 			if (position[0] === position[1]) {
 				areas.push({
 					x: this.noteSpace[position[0]].position.x,
@@ -148,12 +134,24 @@ define([
 		}
 
 	};
+
+	/**
+	 * @interface
+	 */
 	NoteSpaceManager.prototype.isEnabled = function() {
 		return this.enabled;
 	};
+
+	/**
+	 * @interface
+	 */
 	NoteSpaceManager.prototype.enable = function() {
 		this.enabled = true;
 	};
+
+	/**
+	 * @interface
+	 */
 	NoteSpaceManager.prototype.disable = function() {
 		this.enabled = false;
 	};

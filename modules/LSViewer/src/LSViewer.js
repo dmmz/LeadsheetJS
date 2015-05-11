@@ -104,16 +104,16 @@ define([
 			this.LINE_WIDTH = viewerWidth;
 		};
 
-		LSViewer.prototype._scale = function(ctx) {
+		LSViewer.prototype.scale = function(ctx) {
 			ctx = ctx || this.ctx;
 			ctx.scale(this.SCALE, this.SCALE);
 		};
-		LSViewer.prototype._resetScale = function(ctx) {
+		LSViewer.prototype.resetScale = function(ctx) {
 			ctx = ctx || this.ctx;
 			ctx.scale(1 / this.SCALE, 1 / this.SCALE);
 		};
 		/**
-		 * function useful to be called in 'draw' function between this._scale() and this._resetScale().
+		 * function useful to be called in 'draw' function between this.scale() and this.resetScale().
 		 * It takes the width without taking into account we are scaling. This way we can place elements correctly (e.g. centering the title)
 		 */
 		LSViewer.prototype._getNonScaledWidth = function() {
@@ -196,7 +196,7 @@ define([
 			this.setHeight(song, this.barWidthMng);
 
 			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-			this._scale();
+			this.scale();
 
 
 			var numSection = 0;
@@ -281,7 +281,7 @@ define([
 			this.ctx.strokeStyle = "black";
 			this._displayComposer(song.getComposer());
 			this._displayTitle(song.getTitle());
-			this._resetScale();
+			this.resetScale();
 			//console.timeEnd('whole draw');
 			// if we requesteed to have a layer and we haven't already created it
 			if (this.layer && !this.canvasLayer) {
@@ -294,9 +294,9 @@ define([
 		 * @param  {Function} drawFunc function that draws the element, uses context determined by the other param layer
 		 */
 		LSViewer.prototype.drawElem = function(drawFunc) {
-			this._scale(this.ctx);
+			this.scale(this.ctx);
 			drawFunc(this.ctx);
-			this._resetScale(this.ctx);
+			this.resetScale(this.ctx);
 		};
 		return LSViewer;
 

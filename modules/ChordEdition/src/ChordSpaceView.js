@@ -6,7 +6,7 @@ define([
 	'modules/Edition/src/ElementView'
 ], function(ChordUtils, UserLog, pubsub, jquery_autocomplete, ElementView) {
 
-	function ChordSpaceView(viewer, position, barNumber, beatNumber,viewerScaler) {
+	function ChordSpaceView(viewer, position, barNumber, beatNumber, viewerScaler) {
 		this.viewer = viewer;
 		this.position = position;
 		this.barNumber = barNumber;
@@ -25,6 +25,27 @@ define([
 	 */
 	ChordSpaceView.prototype.getArea = function() {
 		return this.position;
+	};
+	/**
+	 * @interface
+	 *
+	 * @param  {CanvasContext} ctx
+	 * @param  {Number} marginTop   [description]
+	 * @param  {Number} marginRight [description]
+	 */
+	ChordSpaceView.prototype.draw = function(ctx, marginTop, marginRight) {
+
+		var style = ctx.fillStyle;
+		ctx.fillStyle = "#0099FF";
+		ctx.globalAlpha = 0.2;
+		ctx.fillRect(
+			this.position.x,
+			this.position.y - marginTop,
+			this.position.w - marginRight,
+			this.position.h + marginTop
+		);
+		ctx.fillStyle = style;
+		ctx.globalAlpha = 1;
 	};
 
 
@@ -59,7 +80,7 @@ define([
 					left: 0
 				};
 			}
-			var pos =  this.viewer.scaler.getScaledObj(this.position);
+			var pos = this.viewer.scaler.getScaledObj(this.position);
 			var top = pos.y - marginTop - 1;
 			var left = pos.x + offset.left + window.pageXOffset - 1;
 			var width = pos.w - marginRight;
@@ -126,23 +147,6 @@ define([
 				$(this).val(self.filterFunction($(this).val()));
 			});
 		}
-
-		//Drawing chord space boxes. We don't need to scale because this function is called by ChordSpaceManager.draw, which uses viewer.drawElem
-		
-	};
-	ChordSpaceView.prototype.draw = function(ctx,marginTop, marginRight) {
-		
-		var style = ctx.fillStyle;
-		ctx.fillStyle = "#0099FF";
-		ctx.globalAlpha = 0.2;
-		ctx.fillRect(
-			this.position.x,
-			this.position.y - marginTop,
-			this.position.w - marginRight,
-			this.position.h + marginTop
-		);
-		ctx.fillStyle = style;
-		ctx.globalAlpha = 1;
 	};
 	/**
 	 * Set to upper case first notes, add a lot of replacement for french or not keyboard

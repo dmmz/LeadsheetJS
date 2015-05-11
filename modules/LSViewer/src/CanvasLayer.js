@@ -1,4 +1,8 @@
 define(function() {
+	/**
+	 * CanvasLayer is a canvas place on top of the basic canvas to manage edition and to draw elements such as cursors (to optimize rendering)
+	 * @param {LSViewer} viewer 
+	 */
 	function CanvasLayer(viewer) {
 		if (!viewer.canvas) {
 			throw "LSViewer cannot create layer because canvas does not exist";
@@ -43,6 +47,7 @@ define(function() {
 		}
 		return canvasLayer;
 	};
+
 	CanvasLayer.prototype._getXandY = function(element, event) {
 		xpos = event.pageX - element.offset().left;
 		ypos = event.pageY - element.offset().top;
@@ -51,22 +56,16 @@ define(function() {
 			y: ypos
 		};
 	};
-	/**
-	 * Publish event after receiving dom events
-	 */
+
 	CanvasLayer.prototype._listenEvents = function() {
 		var self = this,
 			xy,
 			coords;
 		this.mouseDown = false;
 
-		function selection(mouseUp) {
-
-			var elemsActives = [];
-			var cursorPos;
-			//$.publish('CanvasLayer-updateCursors',self.coords);
+		function getElemsByYs() {
 			var minY = 999999, maxY = 0, minName, maxName, ys;
-			
+			var activeElems = [];
 			for (var name in self.elems) {
 				//self.elems[name].updateCursor([null,null]);
 				if (typeof self.elems[name].getYs === 'function'){
@@ -80,34 +79,29 @@ define(function() {
 						maxName = name;	
 					}
 				}
-
 				self.elems[name].cursor.setEditable(false);
 				self.elems[name].disable();
-
-				// console.log(name);
-				// console.log(self.elems[name].cursor.getPos());
-				
-				// if (cursorPos[0] !== null && cursorPos[1] !== null && self.mouseDown === false) {
-				// 	$.publish(name+'-selection', [cursorPos]);
-				// }
 			}
-			if (minName && maxName){
-				self.elems[minName].updateCursor(self.coords,mouseUp);
-				self.elems[minName].cursor.setEditable(true);
-				self.elems[minName].enable();
-				if (maxName != minName){
-					self.elems[maxName].updateCursor(self.coords,mouseUp);
-					self.elems[maxName].cursor.setEditable(true);
-					self.elems[maxName].enable();
-				}
+			if (minName){
+				activeElems.push(self.elems[minName]);
 			}
-			//check elems actives
-			//cursorPos = self.elems[name].cursor.getPos();
-			// console.log(minName);
-			// console.log(maxName);
-			self.viewer.canvasLayer.refresh();
-
+			if (maxName && minName != maxName){
+				activeElems.push(self.elems[maxName]);
+			}
+			return activeElems;
 		}
+
+		function selection(mouseUp) {
+			var cursorPos,
+				activElems = getElemsByYs();
+			for (var i in activElems){
+				activElems[i].updateCursor(self.coords,mouseUp);
+				activElems[i].cursor.setEditable(true);
+				activElems[i].enable();
+			}
+			self.viewer.canvasLayer.refresh();
+		}
+
 		$(this.canvasLayer).mousedown(function(evt) {
 			coords = self._getXandY($(this), evt);
 			self.mouseCoordsIni = [coords.x, coords.y];
@@ -130,8 +124,6 @@ define(function() {
 			$.publish('CanvasLayer-mousemove', xy);
 		});
 		$.subscribe('CanvasLayer-refresh',function(el,name){
-			//console.log("CanvasLayer-refresh");
-
 			self.viewer.canvasLayer.refresh(name);
 		});
 
@@ -171,13 +163,13 @@ define(function() {
 		this.elems[elem.name] = elem;
 		this.refresh();
 	};
-	// CanvasLayer.prototype.removeElement = function(name) {
-	// 	delete this.elems[name];
-	// };
+	/**
+	 * Refresh canvas layer: all elements in canvas layer should be elements cursors or elements that change fast
+	 */
 	CanvasLayer.prototype.refresh = function() {
 		//console.log('refresh');
 		this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-		this.viewer._scale(this.ctx);
+		this.viewer.scale(this.ctx);
 		// console.log(name1+","+name2);
 		// console.log(this.elems);
 		for (var name in this.elems) {
@@ -188,10 +180,8 @@ define(function() {
 			if (typeof this.elems[name].drawCursor === 'function'){
 				this.elems[name].drawCursor(this.ctx);
 			}
-			
 		}
-
-		this.viewer._resetScale(this.ctx);
+		this.viewer.resetScale(this.ctx);
 		if (this.mouseDown) {
 			var style = this.ctx.strokeStyle;
 			this.ctx.strokeStyle = this.color;

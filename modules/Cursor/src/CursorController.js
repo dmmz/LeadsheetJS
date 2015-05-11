@@ -14,20 +14,13 @@ define([
 	 */
 	CursorController.prototype.initSubscribe = function() {
 		var self = this;
-		
-		// TODO: revise
-		//  $.subscribe('ToAllCursors-setEditable', function(el, isEditable) {
-		// 	self.setEditable(isEditable);
-		// });
 		$.subscribe('Cursor-' + this.view.id, function(el, fn, param) {
-			if (self.model.getEditable()){
-				self[fn].call(self,param);
-				$.publish('CanvasLayer-refresh');				
+			if (self.model.getEditable()) {
+				self[fn].call(self, param);
+				$.publish('CanvasLayer-refresh');
 			}
-
 		});
 	};
-
 
 	/**
 	 * set cursor by index
@@ -38,9 +31,7 @@ define([
 		if (typeof index === "undefined" || isNaN(index)) {
 			throw 'CursorController - setCursor - index is not correct ' + index;
 		}
-
 		this.model.setPos(index);
-		//TODO: change by 'canvaslayer-refresh', working for notes but cannot do it yet because we need to solve some problems for the chords editions
 	};
 
 	CursorController.prototype.expandSelected = function(inc) {
@@ -53,7 +44,7 @@ define([
 	CursorController.prototype.moveCursor = function(inc) {
 		this.setCursor(this.model.getEnd() + inc);
 	};
-	//TODO: setEditable???
+
 	CursorController.prototype.setEditable = function(isEditable) {
 		this.model.setEditable(isEditable);
 	};

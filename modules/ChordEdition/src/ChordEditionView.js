@@ -14,7 +14,9 @@ define([
 	}
 
 	ChordEditionView.prototype.render = function(parentHTML, callback) {
-		var rendered = Mustache.render(ChordEditionTemplate,{'imgPath':this.imgPath});
+		var rendered = Mustache.render(ChordEditionTemplate, {
+			'imgPath': this.imgPath
+		});
 		if (typeof parentHTML !== "undefined") {
 			parentHTML.innerHTML = rendered;
 		}
@@ -56,15 +58,15 @@ define([
 	};
 
 	ChordEditionView.prototype.initKeyboard = function() {
-		$.subscribe('enter-key', function(el){
+		$.subscribe('enter-key', function(el) {
 			fn = 'toggleEditChord';
 			$.publish('ChordEditionView', fn);
 		});
-		$.subscribe('ctrl-c-key', function(el){
+		$.subscribe('ctrl-c-key', function(el) {
 			fn = 'copyChords';
 			$.publish('ChordEditionView', fn);
 		});
-		$.subscribe('ctrl-v-key', function(el){
+		$.subscribe('ctrl-v-key', function(el) {
 			fn = 'pasteChords';
 			$.publish('ChordEditionView', fn);
 		});
@@ -76,7 +78,7 @@ define([
 		}
 		return false;
 	};
-	
+
 	ChordEditionView.prototype.unactiveView = function(idElement) {
 		this.editMode = '';
 		$.publish('ChordEditionView-unactiveView');

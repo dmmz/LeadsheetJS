@@ -2,7 +2,7 @@
 define(['utils/NoteUtils',
 	'jquery',
 	'pubsub'
-	], function(NoteUtils,$,pubsub) {
+], function(NoteUtils, $, pubsub) {
 	function KeyboardManager(test) {
 
 		function stopEvent(evt) {
@@ -30,9 +30,9 @@ define(['utils/NoteUtils',
 			);
 		}
 
-		function publish(eventName,evt,param) {
+		function publish(eventName, evt, param) {
 			if (test) {
-				console.log("keyboard "+eventName);
+				console.log("keyboard " + eventName);
 			}
 			$.publish(eventName, param);
 			stopEvent(evt);
@@ -57,38 +57,38 @@ define(['utils/NoteUtils',
 			}
 			if (keyCode == 38 || keyCode == 40) { // up & down arrows
 				inc = (keyCode == 38) ? 1 : -1;
-				publish('updown-arrows',evt, inc);
+				publish('updown-arrows', evt, inc);
 			} else if (NoteUtils.getValidPitch(key) != -1 && (!evt.ctrlKey)) {
 				publish('pitch-letter-key', evt, key.toUpperCase());
 			} else if (ACC_KEYS.hasOwnProperty(key) && (!evt.ctrlKey)) {
 				var acc = ACC_KEYS[key];
 				// console.log(acc);
-				if (evt.shiftKey){
+				if (evt.shiftKey) {
 					publish('shift-accidental-key', evt, acc);
-				}else{
+				} else {
 					publish('accidental-key', evt, acc);
 				}
 			} else if (parseInt(key, null) >= 1 && parseInt(key, null) <= 9) {
-				publish('number-key',evt, key);
+				publish('number-key', evt, key);
 			} else if (keyCode == 190) {
 				publish('dot-key', evt, evt.shiftKey);
 				stopEvent(evt);
 			} else if (keyCode == 84) { // T be carefull, set key to t will be call on F5 also
 				if (evt.shiftKey) {
-					publish('shift-t-key',evt);
+					publish('shift-t-key', evt);
 				} else {
-					publish('t-key',evt);
+					publish('t-key', evt);
 				}
 			} else if (keyCode == 82) { // R
-				publish('R-key',evt);
+				publish('R-key', evt);
 			} else if (keyCode == 46) { //supr
-				publish('supr-key',evt); // in our editor we want to replace note by silence and not delete note
+				publish('supr-key', evt); // in our editor we want to replace note by silence and not delete note
 			} else if (keyCode == 13) { //enter
-				publish('enter-key',evt);
+				publish('enter-key', evt);
 			} else if ((keyCode == 67 && evt.ctrlKey) || (keyCode == 67 && metaKey)) { // Ctrl + c or Command + c (mac or windows specific key)
-				publish('ctrl-c-key',evt);
+				publish('ctrl-c-key', evt);
 			} else if ((keyCode == 86 && evt.ctrlKey) || (keyCode == 86 && metaKey)) { // Ctrl + v or Command + v (mac or windows specific key)
-				publish('ctrl-v-key',evt);
+				publish('ctrl-v-key', evt);
 			} else if (keyCode == 9) {
 				inc = (evt.shiftKey) ? -1 : 1;
 				publish('tab-key', evt, inc);
@@ -96,26 +96,26 @@ define(['utils/NoteUtils',
 				// left-right arrows
 				inc = (keyCode == 39) ? 1 : -1;
 				if (evt.shiftKey) {
-					publish('shift-leftright-arrows',evt, inc);
+					publish('shift-leftright-arrows', evt, inc);
 				} else if (evt.ctrlKey) {
-					publish('ctrl-leftright-arrows',evt, inc);
+					publish('ctrl-leftright-arrows', evt, inc);
 				} else {
-					publish('leftright-arrows',evt, inc);
+					publish('leftright-arrows', evt, inc);
 				}
 			} else if (keyCode == 36) { //begin
 				if (evt.shiftKey) {
-					publish('shift-begin',evt);
+					publish('shift-begin', evt);
 				} else {
-					publish('begin',evt);
+					publish('begin', evt);
 				}
 			} else if (keyCode == 35) { //end
 				if (evt.shiftKey) {
-					publish('shift-end',evt);
+					publish('shift-end', evt);
 				} else {
-					publish('end',evt);
+					publish('end', evt);
 				}
 			}
-			
+
 
 		});
 	};
