@@ -10,7 +10,7 @@ define([
 	function NoteEditionView(imgPath) {
 		this.el = undefined;
 		this.imgPath = imgPath;
-		this.initKeyboardController();
+		this.initKeyboard();
 	}
 
 	NoteEditionView.prototype.render = function(parentHTML, callback) {
@@ -29,7 +29,7 @@ define([
 	/**
 	 * manages events that come from the keyboard
 	 */
-	NoteEditionView.prototype.initKeyboardController = function() {
+	NoteEditionView.prototype.initKeyboard = function() {
 			$.subscribe('updown-arrows', function(el,inc){
 			fn = 'setPitch';
 			$.publish('NoteEditionView', [fn, inc]);

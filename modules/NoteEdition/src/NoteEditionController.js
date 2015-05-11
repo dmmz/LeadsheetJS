@@ -28,8 +28,9 @@ define([
 			self.changeEditMode(false);
 		});
 		// cursor view subscribe
-		$.subscribe('CursorView-moveCursorByElementnotes', function(el, inc) {
+		$.subscribe('Cursor-moveCursorByElement-notes', function(el, inc) {
 			self.moveCursorByBar(inc);
+			$.publish('CanvasLayer-refresh');
 		});
 
 		$.subscribe('NoteEditionView', function(el, fn, param) {

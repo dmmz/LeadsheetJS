@@ -54,11 +54,10 @@ define([
 				throw "NoteSpaceManager needs CanvasLayer";
 			}
 			
-			self.viewer.canvasLayer.addElement(self);
 			//if (self.cursor.getEditable()) {
 			self.noteSpace = self.createNoteSpace(self.viewer);
-			//TODO: refactor
-			self.viewer.canvasLayer.refresh();
+			self.viewer.canvasLayer.addElement(self); //addElement refreshes canvasLayer
+			
 		});
 		// $.subscribe('CanvasLayer-updateCursors',function(el,coords){
 		// 	self.updateCursor(coords);
@@ -99,6 +98,7 @@ define([
 		}
 	};
 	NoteSpaceManager.prototype.updateNote = function(noteString, noteModel, noteSpace) {
+		console.warn("function updateNote");
 		if (typeof noteModel === "undefined" && typeof noteSpace !== "undefined") {
 			noteModel = new NoteModel({
 				'beat': noteSpace.beatNumber,

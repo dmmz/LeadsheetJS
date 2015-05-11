@@ -2,9 +2,11 @@ define([
 	'pubsub',
 ], function(pubsub) {
 
-	function CursorListener(model, id, keyToNext) {
+	function CursorListener(id, keyToNext) {
+		if (!id){
+			throw "CursorListener needs id";
+		}
 		this.id = id;
-		//this.model = model; // Cursor view need information about its model, this is only because draw function is call by an external viewer
 		this.keyToNext = (typeof keyToNext !== "undefined") ? keyToNext : 'arrow'; // way to go to previous next, 'arrow' or 'tab', by default it's arrow
 		this.initSubscribe();
 	}
@@ -14,16 +16,17 @@ define([
 	 */
 	CursorListener.prototype.initSubscribe = function() {
 		var fn;
-		var cursorId = 'Cursor-' + self.id;
+		var cursorId = 'Cursor-' + this.id;
+		var self = this;
 		if (self.keyToNext === 'tab') {			
 			$.subscribe('tab-key',function(el,inc){
 				//TODO: NoteEdition is subscribed to this one, maybe it's the better solution, but not sure
-				$.publish('Cursor-moveCursorByElement' + self.id, inc);
+				$.publish('Cursor-moveCursorByElement-' + self.id, inc);
 			});
 		}else{ //arrow
 			$.subscribe('ctrl-leftright-arrows',function(el,inc){
 				//TODO: NoteEdition is subscribed to this one, maybe it's the better solution, but not sure
-				$.publish('Cursor-moveCursorByElement' + self.id, inc);
+				$.publish('Cursor-moveCursorByElement-' + self.id, inc);
 			});
 			$.subscribe('shift-leftright-arrows',function(el,inc){
 				fn = 'expandSelected';

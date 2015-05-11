@@ -118,13 +118,13 @@ define([
         }
         return areas;
     };
-    //CANVASLAYER ELEMENT METHOD
     WaveDrawer.prototype.drawCursor = function(ctx) {
         ctx.beginPath();
         ctx.moveTo(this.cursorPos.x, this.cursorPos.y);
         ctx.lineTo(this.cursorPos.x, this.cursorPos.y + this.cursorPos.h);
         ctx.stroke();
     };
+    //CANVASLAYER ELEMENT METHOD
     WaveDrawer.prototype.draw = function(ctx) {
        var saveFillColor = ctx.fillStyle;
         ctx.fillStyle = "#9900FF";

@@ -1,5 +1,8 @@
 //TODO: we should add jquery and pubsub, but it's working anyway??? no clear what's going on 
-define(['utils/NoteUtils'], function(NoteUtils) {
+define(['utils/NoteUtils',
+	'jquery',
+	'pubsub'
+	], function(NoteUtils,$,pubsub) {
 	function KeyboardManager(test) {
 
 		function stopEvent(evt) {
@@ -109,7 +112,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 				if (evt.shiftKey) {
 					publish('shift-end',evt);
 				} else {
-					publish('shift-end',evt);
+					publish('end',evt);
 				}
 			}
 			

@@ -164,6 +164,7 @@ define(function() {
 			throw 'CanvasLayer element needs name property';
 		}
 		this.elems[elem.name] = elem;
+		this.refresh();
 	};
 	// CanvasLayer.prototype.removeElement = function(name) {
 	// 	delete this.elems[name];
@@ -176,7 +177,7 @@ define(function() {
 		// console.log(this.elems);
 		for (var name in this.elems) {
 			if (this.elems[name].isEnabled()){
-				this.elems[name].draw(this.ctx);	
+				this.elems[name].draw(this.ctx);
 			}
 			//TODO refactor, we are doing this only to make it work, but it's bad code
 			if (typeof this.elems[name].drawCursor === 'function'){
