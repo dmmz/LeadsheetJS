@@ -145,7 +145,6 @@ define(function(require) {
 			view: noteEdition.view,
 			order: 2
 		});
-		menu.controller.activeMenu('Notes');
 	});
 
 	chordEdition.view.render(undefined, function() {
@@ -190,6 +189,10 @@ define(function(require) {
 			view: fileEdition.view,
 			order: 1
 		});
+		menu.controller.loadStateTab();
+		if (typeof menu.model.getCurrentMenu() === "undefined") {
+			menu.controller.activeMenu('File');
+		}
 	});
 	$.publish('ToViewer-draw', songModel);
 

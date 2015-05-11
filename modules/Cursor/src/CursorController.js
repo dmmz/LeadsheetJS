@@ -1,7 +1,7 @@
 define([
-	'utils/UserLog',
+	"jquery",
 	'pubsub',
-], function(UserLog, pubsub) {
+], function($, pubsub) {
 
 	function CursorController(model, view) {
 		this.model = model || new CursorModel();

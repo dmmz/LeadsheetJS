@@ -34,13 +34,13 @@ define([
 		function LSViewer(divContainer, params) {
 			this._init(divContainer, params);
 			this._initSubscribe();
-			this.el = divContainer; 
+			this.el = divContainer;
 		}
 		LSViewer.prototype._init = function(divContainer, params) {
 			params = params || {};
 			this.DEFAULT_HEIGHT = 1000;
-			this.scaler = new Scaler();	//object that scales objects. User in NoteSpaceView and ChordSpaceView
-			this.SCALE = null;		//scale from 0 to
+			this.scaler = new Scaler(); //object that scales objects. User in NoteSpaceView and ChordSpaceView
+			this.SCALE = null; //scale from 0 to
 			//0.999  fixes vexflow bug that doesn't draw last pixel on end bar
 			this.setScale(0.999);
 
@@ -91,7 +91,7 @@ define([
 			$(this.divContainer).css(divCss);
 			return canvas[0];
 		};
-		
+
 		LSViewer.prototype._initSubscribe = function() {
 			var self = this;
 			$.subscribe('ToViewer-draw', function(el, songModel) {
@@ -162,7 +162,7 @@ define([
 				$(this.divContainer).height(this.canvas.height);
 			}
 		};
-		
+
 
 		LSViewer.prototype.draw = function(song) {
 			if (typeof song === "undefined") {
@@ -279,8 +279,12 @@ define([
 			this.vxfBars = vxfBars;
 			this.ctx.fillStyle = "black";
 			this.ctx.strokeStyle = "black";
-			this._displayComposer(song.getComposer());
-			this._displayTitle(song.getTitle());
+			if (this.DISPLAY_COMPOSER) {
+				this._displayComposer(song.getComposer());
+			}
+			if (this.DISPLAY_TITLE) {
+				this._displayTitle(song.getTitle());
+			}
 			this.resetScale();
 			//console.timeEnd('whole draw');
 			// if we requesteed to have a layer and we haven't already created it

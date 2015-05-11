@@ -12,8 +12,8 @@
 //var NoteModel_MidiCSL = require('modules/MidiCSL/src/model/NoteModel_MidiCSL');
 
 
-define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConverterMidi_MidiCSL', 'modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'],
-	function(SongModel, SongConverterMidi_MidiCSL, SongModel_MidiCSL, MIDI, pubsub) {
+define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConverterMidi_MidiCSL', 'modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'],
+	function($, SongModel, SongConverterMidi_MidiCSL, SongModel_MidiCSL, MIDI, pubsub) {
 		/* option contain
 			editor				// Score Editor Object, it is use mainly for viewer to display cursor
 			chordsInstrument

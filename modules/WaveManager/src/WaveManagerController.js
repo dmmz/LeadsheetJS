@@ -1,6 +1,7 @@
 define([
+	'jquery',
 	'pubsub'
-], function(pubsub) {
+], function($, pubsub) {
 
 	function WaveManagerController(waveMng) {
 		if (!waveMng) throw "WaveManagerController - WaveMng not defined";

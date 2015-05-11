@@ -1,11 +1,12 @@
 define([
+	'jquery',
 	'mustache',
 	'modules/core/src/SongModel',
 	'utils/UserLog',
 	'utils/NoteUtils',
 	'pubsub',
 	'text!modules/NoteEdition/src/NoteEditionTemplate.html',
-], function(Mustache, SongModel, UserLog, NoteUtils, pubsub, NoteEditionTemplate) {
+], function($, Mustache, SongModel, UserLog, NoteUtils, pubsub, NoteEditionTemplate) {
 
 	function NoteEditionView(imgPath) {
 		this.el = undefined;

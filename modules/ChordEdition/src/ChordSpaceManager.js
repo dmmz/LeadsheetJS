@@ -5,8 +5,9 @@ define([
 	'modules/Cursor/src/CursorModel',
 	'utils/UserLog',
 	'modules/Edition/src/ElementManager',
-	'pubsub',
-], function(SongModel, ChordModel, ChordSpaceView, CursorModel, UserLog, ElementManager, pubsub) {
+	'jquery',
+	'pubsub'
+], function(SongModel, ChordModel, ChordSpaceView, CursorModel, UserLog, ElementManager, $, pubsub) {
 
 	function ChordSpaceManager(songModel, cursor, viewer) {
 		if (!songModel || !cursor) {

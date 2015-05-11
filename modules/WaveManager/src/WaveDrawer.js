@@ -1,9 +1,11 @@
 define([
+    'jquery',
     'modules/core/src/SongBarsIterator',
     'modules/Cursor/src/CursorModel',
+    'utils/EditionUtils',
     'modules/WaveManager/src/WaveBarView',
     'pubsub'
-], function(SongBarsIterator, CursorModel, WaveBarView,pubsub) {
+], function($, SongBarsIterator, CursorModel, EditionUtils, WaveBarView, pubsub) {
     function WaveDrawer(viewer, params, waveMng) {
             params = params || {};
             if (!params.pixelRatio) {
@@ -23,9 +25,9 @@ define([
             this._adaptViewer();
             this._initSubscribe();
         }
-    /**
-     * update viewer dimensions if needed (space between lines and margin top)
-     */
+        /**
+         * update viewer dimensions if needed (space between lines and margin top)
+         */
     WaveDrawer.prototype._adaptViewer = function() {
         if (this.topAudio > 0) {
             this.viewer.setLineMarginTop(this.topAudio);
@@ -38,13 +40,13 @@ define([
     };
     WaveDrawer.prototype._initSubscribe = function() {
         var self = this;
-        $.subscribe('CanvasLayer-updateCursors',function(el,coords){
+        $.subscribe('CanvasLayer-updateCursors', function(el, coords) {
             self.updateCursor(coords);
         });
     };
     /**
      * @param  {Float} time      in seconds (e.g. 4.54)
-     * @param  {Integer} barIndex number of bar in which the cursor is (should be previously calculated) 
+     * @param  {Integer} barIndex number of bar in which the cursor is (should be previously calculated)
      * @return {Object}          e.g. { x: 12, y: 23, w:5, h:5}
      */
     WaveDrawer.prototype._getAudioPosFromTime = function(time, barIndex) {
@@ -62,8 +64,8 @@ define([
 
     /**
      * @param  {Integer} x        coordinate x
-     * @param  {Integer} barIndex number of bar in which the cursor is (should be previously calculated) 
-     * @return {Float}  time in seconds (e.g. 3.94)          
+     * @param  {Integer} barIndex number of bar in which the cursor is (should be previously calculated)
+     * @return {Float}  time in seconds (e.g. 3.94)
      */
     WaveDrawer.prototype._getAudioTimeFromPos = function(x, barIndex) {
         var timeBoundaries = this.waveMng.barTimesMng.getTimeLimits(barIndex);
@@ -76,9 +78,9 @@ define([
     };
 
     /**
-     * 
+     *
      * @param  {Float} time     in seconds (e.g. 1.23)
-     * @param  {Integer} barIndex number of bar in which the cursor is (should be previously calculated) 
+     * @param  {Integer} barIndex number of bar in which the cursor is (should be previously calculated)
      *                            if not specfied, it will take current bar number from barTimesMng (this is used for example, when playing)
      * @return {Object}          e.g. { x: 12, y: 23, w:5, h:5}
      */
@@ -148,6 +150,69 @@ define([
     WaveDrawer.prototype.drawAudio = function(barTimesMng) {
         //important to reset each time we draw
         this.waveBarDimensions = [];
+        return this._getAudioPosFromTime(time, barIndex);
+
+    };
+    WaveDrawer.prototype.updateCursorPlaying = function(time) {
+        this.cursorPos = this._getCursorDims(time);
+    };
+
+    WaveDrawer.prototype.getAreasFromCursor = function() {
+        var barTimesMng = this.waveMng.barTimesMng,
+            startTime = this.cursor.getStart(),
+            endTime = this.cursor.getEnd();
+        var startBar = barTimesMng.getIndexByTime(startTime);
+        var endBar = barTimesMng.getIndexByTime(endTime);
+        var areas = EditionUtils.getElementsAreaFromCursor(this.waveBarDimensions, [startBar, endBar]);
+
+        var cursor1 = this._getCursorDims(startTime, startBar);
+        var cursor2 = this._getCursorDims(endTime, endBar);
+
+        if (cursor1.x != cursor2.x) {
+            if (cursor1.x > areas[0].x && cursor1.x < areas[0].x + areas[0].w) {
+                var space = cursor1.x - areas[0].x;
+                areas[0].x = cursor1.x;
+                areas[0].w -= space;
+            }
+            var lastArea = areas[areas.length - 1];
+
+            if (cursor2.x > lastArea.x && cursor2.x < lastArea.x + lastArea.w) {
+                lastArea.w = cursor2.x - lastArea.x;
+            }
+        } else {
+            areas = [];
+        }
+        return areas;
+    };
+    //CANVASLAYER ELEMENT METHOD
+    WaveDrawer.prototype.draw = function(ctx) {
+        ctx.beginPath();
+        ctx.moveTo(this.cursorPos.x, this.cursorPos.y);
+        ctx.lineTo(this.cursorPos.x, this.cursorPos.y + this.cursorPos.h);
+        ctx.stroke();
+    };
+    WaveDrawer.prototype.drawSelection = function(ctx) {
+        var saveFillColor = ctx.fillStyle;
+        ctx.fillStyle = "#9900FF";
+        ctx.globalAlpha = 0.2;
+        var areas = this.getAreasFromCursor();
+        for (i = 0, c = areas.length; i < c; i++) {
+            ctx.fillRect(
+                areas[i].x,
+                areas[i].y,
+                areas[i].w,
+                areas[i].h
+            );
+        }
+        ctx.fillStyle = saveFillColor;
+        ctx.globalAlpha = 1;
+
+    };
+    WaveDrawer.prototype.newCursor = function(audio) {
+        this.cursor = new CursorModel(audio.getDuration());
+    };
+    WaveDrawer.prototype.drawAudio = function(barTimesMng) {
+
         var numBars = barTimesMng.getLength();
         var area, dim, bar, barTime = 0,
             sliceSong = 1 / numBars,
@@ -173,6 +238,7 @@ define([
         this.viewer.canvasLayer.refresh();
     };
  
+
     WaveDrawer.prototype._drawMargins = function(area, ctx) {
         ctx.beginPath();
         ctx.moveTo(area.x, area.y);
@@ -234,52 +300,44 @@ define([
         });
 
     };
-    WaveDrawer.prototype.getYs = function(coords) {
-        
-        var cursorBars = this.getBarsInPath(coords);
-      
-        if (cursorBars){
-            return {
-                topY: this.waveBarDimensions[cursorBars[0]].getArea().y,
-                bottomY : this.waveBarDimensions[cursorBars[1]].getArea().y
-            };
-        }else{
-            return false;
-        }
-    };
-    // TODO, refactor: these functions are present in NoteSpaceManager and in ChordSpaceManager
-    WaveDrawer.prototype.getBarsInPath = function(coords) {
-         var note,
-            min = null,
-            max = null;
-        for (var i in this.waveBarDimensions) {
-            if (this.isInPath(coords, i)) {
-                if (min == null) {
-                    min = Number(i);
-                }
-                if (max == null || max < i) {
-                    max = Number(i);
-                }
-            }
-        }
-        return (min === null && max === null) ? false : [min, max];
-    };
-    WaveDrawer.prototype.isInPath = function(area,i) {
-        area.xe = area.xe || area.x;
-        area.ye = area.ye || area.y; //in case xe and ye are not defined, they take the same value a x and y respectively
-        pos = this.viewer.scaler.getScaledObj(this.waveBarDimensions[i].getArea());
-        var posXe = pos.x + pos.w,
-            posYe = pos.y + pos.h;
-        return (area.x < posXe && area.xe > pos.x) && (area.y < posYe && area.ye > pos.y);
-    };
+
     WaveDrawer.prototype.updateCursor = function(coords) {
+        var self = this;
+
+        function isInPath(area, i) {
+                area.xe = area.xe || area.x;
+                area.ye = area.ye || area.y; //in case xe and ye are not defined, they take the same value a x and y respectively
+                pos = self.viewer.scaler.getScaledObj(self.waveBarDimensions[i].getArea());
+                var posXe = pos.x + pos.w,
+                    posYe = pos.y + pos.h;
+                return (area.x < posXe && area.xe > pos.x) && (area.y < posYe && area.ye > pos.y);
+            }
+            // TODO, refactor: these functions are present in NoteSpaceManager and in ChordSpaceManager
+        function getBarsInPath(coords) {
+                var note,
+                    min = null,
+                    max = null;
+                for (var i in self.waveBarDimensions) {
+                    if (isInPath(coords, i)) {
+                        if (min == null) {
+                            min = Number(i);
+                        }
+                        if (max == null || max < i) {
+                            max = Number(i);
+                        }
+                    }
+                }
+                return (min === null && max === null) ? false : [min, max];
+            }
             //Doing the inverse of what we do in getCursorDims
-        var cursorBars = this.getBarsInPath(coords);
+        var cursorBars = getBarsInPath(coords);
+
         if (cursorBars[0] != null && cursorBars[1] != null) {
             var pos1 = this._getAudioTimeFromPos(coords.x, cursorBars[0]);
             var pos2 = this._getAudioTimeFromPos(coords.xe, cursorBars[1]);
             this.cursor.setPos([pos1, pos2]);
         }
+
     };
     return WaveDrawer;
 });

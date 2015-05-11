@@ -110,13 +110,13 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	};
 	/**
 	 * Adds notes in a given position (special case of noteSplice)
-	 * @param {Array of NoteModel} notes 
-	 * @param {Integer} position 
+	 * @param {Array of NoteModel} notes
+	 * @param {Integer} position
 	 */
 	NoteManager.prototype.addNotes = function(notes, position) {
-		if (position === undefined){
+		if (position === undefined) {
 			position = this.notes.length;
-		} 
+		}
 		this.notesSplice([position, position - 1], notes);
 	};
 	/**
@@ -138,12 +138,12 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	};
 
 	/**
-	 * 
+	 *
 	 * @return {Array} array of pitches of all the notes. e.g.  ["Db/4", "E/4", "F/4", "A#/4", "C/5", "B/4"]
 	 */
 	NoteManager.prototype.getNotesAsString = function() {
 		var arrPitches = [];
-		this.notes.forEach(function(note){
+		this.notes.forEach(function(note) {
 			arrPitches.push(note.toString());
 		});
 		return arrPitches;
@@ -236,8 +236,8 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	 */
 	NoteManager.prototype._getIndexAndCurBeat = function(beat) {
 		var i = 0,
-		curNote,
-		curBeat = 1;
+			curNote,
+			curBeat = 1;
 		//we round in the comparison in order to not carry the rounding in curBeat (which is cumulative inside the iteration)
 		while (roundBeat(curBeat) < beat) { //to avoid problems with tuplet 
 			curNote = this.getNote(i);
@@ -257,7 +257,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	 * closest note just after a given beat
 	 * @param  {float} beat global beat (first beat starts at 1, not 0)
 	 * @return {Integer} index of the note
-	 * TODO: optimisation: accept object with cached index and beat to start from, useful when function is called in loops (iterator) 
+	 * TODO: optimisation: accept object with cached index and beat to start from, useful when function is called in loops (iterator)
 	 */
 	NoteManager.prototype.getNextIndexNoteByBeat = function(beat) {
 		if (isNaN(beat) || beat < 1) {
@@ -278,7 +278,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 			throw 'NoteManager - getPrevIndexNoteByBeat - beat must be a positive float ' + beat;
 		}
 		var r = this._getIndexAndCurBeat(beat);
-		return (r.curBeat === beat ) ? r.index : r.index - 1;
+		return (r.curBeat === beat) ? r.index : r.index - 1;
 	};
 
 	/**
@@ -318,7 +318,8 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		silenceDurs.forEach(function(dur) {
 			if (typeof dur !== "undefined") {
 				newNote = new NoteModel(dur + 'r');
-				self.addNote(newNote);
+				var pos = self.getNextIndexNoteByBeat(initBeat);
+				self.insertNote(pos, newNote);
 			}
 		});
 	};
@@ -427,6 +428,34 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		checkTuplets(this.notes);
 		checkTies(this.notes);
 	};
+
+	/**
+	 * if a duration function applied to a tuplet note, we expand cursor to include the other tuplet notes (to avoid strange durations)
+	 *
+	 * @param  {CursorModel} cursor
+	 * @return {cursorModel} updated cursor
+	 */
+	/*NoteManager.prototype.reviseTuplets = function(cursor) {
+		var notes = this.getNotes();
+		var c = cursor.getStart();
+		if (notes[c].isTuplet()) {
+			c--;
+			while (c >= 0 && notes[c].isTuplet() && !notes[c].isTuplet('stop')) {
+				cursor.setPos([c, cursor.getEnd()]);
+				c--;
+			}
+		}
+		c = cursor.getEnd();
+		if (notes[c].isTuplet()) {
+			c++;
+			while (c < notes.length && notes[c].isTuplet() && !notes[c].isTuplet('start')) {
+				cursor.setPos([cursor.getStart(), c]);
+				c++;
+			}
+		}
+		return cursor;
+	};*/
+
 
 
 	/**

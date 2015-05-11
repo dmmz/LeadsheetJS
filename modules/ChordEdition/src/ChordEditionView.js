@@ -1,10 +1,11 @@
 define([
+	'jquery',
 	'mustache',
 	'modules/core/src/SongModel',
 	'utils/UserLog',
 	'pubsub',
 	'text!modules/ChordEdition/src/ChordEditionTemplate.html',
-], function(Mustache, SongModel, UserLog, pubsub, ChordEditionTemplate) {
+], function($, Mustache, SongModel, UserLog, pubsub, ChordEditionTemplate) {
 
 	function ChordEditionView(parentHTML, cursor, imgPath) {
 		this.cursor = cursor;

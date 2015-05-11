@@ -2,8 +2,9 @@ define([
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
 	'mustache',
 	'utils/UserLog',
+	'jquery',
 	'pubsub',
-], function(SongModel_CSLJson, Mustache, UserLog, pubsub) {
+], function(SongModel_CSLJson, Mustache, UserLog, $, pubsub) {
 
 	function HistoryController(model, songModel) {
 		this.model = model || new HistoryModel();

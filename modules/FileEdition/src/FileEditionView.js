@@ -1,10 +1,11 @@
 define([
+	'jquery',
 	'mustache',
 	'modules/core/src/SongModel',
 	'utils/UserLog',
 	'pubsub',
 	'text!modules/FileEdition/src/FileEditionTemplate.html',
-], function(Mustache, SongModel, UserLog, pubsub, FileEditionTemplate) {
+], function($, Mustache, SongModel, UserLog, pubsub, FileEditionTemplate) {
 
 	function FileEditionView(parentHTML) {
 		this.el = undefined;

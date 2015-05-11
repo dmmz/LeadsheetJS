@@ -1,6 +1,7 @@
 define([
+	'jquery',
 	'pubsub',
-], function(pubsub) {
+], function($, pubsub) {
 
 	/**
 	 * Cursor consists of a pos array that contains index start and index end of position

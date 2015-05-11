@@ -4,8 +4,9 @@ define([
 	'modules/Cursor/src/CursorModel',
 	'utils/UserLog',
 	'modules/Edition/src/ElementManager',
+	'jquery',
 	'pubsub',
-], function(NoteModel, NoteSpaceView, CursorModel, UserLog, ElementManager, pubsub) {
+], function(NoteModel, NoteSpaceView, CursorModel, UserLog, ElementManager,$, pubsub) {
 
 	function NoteSpaceManager(cursor, viewer) {
 

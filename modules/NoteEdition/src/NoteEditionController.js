@@ -5,8 +5,9 @@ define([
 	'modules/Cursor/src/CursorModel',
 	'utils/NoteUtils',
 	'utils/UserLog',
+	'jquery',
 	'pubsub',
-], function(Mustache, SongModel, NoteManager, CursorModel, NoteUtils, UserLog, pubsub) {
+], function(Mustache, SongModel, NoteManager, CursorModel, NoteUtils, UserLog, $, pubsub) {
 
 	function NoteEditionController(songModel, cursor, noteSpaceMng) {
 		this.songModel = songModel || new SongModel();
@@ -107,6 +108,19 @@ define([
 			"7": "w",
 			"8": "w" //should be double whole but not supported yet
 		};
+		var nm = this.songModel.getComponent('notes');
+
+		var selectedNotes = nm.cloneElems(this.cursor.getStart(), this.cursor.getEnd() + 1);
+		var tmpNm = new NoteManager();
+		tmpNm.setNotes(selectedNotes);
+		var initIndex = this.cursor.getStart();
+		var initBeat = nm.getNoteBeat(initIndex);
+		//check if durations fit in the bar duration
+		if (!this.fitsInBar(initIndex, initBeat, nm, tmpNm)) {
+			UserLog.logAutoFade('error', "Duration doesn't fit the bar");
+			return;
+		}
+
 		var selNotes = this.getSelectedNotes();
 		var newDur = arrDurs[duration];
 		if (typeof newDur === "undefined") {
@@ -119,8 +133,10 @@ define([
 			selNotes[i].setDuration(newDur);
 			durAfter += selNotes[i].getDuration();
 		}
+
 		this.checkDuration(durBefore, durAfter);
 	};
+
 
 	NoteEditionController.prototype.setDot = function() {
 		var selNotes = this.getSelectedNotes();
@@ -247,9 +263,10 @@ define([
 		for (var i = 0; i < selNotes.length; i++) {
 			note = selNotes[i];
 			if (note.tie === "stop" || note.tie === "start") {
-				console.warn("Can't convert to silence a tied note");
+				note.tie = undefined;
+				/*console.warn("Can't convert to silence a tied note");
 				UserLog.logAutoFade('warn', "Can't convert to silence a tied note");
-				continue;
+				continue;*/
 			}
 			if (!note.isRest) note.setRest(true);
 		}
@@ -322,6 +339,8 @@ define([
 		return selectedNotes;
 	};
 
+
+
 	NoteEditionController.prototype.checkDuration = function(durBefore, durAfter) {
 		function checkIfBreaksTuplet(initBeat, endBeat, nm) {
 			/**
@@ -338,6 +357,7 @@ define([
 		}
 
 		var nm = this.songModel.getComponent('notes');
+		// cursor = nm.reviseTuplets(cursor); // TODO use revise tuplets
 		var initBeat = nm.getNoteBeat(this.cursor.getStart());
 		var endBeat = initBeat + durAfter;
 
@@ -358,6 +378,23 @@ define([
 		}
 		//nm.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
 		nm.reviseNotes();
+	};
+
+	NoteEditionController.prototype.fitsInBar = function(initIndex, initBeat, nm, tmpNm) {
+		var numBar = nm.getNoteBarNumber(initIndex, this.songModel);
+		var barBeatDuration = this.songModel.getTimeSignatureAt(numBar).getQuarterBeats();
+		var barRelativeBeat = initBeat - this.songModel.getStartBeatFromBarNumber(numBar);
+
+		var notesNew = tmpNm.getNotes();
+		var duration;
+		for (var i = 0; i < notesNew.length; i++) {
+			duration = notesNew[i].getDuration();
+			if (barRelativeBeat < barBeatDuration && Math.round((barRelativeBeat + duration) * 100000) / 100000 > barBeatDuration) {
+				return false;
+			}
+			barRelativeBeat += duration;
+		}
+		return true;
 	};
 
 	NoteEditionController.prototype.changeEditMode = function(isEditable) {

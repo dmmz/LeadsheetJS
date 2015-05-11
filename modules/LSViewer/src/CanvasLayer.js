@@ -1,8 +1,8 @@
-define(function() {
 	/**
 	 * CanvasLayer is a canvas place on top of the basic canvas to manage edition and to draw elements such as cursors (to optimize rendering)
 	 * @param {LSViewer} viewer 
 	 */
+define(['jquery','pubsub'], function($, pubsub) {
 	function CanvasLayer(viewer) {
 		if (!viewer.canvas) {
 			throw "LSViewer cannot create layer because canvas does not exist";

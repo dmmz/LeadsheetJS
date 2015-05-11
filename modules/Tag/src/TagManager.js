@@ -1,7 +1,8 @@
 define([
 	'modules/Tag/src/TagSpaceView',
+	'jquery',
 	'pubsub',
-], function(TagSpaceView, pubsub) {
+], function(TagSpaceView, $, pubsub) {
 
 	/**
 	 * Create and display tags

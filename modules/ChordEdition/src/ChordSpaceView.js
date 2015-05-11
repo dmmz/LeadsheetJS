@@ -1,10 +1,11 @@
 define([
 	'utils/ChordUtils',
 	'utils/UserLog',
+	'jquery',
 	'pubsub',
 	'jquery_autocomplete',
 	'modules/Edition/src/ElementView'
-], function(ChordUtils, UserLog, pubsub, jquery_autocomplete, ElementView) {
+], function(ChordUtils, UserLog, $, pubsub, jquery_autocomplete, ElementView) {
 
 	function ChordSpaceView(viewer, position, barNumber, beatNumber, viewerScaler) {
 		this.viewer = viewer;
