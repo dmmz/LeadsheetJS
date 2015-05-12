@@ -7,6 +7,7 @@ define([
 		if (!waveMng) throw "WaveManagerController - WaveMng not defined";
 
 		$.subscribe("ToPlayer-play", function() {
+			console.log(waveMng);
 			waveMng.play();
 		});
 		$.subscribe("ToPlayer-pause", function() {

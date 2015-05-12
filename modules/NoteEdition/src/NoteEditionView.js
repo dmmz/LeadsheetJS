@@ -11,7 +11,6 @@ define([
 	function NoteEditionView(imgPath) {
 		this.el = undefined;
 		this.imgPath = imgPath;
-		this.initSubscribe();
 		this.initKeyboard();
 	}
 
@@ -24,212 +23,183 @@ define([
 			parentHTML.innerHTML = rendered;
 		}
 		this.el = rendered;
-		this.initController();
-		//$.publish('NoteEditionView-render');
 		if (typeof callback === "function") {
 			callback();
 		}
 		return;
-		//}
 	};
 
-
 	/**
-	 * Publish event after receiving dom events
+	 * manages events that come from the keyboard
+	 */
+	NoteEditionView.prototype.initKeyboard = function() {
+		$.subscribe('updown-arrows', function(el, inc) {
+			fn = 'setPitch';
+			$.publish('NoteEditionView', [fn, inc]);
+		});
+		$.subscribe('pitch-letter-key', function(el, key) {
+			fn = 'setPitch';
+			$.publish('NoteEditionView', [fn, key]);
+		});
+		$.subscribe('accidental-key', function(el, acc) {
+			fn = 'addAccidental';
+			$.publish('NoteEditionView', [fn, acc]);
+		});
+		$.subscribe('shift-accidental-key', function(el, acc) {
+			fn = 'addAccidental';
+			$.publish('NoteEditionView', [fn, acc+acc]);
+		});
+		$.subscribe('number-key', function(el, key) {
+			fn = 'setCurrDuration';
+			$.publish('NoteEditionView', [fn, key]);
+		});
+		$.subscribe('dot-key', function(el) {
+			fn = 'setDot';
+			$.publish('NoteEditionView', fn);
+		});
+		$.subscribe('shift-t-key', function(el) {
+			fn = 'setTuplet';
+			$.publish('NoteEditionView', fn);
+		});
+		$.subscribe('t-key', function(el) {
+			fn = 'setTie';
+			$.publish('NoteEditionView', fn);
+		});
+		$.subscribe('R-key', function(el) {
+			fn = 'setSilence';
+			$.publish('NoteEditionView', fn);
+		});
+		$.subscribe('supr-key', function(el) {
+			fn = 'setSilence';
+			$.publish('NoteEditionView', fn);
+		});
+		$.subscribe('enter-key', function(el) {
+			fn = 'addNote';
+			$.publish('NoteEditionView', fn);
+		});
+		$.subscribe('ctrl-c-key', function(el) {
+			fn = 'copyNotes';
+			$.publish('NoteEditionView', fn);
+		});
+		$.subscribe('ctrl-v-key', function(el) {
+			fn = 'pasteNotes';
+			$.publish('NoteEditionView', fn);
+		});
+
+	};
+	/**
+	 * Manages events clicked from the menu
+	 * this function is called by MainMenuView, after view is rendered
+	 *
 	 */
 	NoteEditionView.prototype.initController = function() {
 		// pitch
+		var fn;
 		$('#aug-note').click(function() {
-			$.publish('NoteEditionView-setPitch', 1);
+			fn = 'setPitch';
+			$.publish('NoteEditionView', [fn, 1]);
 		});
 		$('#sub-note').click(function() {
-			$.publish('NoteEditionView-setPitch', -1);
+			fn = 'setPitch';
+			$.publish('NoteEditionView', [fn, -1]);
 		});
 
 		// Alteration
 		$('#double_flat').click(function() {
-			$.publish('NoteEditionView-addAccidental', {
-				'acc': 'b',
-				'double': true
-			});
+			fn = 'addAccidental';
+			$.publish('NoteEditionView', [fn, 'bb']);
 		});
 		$('#flat').click(function() {
-			$.publish('NoteEditionView-addAccidental', 'b');
+			fn = 'addAccidental';
+			$.publish('NoteEditionView', [fn, 'b']);
 		});
 		$('#natural').click(function() {
-			$.publish('NoteEditionView-addAccidental', 'n');
+			fn = 'addAccidental';
+			$.publish('NoteEditionView', [fn, 'n']);
 		});
 		$('#sharp').click(function() {
-			$.publish('NoteEditionView-addAccidental', '#');
+			fn = 'addAccidental';
+			$.publish('NoteEditionView', [fn, '#']);
 		});
 		$('#double_sharp').click(function() {
-			$.publish('NoteEditionView-addAccidental', {
-				'acc': '#',
-				'double': true
-			});
+			fn = 'addAccidental';
+			$.publish('NoteEditionView', [fn, '##']);
 		});
-
 		// Rhythm
 		$('#whole-note').click(function() {
-			$.publish('NoteEditionView-setCurrDuration', 7);
+			fn = 'setCurrDuration';
+			$.publish('NoteEditionView', [fn, 7]);
 		});
 		$('#half-note').click(function() {
-			$.publish('NoteEditionView-setCurrDuration', 6);
+			fn = 'setCurrDuration';
+			$.publish('NoteEditionView', [fn, 6]);
 		});
 		$('#quarter-note').click(function() {
-			$.publish('NoteEditionView-setCurrDuration', 5);
+			fn = 'setCurrDuration';
+			$.publish('NoteEditionView', [fn, 5]);
 		});
 		$('#eight-note').click(function() {
-			$.publish('NoteEditionView-setCurrDuration', 4);
+			fn = 'setCurrDuration';
+			$.publish('NoteEditionView', [fn, 4]);
 		});
 		$('#sixteenth-note').click(function() {
-			$.publish('NoteEditionView-setCurrDuration', 3);
+			fn = 'setCurrDuration';
+			$.publish('NoteEditionView', [fn, 3]);
 		});
 		$('#thirty-second-note').click(function() {
-			$.publish('NoteEditionView-setCurrDuration', 2);
+			fn = 'setCurrDuration';
+			$.publish('NoteEditionView', [fn, 2]);
 		});
 		$('#sixty-four-note').click(function() {
-			$.publish('NoteEditionView-setCurrDuration', 1);
+			fn = 'setCurrDuration';
+			$.publish('NoteEditionView', [fn, 1]);
 		});
 		$('#dot').click(function() {
-			$.publish('NoteEditionView-setDot');
+			fn = 'setDot';
+			$.publish('NoteEditionView', fn);
 		});
 
 		// Symbol
 		$('#tie-note').click(function() {
-			$.publish('NoteEditionView-setTie');
+			fn = 'setTie';
+			$.publish('NoteEditionView', fn);
 		});
 		$('#tuplet').click(function() {
-			$.publish('NoteEditionView-setTuplet', true);
+			fn = 'setTuplet';
+			$.publish('NoteEditionView', fn);
 		});
 
 		// Note
 		$('#silent-note').click(function() {
-			$.publish('NoteEditionView-setSilence');
+			fn = 'setSilence';
+			$.publish('NoteEditionView', fn);
 		});
 		$('#regular-note').click(function() {
-			$.publish('NoteEditionView-setPitch', 0);
+			fn = 'setPitch';
+			$.publish('NoteEditionView', [fn, 0]);
 		});
 		$('#delete-note').click(function() {
-			$.publish('NoteEditionView-setSilence'); // in our editor we want to replace note by silence and not delete note
+			// in our editor we want to replace note by silence and not delete note
+			fn = 'setSilence';
+			$.publish('NoteEditionView', fn);
 		});
 		$('#add-note').click(function() {
-			$.publish('NoteEditionView-addNote');
+			fn = 'addNote';
+			$.publish('NoteEditionView', fn);
 		});
 
 		// Selection
 		$('#copy-note').click(function() {
-			$.publish('NoteEditionView-copyNotes');
+			fn = 'copyNotes';
+			$.publish('NoteEditionView', fn);
 		});
 		$('#paste-note').click(function() {
-			$.publish('NoteEditionView-pasteNotes');
+			fn = 'pasteNotes';
+			$.publish('NoteEditionView', fn);
 		});
 	};
 
-	NoteEditionView.prototype.initKeyboard = function(evt) {
-		var self = this;
-		var ACC_KEYS = {
-			"s": "#",
-			"v": "b",
-			"n": "n"
-		};
-		$(document).keydown(function(evt) {
-			if (self.editing === false) {
-				return;
-			}
-			var keyCode = (evt === null) ? event.keyCode : evt.keyCode;
-			var key = String.fromCharCode(keyCode).toLowerCase();
-			var metaKey = !!evt.metaKey;
-
-
-			var d = evt.srcElement || evt.target;
-			//prevent backspace
-			if (keyCode === 8) {
-				var doPrevent = false;
-				if (d.tagName.toUpperCase() === 'TEXTAREA' || (d.tagName.toUpperCase() === 'INPUT' && (d.type.toUpperCase() === 'TEXT' || d.type.toUpperCase() === 'PASSWORD' || d.type.toUpperCase() === 'FILE'))) {
-					doPrevent = d.readOnly || d.disabled;
-				} else {
-					doPrevent = true;
-				}
-				if (doPrevent) {
-					stopEvent(evt);
-				}
-			}
-
-			doListenToEvent = true;
-			if (d.tagName.toUpperCase() === 'TEXTAREA' || (d.tagName.toUpperCase() === 'INPUT' && (d.type.toUpperCase() === 'TEXT' || d.type.toUpperCase() === 'PASSWORD' || d.type.toUpperCase() === 'FILE'))) {
-				doListenToEvent = false;
-			}
-			//Functions for Notes
-			if (doListenToEvent) {
-				if (keyCode == 38 || keyCode == 40) { // up & down arrows
-					var inc = (keyCode == 38) ? 1 : -1;
-					$.publish('NoteEditionView-setPitch', inc);
-					stopEvent(evt);
-				} else if (NoteUtils.getValidPitch(key) != -1 && (!evt.ctrlKey)) {
-					$.publish('NoteEditionView-setPitch', key.toUpperCase());
-					stopEvent(evt);
-				} else if (ACC_KEYS.hasOwnProperty(key) && (!evt.ctrlKey)) {
-					var acc = ACC_KEYS[key];
-					// console.log(acc);
-					$.publish('NoteEditionView-addAccidental', {
-						'acc': acc,
-						'double': evt.shiftKey
-					});
-					stopEvent(evt);
-				} else if (parseInt(key, null) >= 1 && parseInt(key, null) <= 9) {
-					$.publish('NoteEditionView-setCurrDuration', key);
-					stopEvent(evt);
-				} else if (keyCode == 190) {
-					$.publish('NoteEditionView-setDot', evt.shiftKey);
-					stopEvent(evt);
-				} else if (keyCode == 84) { // T be carefull, set key to t will be call on F5 also
-					if (evt.shiftKey) {
-						$.publish('NoteEditionView-setTuplet');
-					} else {
-						$.publish('NoteEditionView-setTie');
-					}
-					stopEvent(evt);
-				} else if (keyCode == 82) { // R
-					$.publish('NoteEditionView-setSilence');
-					stopEvent(evt);
-				} else if (keyCode == 46) { //supr
-					$.publish('NoteEditionView-setSilence'); // in our editor we want to replace note by silence and not delete note
-					stopEvent(evt);
-				} else if (keyCode == 13) { //enter
-					$.publish('NoteEditionView-addNote');
-					stopEvent(evt);
-				} else if ((keyCode == 67 && evt.ctrlKey) || (keyCode == 67 && metaKey)) { // Ctrl + c or Command + c (mac or windows specific key)
-					$.publish('NoteEditionView-copyNotes');
-					stopEvent(evt);
-				} else if ((keyCode == 86 && evt.ctrlKey) || (keyCode == 86 && metaKey)) { // Ctrl + v or Command + v (mac or windows specific key)
-					$.publish('NoteEditionView-pasteNotes');
-					stopEvent(evt);
-				}
-			}
-		});
-
-		function stopEvent(evt) {
-			evt.preventDefault();
-			evt.stopPropagation();
-			return false;
-		}
-	};
-
-
-	/**
-	 * Subscribe to model events
-	 */
-	NoteEditionView.prototype.initSubscribe = function() {};
-
-
-	NoteEditionView.prototype.isEditMode = function(mode) {
-		if (this.editMode === mode) {
-			return true;
-		}
-		return false;
-	};
-
+	//TODO: not verified, nor tested, nor used
 	NoteEditionView.prototype.unactiveView = function(idElement) {
 		this.editMode = '';
 		$.publish('NoteEditionView-unactiveView');

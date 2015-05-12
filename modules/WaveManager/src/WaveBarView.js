@@ -1,17 +1,13 @@
-define(function(){
-	function WaveBarView (x,y,w,h) {
-		this.x = x;
-		this.y = y;
-		this.w = w;
-		this.h = h;
+define(['modules/Edition/src/ElementView'],function(ElementView){
+	function WaveBarView (position,viewerScaler) {
+		this.position = position;
+		this.scaler = viewerScaler;
 	}
+	WaveBarView.prototype.isInPath = function(coords) {
+		return ElementView.isInPath(coords,this.position,this.scaler);
+	};
 	WaveBarView.prototype.getArea = function() {
-		return  {
-			x: this.x,
-			y: this.y,
-			w: this.w,
-			h: this.h
-		};
+		return  this.position;
 	};
 	return WaveBarView;
 });

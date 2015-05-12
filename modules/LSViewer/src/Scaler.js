@@ -17,11 +17,19 @@ define(function() {
 		 * @return {[type]}     [description]
 		 */
 	Scaler.prototype.getScaledObj = function(obj) {
-		var r = {};
-		for (var prop in obj) {
-			r[prop] = obj[prop] * this.scale;
+		if (obj instanceof Object){
+			var r = {};
+			for (var prop in obj) {
+				r[prop] = obj[prop] * this.scale;
+			}
+			return r;
 		}
-		return r;
+		else if (!isNaN(parseFloat(obj)) && isFinite(obj)){
+			return obj * this.scale;
+		}
+		else{
+			throw "Scaler only accept obj or number";
+		}
 	};
 	return Scaler;
 });

@@ -43,6 +43,17 @@ define(['vexflow', 'modules/converters/MusicCSLJson/src/NoteModel_CSLJson'], fun
 	LSNoteView.prototype.getVexflowNote = function() {
 		return this.vexflowNote;
 	};
+
+	LSNoteView.prototype.getArea = function() {
+		var boundingBox = this.vexflowNote.getBoundingBox();
+			
+		return {
+			x: boundingBox.x,
+			y: this.vexflowNote.stave.y,
+			w: boundingBox.w,
+			h: boundingBox.h
+		};
+	};
 	LSNoteView.prototype.isBeamable = function() {
 		return (/^\d+$/).test(this.vexflowNote.duration) && !this.note.isRest;
 	};

@@ -30,7 +30,7 @@ define(['modules/WaveManager/src/WaveAudio',
         this.song = song;
         this.cursorNotes = cModel;
         this.isLoaded = false;
-
+        
         this.audio = new WaveAudio();
 
         var paramsDrawer = {
@@ -47,7 +47,6 @@ define(['modules/WaveManager/src/WaveAudio',
     WaveManager.prototype.isReady = function() {
         return this.isLoaded;
     };
-
 
 
     WaveManager.prototype._getBarTime = function(songIt, barTime) {
@@ -142,8 +141,6 @@ define(['modules/WaveManager/src/WaveAudio',
         //var dur = this.buffer.duration;
         return this.audio.audioCtx.currentTime - this.startTime;
     };
-
-
 
     return WaveManager;
 });

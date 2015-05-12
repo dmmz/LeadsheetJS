@@ -43,7 +43,7 @@ define(function(require) {
         var viewer = new LSViewer($("#audioExample")[0],{heightOverflow:'resizeDiv',layer:true});
         var song = SongModel_CSLJson.importFromMusicCSLJSON(Solar);
         var cM = new CursorModel(song.getComponent('notes'));
-        var noteSpaceManager = new NoteSpaceManager(song, cM, viewer);
+        var noteSpaceManager = new NoteSpaceManager(cM, viewer);
         viewer.draw(song);
         
         var neC = new NoteEditionController(song, cM);

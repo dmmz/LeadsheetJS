@@ -1,13 +1,13 @@
 define([
-		"modules/Cursor/src/CursorController",
-		"modules/Cursor/src/CursorModel",
-		"modules/Cursor/src/CursorView"
-		], function(CursorController, CursorModel, CursorView){
+	"modules/Cursor/src/CursorController",
+	"modules/Cursor/src/CursorModel",
+	"modules/Cursor/src/CursorListener"
+], function(CursorController, CursorModel, CursorListener) {
 
-		function Cursor (listElement, songModel, id, keyType) {
-			var cM = new CursorModel(listElement);
-			var cV = new CursorView(cM, id, keyType);
-			this.controller = new CursorController(songModel, cM, cV);
-		}
-		return Cursor;
+	function Cursor(listElement, id, keyType) {
+		var cM = new CursorModel(listElement);
+		var cV = new CursorListener(id, keyType);
+		this.controller = new CursorController(cM, cV);
+	}
+	return Cursor;
 });

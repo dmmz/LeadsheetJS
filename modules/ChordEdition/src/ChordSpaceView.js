@@ -3,40 +3,52 @@ define([
 	'utils/UserLog',
 	'jquery',
 	'pubsub',
-	'jquery_autocomplete'
-], function(ChordUtils, UserLog, $, pubsub, jquery_autocomplete) {
+	'jquery_autocomplete',
+	'modules/Edition/src/ElementView'
+], function(ChordUtils, UserLog, $, pubsub, jquery_autocomplete, ElementView) {
 
-	function ChordSpaceView(viewer, position, barNumber, beatNumber) {
+	function ChordSpaceView(viewer, position, barNumber, beatNumber, viewerScaler) {
 		this.viewer = viewer;
-		this.initSubscribe();
 		this.position = position;
 		this.barNumber = barNumber;
 		this.beatNumber = beatNumber;
+		this.scaler = viewerScaler;
 	}
 
 	/**
-	 * Publish event after receiving dom events
+	 * @interface
 	 */
-	ChordSpaceView.prototype.initController = function() {
-		// there are two controllers, one on input onselect, the other on blur event
+	ChordSpaceView.prototype.isInPath = function(coords) {
+		return ElementView.isInPath(coords, this.position, this.scaler);
 	};
-
-	ChordSpaceView.prototype.initKeyboard = function(evt) {};
-
 	/**
-	 * Subscribe to model events
+	 * @interface
 	 */
-	ChordSpaceView.prototype.initSubscribe = function() {};
-
-	ChordSpaceView.prototype.isInPath = function(x, y) {
-		var pos = this.viewer.scaler.getScaledObj(this.position);
-		if (typeof x !== "undefined" && !isNaN(x) && typeof y !== "undefined" && !isNaN(y)) {
-			if (pos.x <= x && x <= (pos.x + pos.xe) && pos.y <= y && y <= (pos.y + pos.ye)) {
-				return true;
-			}
-		}
-		return false;
+	ChordSpaceView.prototype.getArea = function() {
+		return this.position;
 	};
+	/**
+	 * @interface
+	 *
+	 * @param  {CanvasContext} ctx
+	 * @param  {Number} marginTop   [description]
+	 * @param  {Number} marginRight [description]
+	 */
+	ChordSpaceView.prototype.draw = function(ctx, marginTop, marginRight) {
+
+		var style = ctx.fillStyle;
+		ctx.fillStyle = "#0099FF";
+		ctx.globalAlpha = 0.2;
+		ctx.fillRect(
+			this.position.x,
+			this.position.y - marginTop,
+			this.position.w - marginRight,
+			this.position.h + marginTop
+		);
+		ctx.fillStyle = style;
+		ctx.globalAlpha = 1;
+	};
+
 
 	ChordSpaceView.prototype.onChange = function(chord, value) {
 		var chordInfos = {
@@ -48,10 +60,7 @@ define([
 	};
 
 
-	ChordSpaceView.prototype.draw = function(songModel, selected) {
-		
-		var marginTop = 5;
-		var marginRight = 5;
+	ChordSpaceView.prototype.drawEditableChord = function(songModel, selected, marginTop, marginRight) {
 		if (!!selected) {
 			var self = this;
 
@@ -64,7 +73,7 @@ define([
 				}
 			}
 
-			// Then we create input
+			// // Then we create input
 			var offset = $("#canvas_container canvas").offset();
 			if (typeof offset === "undefined" || isNaN(offset.top) || isNaN(offset.left)) {
 				offset = {
@@ -72,11 +81,11 @@ define([
 					left: 0
 				};
 			}
-			var position = this.viewer.scaler.getScaledObj(this.position);
-			var top = position.y - marginTop - 1;
-			var left = position.x + offset.left + window.pageXOffset - 1;
-			var width = position.xe - marginRight;
-			var height = position.ye + marginTop;
+			var pos = this.viewer.scaler.getScaledObj(this.position);
+			var top = pos.y - marginTop - 1;
+			var left = pos.x + offset.left + window.pageXOffset - 1;
+			var width = pos.w - marginRight;
+			var height = pos.h + marginTop;
 			var input = $('<input/>').attr({
 				type: 'text',
 				style: "position:absolute; z-index: 11000;left:" + left + "px;top:" + top + "px; width:" + width + "px; height:" + height + "px",
@@ -113,7 +122,7 @@ define([
 			});
 			input.focus(); // this focus allow setting cursor on end carac
 			input.val(inputVal);
-			input.focus(); // this focus launch autocomplete firectly when value is not empty
+			input.focus(); // this focus launch autocomplete directly when value is not empty
 			// on blur event we change the value, blur is launched when we enter and click somewhere else
 			input.on('blur', function() {
 				//console.log('blur');
@@ -139,17 +148,7 @@ define([
 				$(this).val(self.filterFunction($(this).val()));
 			});
 		}
-
-		//Drawing chord space boxes. We don't need to scale because this function is called by ChordSpaceManager.draw, which uses viewer.drawElem
-		this.viewer.ctx.strokeStyle = "#999999";
-		this.viewer.ctx.strokeRect(
-			this.position.x,
-			this.position.y - marginTop,
-			this.position.xe - marginRight,
-			this.position.ye + marginTop
-		);
 	};
-
 	/**
 	 * Set to upper case first notes, add a lot of replacement for french or not keyboard
 	 * @param  {String} s input string

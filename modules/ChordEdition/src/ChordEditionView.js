@@ -10,18 +10,18 @@ define([
 	function ChordEditionView(parentHTML, cursor, imgPath) {
 		this.cursor = cursor;
 		this.el = undefined;
-		this.initSubscribe();
 		this.imgPath = imgPath;
+		this.initKeyboard();
 	}
 
 	ChordEditionView.prototype.render = function(parentHTML, callback) {
-		var rendered = Mustache.render(ChordEditionTemplate,{'imgPath':this.imgPath});
+		var rendered = Mustache.render(ChordEditionTemplate, {
+			'imgPath': this.imgPath
+		});
 		if (typeof parentHTML !== "undefined") {
 			parentHTML.innerHTML = rendered;
 		}
 		this.el = rendered;
-		this.initController();
-		this.initKeyboard();
 		//	$.publish('ChordEditionView-render');
 		if (typeof callback === "function") {
 			callback();
@@ -30,7 +30,7 @@ define([
 	};
 
 	/**
-	 * Publish event after receiving dom events
+	 * Function called by MainMenuView
 	 */
 	ChordEditionView.prototype.initController = function() {
 		// Chords
@@ -49,82 +49,29 @@ define([
 			$.publish('ChordEditionView-toggleEditChord');
 		});*/
 		$('#copy_chord').click(function() {
-			$.publish('ChordEditionView-copyChords');
+			fn = 'copyChords';
+			$.publish('ChordEditionView', fn);
 		});
 		$('#paste_chord').click(function() {
-			$.publish('ChordEditionView-pasteChords');
+			fn = 'pasteChords';
+			$.publish('ChordEditionView', fn);
 		});
-
 	};
 
-	ChordEditionView.prototype.initKeyboard = function(evt) {
-		var self = this;
-		$(document).keydown(function(evt) {
-			if (self.editing === false) {
-				return;
-			}
-			var keyCode = (evt === null) ? event.keyCode : evt.keyCode;
-			var key = String.fromCharCode(keyCode).toLowerCase();
-
-			//prevent backspace
-			if (keyCode === 8) {
-				var doPrevent = false;
-				var d = evt.srcElement || evt.target;
-				if (d.tagName.toUpperCase() === 'TEXTAREA' || (d.tagName.toUpperCase() === 'INPUT' && (d.type.toUpperCase() === 'TEXT' || d.type.toUpperCase() === 'PASSWORD' || d.type.toUpperCase() === 'FILE'))) {
-					doPrevent = d.readOnly || d.disabled;
-				} else {
-					doPrevent = true;
-				}
-				if (doPrevent) {
-					stopEvent(evt);
-				}
-			}
-
-			//Functions for Chords
-			if (self.isEditMode("chords")) {
-				/*if (keyCode == 32) { // space					
-					$.publish('ChordEditionView-addChord');
-					stopEvent(evt);
-				} else if (keyCode == 46) { // delete
-					$.publish('ChordEditionView-deleteChord');
-					stopEvent(evt);
-				} else*/ if (keyCode == 13) { //	enter
-					$.publish('ChordEditionView-toggleEditChord');
-					stopEvent(evt);
-				} /*else if (keyCode == 9) { // tab
-					if (evt.shiftKey) {
-						$.publish('ChordEditionView-chordTabEvent', -1);
-					} else {
-						$.publish('ChordEditionView-chordTabEvent', 1);
-					}
-					stopEvent(evt);
-				}*/ /*else if (keyCode == 86) { // V
-					$.publish('ChordEditionView-toggleChordVisibility');
-					stopEvent(evt);
-				}*/ else if (keyCode == 67 && evt.ctrlKey) { // Ctrl + c
-					$.publish('ChordEditionView-copyChords');
-					stopEvent(evt);
-				} else if (keyCode == 86 && evt.ctrlKey) { // Ctrl + v
-					$.publish('ChordEditionView-pasteChords');
-					stopEvent(evt);
-				}
-				// else console.log(key + " " + keyCode);
-			}
+	ChordEditionView.prototype.initKeyboard = function() {
+		$.subscribe('enter-key', function(el) {
+			fn = 'toggleEditChord';
+			$.publish('ChordEditionView', fn);
 		});
-
-		function stopEvent(evt) {
-			evt.preventDefault();
-			evt.stopPropagation();
-		}
+		$.subscribe('ctrl-c-key', function(el) {
+			fn = 'copyChords';
+			$.publish('ChordEditionView', fn);
+		});
+		$.subscribe('ctrl-v-key', function(el) {
+			fn = 'pasteChords';
+			$.publish('ChordEditionView', fn);
+		});
 	};
-
-
-
-	/**
-	 * Subscribe to model events
-	 */
-	ChordEditionView.prototype.initSubscribe = function() {};
-
 
 	ChordEditionView.prototype.isEditMode = function(mode) {
 		if (this.editMode === mode) {
@@ -132,7 +79,7 @@ define([
 		}
 		return false;
 	};
-	
+
 	ChordEditionView.prototype.unactiveView = function(idElement) {
 		this.editMode = '';
 		$.publish('ChordEditionView-unactiveView');

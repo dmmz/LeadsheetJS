@@ -4,15 +4,25 @@ define([
 	'modules/ChordEdition/src/ChordSpaceView',
 	'modules/Cursor/src/CursorModel',
 	'utils/UserLog',
+	'modules/Edition/src/ElementManager',
 	'jquery',
-	'pubsub',
-], function(SongModel, ChordModel, ChordSpaceView, CursorModel, UserLog, $, pubsub) {
+	'pubsub'
+], function(SongModel, ChordModel, ChordSpaceView, CursorModel, UserLog, ElementManager, $, pubsub) {
 
-	function ChordSpaceManager(songModel, cursor) {
-		this.songModel = songModel || new SongModel();
-		this.cursor = cursor || new CursorModel();
+	function ChordSpaceManager(songModel, cursor, viewer) {
+		if (!songModel || !cursor) {
+			throw "ChordSpaceManager missing params";
+		}
+		this.songModel = songModel;
+		this.cursor = cursor;
 		this.chordSpace = [];
+		this.name = 'chordCursor';
+		this.elemMng = new ElementManager();
 		this.initSubscribe();
+		this.viewer = viewer;
+		this.enabled = false;
+		this.MARGIN_TOP = 5;
+		this.MARGIN_RIGHT = 5;
 	}
 
 	/**
@@ -20,92 +30,35 @@ define([
 	 */
 	ChordSpaceManager.prototype.initSubscribe = function() {
 		var self = this;
+		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
+			self.viewer.canvasLayer.addElement(self);
+			self.chordSpace = self.createChordSpace(viewer);
+			self.viewer.canvasLayer.refresh();
+					
+		});
+
 		$.subscribe('ChordSpaceView-updateChord', function(el, update) {
 			self.updateChord(update.chordString, update.chordModel, update.chordSpace);
 			$.publish('ToViewer-draw', self.songModel);
 		});
-		$.subscribe('CanvasLayer-selection', function(el, position) {
-			var inPath = self.isInPath(position.x, position.y);
-			if (inPath !== false) {
-				$.publish('ToAllCursors-setEditable', false);
-				self.cursor.setEditable(true);
-				self.cursor.setPos(inPath);
-				$.publish('ToViewer-draw', self.songModel);
-			} else {
-				self.undraw();
-			}
-		});
+
 		$.subscribe('CanvasLayer-mousemove', function(el, position) {
-			if (!self.cursor.getEditable()) return;	
-			var inPath = self.isInPath(position.x, position.y);
-			if (inPath !== false) {
-				myApp.viewer.el.style.cursor = 'pointer';
-				//self.cursor.setPos(inPath);
-				//$.publish('ToViewer-draw', self.songModel);
+			if (!self.cursor.getEditable()) return;
+			var inPath = !!self.getChordsInPath({
+				x: position.x,
+				y: position.y
+			});
+			if (inPath) {
+				self.viewer.el.style.cursor = 'pointer';
 			} else {
-				myApp.viewer.el.style.cursor = 'default';
-			}
-		});
-		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
-			if (self.cursor.getEditable()) {
-				self.refresh(viewer);
-			} else if (self.chordSpace.length === 0) {
-				// case chordspace have never been drawn, we create it so isInPath function can works
-				self.chordSpace = self.createChordSpace(viewer);
-			} else {
-				self.undraw(); // maybe we should call it only once
+				self.viewer.el.style.cursor = 'default';
 			}
 		});
 		// cursor view subscribe
-		$.subscribe('CursorView-moveCursorByElementchords', function(el, inc) {
+		$.subscribe('Cursor-moveCursorByElement-chords', function(el, inc) {
 			self.moveCursorByBar(inc);
 		});
 	};
-
-	ChordSpaceManager.prototype.updateChord = function(chordString, chordModel, chordSpace) {
-		if (typeof chordModel === "undefined" && typeof chordSpace !== "undefined") {
-			chordModel = new ChordModel({
-				'beat': chordSpace.beatNumber,
-				'barNumber': chordSpace.barNumber,
-			});
-			this.songModel.getComponent('chords').addChord(chordModel);
-		}
-		chordModel.setChordFromString(chordString);
-	};
-
-	ChordSpaceManager.prototype.refresh = function(viewer) {
-		this.chordSpace = this.createChordSpace(viewer);
-		this.draw(viewer);
-	};
-
-	ChordSpaceManager.prototype.isInPath = function(x, y) {
-		for (var i = 0, c = this.chordSpace.length; i < c; i++) {
-			if (typeof this.chordSpace[i] !== "undefined") {
-				if (this.chordSpace[i].isInPath(x, y)) {
-					return i;
-				}
-			}
-		}
-		return false;
-	};
-
-	ChordSpaceManager.prototype.moveCursorByBar = function(inc) {
-		if (this.cursor.getEditable() === false) {
-			return;
-		}
-		var barNum = this.chordSpace[this.cursor.getPos()[0]].barNumber;
-		var startBeat = this.songModel.getStartBeatFromBarNumber(barNum+inc) - 1;
-
-		if (barNum === 0 && inc === -1) {
-			this.cursor.setPos(0);
-			$.publish('ToViewer-draw', this.songModel);
-			return;
-		}
-
-		this.cursor.setPos(startBeat);
-		$.publish('ToViewer-draw', this.songModel);
-	};
-
 	/**
 	 * Function return several areas to indicate which notes are selected, usefull for cursor or selection
 	 * @param  {[Integer, Integer] } Array with initial position and end position
@@ -126,40 +79,143 @@ define([
 			widthBeat = viewer.vxfBars[i].barDimensions.width / beatInBar;
 			for (var j = 0; j < beatInBar; j++) {
 				area = {
-					x: (viewer.vxfBars[i].barDimensions.left + widthBeat * j) ,
-					y: (viewer.vxfBars[i].barDimensions.top - 17) ,
-					xe: widthBeat ,
-					ye: 20
+					x: (viewer.vxfBars[i].barDimensions.left + widthBeat * j),
+					y: (viewer.vxfBars[i].barDimensions.top - 17),
+					w: widthBeat,
+					h: 20
 				};
-				chordSpace.push(new ChordSpaceView(viewer, area, i, j + 1));
+				chordSpace.push(new ChordSpaceView(viewer, area, i, j + 1, viewer.scaler));
 			}
 		}
 		return chordSpace;
 	};
-
-	ChordSpaceManager.prototype.undraw = function(viewer) {
-		$('#canvas_container .chordSpaceInput').devbridgeAutocomplete('dispose').remove();
+	/**
+	 * @interface
+	 *
+	 * @param  {Object} coords [description]
+	 */
+	ChordSpaceManager.prototype.getYs = function(coords) {
+		return this.elemMng.getYs(this.chordSpace, coords);
 	};
 
-	ChordSpaceManager.prototype.draw = function(viewer) {
-		var position = this.cursor.getPos();
-		var self = this;
-		viewer.drawElem(function(ctx){
-				var saveStrokeColor = ctx.strokeStyle;
-				ctx.lineWidth = 0.7;
-				var selected = false;
-				self.undraw();
-				for (var i = 0, c = self.chordSpace.length; i < c; i++) {
-					if (position[0] <= i && i <= position[1]) {
-						selected = true;
-					} else {
-						selected = false;
-					}
-					self.chordSpace[i].draw(self.songModel, selected);
-				}
-				ctx.strokeStyle = saveStrokeColor;
-		});
+	/**
+	 * @interface
+	 *
+	 * @param  {Object} coords
+	 * @param  {Booelan} mouseUp
+	 */
+	ChordSpaceManager.prototype.updateCursor = function(coords, mouseUp) {
 
+		this.undrawEditableChord();
+
+		var posCursor = this.getChordsInPath(coords);
+
+		if (posCursor[0] !== null) {
+			this.cursor.setPos(posCursor);
+		}
+		// if event was mouseUp and we just selected one chord, we draw the pull down
+		if (posCursor[0] == posCursor[1] && mouseUp) {
+			this.drawEditableChord();
+		}
+	};
+
+	/**
+	 * @interface
+	 *
+	 * @param  {CanvasContext} ctx
+	 */
+	ChordSpaceManager.prototype.draw = function(ctx) {
+		var self = this;
+
+		function drawChordSpaceBorders(ctx) {
+			for (var j = 0; j < self.chordSpace.length; j++) {
+				var position = self.chordSpace[j].getArea();
+
+				ctx.strokeStyle = "#999999";
+				ctx.strokeRect(
+					position.x,
+					position.y - self.MARGIN_TOP,
+					position.w - self.MARGIN_RIGHT,
+					position.h + self.MARGIN_TOP
+				);
+			}
+		}
+		var pos = this.cursor.getPos();
+		if (pos[0] !== false) {
+			for (var i = pos[0]; i <= pos[1]; i++) {
+				this.chordSpace[i].draw(ctx, self.MARGIN_TOP, self.MARGIN_RIGHT);
+			}
+		}
+		drawChordSpaceBorders(ctx);
+	};
+	/**
+	 * @interface
+	 *
+	 * @return {Boolean}
+	 */
+	ChordSpaceManager.prototype.isEnabled = function() {
+		return this.enabled;
+	};
+
+	/**
+	 * @interface
+	 */
+	ChordSpaceManager.prototype.enable = function() {
+		this.enabled = true;
+	};
+
+	/**
+	 * @interface
+	 */
+	ChordSpaceManager.prototype.disable = function() {
+		this.undrawEditableChord();
+		this.enabled = false;
+	};
+
+	ChordSpaceManager.prototype.updateChord = function(chordString, chordModel, chordSpace) {
+		if (typeof chordModel === "undefined" && typeof chordSpace !== "undefined") {
+			chordModel = new ChordModel({
+				'beat': chordSpace.beatNumber,
+				'barNumber': chordSpace.barNumber,
+			});
+			this.songModel.getComponent('chords').addChord(chordModel);
+		}
+		chordModel.setChordFromString(chordString);
+	};
+
+	ChordSpaceManager.prototype.getChordsInPath = function(coords) {
+		return this.elemMng.getElemsInPath(this.chordSpace, coords);
+	};
+
+	ChordSpaceManager.prototype.moveCursorByBar = function(inc) {
+		var barNum = this.chordSpace[this.cursor.getPos()[0]].barNumber;
+		var startBeat = this.songModel.getStartBeatFromBarNumber(barNum + inc) - 1;
+
+		if (barNum === 0 && inc === -1) {
+			this.cursor.setPos(0);
+		} else {
+			this.cursor.setPos(startBeat);
+			this.drawEditableChord();
+		}
+	};
+
+
+
+	ChordSpaceManager.prototype.undrawEditableChord = function() {
+		$('#canvas_container .chordSpaceInput').devbridgeAutocomplete('dispose').remove();
+	};
+	/**
+	 * draws the pulldown or the inpus in chords
+	 */
+	ChordSpaceManager.prototype.drawEditableChord = function() {
+		var position = this.cursor.getPos(),
+			selected;
+
+		this.undrawEditableChord();
+		for (var i = 0, c = this.chordSpace.length; i < c; i++) {
+			selected = (position[0] <= i && i <= position[1]);
+			this.chordSpace[i].drawEditableChord(this.songModel, selected, this.MARGIN_TOP, this.MARGIN_RIGHT);
+		}
 	};
 
 	return ChordSpaceManager;

@@ -8,7 +8,7 @@ define(['tests/DisplayTester',
 	'modules/NoteEdition/src/NoteSpaceManager',
 	'modules/Cursor/src/CursorModel',
 	'modules/Cursor/src/CursorController',
-	'modules/Cursor/src/CursorView',
+	'modules/Cursor/src/CursorListener',
 	'modules/NoteEdition/src/NoteEditionController',
 	'modules/NoteEdition/src/NoteSpaceManager',
 	'tests/songs/allRhythmicFigures',
@@ -54,8 +54,8 @@ define(['tests/DisplayTester',
 				var waveMng = new WaveManager(song, cM, viewer); //last parameter is called params and is not used here, so it's the default config
 				viewer.draw(song);	
 	
-				var noteSpaceManager = new NoteSpaceManager(song, cM, viewer);
-				noteSpaceManager.refresh();
+				var noteSpaceManager = new NoteSpaceManager(cM, viewer);
+				
 				waveMng.load('/tests/audio/solar.wav');
 
 			},{width:1200,height:1000}, "Painting audio");

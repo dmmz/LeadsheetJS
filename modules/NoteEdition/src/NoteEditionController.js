@@ -9,9 +9,10 @@ define([
 	'pubsub',
 ], function(Mustache, SongModel, NoteManager, CursorModel, NoteUtils, UserLog, $, pubsub) {
 
-	function NoteEditionController(songModel, cursor) {
+	function NoteEditionController(songModel, cursor, noteSpaceMng) {
 		this.songModel = songModel || new SongModel();
 		this.cursor = cursor || new CursorModel();
+		this.noteSpaceMng = noteSpaceMng;
 		this.initSubscribe();
 	}
 
@@ -20,6 +21,7 @@ define([
 	 */
 	NoteEditionController.prototype.initSubscribe = function() {
 		var self = this;
+/*
 		$.subscribe('NoteEditionView-setPitch', function(el, decal) {
 			self.setPitch(decal);
 		});
@@ -65,6 +67,10 @@ define([
 		$.subscribe('NoteEditionView-pasteNotes', function(el) {
 			self.pasteNotes();
 		});
+*/
+
+		//TODO: these two function are not verified / tested after refactoring
+
 		$.subscribe('NoteEditionView-activeView', function(el) {
 			self.changeEditMode(true);
 			$.publish('ToViewer-draw', self.songModel);
@@ -72,9 +78,20 @@ define([
 		$.subscribe('NoteEditionView-unactiveView', function(el) {
 			self.changeEditMode(false);
 		});
+
 		// cursor view subscribe
-		$.subscribe('CursorView-moveCursorByElementnotes', function(el, inc) {
-			self.moveCursorByBar(inc);
+		$.subscribe('Cursor-moveCursorByElement-notes', function(el, inc) {
+			if (self.cursor.getEditable()) {
+				self.moveCursorByBar(inc);
+				$.publish('CanvasLayer-refresh');
+			}
+		});
+		// All functions related with note edition go here
+		$.subscribe('NoteEditionView', function(el, fn, param) {
+			if (self.noteSpaceMng.isEnabled()) {
+				self[fn].call(self, param);
+				$.publish('ToViewer-draw', self.songModel);
+			}
 		});
 
 	};
@@ -101,12 +118,11 @@ define([
 				note.setNoteFromString(newKey);
 			}
 		}
-		$.publish('ToViewer-draw', this.songModel);
 	};
 
 
 
-	NoteEditionController.prototype.addAccidental = function(accidental, doubleAccidental) {
+	NoteEditionController.prototype.addAccidental = function(accidental) {
 		var selNotes = this.getSelectedNotes();
 		var note;
 		if (typeof doubleAccidental !== "undefined" && doubleAccidental === true && accidental !== "n") {
@@ -121,7 +137,6 @@ define([
 				note.setAccidental(accidental);
 			}
 		}
-		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	/**
@@ -161,12 +176,12 @@ define([
 			selNotes[i].setDuration(newDur);
 			durAfter += selNotes[i].getDuration();
 		}
-
 		tmpNm = this.checkDuration(tmpNm, durBefore, durAfter);
 		noteManager.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
 		noteManager.reviseNotes();
 
 		$.publish('ToViewer-draw', this.songModel);
+
 	};
 
 
@@ -218,7 +233,6 @@ define([
 				}
 			}
 		}
-		$.publish('ToViewer-draw', this.songModel);
 	};
 
 
@@ -296,7 +310,6 @@ define([
 				}
 			}
 		}
-		$.publish('ToViewer-draw', this.songModel);
 	};
 
 
@@ -323,6 +336,7 @@ define([
 		}
 		nm.reviseNotes();
 		$.publish('ToViewer-draw', this.songModel);
+
 	};
 
 
@@ -336,12 +350,12 @@ define([
 		}
 		this.checkDuration(durBefore, 0);
 		var numNotes = noteManager.getTotal();
+		this.cursor.revisePos(numNotes);
 		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	NoteEditionController.prototype.addNote = function() {
 		var noteManager = this.songModel.getComponent('notes');
-
 		var tmpNm = this.cloneSelectedNotes();
 		var durationBefore = tmpNm.getTotalDuration();
 
@@ -364,7 +378,6 @@ define([
 	NoteEditionController.prototype.copyNotes = function() {
 		var noteManager = this.songModel.getComponent('notes');
 		this.buffer = noteManager.cloneElems(this.cursor.getStart(), this.cursor.getEnd() + 1);
-		$.publish('ToViewer-draw', this.songModel);
 	};
 
 
@@ -377,7 +390,6 @@ define([
 		var noteManager = this.songModel.getComponent('notes');
 		//this.checkDuration(0, noteManager.getTotalDuration());
 		noteManager.notesSplice(this.cursor.getPos(), notesToPaste);
-		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	NoteEditionController.prototype.moveCursorByBar = function(inc) {
@@ -454,7 +466,7 @@ define([
 			if (endBeat < beatEndNote) {
 				tmpNm.fillGapWithRests(beatEndNote - endBeat, initBeat);
 			}
-			this.cursor.setPos([this.cursor.getStart(), endIndex - 1]);
+			//this.cursor.setPos([this.cursor.getStart(), endIndex - 1]);
 		}
 
 		return tmpNm;

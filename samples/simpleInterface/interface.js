@@ -31,6 +31,10 @@ require.config({
 
 define(function(require) {
 
+	var KeyboardManager = require('modules/Edition/src/KeyboardManager');
+	new KeyboardManager(true); 
+
+
 	var WaveManager = require('modules/WaveManager/src/WaveManager');
 	var WaveManagerView = require('modules/WaveManager/src/WaveManagerView');
 	var WaveManagerController = require('modules/WaveManager/src/WaveManagerController');
@@ -93,21 +97,18 @@ define(function(require) {
 	myApp.viewer = new LJS.LSViewer.LSViewer($("#canvas_container")[0], {
 		layer: true
 	});
-
-
 	var menu = new LJS.MainMenu(document.getElementById('menu-container'));
 
 
-
 	// Edit notes on view
-	var cursorNote = new LJS.Cursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow');
+	var cursorNote = new LJS.Cursor(songModel.getComponent('notes'), 'notes', 'arrow');
 	var noteEdition = new LJS.NoteEdition(songModel, cursorNote.controller.model, myApp.viewer, '/modules/NoteEdition/img');
 
-	// Edit chords on view
-	var cursorChord = new LJS.Cursor(songModel.getSongTotalBeats(), songModel, 'chords', 'tab');
+	// // Edit chords on view
+	var cursorChord = new LJS.Cursor(songModel.getSongTotalBeats(), 'chords', 'tab');
 	cursorChord.controller.model.setEditable(false);
 
-	var chordEdition = new LJS.ChordEdition(songModel, cursorChord.controller.model, '/modules/NoteEdition/img');
+	var chordEdition = new LJS.ChordEdition(songModel, cursorChord.controller.model, myApp.viewer, '/modules/NoteEdition/img');
 
 	// Harmonize menu
 	var harm = new LJS.Harmonizer(songModel, menu.model);
@@ -125,7 +126,18 @@ define(function(require) {
 
 	// Edit files menu
 	var fileEdition = new LJS.FileEdition(songModel, myApp.viewer.canvas);
-
+       
+    var params = {
+      showHalfWave: true,
+      //drawMargins: true,
+      topAudio: -100,
+      heightAudio: 75/*,
+      marginCursor: 20*/
+    };
+     var waveMng = new WaveManager(songModel, cursorNote.controller.model, myApp.viewer, params);
+    //noteSpaceManager.refresh();
+    waveMng.load('/tests/audio/solar.wav');
+	var wmc = new WaveManagerController(waveMng);
 
 	noteEdition.view.render(undefined, function() {
 		menu.model.addMenu({
@@ -134,18 +146,6 @@ define(function(require) {
 			order: 2
 		});
 	});
-
-	var params = {
-		showHalfWave: true,
-		//drawMargins: true,
-		topAudio: -100,
-		heightAudio: 75,
-		//marginCursor: 20
-	};
-	var waveMng = new WaveManager(songModel, cursorNote.controller.model, myApp.viewer, params);
-	var wmc = new WaveManagerController(waveMng);
-
-
 
 	chordEdition.view.render(undefined, function() {
 		menu.model.addMenu({

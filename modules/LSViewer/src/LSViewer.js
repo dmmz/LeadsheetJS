@@ -104,16 +104,16 @@ define([
 			this.LINE_WIDTH = viewerWidth;
 		};
 
-		LSViewer.prototype._scale = function(ctx) {
+		LSViewer.prototype.scale = function(ctx) {
 			ctx = ctx || this.ctx;
 			ctx.scale(this.SCALE, this.SCALE);
 		};
-		LSViewer.prototype._resetScale = function(ctx) {
+		LSViewer.prototype.resetScale = function(ctx) {
 			ctx = ctx || this.ctx;
 			ctx.scale(1 / this.SCALE, 1 / this.SCALE);
 		};
 		/**
-		 * function useful to be called in 'draw' function between this._scale() and this._resetScale().
+		 * function useful to be called in 'draw' function between this.scale() and this.resetScale().
 		 * It takes the width without taking into account we are scaling. This way we can place elements correctly (e.g. centering the title)
 		 */
 		LSViewer.prototype._getNonScaledWidth = function() {
@@ -186,8 +186,7 @@ define([
 				iNote = 0,
 				stave,
 				vxfBeams,
-				vxfNote,
-				vxfNotes = [],
+				noteViews = [],
 				vxfBars = [],
 				barDimensions,
 				tieMng = new TieManager();
@@ -197,7 +196,7 @@ define([
 			this.setHeight(song, this.barWidthMng);
 
 			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-			this._scale();
+			this.scale();
 
 
 			var numSection = 0;
@@ -227,9 +226,9 @@ define([
 						tupletMng.checkTuplet(barNotes[j], iNote);
 						noteView = new LSNoteView(barNotes[j]);
 						beamMng.checkBeam(nm, iNote, noteView);
-						vxfNote = noteView.getVexflowNote();
-						bar.push(vxfNote);
-						vxfNotes.push(vxfNote);
+						
+						bar.push(noteView.getVexflowNote());
+						noteViews.push(noteView);
 						iNote++;
 					}
 					//console.timeEnd('drawNotes');
@@ -266,7 +265,7 @@ define([
 					//console.timeEnd('stave');
 					//console.time('draw');
 					beamMng.draw(self.ctx, vxfBeams); // and draw beams needs to be done after drawing notes
-					tupletMng.draw(self.ctx, vxfNotes);
+					tupletMng.draw(self.ctx, noteViews);
 					//console.timeEnd('draw');
 
 					songIt.next();
@@ -275,8 +274,8 @@ define([
 				}
 				numSection++;
 			});
-			tieMng.draw(this.ctx, vxfNotes, nm, this.barWidthMng, song);
-			this.vxfNotes = vxfNotes;
+			tieMng.draw(this.ctx, noteViews, nm, this.barWidthMng, song);
+			this.noteViews = noteViews;
 			this.vxfBars = vxfBars;
 			this.ctx.fillStyle = "black";
 			this.ctx.strokeStyle = "black";
@@ -286,9 +285,9 @@ define([
 			if (this.DISPLAY_TITLE) {
 				this._displayTitle(song.getTitle());
 			}
-			this._resetScale();
+			this.resetScale();
 			//console.timeEnd('whole draw');
-
+			// if we requesteed to have a layer and we haven't already created it
 			if (this.layer && !this.canvasLayer) {
 				this.canvasLayer = new CanvasLayer(this);
 			}
@@ -299,9 +298,9 @@ define([
 		 * @param  {Function} drawFunc function that draws the element, uses context determined by the other param layer
 		 */
 		LSViewer.prototype.drawElem = function(drawFunc) {
-			this._scale(this.ctx);
+			this.scale(this.ctx);
 			drawFunc(this.ctx);
-			this._resetScale(this.ctx);
+			this.resetScale(this.ctx);
 		};
 		return LSViewer;
 

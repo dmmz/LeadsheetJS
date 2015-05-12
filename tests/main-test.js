@@ -51,7 +51,7 @@ define(function(require) {
   var testNoteManager_CSLJson = require('modules/converters/MusicCSLJson/test/testNoteManager_CSLJson');
   var testNoteModel_CSLJson = require('modules/converters/MusicCSLJson/test/testNoteModel_CSLJson');
 
-  var testSongModel_MusicXMl = require('modules/converters/MusicXMl/test/testSongModel_MusicXMl');
+  var testSongModel_MusicXMl = require('modules/converters/MusicXML/test/testSongModel_MusicXML');
 
   var testSongView_chordSequence = require('modules/chordSequence/test/testSongView_chordSequence');
 

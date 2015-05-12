@@ -39,10 +39,10 @@ define(['vexflow'], function(Vex) {
 	};
 	/**
 	 * @param  {Context} ctx
-	 * @param  {Array} vexflowNotes of Vex.Flow.StaveNote
+	 * @param  {Array} noteViews of LSNoteView
 	 * @param  {NoteManagerModel} nm
 	 */
-	TieManager.prototype.draw = function(ctx, vexflowNotes, nm, barWidthMng, song) {
+	TieManager.prototype.draw = function(ctx, noteViews, nm, barWidthMng, song) {
 
 		function drawTie(note1, note2) {
 			var vxTie = new Vex.Flow.StaveTie({
@@ -62,7 +62,7 @@ define(['vexflow'], function(Vex) {
 			iNoteTieStart = this.ties[i][0];
 			iNoteTieEnd = this.ties[i][1];
 
-			auxStartNote = vexflowNotes[iNoteTieStart];
+			auxStartNote = noteViews[iNoteTieStart].getVexflowNote();
 
 			iTieStartBar = nm.getNoteBarNumber(iNoteTieStart, song);
 			iTieEndBar = nm.getNoteBarNumber(iNoteTieEnd, song);
@@ -71,7 +71,7 @@ define(['vexflow'], function(Vex) {
 				drawTie(auxStartNote, null);
 				auxStartNote = null;
 			}
-			drawTie(auxStartNote, vexflowNotes[iNoteTieEnd]);
+			drawTie(auxStartNote, noteViews[iNoteTieEnd].getVexflowNote());
 
 		}
 	};
