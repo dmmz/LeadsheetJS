@@ -139,19 +139,17 @@ define([
 			"7": "w",
 			"8": "w" //should be double whole but not supported yet
 		};
-		var nm = this.songModel.getComponent('notes');
-		var selectedNotes = nm.cloneElems(this.cursor.getStart(), this.cursor.getEnd() + 1);
-		var tmpNm = new NoteManager();
-		tmpNm.setNotes(selectedNotes);
-		var initIndex = this.cursor.getStart();
-		var initBeat = nm.getNoteBeat(initIndex);
+
+		var noteManager = this.songModel.getComponent('notes');
+		var tmpNm = this.cloneSelectedNotes();
+
 		//check if durations fit in the bar duration
-		if (!this.fitsInBar(initIndex, initBeat, nm, tmpNm)) {
+		if (!this.fitsInBar(tmpNm)) {
 			UserLog.logAutoFade('error', "Duration doesn't fit the bar");
 			return;
 		}
 
-		var selNotes = this.getSelectedNotes();
+		var selNotes = tmpNm.getNotes();
 		var newDur = arrDurs[duration];
 		if (typeof newDur === "undefined") {
 			throw 'NoteEditionController - setCurrDuration not accepted duration ' + duration;
@@ -164,7 +162,10 @@ define([
 			durAfter += selNotes[i].getDuration();
 		}
 
-		this.checkDuration(durBefore, durAfter);
+		tmpNm = this.checkDuration(tmpNm, durBefore, durAfter);
+		noteManager.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
+		noteManager.reviseNotes();
+
 		$.publish('ToViewer-draw', this.songModel);
 	};
 
@@ -173,20 +174,16 @@ define([
 		var noteManager = this.songModel.getComponent('notes');
 		var tmpNm = this.cloneSelectedNotes();
 
-		var initIndex = this.cursor.getStart();
-		var initBeat = noteManager.getNoteBeat(initIndex);
 		//check if durations fit in the bar duration
-		if (!this.fitsInBar(initIndex, initBeat, noteManager, tmpNm)) {
+		if (!this.fitsInBar(tmpNm)) {
 			UserLog.logAutoFade('error', "Duration doesn't fit the bar");
 			return;
 		}
 
 		var selNotes = tmpNm.getNotes();
 		var numberOfDots = 0;
-		var durBefore = 0,
-			durAfter = 0;
+		var durBefore = tmpNm.getTotalDuration();
 		for (var i = 0, c = selNotes.length; i < c; i++) {
-			durBefore += selNotes[i].getDuration();
 			numberOfDots = selNotes[i].getDot();
 			if (numberOfDots >= 2) {
 				numberOfDots = 0;
@@ -194,12 +191,10 @@ define([
 				numberOfDots++;
 			}
 			selNotes[i].setDot(numberOfDots);
-			durAfter += selNotes[i].getDuration();
 		}
-		tmpNm = this.checkDuration(tmpNm, durBefore, durAfter);
+		tmpNm = this.checkDuration(tmpNm, durBefore, tmpNm.getTotalDuration());
 		noteManager.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
 		noteManager.reviseNotes();
-
 
 		$.publish('ToViewer-draw', this.songModel);
 	};
@@ -361,7 +356,7 @@ define([
 		noteManager.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
 		noteManager.reviseNotes();
 
-		this.cursor.setPos(this.cursor.getEnd() + 1);
+		this.cursor.setPos(this.cursor.getStart() + 1);
 		$.publish('ToViewer-draw', this.songModel);
 	};
 
@@ -445,10 +440,8 @@ define([
 
 		var nm = this.songModel.getComponent('notes');
 		// cursor = nm.reviseTuplets(cursor); // TODO use revise tuplets
-
 		var initBeat = nm.getNoteBeat(this.cursor.getStart());
 		var endBeat = initBeat + durAfter;
-
 		if (durAfter < durBefore) {
 			tmpNm.fillGapWithRests(durBefore - durAfter, initBeat);
 		} else if (durAfter > durBefore) {
@@ -458,17 +451,20 @@ define([
 			}
 			var endIndex = nm.getNextIndexNoteByBeat(endBeat);
 			var beatEndNote = nm.getNoteBeat(endIndex);
-
 			if (endBeat < beatEndNote) {
 				tmpNm.fillGapWithRests(beatEndNote - endBeat, initBeat);
 			}
 			this.cursor.setPos([this.cursor.getStart(), endIndex - 1]);
 		}
+
 		return tmpNm;
 	};
 
-	NoteEditionController.prototype.fitsInBar = function(initIndex, initBeat, nm, tmpNm) {
-		var numBar = nm.getNoteBarNumber(initIndex, this.songModel);
+	NoteEditionController.prototype.fitsInBar = function(tmpNm) {
+		var noteManager = this.songModel.getComponent('notes');
+		var initIndex = this.cursor.getStart();
+		var initBeat = noteManager.getNoteBeat(initIndex);
+		var numBar = noteManager.getNoteBarNumber(initIndex, this.songModel);
 		var barBeatDuration = this.songModel.getTimeSignatureAt(numBar).getQuarterBeats();
 		var barRelativeBeat = initBeat - this.songModel.getStartBeatFromBarNumber(numBar);
 

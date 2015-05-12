@@ -186,12 +186,10 @@ define(['modules/core/src/NoteManager',
 					assert.equal(noteManager.getNextIndexNoteByBeat(4.9), 6);
 
 					assert.equal(noteManager.getPrevIndexNoteByBeat(1.1), 0);
-					assert.throws(function() {
-						noteManager.getNextIndexNoteByBeat(10); //exceeds last beat
-					});
-					assert.throws(function() {
-						noteManager.getNextIndexNoteByBeat(6.1); //exceeds last beat
-					}, 'getNextIndexNoteByBeat last beat must throw error');
+
+					assert.equal(noteManager.getNextIndexNoteByBeat(10), undefined); //exceeds last beat
+					assert.equal(noteManager.getNextIndexNoteByBeat(6.1), undefined, 'getNextIndexNoteByBeat last beat must throw error'); //exceeds last beat
+
 					assert.equal(noteManager.getNextIndexNoteByBeat(2), 1);
 					assert.equal(noteManager.getPrevIndexNoteByBeat(2), 1);
 					assert.equal(noteManager.getPrevIndexNoteByBeat(2.2), 1);

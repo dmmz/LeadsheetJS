@@ -223,7 +223,6 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 			end >= this.notes.length || end < 0) {
 			throw "problem with end " + end;
 		}
-
 		var startBeat = this.getNoteBeat(start);
 		var endBeat = this.getNoteBeat(end) + this.getNote(end).getDuration();
 		endBeat = roundBeat(endBeat);
@@ -243,7 +242,11 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		while (roundBeat(curBeat) < beat) { //to avoid problems with tuplet 
 			curNote = this.getNote(i);
 			if (curNote === undefined) {
-				throw 'NoteManager - getNextIndexNoteByBeat - Note not found (possibly beat is greater than last note beat)';
+				// throw 'NoteManager - _getIndexAndCurBeat - Note not found (possibly beat is greater than last note beat)';
+				return {
+					index: undefined,
+					curBeat: curBeat
+				};
 			}
 			curBeat += curNote.getDuration();
 			i++;
@@ -320,7 +323,11 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 			if (typeof dur !== "undefined") {
 				newNote = new NoteModel(dur + 'r');
 				var pos = self.getNextIndexNoteByBeat(initBeat);
-				self.insertNote(pos, newNote);
+				if (typeof pos === "undefined") {
+					self.addNote(newNote);
+				}else{
+					self.insertNote(pos, newNote);
+				}
 			}
 		});
 	};
