@@ -161,7 +161,6 @@ define(['jquery','pubsub'], function($, pubsub) {
 			throw 'CanvasLayer element needs name property';
 		}
 		this.elems[elem.name] = elem;
-		this.refresh();
 	};
 	/**
 	 * Refresh canvas layer: all elements in canvas layer should be elements cursors or elements that change fast

@@ -33,6 +33,8 @@ define([
 		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
 			self.viewer.canvasLayer.addElement(self);
 			self.chordSpace = self.createChordSpace(viewer);
+			self.viewer.canvasLayer.refresh();
+					
 		});
 
 		$.subscribe('ChordSpaceView-updateChord', function(el, update) {

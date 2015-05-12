@@ -74,9 +74,7 @@ define([
 
 
 
-	NoteEditionController.prototype.addAccidental = function(acc) {
-		var accidental = acc[0];
-		var doubleAccidental = acc[1];
+	NoteEditionController.prototype.addAccidental = function(accidental) {
 		var selNotes = this.getSelectedNotes();
 		var note;
 		if (typeof doubleAccidental !== "undefined" && doubleAccidental === true && accidental !== "n") {

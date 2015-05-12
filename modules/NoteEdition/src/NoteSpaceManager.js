@@ -54,7 +54,8 @@ define([
 
 			//if (self.cursor.getEditable()) {
 			self.noteSpace = self.createNoteSpace(self.viewer);
-			self.viewer.canvasLayer.addElement(self); //addElement refreshes canvasLayer
+			self.viewer.canvasLayer.addElement(self); 
+			self.viewer.canvasLayer.refresh();
 
 		});
 		// $.subscribe('CanvasLayer-updateCursors',function(el,coords){

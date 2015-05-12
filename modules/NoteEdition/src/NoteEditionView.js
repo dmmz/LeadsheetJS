@@ -43,11 +43,11 @@ define([
 		});
 		$.subscribe('accidental-key', function(el, acc) {
 			fn = 'addAccidental';
-			$.publish('NoteEditionView', [fn, [acc, false]]);
+			$.publish('NoteEditionView', [fn, acc]);
 		});
 		$.subscribe('shift-accidental-key', function(el, acc) {
 			fn = 'addAccidental';
-			$.publish('NoteEditionView', [fn, [acc, true]]);
+			$.publish('NoteEditionView', [fn, acc+acc]);
 		});
 		$.subscribe('number-key', function(el, key) {
 			fn = 'setCurrDuration';
@@ -107,23 +107,23 @@ define([
 		// Alteration
 		$('#double_flat').click(function() {
 			fn = 'addAccidental';
-			$.publish('NoteEditionView', [fn, ['b', true]]);
+			$.publish('NoteEditionView', [fn, 'bb']);
 		});
 		$('#flat').click(function() {
 			fn = 'addAccidental';
-			$.publish('NoteEditionView', [fn, ['b', false]]);
+			$.publish('NoteEditionView', [fn, 'b']);
 		});
 		$('#natural').click(function() {
 			fn = 'addAccidental';
-			$.publish('NoteEditionView', [fn, ['n', false]]);
+			$.publish('NoteEditionView', [fn, 'n']);
 		});
 		$('#sharp').click(function() {
 			fn = 'addAccidental';
-			$.publish('NoteEditionView', [fn, ['#', false]]);
+			$.publish('NoteEditionView', [fn, '#']);
 		});
 		$('#double_sharp').click(function() {
 			fn = 'addAccidental';
-			$.publish('NoteEditionView', [fn, ['#', true]]);
+			$.publish('NoteEditionView', [fn, '##']);
 		});
 		// Rhythm
 		$('#whole-note').click(function() {

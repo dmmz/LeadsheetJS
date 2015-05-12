@@ -11,7 +11,7 @@ define([
             if (!params.pixelRatio) {
                 throw "WaveDrawer - pixelRatio not defined";
             }
-
+            this.name = 'audioCursor';
             this.pixelRatio = params.pixelRatio;
             this.showHalfWave = params.showHalfWave;
             this.marginCursor = params.marginCursor || 0;
@@ -90,7 +90,9 @@ define([
         
     };
     WaveDrawer.prototype.updateCursorPlaying = function(time) {
+        console.log(time);
         this.cursorPos = this._getCursorDims(time);
+        console.log(this.cursorPos);
     };
 
     WaveDrawer.prototype.getAreasFromCursor = function() {
@@ -146,12 +148,6 @@ define([
     };
     WaveDrawer.prototype.newCursor = function(audio) {
         this.cursor = new CursorModel(audio.getDuration());
-    };
-    WaveDrawer.prototype.drawAudio = function(barTimesMng) {
-        //important to reset each time we draw
-        this.waveBarDimensions = [];
-        return this._getAudioPosFromTime(time, barIndex);
-
     };
     WaveDrawer.prototype.updateCursorPlaying = function(time) {
         this.cursorPos = this._getCursorDims(time);
@@ -212,7 +208,7 @@ define([
         this.cursor = new CursorModel(audio.getDuration());
     };
     WaveDrawer.prototype.drawAudio = function(barTimesMng) {
-
+        this.waveBarDimensions = [];
         var numBars = barTimesMng.getLength();
         var area, dim, bar, barTime = 0,
             sliceSong = 1 / numBars,
@@ -233,7 +229,7 @@ define([
             this.drawPeaks(peaks, area, this.color[toggleColor], this.viewer);
             toggleColor = (toggleColor + 1) % 2;
         }
-         this.viewer.canvasLayer.addElement('audioCursor', this);
+        this.viewer.canvasLayer.addElement(this);
         this.updateCursorPlaying(0);
         this.viewer.canvasLayer.refresh();
     };
@@ -338,6 +334,27 @@ define([
             this.cursor.setPos([pos1, pos2]);
         }
 
+    };
+
+    /**
+     * @interface
+     */
+    WaveDrawer.prototype.isEnabled = function() {
+        return this.enabled;
+    };
+
+    /**
+     * @interface
+     */
+    WaveDrawer.prototype.enable = function() {
+        this.enabled = true;
+    };
+
+    /**
+     * @interface
+     */
+    WaveDrawer.prototype.disable = function() {
+        this.enabled = false;
     };
     return WaveDrawer;
 });

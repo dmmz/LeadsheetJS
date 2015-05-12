@@ -55,7 +55,7 @@ define(['tests/DisplayTester',
 				viewer.draw(song);	
 	
 				var noteSpaceManager = new NoteSpaceManager(cM, viewer);
-				noteSpaceManager.refresh();
+				
 				waveMng.load('/tests/audio/solar.wav');
 
 			},{width:1200,height:1000}, "Painting audio");

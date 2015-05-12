@@ -122,12 +122,13 @@ define(['modules/core/src/NoteModel',
 				nec.pasteNotes();
 				nec.cursor.setPos([5, 7]);
 				assert.equal(nec.getSelectedNotes().toString(), selNotes, 'copy Notes');
-
 				assert.equal(nec.moveCursorByBar(-1), undefined);
 				nec.moveCursorByBar(1);
+				
 				assert.equal(nec.getSelectedNotes().toString(), "G/4-8");
 				nec.moveCursorByBar(-1);
 				assert.equal(nec.getSelectedNotes().toString(), "wr");
+				 
 			});
 		}
 	};

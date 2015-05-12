@@ -121,7 +121,7 @@ define(function(require) {
 	var constraint = new LJS.Constraint(songModel);
 
 	//bars edition 
-//	var structEdition = new LJS.StructureEdition(songModel, cursorNote.controller.model, '/modules/StructureEdition/img');
+	var structEdition = new LJS.StructureEdition(songModel, cursorNote.controller.model, '/modules/StructureEdition/img');
 
 
 	// Edit files menu
@@ -134,10 +134,10 @@ define(function(require) {
       heightAudio: 75/*,
       marginCursor: 20*/
     };
- //    var waveMng = new WaveManager(songModel, cursorNote.controller.model, myApp.viewer, params);
- //    //noteSpaceManager.refresh();
- //    waveMng.load('/tests/audio/solar.wav');
-	// var wmc = new WaveManagerController(waveMng);
+     var waveMng = new WaveManager(songModel, cursorNote.controller.model, myApp.viewer, params);
+    //noteSpaceManager.refresh();
+    waveMng.load('/tests/audio/solar.wav');
+	var wmc = new WaveManagerController(waveMng);
 
 	noteEdition.view.render(undefined, function() {
 		menu.model.addMenu({
@@ -154,13 +154,13 @@ define(function(require) {
 			order: 3
 		});
 	});
-	// structEdition.view.render(undefined, function() {
-	// 	menu.model.addMenu({
-	// 		title: 'Structure',
-	// 		view: structEdition.view,
-	// 		order: 4
-	// 	});
-	// });
+	structEdition.view.render(undefined, function() {
+		menu.model.addMenu({
+			title: 'Structure',
+			view: structEdition.view,
+			order: 4
+		});
+	});
 	constraint.view.render(undefined, function() {
 		menu.model.addMenu({
 			title: 'Constraint',
