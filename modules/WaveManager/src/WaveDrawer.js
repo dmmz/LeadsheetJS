@@ -127,14 +127,16 @@ define([
         this.enabled = false;
     };
 
-
     WaveDrawer.prototype.drawCursor = function(ctx) {
         ctx.beginPath();
         ctx.moveTo(this.cursorPos.x, this.cursorPos.y);
         ctx.lineTo(this.cursorPos.x, this.cursorPos.y + this.cursorPos.h);
         ctx.stroke();
     };
-    //CANVASLAYER ELEMENT METHOD
+    /**
+     * @interface
+     * @param  {CanvasContext} ctx 
+     */
     WaveDrawer.prototype.draw = function(ctx) {
        var saveFillColor = ctx.fillStyle;
         ctx.fillStyle = "#9900FF";
