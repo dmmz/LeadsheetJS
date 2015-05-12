@@ -54,7 +54,7 @@ define([
 			self.setSilence();
 		});
 		$.subscribe('NoteEditionView-deleteNote', function(el) {
-			self.deleteNote();
+			self.setSilence();
 		});
 		$.subscribe('NoteEditionView-addNote', function(el) {
 			self.addNote();
@@ -140,7 +140,6 @@ define([
 			"8": "w" //should be double whole but not supported yet
 		};
 		var nm = this.songModel.getComponent('notes');
-
 		var selectedNotes = nm.cloneElems(this.cursor.getStart(), this.cursor.getEnd() + 1);
 		var tmpNm = new NoteManager();
 		tmpNm.setNotes(selectedNotes);
@@ -171,7 +170,18 @@ define([
 
 
 	NoteEditionController.prototype.setDot = function() {
-		var selNotes = this.getSelectedNotes();
+		var noteManager = this.songModel.getComponent('notes');
+		var tmpNm = this.cloneSelectedNotes();
+
+		var initIndex = this.cursor.getStart();
+		var initBeat = noteManager.getNoteBeat(initIndex);
+		//check if durations fit in the bar duration
+		if (!this.fitsInBar(initIndex, initBeat, noteManager, tmpNm)) {
+			UserLog.logAutoFade('error', "Duration doesn't fit the bar");
+			return;
+		}
+
+		var selNotes = tmpNm.getNotes();
 		var numberOfDots = 0;
 		var durBefore = 0,
 			durAfter = 0;
@@ -186,7 +196,11 @@ define([
 			selNotes[i].setDot(numberOfDots);
 			durAfter += selNotes[i].getDuration();
 		}
-		this.checkDuration(durBefore, durAfter);
+		tmpNm = this.checkDuration(tmpNm, durBefore, durAfter);
+		noteManager.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
+		noteManager.reviseNotes();
+
+
 		$.publish('ToViewer-draw', this.songModel);
 	};
 
@@ -293,18 +307,26 @@ define([
 
 
 	NoteEditionController.prototype.setSilence = function() {
+		var nm = this.songModel.getComponent('notes');
+		/*		var position = this.cursor.getPos();
+				var durBefore = 0;
+				var initBeat = nm.getNoteBeat(this.cursor.getStart());
+				for (var cInit = position[0], cEnd = position[1]; cInit <= cEnd; cInit++) {
+					durBefore += nm.getNote(cInit).getDuration();
+					nm.deleteNote(cInit);
+				}
+				nm.fillGapWithRests(durBefore, initBeat);
+		*/
 		var selNotes = this.getSelectedNotes();
 		var note;
 		for (var i = 0; i < selNotes.length; i++) {
 			note = selNotes[i];
 			if (note.tie === "stop" || note.tie === "start") {
 				note.tie = undefined;
-				/*console.warn("Can't convert to silence a tied note");
-				UserLog.logAutoFade('warn', "Can't convert to silence a tied note");
-				continue;*/
 			}
 			if (!note.isRest) note.setRest(true);
 		}
+		nm.reviseNotes();
 		$.publish('ToViewer-draw', this.songModel);
 	};
 
@@ -319,18 +341,27 @@ define([
 		}
 		this.checkDuration(durBefore, 0);
 		var numNotes = noteManager.getTotal();
-		this.cursor.revisePos(numNotes);
 		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	NoteEditionController.prototype.addNote = function() {
 		var noteManager = this.songModel.getComponent('notes');
-		var pos = this.cursor.getEnd();
-		var noteToClone = noteManager.getNotes(pos, pos + 1)[0];
-		var cloned = noteToClone.clone(false);
-		noteManager.insertNote(pos, cloned);
-		this.checkDuration(0, noteToClone.getDuration());
-		// this.cursor.setPos(pos + 1);
+
+		var tmpNm = this.cloneSelectedNotes();
+		var durationBefore = tmpNm.getTotalDuration();
+
+		// copy previous note and add it
+		var cloned = tmpNm.getNotes()[0].clone(false);
+		tmpNm.insertNote(0, cloned);
+
+		// ensure the size
+		tmpNm = this.checkDuration(tmpNm, durationBefore, tmpNm.getTotalDuration());
+
+		// Once the size is ensured, we can set it to real notemanager
+		noteManager.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
+		noteManager.reviseNotes();
+
+		this.cursor.setPos(this.cursor.getEnd() + 1);
 		$.publish('ToViewer-draw', this.songModel);
 	};
 
@@ -340,6 +371,7 @@ define([
 		this.buffer = noteManager.cloneElems(this.cursor.getStart(), this.cursor.getEnd() + 1);
 		$.publish('ToViewer-draw', this.songModel);
 	};
+
 
 	NoteEditionController.prototype.pasteNotes = function(notesToPaste) {
 		notesToPaste = notesToPaste || this.buffer;
@@ -380,8 +412,23 @@ define([
 	};
 
 
+	/**
+	 * Function clones selectedNotes and insert it in a new Note Manager
+	 * @return {NoteManager} return a cloned notemanager that contain as many notes as the cursor selection
+	 */
+	NoteEditionController.prototype.cloneSelectedNotes = function() {
+		/*we run it in a temporal NoteManager, and then we check if there are duration differences to fill with silences or not*/
+		var nm = this.songModel.getComponent('notes');
+		var selectedNotes = nm.cloneElems(this.cursor.getStart(), this.cursor.getEnd() + 1);
+		var localCursor = new CursorModel(selectedNotes.length);
+		localCursor.setPos([0, selectedNotes.length - 1]);
+		var tmpNm = new NoteManager();
+		tmpNm.setNotes(selectedNotes);
+		return tmpNm;
+	};
 
-	NoteEditionController.prototype.checkDuration = function(durBefore, durAfter) {
+
+	NoteEditionController.prototype.checkDuration = function(tmpNm, durBefore, durAfter) {
 		function checkIfBreaksTuplet(initBeat, endBeat, nm) {
 			/**
 			 * means that is a 0.33333 or something like that
@@ -398,11 +445,12 @@ define([
 
 		var nm = this.songModel.getComponent('notes');
 		// cursor = nm.reviseTuplets(cursor); // TODO use revise tuplets
+
 		var initBeat = nm.getNoteBeat(this.cursor.getStart());
 		var endBeat = initBeat + durAfter;
 
 		if (durAfter < durBefore) {
-			nm.fillGapWithRests(durBefore - durAfter, initBeat);
+			tmpNm.fillGapWithRests(durBefore - durAfter, initBeat);
 		} else if (durAfter > durBefore) {
 			if (checkIfBreaksTuplet(initBeat, endBeat, nm)) {
 				UserLog.logAutoFade('error', "Can't break tuplet");
@@ -412,12 +460,11 @@ define([
 			var beatEndNote = nm.getNoteBeat(endIndex);
 
 			if (endBeat < beatEndNote) {
-				nm.fillGapWithRests(beatEndNote - endBeat, initBeat);
+				tmpNm.fillGapWithRests(beatEndNote - endBeat, initBeat);
 			}
 			this.cursor.setPos([this.cursor.getStart(), endIndex - 1]);
 		}
-		//nm.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
-		nm.reviseNotes();
+		return tmpNm;
 	};
 
 	NoteEditionController.prototype.fitsInBar = function(initIndex, initBeat, nm, tmpNm) {

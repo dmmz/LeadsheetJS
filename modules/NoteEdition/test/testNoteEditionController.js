@@ -82,6 +82,27 @@ define(['modules/core/src/NoteModel',
 				nec.deleteNote();
 				assert.equal(nec.getSelectedNotes().toString(), note, 'delete note');
 
+				// Editor test where delete is like silence
+				var necDelete = createRhythmicMelody();
+				necDelete.setSilence();
+				assert.equal(necDelete.getSelectedNotes().toString(), 'qr', 'delete note');
+
+				necDelete.cursor.setPos([1, 2]);
+				necDelete.setSilence();
+				assert.equal(necDelete.getSelectedNotes().toString(), '8r,16r', 'delete note');
+
+				necDelete.cursor.setPos([3, 3]);
+				necDelete.setSilence();
+				assert.equal(necDelete.getSelectedNotes().toString(), 'qr', 'Delete tuplet note');
+				assert.equal(necDelete.getSelectedNotes()[0].isTuplet(), true, 'tuplet after deletion should no more be a tuplet');
+				
+				/*necDelete.cursor.setPos([3, 5]);
+				necDelete.setSilence();
+				assert.equal(necDelete.getSelectedNotes()[0].isTuplet(), false, 'tuplet after whole tuplets deletion should no more be a tuplet');
+				assert.equal(necDelete.getSelectedNotes()[1].isTuplet(), false, 'tuplet after whole tuplets  deletion should no more be a tuplet');
+				assert.equal(necDelete.getSelectedNotes()[2].isTuplet(), false, 'tuplet after whole tuplets  deletion should no more be a tuplet');
+*/
+
 				// Tie notes
 				nec.setTie();
 				assert.equal(nec.getSelectedNotes()[0].isTie(), false, 'tie note with only one selected');
@@ -123,11 +144,63 @@ define(['modules/core/src/NoteModel',
 				nec.cursor.setPos([5, 7]);
 				assert.equal(nec.getSelectedNotes().toString(), selNotes, 'copy Notes');
 
+				songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
+				cM = new CursorModel(songModel.getComponent('notes'));
+				nec = new NoteEditionController(songModel, cM);
 				assert.equal(nec.moveCursorByBar(-1), undefined);
 				nec.moveCursorByBar(1);
-				assert.equal(nec.getSelectedNotes().toString(), "G/4-8");
+				assert.equal(nec.getSelectedNotes().toString(), "A/4-q");
 				nec.moveCursorByBar(-1);
-				assert.equal(nec.getSelectedNotes().toString(), "wr");
+				nec.setCurrDuration("2");
+				assert.equal(nec.getSelectedNotes().toString(), "A/4-32");
+
+
+
+				// rhythm  q,8,16,16, triplet(q,q,q)
+				function createRhythmicMelody() {
+					var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
+					var cM = new CursorModel(songModel.getComponent('notes'));
+					var nec = new NoteEditionController(songModel, cM);
+					var rhythmicMelody = [];
+					rhythmicMelody.push(new NoteModel({
+						pitchList: ["F#/5"],
+						duration: "q"
+					}));
+					rhythmicMelody.push(new NoteModel({
+						pitchList: ["G/5"],
+						duration: "8",
+						dot: 1
+					}));
+					rhythmicMelody.push(new NoteModel({
+						pitchList: ["F#/5"],
+						duration: "16"
+					}));
+
+					rhythmicMelody.push(new NoteModel({
+						pitchList: ["F#/5"],
+						duration: "q",
+						tuplet: "start",
+						timeModification: "3/2"
+					}));
+					rhythmicMelody.push(new NoteModel({
+						pitchList: ["G/5"],
+						duration: "q",
+						timeModification: "3/2"
+					}));
+					rhythmicMelody.push(new NoteModel({
+						pitchList: ["A/5"],
+						duration: "q",
+						tuplet: "stop",
+						timeModification: "3/2"
+					}));
+					rhythmicMelody.push(new NoteModel({
+						pitchList: ["Bb/5"],
+						duration: "q"
+					}));
+					songModel.getComponent('notes').setNotes(rhythmicMelody);
+
+					return nec;
+				}
 			});
 		}
 	};

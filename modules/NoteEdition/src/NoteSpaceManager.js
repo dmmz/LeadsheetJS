@@ -183,7 +183,7 @@ define([
 
 	NoteSpaceManager.prototype.draw = function(ctx) {
 		var self = this;
-		if (this.noteSpace.length == 0) return;
+		if (this.noteSpace.length === 0) return;
 		var position = self.cursor.getPos();
 		var saveFillColor = ctx.fillStyle;
 		ctx.fillStyle = "#0099FF";

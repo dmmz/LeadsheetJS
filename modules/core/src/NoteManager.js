@@ -108,6 +108,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		for (var i = 0, c = notesToPaste.length; i < c; i++) copyArr.push(notesToPaste[i].clone());
 		this.notes = part1.concat(copyArr, part2);
 	};
+
 	/**
 	 * Adds notes in a given position (special case of noteSplice)
 	 * @param {Array of NoteModel} notes
@@ -308,7 +309,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		if (isNaN(gapDuration)) {
 			return;
 		}
-		if (isNaN(initBeat) || initBeat < 0) {
+		if (isNaN(initBeat) || initBeat <= 0) {
 			initBeat = 1;
 		}
 		gapDuration = Math.round(gapDuration * 1000000) / 1000000;
@@ -325,11 +326,27 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	};
 
 	/**
+	 * if there are ties that with different pitches, we remove the tie
+	 */
+	NoteManager.prototype.reviseTiesPitch = function() {
+		var notes = this.notes;
+		var note, notes2;
+		for (var i = 0; i < notes.length - 1; i++) {
+			note = notes[i];
+			note2 = notes[i + 1];
+			if (note.isTie('start') && note2.isTie('stop') && note.getPitch() != note2.getPitch()) {
+				note.removeTie(note.getTie());
+				note2.removeTie(note2.getTie());
+			}
+		}
+	};
+
+	/**
 	 * this function is called after deleting a notes or copy and pasting notes, to check if there is a malformed tuplet or a malformed tie
 	 * if it does, it deletes the tie or the tuplet
 	 * @return {[type]} [description]
 	 */
-	NoteManager.prototype.reviseNotes = function(from, to) {
+	NoteManager.prototype.reviseNotes = function() {
 
 		function getRemoveSet(input, i) {
 			var min = i;
@@ -364,12 +381,10 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 			for (var i = 0; i < input.length; i++) {
 				prevState = (i < 1) ? "no" : input[i - 1];
 				currState = (i == input.length) ? "no" : input[i];
-
 				if ($.inArray(prevState, states) == -1) {
 					throw "value " + prevState + "(position " + i + ") not specified on transitions graph";
 				}
 				if ($.inArray(currState, graph[prevState]) == -1) {
-
 					var iToStartRemove = (currState == "no") ? i - 1 : i;
 					intervalsToRemove.push(getRemoveSet(input, iToStartRemove));
 				}
