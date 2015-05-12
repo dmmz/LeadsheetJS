@@ -88,7 +88,7 @@ define(function() {
 					x: x,
 					y: currElemY + cursorDims.top,
 					w: xe,
-					h: cursorDims.height || currElem.h
+					h: cursorDims.height || currElem.getArea().h
 				};
 				areas.push(area);
 				if (cInit != cEnd) {

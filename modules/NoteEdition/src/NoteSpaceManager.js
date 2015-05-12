@@ -40,10 +40,12 @@ define([
 
 
 			var inPath = self.elemMng.getElemsInPath(self.noteSpace, position);
-			if (inPath) {
-				self.viewer.el.style.cursor = 'pointer';
-			} else {
-				self.viewer.el.style.cursor = 'default';
+			if (typeof self.viewer.el.style !== 'undefined'){
+				if (inPath) {
+					self.viewer.el.style.cursor = 'pointer';
+				} else {
+					self.viewer.el.style.cursor = 'default';
+				}
 			}
 		});
 
@@ -81,11 +83,17 @@ define([
 		}
 		return noteSpace;
 	};
-
+	/**
+	 * @inteface
+	 * @param  {Object} coords
+	 */
 	NoteSpaceManager.prototype.getYs = function(coords) {
 		return this.elemMng.getYs(this.noteSpace, coords);
 	};
-
+	/**
+	 * @interface
+	 * @param  {Object} coords 
+	 */
 	NoteSpaceManager.prototype.updateCursor = function(coords) {
 
 		var notes = this.elemMng.getElemsInPath(this.noteSpace, coords);
@@ -96,7 +104,10 @@ define([
 		}
 	};
 
-	//CANVASLAYER ELEMENT METHOD
+	/**
+	 * @interface
+	 * @param  {CanvasContext} ctx 
+	 */
 	NoteSpaceManager.prototype.draw = function(ctx) {
 		if (this.noteSpace.length == 0) return;
 		var position = this.cursor.getPos();
