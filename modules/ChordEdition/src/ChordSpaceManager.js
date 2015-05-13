@@ -49,9 +49,9 @@ define([
 				y: position.y
 			});
 			if (inPath) {
-				self.viewer.el.style.cursor = 'pointer';
+				self.viewer.divContainer.style.cursor = 'pointer';
 			} else {
-				self.viewer.el.style.cursor = 'default';
+				self.viewer.divContainer.style.cursor = 'default';
 			}
 		});
 		// cursor view subscribe

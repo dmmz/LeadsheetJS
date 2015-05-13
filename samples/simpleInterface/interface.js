@@ -44,6 +44,7 @@ define(function(require) {
 	var myApp = {};
 	window.myApp = myApp;
 
+	var onWindowResizer = require('modules/LSViewer/src/OnWindowResizer');
 
 	/*var popIn = new PopIn('Hello', 'Test<br />ok');
 	popIn.render();*/
@@ -56,7 +57,10 @@ define(function(require) {
 	// tried for unfolding
 	// var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
 	var songModel = LJS.converters.MusicCSLJson.SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
-	// initPlayerModule(songModel);
+	
+	onWindowResizer(songModel);
+
+	initPlayerModule(songModel);
 
 
 	new LJS.HistoryC(songModel);
@@ -95,7 +99,8 @@ define(function(require) {
 
 
 	myApp.viewer = new LJS.LSViewer.LSViewer($("#canvas_container")[0], {
-		layer: true
+		layer: true/*,
+		typeResize: "scale"*/
 	});
 	var menu = new LJS.MainMenu(document.getElementById('menu-container'));
 
@@ -194,7 +199,7 @@ define(function(require) {
 			menu.controller.activeMenu('File');
 		}
 	});
-	$.publish('ToViewer-draw', songModel);
+	//$.publish('ToViewer-draw', songModel);
 
 
 

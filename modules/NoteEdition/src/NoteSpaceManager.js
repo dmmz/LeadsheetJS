@@ -37,14 +37,12 @@ define([
 	NoteSpaceManager.prototype.initSubscribe = function() {
 		var self = this;
 		$.subscribe('CanvasLayer-mousemove', function(el, position) {
-
-
 			var inPath = self.elemMng.getElemsInPath(self.noteSpace, position);
-			if (typeof self.viewer.el.style !== 'undefined'){
+			if (typeof self.viewer.divContainer.style !== 'undefined'){
 				if (inPath) {
-					self.viewer.el.style.cursor = 'pointer';
+					self.viewer.divContainer.style.cursor = 'pointer';
 				} else {
-					self.viewer.el.style.cursor = 'default';
+					self.viewer.divContainer.style.cursor = 'default';
 				}
 			}
 		});

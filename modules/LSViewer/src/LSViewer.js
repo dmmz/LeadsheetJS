@@ -34,7 +34,7 @@ define([
 		function LSViewer(divContainer, params) {
 			this._init(divContainer, params);
 			this._initSubscribe();
-			this.el = divContainer;
+			this.divContainer = divContainer;
 		}
 		LSViewer.prototype._init = function(divContainer, params) {
 			params = params || {};
@@ -42,12 +42,12 @@ define([
 			this.scaler = new Scaler(); //object that scales objects. User in NoteSpaceView and ChordSpaceView
 			this.SCALE = null; //scale from 0 to
 			//0.999  fixes vexflow bug that doesn't draw last pixel on end bar
-			this.setScale(0.999);
-
-			this.CANVAS_DIV_WIDTH_PROPORTION = 0.97; //width proportion between canvas created and divContainer (space between canvas border and divContainer border)
+			this.SCALE_FIX = 0.995;
+			
+			this.CANVAS_DIV_WIDTH_PROPORTION = 0.9; //width proportion between canvas created and divContainer (space between canvas border and divContainer border)
 			this.NOTE_WIDTH = 20; // estimated note width in order to be more flexible
 			this.LINE_HEIGHT = 150;
-			this.LINE_WIDTH = 1160;
+			this.LINE_WIDTH = 1550;
 			this.BARS_PER_LINE = 4;
 			this.ENDINGS_Y = 20; //0 -> thisChordsPosY==40, the greater the closer to stave 
 			this.LABELS_Y = 0; //like this.ENDINGS_Y
@@ -59,21 +59,22 @@ define([
 
 			this.heightOverflow = params.heightOverflow || "auto";
 			this.divContainer = divContainer;
-
+			this.resizable = !params.width; //if there is a width specified, we assume that it wont be resized on window resize
+			
 			var idScore = "ls" + ($("canvas").length + 1),
-				width = (params.width) ? params.width : $(divContainer).width() * this.CANVAS_DIV_WIDTH_PROPORTION;
+				width = (params.width) ? params.width : this._getWidthFromContainer(divContainer);
 
 			this.canvas = this._createCanvas(idScore, width, this.DEFAULT_HEIGHT);
 			var renderer = new Vex.Flow.Renderer(this.canvas, Vex.Flow.Renderer.Backends.CANVAS);
 			this.ctx = renderer.getContext("2d");
 
-			if (params.typeResize == 'scale') {
-				this.setScale((width / this.LINE_WIDTH));
-			} else { // typeResize == 'fluid'
-				this._setWidth(width);
-			}
+			this.typeResize = params.typeResize || "fluid";
+			this._resize(width);
 			this.layer = params.layer;
 
+		};
+		LSViewer.prototype._getWidthFromContainer = function(divContainer) {
+			return $(this.divContainer).width() * this.CANVAS_DIV_WIDTH_PROPORTION;
 		};
 		/**
 		 * Creates and return a dom element
@@ -98,11 +99,28 @@ define([
 			$.subscribe('ToViewer-draw', function(el, songModel) {
 				self.draw(songModel);
 			});
+			$.subscribe('ToViewer-resize',function(el,songModel){
+				var width = self._getWidthFromContainer(this.divContainer);
+				self.canvas.width = width;
+				self._resize(width);
+				self.draw(songModel, {resize:true});
+			});
 		};
+		LSViewer.prototype._resize = function(width) {
+			if (this.typeResize == 'scale') {
+				var scale = width / this.LINE_WIDTH; 
+				this.setScale(scale * this.SCALE_FIX);
+			} else { // typeResize == 'fluid'
+				this.setScale(this.SCALE_FIX);
+				this._setWidth(width);
+			}
 
+		};
 		LSViewer.prototype._setWidth = function(width) {
 			var viewerWidth = width || this.LINE_WIDTH;
-			this.LINE_WIDTH = viewerWidth;
+			//if (viewerWidth < this.LINE_WIDTH){
+				this.LINE_WIDTH = viewerWidth;
+			//}
 		};
 
 		LSViewer.prototype.scale = function(ctx) {
@@ -143,7 +161,6 @@ define([
 		LSViewer.prototype.setScale = function(scale) {
 			this.SCALE = scale;
 			this.scaler.setScale(scale);
-
 		};
 		LSViewer.prototype.setLineMarginTop = function(lineMarginTop, bottom) {
 			if (!bottom) {
@@ -165,7 +182,8 @@ define([
 		};
 
 
-		LSViewer.prototype.draw = function(song) {
+		LSViewer.prototype.draw = function(song, params) {
+			params = params || {};
 			if (typeof song === "undefined") {
 				console.warn('song is empty'); // only for debug, remove after 1 week safe
 				return;
@@ -289,14 +307,14 @@ define([
 			this.resetScale();
 			//console.timeEnd('whole draw');
 			// if we requested to have a layer and we haven't already created it
-			if (this.layer && !this.canvasLayer) {
+			if (this.layer && (!this.canvasLayer) || params.resize) {
 				this.canvasLayer = new CanvasLayer(this); //the canvasLayer needs to be created after the score has been drawn
 			}
 			$.publish('LSViewer-drawEnd', this);
 		};
 		/**
 		 * When drawing an element from another module, it has to use this function
-		 * @param  {Function} drawFunc function that draws the element, uses context determined by the other param layer
+		 * @param  {Function} drawFunc function that draws the element
 		 */
 		LSViewer.prototype.drawElem = function(drawFunc) {
 			this.scale(this.ctx);

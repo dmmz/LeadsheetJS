@@ -22,6 +22,7 @@ define(['jquery','pubsub'], function($, pubsub) {
 	}
 
 	CanvasLayer.prototype._createLayer = function(viewer) {
+		//console.log("CanvasLayer._createLayer");
 		var canvasEl = $(viewer.canvas),
 			idCanvas = canvasEl.attr('id'),
 			idLayer = idCanvas + "-layer",
@@ -34,17 +35,15 @@ define(['jquery','pubsub'], function($, pubsub) {
 			left: offset.left,
 			top: top
 		};
-
 		var canvasLayer;
-		// we only create it if it does not exist
-		if ($("canvas#" + idLayer).length === 0) {
-			$("<canvas id='" + idLayer + "' width='" + canvasEl.width() + "' height='" + canvasEl.height() + "'></canvas>").insertAfter(canvasEl);
-			canvasLayer = $("#" + idLayer);
-			canvasLayer.css(layersProps);
-			canvasLayer.css('z-index', 10);
-		} else {
-			canvasLayer = $("canvas#" + idLayer);
+		//we remove it, to create a new one (_createLayer it's called only at the beginning or when resizing)
+		if ($("canvas#" + idLayer).length !== 0) { 
+			$("canvas#" + idLayer).remove();
 		}
+		$("<canvas id='" + idLayer + "' width='" + canvasEl.width() + "' height='" + canvasEl.height() + "'></canvas>").insertAfter(canvasEl);
+		canvasLayer = $("#" + idLayer);
+		canvasLayer.css(layersProps);
+		canvasLayer.css('z-index', 10);
 		return canvasLayer;
 	};
 

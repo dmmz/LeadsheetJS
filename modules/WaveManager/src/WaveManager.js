@@ -42,7 +42,17 @@ define(['modules/WaveManager/src/WaveAudio',
             marginCursor: params.marginCursor
         };
         this.drawer = new WaveDrawer(viewer, paramsDrawer, this);
+        this._initSubscribe();
     }
+    WaveManager.prototype._initSubscribe = function() {
+         var self = this;
+         //when window is resized, leadsheet is drawn, and audio needs to be redrawn too
+         $.subscribe('LSViewer-drawEnd', function(){
+            if (self.isLoaded){
+                self.drawer.drawAudio(self.barTimesMng);    
+            }
+        });
+    };
 
     WaveManager.prototype.isReady = function() {
         return this.isLoaded;
