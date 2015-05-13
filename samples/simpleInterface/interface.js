@@ -141,7 +141,7 @@ define(function(require) {
     };
      var waveMng = new WaveManager(songModel, cursorNote.controller.model, myApp.viewer, params);
     //noteSpaceManager.refresh();
-    waveMng.load('/tests/audio/solar.wav');
+    waveMng.load('/tests/audio/solar.wav', 170);
 	var wmc = new WaveManagerController(waveMng);
 
 	noteEdition.view.render(undefined, function() {

@@ -188,7 +188,7 @@ define([
     WaveDrawer.prototype.newCursor = function(audio) {
         this.cursor = new CursorModel(audio.getDuration());
     };
-    WaveDrawer.prototype.drawAudio = function(barTimesMng) {
+    WaveDrawer.prototype.drawAudio = function(barTimesMng,tempo) {
         this.waveBarDimensions = [];
         var numBars = barTimesMng.getLength();
         var area, dim, bar, barTime = 0,
@@ -196,7 +196,12 @@ define([
             start = 0,
             peaks,
             toggleColor = 0;
+        var sampleRate = this.waveMng.audio.buffer.sampleRate;
+
+        
         for (var i = 0; i < barTimesMng.getLength(); i++) {
+            console.log(barTimesMng.getCurrBarTime(i));
+
             dim = this.viewer.barWidthMng.getDimensions(i);
             waveBarView = new WaveBarView({
                 x: dim.left,

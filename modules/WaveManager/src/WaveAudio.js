@@ -31,6 +31,7 @@ define(function() {
 	WaveAudio.prototype.load = function(audioData, waveMng, callback) {
 		var self = this;
 		this.audioCtx.decodeAudioData(audioData, function(buffer) {
+				
 				self.buffer = buffer;
 				self.beatDuration = self.buffer.duration / waveMng.song.getSongTotalBeats();
 

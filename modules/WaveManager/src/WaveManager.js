@@ -81,6 +81,7 @@ define(['modules/WaveManager/src/WaveAudio',
         if (isNaN(tempo) || tempo <= 0) {
             tempo = 120;
         }
+
         // TODO Use tempo to compute length
         var self = this;
         var xhr = new XMLHttpRequest();
@@ -94,7 +95,7 @@ define(['modules/WaveManager/src/WaveAudio',
                 self.isLoaded = true;
                 self.barTimesMng.setBarTimes(self.calculateBarTimes());
                 self.drawer.newCursor(self.audio);
-                self.drawer.drawAudio(self.barTimesMng);
+                self.drawer.drawAudio(self.barTimesMng,tempo);
             });
         };
         xhr.send();

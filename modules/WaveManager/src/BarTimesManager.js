@@ -29,6 +29,10 @@ define(function() {
 				end: this.barTimes[index]
 			};
 		},
+		getCurrBarTime: function(index){
+			var limits = this.getTimeLimits(index);
+			return limits.end - limits.start;
+		},
 		getIndexByTime: function(time){
 			for (var i = 0; i < this.barTimes.length; i++) {
 				if (time < this.barTimes[i]) break;
