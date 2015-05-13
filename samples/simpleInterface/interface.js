@@ -32,7 +32,7 @@ require.config({
 define(function(require) {
 
 	var KeyboardManager = require('modules/Edition/src/KeyboardManager');
-	new KeyboardManager(true); 
+	new KeyboardManager(true);
 
 
 	var WaveManager = require('modules/WaveManager/src/WaveManager');

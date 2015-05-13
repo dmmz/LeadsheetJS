@@ -6,6 +6,7 @@ define([
 		"modules/converters/MusicXML/src/main",
 		"modules/core/src/main", // most important module
 		"modules/Cursor/src/Cursor",
+		"modules/Edition/src/main",
 		"modules/FileEdition/src/FileEdition",
 		"modules/History/src/HistoryC",
 		"modules/HarmonicAnalysis/src/HarmonicAnalysis",
@@ -27,6 +28,7 @@ define([
 		convertersMusicXML,
 		core,
 		Cursor,
+		Edition,
 		FileEdition,
 		HistoryC,
 		HarmonicAnalysis,
@@ -50,6 +52,7 @@ define([
 			},
 			"core": core,
 			"Cursor": Cursor,
+			"Edition": Edition,
 			"FileEdition": FileEdition,
 			"HistoryC": HistoryC,
 			"HarmonicAnalysis": HarmonicAnalysis,
