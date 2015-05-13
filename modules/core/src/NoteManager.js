@@ -451,34 +451,6 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		checkTies(this.notes);
 	};
 
-	/**
-	 * if a duration function applied to a tuplet note, we expand cursor to include the other tuplet notes (to avoid strange durations)
-	 *
-	 * @param  {CursorModel} cursor
-	 * @return {cursorModel} updated cursor
-	 */
-	/*NoteManager.prototype.reviseTuplets = function(cursor) {
-		var notes = this.getNotes();
-		var c = cursor.getStart();
-		if (notes[c].isTuplet()) {
-			c--;
-			while (c >= 0 && notes[c].isTuplet() && !notes[c].isTuplet('stop')) {
-				cursor.setPos([c, cursor.getEnd()]);
-				c--;
-			}
-		}
-		c = cursor.getEnd();
-		if (notes[c].isTuplet()) {
-			c++;
-			while (c < notes.length && notes[c].isTuplet() && !notes[c].isTuplet('start')) {
-				cursor.setPos([cursor.getStart(), c]);
-				c++;
-			}
-		}
-		return cursor;
-	};*/
-
-
 
 	/**
 	 * private function for rounding beats
