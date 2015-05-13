@@ -1,6 +1,7 @@
 define([
+	'jquery',
 	'pubsub',
-], function(pubsub) {
+], function($, pubsub) {
 
 	function CursorListener(id, keyToNext) {
 		if (!id) {
