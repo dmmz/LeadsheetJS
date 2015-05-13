@@ -123,26 +123,32 @@ define([
 			input.focus(); // this focus allow setting cursor on end carac
 			input.val(inputVal);
 			input.focus(); // this focus launch autocomplete directly when value is not empty
-			// on blur event we change the value, blur is launched when we enter and click somewhere else
+			/*// on blur event we change the value, blur is launched when we enter and click somewhere else
+			// We don't use blur because it prevent onclick element to be launched
 			input.on('blur', function() {
-				//console.log('blur');
+				console.log('blur');
 				self.onChange(chord, $(this).val());
 				input.devbridgeAutocomplete('dispose');
-			});
+			});*/
 			$('#autocomplete-suggestion').on('click', function() {
-				//console.log('click');
+				// console.log('click');
 				self.onChange(chord, $(input).val());
 				input.devbridgeAutocomplete('dispose');
 			});
 			// on tab call (tab doesn't trigger blur event)
-			/*input.keydown(function(e) {
+			input.keydown(function(e) {
 				var code = e.keyCode || e.which;
 				if (code == '9') {
-					console.log('tab');
-					// self.onChange(chord, $(this).val());
-					// input.devbridgeAutocomplete('dispose');
+					// console.log('tab');
+					self.onChange(chord, $(this).val());
+					input.devbridgeAutocomplete('dispose');
 				}
-			});*/
+				if (code == '13') {
+					// console.log('enter');
+					self.onChange(chord, $(this).val());
+					input.devbridgeAutocomplete('dispose');
+				}
+			});
 			// We use a filter function to make it easier for user to enter chords
 			input.on('input propertychange paste', function() {
 				$(this).val(self.filterFunction($(this).val()));

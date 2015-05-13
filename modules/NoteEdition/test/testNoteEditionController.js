@@ -94,7 +94,15 @@ define(['modules/core/src/NoteModel',
 				necDelete.cursor.setPos([3, 3]);
 				necDelete.setSilence();
 				assert.equal(necDelete.getSelectedNotes().toString(), 'qr', 'Delete tuplet note');
-				assert.equal(necDelete.getSelectedNotes()[0].isTuplet(), true, 'tuplet after deletion should no more be a tuplet');
+				assert.equal(necDelete.getSelectedNotes()[0].isTuplet(), true, 'tuplet after one note deletion should be a tuplet');
+
+				necDelete.cursor.setPos([3, 4]);
+				nec.setTuplet();
+				necDelete.cursor.setPos([3, 5]);
+				necDelete.setSilence();
+				assert.equal(necDelete.getSelectedNotes()[0].isTuplet(), false, 'tuplet after whole note deletion should no more be a tuplet');
+				assert.equal(necDelete.getSelectedNotes()[1].isTuplet(), false, 'tuplet after whole note  deletion should no more be a tuplet');
+				assert.equal(necDelete.getSelectedNotes()[2].isTuplet(), false, 'tuplet after whole note  deletion should no more be a tuplet');
 				
 				/*necDelete.cursor.setPos([3, 5]);
 				necDelete.setSilence();

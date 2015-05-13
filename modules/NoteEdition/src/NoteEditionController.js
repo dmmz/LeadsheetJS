@@ -169,13 +169,11 @@ define([
 		if (typeof newDur === "undefined") {
 			throw 'NoteEditionController - setCurrDuration not accepted duration ' + duration;
 		}
-		var durBefore = 0,
-			durAfter = 0;
+		var durBefore = tmpNm.getTotalDuration();
 		for (var i = 0; i < selNotes.length; i++) {
-			durBefore += selNotes[i].getDuration();
 			selNotes[i].setDuration(newDur);
-			durAfter += selNotes[i].getDuration();
 		}
+		var durAfter = tmpNm.getTotalDuration();
 		tmpNm = this.checkDuration(tmpNm, durBefore, durAfter);
 		noteManager.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
 		noteManager.reviseNotes();
@@ -196,8 +194,8 @@ define([
 		}
 
 		var selNotes = tmpNm.getNotes();
-		var numberOfDots = 0;
 		var durBefore = tmpNm.getTotalDuration();
+		var numberOfDots = 0;
 		for (var i = 0, c = selNotes.length; i < c; i++) {
 			numberOfDots = selNotes[i].getDot();
 			if (numberOfDots >= 2) {
@@ -246,7 +244,7 @@ define([
 		}
 
 		function validDur(dur) {
-			initDur = 4;
+			var initDur = 4;
 			for (var i = 0; i < 6; i++) {
 				if (initDur == dur) return true;
 				initDur /= 2;
