@@ -44,7 +44,7 @@ define([
 			//0.999  fixes vexflow bug that doesn't draw last pixel on end bar
 			this.setScale(0.999);
 
-			this.CANVAS_DIV_WIDTH_PROPORTION = 0.8; //width proportion between canvas created and divContainer
+			this.CANVAS_DIV_WIDTH_PROPORTION = 0.97; //width proportion between canvas created and divContainer (space between canvas border and divContainer border)
 			this.NOTE_WIDTH = 20; // estimated note width in order to be more flexible
 			this.LINE_HEIGHT = 150;
 			this.LINE_WIDTH = 1160;
@@ -68,7 +68,7 @@ define([
 			this.ctx = renderer.getContext("2d");
 
 			if (params.typeResize == 'scale') {
-				this.setScale((width / this.LINE_WIDTH) * 0.95);
+				this.setScale((width / this.LINE_WIDTH));
 			} else { // typeResize == 'fluid'
 				this._setWidth(width);
 			}
@@ -82,9 +82,10 @@ define([
 			var canvas = $("<canvas id='" + idScore + "'></canvas>");
 			canvas[0].width = width;
 			canvas[0].height = height;
+
 			canvas.appendTo(this.divContainer);
 			var divCss = {
-				textAlign: "center"
+				textAlign: "center",
 			};
 			this.barWidthMng = null;
 
@@ -287,9 +288,9 @@ define([
 			}
 			this.resetScale();
 			//console.timeEnd('whole draw');
-			// if we requesteed to have a layer and we haven't already created it
+			// if we requested to have a layer and we haven't already created it
 			if (this.layer && !this.canvasLayer) {
-				this.canvasLayer = new CanvasLayer(this);
+				this.canvasLayer = new CanvasLayer(this); //the canvasLayer needs to be created after the score has been drawn
 			}
 			$.publish('LSViewer-drawEnd', this);
 		};

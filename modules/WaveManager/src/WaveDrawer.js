@@ -210,6 +210,7 @@ define([
             peaks = this.waveMng.audio.getPeaks(area.w, start, start + sliceSong);
             this.drawPeaks(peaks, area, this.color[toggleColor], this.viewer);
             toggleColor = (toggleColor + 1) % 2;
+            start += sliceSong;
         }
         this.viewer.canvasLayer.addElement(this);
         this.updateCursorPlaying(0);
