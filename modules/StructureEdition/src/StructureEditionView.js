@@ -9,26 +9,17 @@ define([
 
 	function StructureEditionView(imgPath) {
 		this.el = undefined;
+		this.imgPath = imgPath;
 		this.initSubscribe();
 		this.initKeyboard();
-		this.imgPath = imgPath;
+		this.render();
 	}
 
 	StructureEditionView.prototype.render = function(parentHTML, callback) {
 		//if (typeof this.el === "undefined" || (typeof this.el !== "undefined" && force === true)) {
-		var rendered = Mustache.render(StructureEditionTemplate, {
+		this.el = Mustache.render(StructureEditionTemplate, {
 			'imgPath': this.imgPath
 		});
-		if (typeof parentHTML !== "undefined") {
-			parentHTML.innerHTML = rendered;
-		}
-		this.el = rendered;
-		this.initController();
-		//$.publish('StructureEditionView-render');
-		if (typeof callback === "function") {
-			callback();
-		}
-		return;
 	};
 
 	/**

@@ -12,21 +12,13 @@ define([
 		this.el = undefined;
 		this.imgPath = imgPath;
 		this.initKeyboard();
+		this.render();
 	}
 
 	NoteEditionView.prototype.render = function(parentHTML, callback) {
-		//if (typeof this.el === "undefined" || (typeof this.el !== "undefined" && force === true)) {
-		var rendered = Mustache.render(NoteEditionTemplate, {
+		this.el = Mustache.render(NoteEditionTemplate, {
 			'imgPath': this.imgPath
 		});
-		if (typeof parentHTML !== "undefined") {
-			parentHTML.innerHTML = rendered;
-		}
-		this.el = rendered;
-		if (typeof callback === "function") {
-			callback();
-		}
-		return;
 	};
 
 	/**
@@ -89,7 +81,7 @@ define([
 	};
 	/**
 	 * Manages events clicked from the menu
-	 * this function is called by MainMenuView, after view is rendered
+	 * this function is called by MainMenuView
 	 *
 	 */
 	NoteEditionView.prototype.initController = function() {

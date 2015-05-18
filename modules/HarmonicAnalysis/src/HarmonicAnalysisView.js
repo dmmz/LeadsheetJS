@@ -8,26 +8,11 @@ define([
 
 	function HarmonicAnalysisView(parentHTML) {
 		this.el = undefined;
-		var self = this;
-		/*this.initView(parentHTML, function() {
-			self.initController();
-			$.publish('HarmonicAnalysisView-render', self);
-		});*/
+		this.render();
 	}
 
-	HarmonicAnalysisView.prototype.render = function(parentHTML, callback) {
-		//if (typeof this.el === "undefined" || (typeof this.el !== "undefined" && force === true)) {
-		var rendered = Mustache.render(HarmonicAnalysisTemplate);
-		if (typeof parentHTML !== "undefined") {
-			parentHTML.innerHTML = rendered;
-		}
-		this.el = rendered;
-		this.initController();
-		//$.publish('HarmonicAnalysisView-render');
-		if (typeof callback === "function") {
-			callback();
-		}
-		return;
+	HarmonicAnalysisView.prototype.render = function() {
+		this.el = Mustache.render(HarmonicAnalysisTemplate);
 	};
 
 	HarmonicAnalysisView.prototype.initController = function() {

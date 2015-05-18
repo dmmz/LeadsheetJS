@@ -144,63 +144,52 @@ define(function(require) {
     waveMng.load('/tests/audio/solar.wav', 170);
 	var wmc = new WaveManagerController(waveMng);
 
-	noteEdition.view.render(undefined, function() {
-		menu.model.addMenu({
-			title: 'Notes',
-			view: noteEdition.view,
-			order: 2
-		});
+	menu.model.addMenu({
+		title: 'Notes',
+		view: noteEdition.view,
+		order: 2
 	});
 
-	chordEdition.view.render(undefined, function() {
-		menu.model.addMenu({
-			title: 'Chords',
-			view: chordEdition.view,
-			order: 3
-		});
+	menu.model.addMenu({
+		title: 'Chords',
+		view: chordEdition.view,
+		order: 3
 	});
-	structEdition.view.render(undefined, function() {
-		menu.model.addMenu({
-			title: 'Structure',
-			view: structEdition.view,
-			order: 4
-		});
+	menu.model.addMenu({
+		title: 'Structure',
+		view: structEdition.view,
+		order: 4
 	});
-	constraint.view.render(undefined, function() {
-		menu.model.addMenu({
-			title: 'Constraint',
-			view: constraint.view,
-			order: 5
-		});
-		// menuC.activeMenu('Constraint');
-	});
-	harm.view.render(undefined, function() {
-		menu.model.addMenu({
-			title: 'Harmonizer',
-			view: harm.view,
-			order: 6
-		});
-	});
-	harmAn.view.render(undefined, function() {
-		menu.model.addMenu({
-			title: 'Harmonic Analysis',
-			view: harmAn.view,
-			order: 7
-		});
-	});
-	fileEdition.view.render(undefined, function() {
-		menu.model.addMenu({
-			title: 'File',
-			view: fileEdition.view,
-			order: 1
-		});
-		menu.controller.loadStateTab();
-		if (typeof menu.model.getCurrentMenu() === "undefined") {
-			menu.controller.activeMenu('File');
-		}
-	});
-	//$.publish('ToViewer-draw', songModel);
 
+	menu.model.addMenu({
+		title: 'Constraint',
+		view: constraint.view,
+		order: 5
+	});
+	// menuC.activeMenu('Constraint');
+
+	menu.model.addMenu({
+		title: 'Harmonizer',
+		view: harm.view,
+		order: 6
+	});
+
+	menu.model.addMenu({
+		title: 'Harmonic Analysis',
+		view: harmAn.view,
+		order: 7
+	});
+
+
+	menu.model.addMenu({
+		title: 'File',
+		view: fileEdition.view,
+		order: 1
+	});
+	menu.controller.loadStateTab();
+	if (typeof menu.model.getCurrentMenu() === "undefined") {
+		menu.controller.activeMenu('File');
+	}
 
 
 	function initPlayerModule(songModel) {

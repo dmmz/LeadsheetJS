@@ -12,21 +12,13 @@ define([
 		this.el = undefined;
 		this.imgPath = imgPath;
 		this.initKeyboard();
+		this.render();
 	}
 
-	ChordEditionView.prototype.render = function(parentHTML, callback) {
-		var rendered = Mustache.render(ChordEditionTemplate, {
+	ChordEditionView.prototype.render = function() {
+		this.el = Mustache.render(ChordEditionTemplate, {
 			'imgPath': this.imgPath
 		});
-		if (typeof parentHTML !== "undefined") {
-			parentHTML.innerHTML = rendered;
-		}
-		this.el = rendered;
-		//	$.publish('ChordEditionView-render');
-		if (typeof callback === "function") {
-			callback();
-		}
-		return;
 	};
 
 	/**
