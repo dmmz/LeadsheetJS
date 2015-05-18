@@ -49,7 +49,7 @@ define(['modules/WaveManager/src/WaveAudio',
          //when window is resized, leadsheet is drawn, and audio needs to be redrawn too
          $.subscribe('LSViewer-drawEnd', function(){
             if (self.isLoaded){
-                self.drawer.drawAudio(self.barTimesMng);    
+                self.drawer.drawAudio(self.barTimesMng,self.audio.tempo,self.audio.getDuration());    
             }
         });
     };
@@ -76,7 +76,7 @@ define(['modules/WaveManager/src/WaveAudio',
                 self.isLoaded = true;
                 self.barTimesMng.setBarTimes(self.song, self.audio);
                 self.drawer.newCursor(self.audio);
-                self.drawer.drawAudio(self.barTimesMng,tempo,self.audio.getDuration());
+                self.drawer.drawAudio(self.barTimesMng,self.audio.tempo,self.audio.getDuration());
             });
         };
         xhr.send();

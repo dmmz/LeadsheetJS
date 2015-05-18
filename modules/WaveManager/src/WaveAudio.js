@@ -2,6 +2,7 @@ define(function() {
 	function WaveAudio() {
 		this.audioCtx = new(window.AudioContext || window.webkitAudioContext)();
 		this.source = this.audioCtx.createBufferSource();
+		this.tempo = null;
 	}
 
 	WaveAudio.prototype._createSource = function() {
@@ -33,6 +34,7 @@ define(function() {
 		this.audioCtx.decodeAudioData(audioData, function(buffer) {
 				
 				self.buffer = buffer;
+				self.tempo  = tempo;
 				self.beatDuration = 60 / tempo;
 				self.source.buffer = self.buffer;
 				//source.playbackRate.value = playbackControl.value;

@@ -189,6 +189,9 @@ define([
         this.cursor = new CursorModel(audio.getDuration());
     };
     WaveDrawer.prototype.drawAudio = function(barTimesMng, tempo, duration) {
+        if (!tempo || !duration){
+            throw "WaveDrawer - missing parameters";
+        }
         this.waveBarDimensions = [];
         var numBars = barTimesMng.getLength();
         var area, dim, bar, barTime = 0,
