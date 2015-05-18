@@ -247,11 +247,13 @@ define([
             var offsetY = area.y;
             var halfH = height / 2;
             var length = peaks.length;
-            var scale = 1;
+            var scale;
             var i, h, maxH;
+
             // if (self.params.fillParent && width != length) {
             //     scale = width / length;
             // }
+            maxH = self.showHalfWave ? halfH : height;
             scale = width / length;
             ctx.fillStyle = color;
             if (self.drawMargins) {
@@ -260,7 +262,7 @@ define([
 
             ctx.beginPath();
             ctx.moveTo(area.x + $, halfH + offsetY);
-            //Comment these 3 lines if we only want to print the superior half
+            // 3 lines for printing the inferior half
             if (!self.showHalfWave) {
                 for (i = 0; i < length; i++) {
                     h = Math.round(peaks[i] * halfH);
@@ -272,7 +274,6 @@ define([
             ctx.moveTo(area.x + $, halfH + offsetY);
 
             for (i = 0; i < length; i++) {
-                maxH = self.showHalfWave ? height : halfH;
                 h = Math.round(peaks[i] * maxH);
                 ctx.lineTo(area.x + i * scale + $, halfH - h + offsetY);
             }
