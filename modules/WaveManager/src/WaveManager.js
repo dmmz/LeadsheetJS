@@ -1,8 +1,10 @@
 define(['modules/WaveManager/src/WaveAudio',
     'modules/WaveManager/src/WaveDrawer',
     'modules/WaveManager/src/BarTimesManager',
-    'modules/core/src/SongBarsIterator'
-], function(WaveAudio, WaveDrawer, BarTimesManager, SongBarsIterator) {
+    'modules/core/src/SongBarsIterator',
+    'jquery',
+    'pubsub'
+], function(WaveAudio, WaveDrawer, BarTimesManager, SongBarsIterator, $, pubsub) {
     /**
      * @param {SongModel} song
      * @param {cursorNotes} cModel     // notes cursor, it is updated when playing

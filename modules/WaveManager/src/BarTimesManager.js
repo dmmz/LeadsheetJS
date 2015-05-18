@@ -19,11 +19,11 @@ define(['modules/core/src/SongBarsIterator'],
 				barTimes = [];
 
 				while (songIt.hasNext()) {
-					if (songIt.isLast()){
-						barTime = audio.getDuration(); //for the last bar, we get the rest of the audio (useful because normally there is a fade out or a longer end)
-					}else{
+					// if (songIt.isLast()){
+					// 	barTime = audio.getDuration(); //for the last bar, we get the rest of the audio (useful because normally there is a fade out or a longer end)
+					// }else{
 						barTime += songIt.getBarTimeSignature().getBeats() * audio.beatDuration;
-					}
+					//}
 					barTimes.push(barTime);
 					songIt.next();
 				}

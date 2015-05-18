@@ -44,7 +44,7 @@ define(function(require) {
 	var myApp = {};
 	window.myApp = myApp;
 
-	var onWindowResizer = require('modules/LSViewer/src/OnWindowResizer');
+	
 
 	/*var popIn = new PopIn('Hello', 'Test<br />ok');
 	popIn.render();*/
@@ -58,8 +58,8 @@ define(function(require) {
 	// var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
 	var songModel = LJS.converters.MusicCSLJson.SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
 	
-	onWindowResizer(songModel);
-
+	LJS.LSViewer.OnWindowResizer(songModel);
+	
 	initPlayerModule(songModel);
 
 

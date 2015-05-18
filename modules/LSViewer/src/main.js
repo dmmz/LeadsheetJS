@@ -9,8 +9,10 @@ define([
 		"modules/LSViewer/src/TupletManager",
 		"modules/LSViewer/src/Scaler",
 		"modules/LSViewer/src/CanvasLayer",
+		"modules/LSViewer/src/OnWindowResizer"
+
 	],
-	function(BarWidthManager, BeamManager, LSBarView, LSChordView, LSNoteView, LSViewer, TieManager, TupletManager, Scaler, CanvasLayer) {
+	function(BarWidthManager, BeamManager, LSBarView, LSChordView, LSNoteView, LSViewer, TieManager, TupletManager, Scaler, CanvasLayer, OnWindowResizer) {
 		return {
 			"BarWidthManager": BarWidthManager,
 			"BeamManager": BeamManager,
@@ -21,7 +23,8 @@ define([
 			"TieManager": TieManager,
 			"TupletManager": TupletManager,
 			"Scaler": Scaler,
-			"CanvasLayer": CanvasLayer
+			"CanvasLayer": CanvasLayer,
+			"OnWindowResizer": OnWindowResizer
 		};
 	}
 );
