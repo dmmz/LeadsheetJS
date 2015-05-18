@@ -28,13 +28,12 @@ define(function() {
 		this.source.stop(0);
 	};
 
-	WaveAudio.prototype.load = function(audioData, waveMng, callback) {
+	WaveAudio.prototype.load = function(audioData, waveMng, tempo, callback) {
 		var self = this;
 		this.audioCtx.decodeAudioData(audioData, function(buffer) {
 				
 				self.buffer = buffer;
-				self.beatDuration = self.buffer.duration / waveMng.song.getSongTotalBeats();
-
+				self.beatDuration = 60 / tempo;
 				self.source.buffer = self.buffer;
 				//source.playbackRate.value = playbackControl.value;
 				self.source.connect(self.audioCtx.destination);

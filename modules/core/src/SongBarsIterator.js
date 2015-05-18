@@ -51,6 +51,9 @@ define(function() {
 		},
 		setEndingState: function(endingState){
 			this.endingState = endingState;
+		},
+		isLast: function(){
+			return this.index == this.bm.getTotal() - 1;
 		}
 
 	};

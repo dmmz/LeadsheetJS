@@ -58,28 +58,9 @@ define(['modules/WaveManager/src/WaveAudio',
         return this.isLoaded;
     };
 
-
-    WaveManager.prototype._getBarTime = function(songIt, barTime) {
-        return barTime + songIt.getBarTimeSignature().getBeats() * this.audio.beatDuration;
-    };
-
-    WaveManager.prototype.calculateBarTimes = function() {
-        var numBars = this.song.getComponent("bars").getTotal(),
-            songIt = new SongBarsIterator(this.song),
-            barTime = 0,
-            barTimes = [];
-
-        while (songIt.hasNext()) {
-            barTime = this._getBarTime(songIt, barTime);
-            barTimes.push(barTime);
-            songIt.next();
-        }
-        return barTimes;
-    };
-
     WaveManager.prototype.load = function(url, tempo) {
         if (isNaN(tempo) || tempo <= 0) {
-            tempo = 120;
+            throw "WaveManager - No tempo speficied";
         }
 
         // TODO Use tempo to compute length
@@ -91,11 +72,11 @@ define(['modules/WaveManager/src/WaveAudio',
 
         xhr.onload = function() {
             var audioData = xhr.response;
-            self.audio.load(audioData, self, function() {
+            self.audio.load(audioData, self, tempo, function() {
                 self.isLoaded = true;
-                self.barTimesMng.setBarTimes(self.calculateBarTimes());
+                self.barTimesMng.setBarTimes(self.song, self.audio);
                 self.drawer.newCursor(self.audio);
-                self.drawer.drawAudio(self.barTimesMng,tempo);
+                self.drawer.drawAudio(self.barTimesMng,tempo,self.audio.getDuration());
             });
         };
         xhr.send();
