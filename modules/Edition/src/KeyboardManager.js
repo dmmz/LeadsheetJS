@@ -12,7 +12,6 @@ define(['utils/NoteUtils',
 		}
 
 		function preventBackspace(evt, d) {
-
 			var doPrevent = false;
 			if (d.tagName.toUpperCase() === 'TEXTAREA' || (d.tagName.toUpperCase() === 'INPUT' && (d.type.toUpperCase() === 'TEXT' || d.type.toUpperCase() === 'PASSWORD' || d.type.toUpperCase() === 'FILE'))) {
 				doPrevent = d.readOnly || d.disabled;
@@ -118,6 +117,6 @@ define(['utils/NoteUtils',
 
 
 		});
-	};
+	}
 	return KeyboardManager;
 });
