@@ -7,10 +7,13 @@ define([
 	'pubsub',
 ], function(Mustache, CursorModel, SongModel, UserLog, $, pubsub) {
 
-	function ChordEditionController(songModel, cursor, view) {
-		this.songModel = songModel || new SongModel();
-		this.cursor = cursor || new CursorModel();
-		this.view = view;
+	function ChordEditionController(songModel, cursor, chordSpaceMng) {
+		if (!songModel || !cursor || !chordSpaceMng){
+			throw "ChordEditionController params are wrong";
+		}
+		this.songModel = songModel;
+		this.cursor = cursor;
+		this.chordSpaceMng = chordSpaceMng;
 		this.initSubscribe();
 	}
 
@@ -19,20 +22,14 @@ define([
 	 */
 	ChordEditionController.prototype.initSubscribe = function() {
 		var self = this;
-		/*$.subscribe('ChordEditionView-toggleChordVisibility', function(el) {
-			self.toggleChordVisibility();
-		});
-		$.subscribe('ChordEditionView-deleteChord', function(el) {
-			self.deleteChord();
-		});
-		$.subscribe('ChordEditionView-addChord', function(el) {
-			self.addChord();
-		});
-		$.subscribe('ChordEditionView-toggleEditChord', function(el) {
-			self.toggleEditChord();
-		});*/
-		$.subscribe('ChordEditionView-copyChords', function(el) {
-			self.copyChords();
+		
+
+		$.subscribe('ChordEditionView', function(el, fn, param) {
+
+			if (self.chordSpaceMng.isEnabled()) {
+				self[fn].call(self, param);
+				$.publish('ToViewer-draw', self.songModel);
+			}
 		});
 		$.subscribe('ChordEditionView-pasteChords', function(el) {
 			self.pasteChords();
@@ -50,21 +47,38 @@ define([
 		});
 	};
 
-	/*ChordEditionController.prototype.toggleChordVisibility = function() {
-		console.log('toggleChordVisibility');
-		// editor.toggleChordVisibility();
+	ChordEditionController.prototype.deleteChords = function() {
+		/**
+		 * @param  {positon} argument 
+		 * @return {Object}          position as {numBar: valBar, numBeat: valBeat}
+		 */
+		
+		var chordMng = this.songModel.getComponent('chords');
+		var self = this;
+		function removeChordIfExists(cursorIndex) {
+			
+			var chordSpace = self.chordSpaceMng.chordSpace[cursorIndex];
+			var pos = {
+				numBeat: chordSpace.beatNumber,
+				numBar: chordSpace.barNumber
+			};
+			var r = chordMng.getChordIndexByPosition(pos);
+			if (r.exact){
+				chordMng.removeChordByIndex(r.index);
+			}
+		}
+		for (var i = this.cursor.getStart(); i <= this.cursor.getEnd(); i++) {
+			removeChordIfExists(i);		
+		}
+		
 	};
-	ChordEditionController.prototype.deleteChord = function() {
-		console.log('deleteChord');
-		// editor.deleteChord();
-	};
-	ChordEditionController.prototype.addChord = function() {
+	/*ChordEditionController.prototype.addChord = function() {
 		console.log('addChord');
 		// editor.addChord();
-	};
+	};*/
 	ChordEditionController.prototype.toggleEditChord = function() {
 		console.log('toggleEditChord');
-	};*/
+	};
 	ChordEditionController.prototype.copyChords = function() {
 		console.log('copyChords');
 		// self.run("copyChords");

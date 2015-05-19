@@ -10,8 +10,11 @@ define([
 ], function(Mustache, SongModel, NoteManager, CursorModel, NoteUtils, UserLog, $, pubsub) {
 
 	function NoteEditionController(songModel, cursor, noteSpaceMng) {
-		this.songModel = songModel || new SongModel();
-		this.cursor = cursor || new CursorModel();
+		if (!songModel || !cursor || !noteSpaceMng){
+			throw "NoteEditionController params are wrong";
+		}
+		this.songModel = songModel;
+		this.cursor = cursor;
 		this.noteSpaceMng = noteSpaceMng;
 		this.initSubscribe();
 	}
@@ -69,7 +72,7 @@ define([
 		});
 */
 
-		//TODO: these two function are not verified / tested after refactoring
+		//TODO: these two functions are not verified / tested after refactoring
 
 		$.subscribe('NoteEditionView-activeView', function(el) {
 			self.changeEditMode(true);

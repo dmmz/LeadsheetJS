@@ -7,7 +7,7 @@ define([
 	'text!modules/ChordEdition/src/ChordEditionTemplate.html',
 ], function($, Mustache, SongModel, UserLog, pubsub, ChordEditionTemplate) {
 
-	function ChordEditionView(parentHTML, cursor, imgPath) {
+	function ChordEditionView(cursor, imgPath) {
 		this.cursor = cursor;
 		this.el = undefined;
 		this.imgPath = imgPath;
@@ -61,6 +61,10 @@ define([
 		});
 		$.subscribe('ctrl-v-key', function(el) {
 			fn = 'pasteChords';
+			$.publish('ChordEditionView', fn);
+		});
+		$.subscribe('supr-key', function(el) {
+			fn = 'deleteChords';
 			$.publish('ChordEditionView', fn);
 		});
 	};
