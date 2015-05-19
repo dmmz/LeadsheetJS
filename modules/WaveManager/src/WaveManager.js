@@ -32,7 +32,7 @@ define(['modules/WaveManager/src/WaveAudio',
         this.song = song;
         this.cursorNotes = cModel;
         this.isLoaded = false;
-        
+        this.viewer = viewer;
         this.audio = new WaveAudio();
 
         var paramsDrawer = {
@@ -60,7 +60,7 @@ define(['modules/WaveManager/src/WaveAudio',
         return this.isLoaded;
     };
 
-    WaveManager.prototype.load = function(url, tempo) {
+    WaveManager.prototype.load = function(url, tempo, redraw) {
         if (isNaN(tempo) || tempo <= 0) {
             throw "WaveManager - No tempo speficied";
         }
@@ -78,7 +78,13 @@ define(['modules/WaveManager/src/WaveAudio',
                 self.isLoaded = true;
                 self.barTimesMng.setBarTimes(self.song, self.audio);
                 self.drawer.newCursor(self.audio);
-                self.drawer.drawAudio(self.barTimesMng,self.audio.tempo,self.audio.getDuration());
+                if (redraw){
+                    self.viewer.setShortenLastBar(true);
+                    self.viewer.draw(self.song); // no need to drawAudio(), as it is called on 'drawEnd'
+                }else{
+                    self.drawer.drawAudio(self.barTimesMng,self.audio.tempo,self.audio.getDuration());
+                }
+                
             });
         };
         xhr.send();

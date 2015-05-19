@@ -56,6 +56,9 @@ define([
 			this.DISPLAY_TITLE = (params.displayTitle != undefined) ? params.displayTitle : true;
 			this.DISPLAY_COMPOSER = (params.displayComposer != undefined) ? params.displayComposer : true;
 			this.LINE_MARGIN_TOP = 0;
+			this.LAST_BAR_WIDTH_RATIO = 0.75; //in case of this.shortenLastBar = true (rendering audio), we make the last bar more compressed so that we left space for recordings longer than piece
+
+			this.shortenLastBar = false;
 
 			this.heightOverflow = params.heightOverflow || "auto";
 			this.divContainer = divContainer;
@@ -165,9 +168,11 @@ define([
 		LSViewer.prototype.setLineMarginTop = function(lineMarginTop, bottom) {
 			if (!bottom) {
 				this.MARGIN_TOP += lineMarginTop;
+			}else{
+				this.LINE_MARGIN_TOP = lineMarginTop;
 			}
 			this.LINE_HEIGHT += lineMarginTop;
-			this.LINE_MARGIN_TOP = lineMarginTop;
+			
 		};
 		LSViewer.prototype.setHeight = function(song, barWidthMng) {
 			var totalNumBars = song.getComponent("bars").getTotal();
@@ -180,7 +185,9 @@ define([
 				$(this.divContainer).height(this.canvas.height);
 			}
 		};
-
+		LSViewer.prototype.setShortenLastBar = function(bool) {
+			this.shortenLastBar = bool;
+		};
 
 		LSViewer.prototype.draw = function(song, params) {
 			params = params || {};
@@ -188,6 +195,7 @@ define([
 				console.warn('song is empty'); // only for debug, remove after 1 week safe
 				return;
 			}
+			//console.log("draw");
 			//console.time('whole draw');
 			var i, j, v, c;
 
@@ -210,7 +218,8 @@ define([
 				barDimensions,
 				tieMng = new TieManager();
 
-			this.barWidthMng = new BarWidthManager(this.LINE_HEIGHT, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE, this.MARGIN_TOP);
+			var lastBarWidthRatio = this.shortenLastBar ? this.LAST_BAR_WIDTH_RATIO : 1;
+			this.barWidthMng = new BarWidthManager(this.LINE_HEIGHT, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE, this.MARGIN_TOP, lastBarWidthRatio);
 			this.barWidthMng.calculateBarsStructure(song, nm);
 			this.setHeight(song, this.barWidthMng);
 
@@ -253,7 +262,9 @@ define([
 					//console.timeEnd('drawNotes');
 
 					barDimensions = self.barWidthMng.getDimensions(songIt.getBarIndex());
+					
 					barView = new LSBarView(barDimensions);
+
 					//console.time('drawBars');
 					barView.draw(self.ctx, songIt, sectionIt, self.ENDINGS_Y, self.LABELS_Y);
 					//console.timeEnd('drawBars');

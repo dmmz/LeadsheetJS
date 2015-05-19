@@ -160,7 +160,7 @@ define(function(require) {
 	var params = {
 		showHalfWave: true,
 		//drawMargins: true,
-		topAudio: -100,
+		topAudio: -120,
 		heightAudio: 75
 			/*,
 			      marginCursor: 20*/

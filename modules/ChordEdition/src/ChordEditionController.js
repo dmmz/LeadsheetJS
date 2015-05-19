@@ -23,16 +23,12 @@ define([
 	ChordEditionController.prototype.initSubscribe = function() {
 		var self = this;
 		
-
 		$.subscribe('ChordEditionView', function(el, fn, param) {
 
 			if (self.chordSpaceMng.isEnabled()) {
 				self[fn].call(self, param);
 				$.publish('ToViewer-draw', self.songModel);
 			}
-		});
-		$.subscribe('ChordEditionView-pasteChords', function(el) {
-			self.pasteChords();
 		});
 		/*$.subscribe('ChordEditionView-chordTabEvent', function(el, way) {
 			self.chordTabEvent(way);

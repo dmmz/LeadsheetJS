@@ -30,11 +30,12 @@ define([
          * update viewer dimensions if needed (space between lines and margin top)
          */
     WaveDrawer.prototype._adaptViewer = function() {
-        if (this.topAudio > 0) {
+        
+        if (this.topAudio > 0) { // if audio is greater than 0 it measn audio will be on top of score line
             this.viewer.setLineMarginTop(this.topAudio);
-        } else {
-            distance = this.viewer.LINE_HEIGHT + this.topAudio + this.heightAudio;
-            if (distance < 0) {
+        } else { 
+            distance = (this.heightAudio - this.topAudio) - this.viewer.LINE_HEIGHT ;
+            if (distance > 0) {
                 this.viewer.setLineMarginTop(distance, true);
             }
         }
@@ -194,16 +195,21 @@ define([
         }
         this.waveBarDimensions = [];
         var numBars = barTimesMng.getLength();
-        var area, dim, bar, barTime = 0,
-            sliceSong = 1 / numBars,
+        var area, dim, prevDim,bar, barTime = 0,
+            sliceSong,
             start = 0,
             peaks,
             toggleColor = 0;
         
         for (var i = 0; i < barTimesMng.getLength(); i++) {
             sliceSong = barTimesMng.getCurrBarTime(i) / duration;
-            
+            prevDim = dim;
             dim = this.viewer.barWidthMng.getDimensions(i);
+            if (!dim){
+                dim = prevDim;
+                dim.left = dim.left + dim.width;
+                dim.width = dim.width / this.viewer.LAST_BAR_WIDTH_RATIO - dim.width;
+            }
             waveBarView = new WaveBarView({
                 x: dim.left,
                 y: dim.top - this.viewer.CHORDS_DISTANCE_STAVE - this.topAudio,
@@ -218,6 +224,7 @@ define([
             toggleColor = (toggleColor + 1) % 2;
             start += sliceSong;
         }
+        
         this.viewer.canvasLayer.addElement(this);
         this.updateCursorPlaying(0);
         this.viewer.canvasLayer.refresh();
