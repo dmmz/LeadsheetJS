@@ -4,8 +4,9 @@ define([
 	'jquery',
 	'pubsub',
 	'jquery_autocomplete',
-	'modules/Edition/src/ElementView'
-], function(ChordUtils, UserLog, $, pubsub, jquery_autocomplete, ElementView) {
+	'modules/Edition/src/ElementView',
+	'modules/Edition/src/HtmlInputElement'
+], function(ChordUtils, UserLog, $, pubsub, jquery_autocomplete, ElementView, HtmlInputElement) {
 
 	function ChordSpaceView(viewer, position, barNumber, beatNumber, viewerScaler) {
 		this.viewer = viewer;
@@ -62,7 +63,6 @@ define([
 
 	ChordSpaceView.prototype.drawEditableChord = function(songModel, marginTop, marginRight) {
 		var self = this;
-
 		// Get chord value
 		var inputVal = '';
 		if (typeof songModel !== "undefined") {
@@ -71,26 +71,9 @@ define([
 				inputVal = chord.toString('', false);
 			}
 		}
-
-		// // Then we create input
-		var offset = $("#canvas_container canvas").offset();
-		if (typeof offset === "undefined" || isNaN(offset.top) || isNaN(offset.left)) {
-			offset = {
-				top: 0,
-				left: 0
-			};
-		}
-		var pos = this.viewer.scaler.getScaledObj(this.position);
-		var top = pos.y - marginTop - 1;
-		var left = pos.x + offset.left + window.pageXOffset - 1;
-		var width = pos.w - marginRight;
-		var height = pos.h + marginTop;
-		var input = $('<input/>').attr({
-			type: 'text',
-			style: "position:absolute; z-index: 11000;left:" + left + "px;top:" + top + "px; width:" + width + "px; height:" + height + "px",
-			'class': 'chordSpaceInput',
-		}).prependTo('#canvas_container');
-
+		//we create html input, jquery object is in htmlInput.input (did not do getter because don't believe anymore in plain getters in javascript)
+		var htmlInput = new HtmlInputElement(this.viewer,'chordSpaceInput',this.getArea(), marginTop,marginRight);
+		var input = htmlInput.input;
 		// We create auto complete input
 		var chordTypeList = [];
 		if (typeof ChordUtils.allChords !== "undefined") {
@@ -152,7 +135,7 @@ define([
 		input.on('input propertychange paste', function() {
 			$(this).val(self.filterFunction($(this).val()));
 		});
-
+		return htmlInput;
 	};
 	/**
 	 * Set to upper case first notes, add a lot of replacement for french or not keyboard

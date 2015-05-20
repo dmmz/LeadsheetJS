@@ -204,7 +204,10 @@ define([
 
 
 	ChordSpaceManager.prototype.undrawEditableChord = function() {
-		$('#canvas_container .chordSpaceInput').devbridgeAutocomplete('dispose').remove();
+		if (this.htmlInput){
+			this.htmlInput.input.devbridgeAutocomplete('dispose');
+			this.htmlInput.remove();
+		}
 	};
 	/**
 	 * draws the pulldown or the inpus in chords
@@ -214,11 +217,9 @@ define([
 			selected;
 
 		this.undrawEditableChord();
-		for (var i = 0, c = this.chordSpace.length; i < c; i++) {
-			if (i >= position[0] && i <= position[1]){
-				this.chordSpace[i].drawEditableChord(this.songModel, this.MARGIN_TOP, this.MARGIN_RIGHT);	
-			}
-		}
+		// position[0] === position[1] always
+		position = position[0];
+		this.htmlInput = this.chordSpace[position].drawEditableChord(this.songModel, this.MARGIN_TOP, this.MARGIN_RIGHT);	
 	};
 
 	return ChordSpaceManager;

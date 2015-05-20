@@ -206,7 +206,7 @@ define([
 				console.warn('song is empty'); // only for debug, remove after 1 week safe
 				return;
 			}
-			console.log("draw");
+			//console.log("draw");
 			//console.time('whole draw');
 			var i, j, v, c;
 

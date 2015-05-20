@@ -22,7 +22,6 @@ define(['jquery','pubsub'], function($, pubsub) {
 	}
 
 	CanvasLayer.prototype._createLayer = function(viewer) {
-		//console.log("CanvasLayer._createLayer");
 		var canvasEl = $(viewer.canvas),
 			idCanvas = canvasEl.attr('id'),
 			idLayer = idCanvas + "-layer",
@@ -61,7 +60,15 @@ define(['jquery','pubsub'], function($, pubsub) {
 			xy,
 			coords;
 		this.mouseDown = false;
-
+		/**
+		 * when selecting we need to know which kind of elements (being normally notes, chords or audio), are at the top and at the bottom of the selection.
+		 * We will decide by that, which elements will be editable. So far, we take maximum two. 
+		 * E.g.1 if notes at top and notes at bottom of selection, we only enable edition for notes (even if there are chords in the middle)
+		 * E.g.2 if notes at top and chords at bottom of selection, we enable edition on notes and chords at the same time.
+		 * @param  {Object} coords e.g.:  {x:12, y:21}
+		 * 
+		 * @return {Array}        array of active elements (being elements like ChordSpaceManager, NoteSpaceManager, WaveDrawer. TextElementManager will never be returned because it is not selectable (it does not have getY() function), it is only thought for being clicked)
+		 */
 		function getElemsByYs(coords) {
 			var minY = 999999, maxY = 0, minName, maxName, ys;
 			var activeElems = [];
@@ -78,7 +85,6 @@ define(['jquery','pubsub'], function($, pubsub) {
 						maxName = name;	
 					}
 				}
-				
 			}
 			if (minName){
 				activeElems.push(self.elems[minName]);
@@ -88,6 +94,11 @@ define(['jquery','pubsub'], function($, pubsub) {
 			}
 			return activeElems;
 		}
+		/**
+		 * when clicking on an element we will select one only element, this function chooses which one depending on coords
+		 * @param  {Object} coords  e.g.:  {x:12, y:21}
+		 * @return {Object}        class of active element (ChordSpaceManager, NoteSpaceManager, WaveDrawer. TextElementManager...etc.)
+		 */
 		function getOneActiveElement (coords) {
 			for (var name in self.elems){
 				
@@ -96,6 +107,7 @@ define(['jquery','pubsub'], function($, pubsub) {
 				}
 			}
 		}
+
 		function resetElems(){
 			for (var name in self.elems){
 				if (self.elems[name].cursor){
@@ -104,6 +116,10 @@ define(['jquery','pubsub'], function($, pubsub) {
 				self.elems[name].disable();
 			}
 		}
+		/**
+		 * [selection description]
+		 * @param  {Boolean} clicked true when clicked (mouseDown and mouseUp in same position) false when moved mouse onMouseDown
+		 */
 		function selection(clicked) {
 			var cursorPos;
 			resetElems();
@@ -120,6 +136,11 @@ define(['jquery','pubsub'], function($, pubsub) {
 			self.viewer.canvasLayer.refresh();
 		}
 
+		/**
+		 * cursor set to pointer to indicate when an element is clickable. Before it was managed by each element edition class (notes,chords...etc.) but we moved it here
+		 * because it has to be centralized otherwise events where interfering to each other (notes pointer when mouse is over notes would not work if at the same time chords editor asks to set pointer to default when mouse is not over chords)
+		 * @param {Object} xy  e.g.:  {x:12, y:21}
+		 */
 		function setPointerIfInPath (xy) {
 			if (typeof self.viewer.divContainer.style !== 'undefined'){
 				var found = false;
@@ -164,7 +185,10 @@ define(['jquery','pubsub'], function($, pubsub) {
 			self.viewer.canvasLayer.refresh(name);
 		});
 	};
-
+	/**
+	 * true if position on mouseDown is the same as position on mouseUp
+	 * @return {Booelan} 
+	 */
 	CanvasLayer.prototype.mouseDidntMove = function() {
 		return (this.coords.x == this.coords.xe && this.coords.y == this.coords.ye);
 	};

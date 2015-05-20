@@ -1,8 +1,9 @@
 define([
 	'modules/TextEdition/src/TextElementView',
-	'modules/Edition/src/ElementManager'
+	'modules/Edition/src/ElementManager',
+	'modules/Edition/src/HtmlInputElement'
 
-	],function(TextElementView, ElementManager){
+	],function(TextElementView, ElementManager, HtmlInputElement){
 	function TextElementManager (viewer, songModel) {
 		if (!viewer){
 			throw "TextElementManager - viewer not defined";
@@ -36,23 +37,10 @@ define([
 	TextElementManager.prototype.updateCursor = function() {
 		var self  = this;
 		var inputVal = this.songModel.getTitle();
-		var offset = $("#canvas_container canvas").offset();
-		if (typeof offset === "undefined" || isNaN(offset.top) || isNaN(offset.left)) {
-			offset = {
-				top: 0,
-				left: 0
-			};
-		}
-		var pos = this.viewer.scaler.getScaledObj(this.textView.getArea());
-		var top = pos.y - 1;
-		var left = pos.x + offset.left + window.pageXOffset - 1;
-		var width = pos.w ;
-		var height = pos.h ;
-		var input = $('<input/>').attr({
-			type: 'text',
-			style: "position:absolute; z-index: 11000;left:" + left + "px;top:" + top + "px; width:" + width + "px; height:" + height + "px",
-			'class': 'title',
-		}).prependTo('#canvas_container');
+
+		this.htmlInput = new HtmlInputElement(this.viewer,'title',this.textView.getArea());
+		var input = this.htmlInput.input;
+		
 		input.focus(); // this focus allow setting cursor on end carac
 		input.val(inputVal);
 		$(input).keyup(function(evt){
@@ -67,11 +55,13 @@ define([
 		//do nothing as we have no cursor
 	};
 	TextElementManager.prototype.enable = function() {
-		//do nothin
+		//do nothing
 	};
 	TextElementManager.prototype.disable = function() {
-		$.publish('ToViewer-draw', this.songModel);
-		$('#canvas_container .title').remove();
+		if (this.htmlInput){
+			this.htmlInput.remove();
+			$.publish('ToViewer-draw', this.songModel);
+		}
 	};
 	TextElementManager.prototype.inPath = function(coords) {
 		return !!this.textView.isInPath(coords);
