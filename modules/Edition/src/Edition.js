@@ -14,7 +14,7 @@ define([
 
 		new KeyboardManager(true);
 		
-		new TextElementManager(viewer);
+		new TextElementManager(viewer, songModel);
 
 		var values = {};
 		var cursorNote;

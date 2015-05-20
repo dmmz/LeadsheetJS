@@ -100,8 +100,8 @@ define(['jquery','pubsub'], function($, pubsub) {
 			for (var name in self.elems){
 				if (self.elems[name].cursor){
 					self.elems[name].setCursorEditable(false);
-					self.elems[name].disable();
 				}
+				self.elems[name].disable();
 			}
 		}
 		function selection(clicked) {
