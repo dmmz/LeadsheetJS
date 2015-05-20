@@ -16,7 +16,7 @@ define([
 		this.songModel = songModel;
 		this.cursor = cursor;
 		this.chordSpace = [];
-		this.name = 'chordCursor';
+		this.name = 'ChordsCursor';
 		this.elemMng = new ElementManager();
 		this.initSubscribe();
 		this.viewer = viewer;
@@ -40,19 +40,6 @@ define([
 		$.subscribe('ChordSpaceView-updateChord', function(el, update) {
 			self.updateChord(update.chordString, update.chordModel, update.chordSpace);
 			$.publish('ToViewer-draw', self.songModel);
-		});
-
-		$.subscribe('CanvasLayer-mousemove', function(el, position) {
-			if (!self.cursor.getEditable()) return;
-			var inPath = !!self.getChordsInPath({
-				x: position.x,
-				y: position.y
-			});
-			if (inPath) {
-				self.viewer.divContainer.style.cursor = 'pointer';
-			} else {
-				self.viewer.divContainer.style.cursor = 'default';
-			}
 		});
 		// cursor view subscribe
 		$.subscribe('Cursor-moveCursorByElement-chords', function(el, inc) {
@@ -170,6 +157,15 @@ define([
 	ChordSpaceManager.prototype.disable = function() {
 		this.undrawEditableChord();
 		this.enabled = false;
+	};
+
+	/**
+	 * @interface
+	 * @param  {Object} coords {x: xval, y: yval}}
+	 * @return {Boolean}
+	 */
+	ChordSpaceManager.prototype.inPath = function(coords) {
+		return !!this.getChordsInPath(coords);
 	};
 
 	ChordSpaceManager.prototype.updateChord = function(chordString, chordModel, chordSpace) {

@@ -36,16 +36,6 @@ define([
 	 */
 	NoteSpaceManager.prototype.initSubscribe = function() {
 		var self = this;
-		$.subscribe('CanvasLayer-mousemove', function(el, position) {
-			var inPath = self.elemMng.getElemsInPath(self.noteSpace, position);
-			if (typeof self.viewer.divContainer.style !== 'undefined'){
-				if (inPath) {
-					self.viewer.divContainer.style.cursor = 'pointer';
-				} else {
-					self.viewer.divContainer.style.cursor = 'default';
-				}
-			}
-		});
 
 		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
 			if (!self.viewer.canvasLayer) {
@@ -101,7 +91,14 @@ define([
 			//$.publish('ToViewer-draw',self.songModel);
 		}
 	};
-
+	/**
+	 * @interface
+	 * @param  {Object} coords {x: xval, y: yval}}
+	 * @return {Boolean}
+	 */
+	NoteSpaceManager.prototype.inPath = function(coords) {
+		return !!this.elemMng.getElemsInPath(this.noteSpace, coords);
+	};
 	/**
 	 * @interface
 	 * @param  {CanvasContext} ctx 

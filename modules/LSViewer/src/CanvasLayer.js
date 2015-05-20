@@ -78,8 +78,10 @@ define(['jquery','pubsub'], function($, pubsub) {
 						maxName = name;	
 					}
 				}
-				self.elems[name].cursor.setEditable(false);
-				self.elems[name].disable();
+				if (self.elems[name].cursor){
+					self.elems[name].cursor.setEditable(false);
+					self.elems[name].disable();
+				}
 			}
 			if (minName){
 				activeElems.push(self.elems[minName]);
@@ -100,7 +102,25 @@ define(['jquery','pubsub'], function($, pubsub) {
 			}
 			self.viewer.canvasLayer.refresh();
 		}
+		function setPointerIfInPath (xy) {
+			if (typeof self.viewer.divContainer.style !== 'undefined'){
+				var found = false;
 
+				for (var name in self.elems){
+					if (typeof self.elems[name].inPath !== 'function'){
+						continue;
+					}
+					if (self.elems[name].inPath(xy)){
+
+						self.viewer.divContainer.style.cursor = 'pointer';
+						found = true;
+					}
+				}
+				if (!found){
+					self.viewer.divContainer.style.cursor = 'default';
+				}
+			}
+		}
 		$(this.canvasLayer).mousedown(function(evt) {
 			coords = self._getXandY($(this), evt);
 			self.mouseCoordsIni = [coords.x, coords.y];
@@ -120,7 +140,7 @@ define(['jquery','pubsub'], function($, pubsub) {
 				self._setCoords(self.mouseCoordsIni, self.mouseCoordsEnd);
 				selection();
 			}
-			$.publish('CanvasLayer-mousemove', xy);
+			setPointerIfInPath(xy);
 		});
 		$.subscribe('CanvasLayer-refresh',function(el,name){
 			self.viewer.canvasLayer.refresh(name);
