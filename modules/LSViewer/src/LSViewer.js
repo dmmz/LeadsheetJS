@@ -146,7 +146,18 @@ define([
 			var oldTextAlign = this.ctx.textAlign;
 			this.ctx.textAlign = 'center';
 			this.ctx.font = "32px lato Verdana";
-			this.ctx.fillText(title, this._getNonScaledWidth() / 2, 60, this._getNonScaledWidth());
+			var x = this._getNonScaledWidth() / 2,
+				y = 60,
+				maxWidth = this.canvas.width;
+			this.ctx.fillText(title, x, y, maxWidth);
+	
+			var metrics = this.ctx.measureText(title);
+			this.titleView = {
+				x: x - metrics.actualBoundingBoxRight / 2,
+				y: y - metrics.actualBoundingBoxAscent,
+				w: metrics.actualBoundingBoxRight,
+				h: metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent
+			};
 			this.ctx.textAlign = oldTextAlign;
 		};
 
@@ -195,7 +206,7 @@ define([
 				console.warn('song is empty'); // only for debug, remove after 1 week safe
 				return;
 			}
-			//console.log("draw");
+			console.log("draw");
 			//console.time('whole draw');
 			var i, j, v, c;
 

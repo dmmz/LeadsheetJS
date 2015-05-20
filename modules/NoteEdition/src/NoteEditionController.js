@@ -93,6 +93,7 @@ define([
 		$.subscribe('NoteEditionView', function(el, fn, param) {
 			if (self.noteSpaceMng.isEnabled()) {
 				self[fn].call(self, param);
+				console.log("note-toviewer-draw");
 				$.publish('ToViewer-draw', self.songModel);
 			}
 		});

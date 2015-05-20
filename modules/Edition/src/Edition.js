@@ -3,8 +3,9 @@ define([
 	"modules/Cursor/src/Cursor",
 	"modules/NoteEdition/src/NoteEdition",
 	"modules/ChordEdition/src/ChordEdition",
-	"modules/StructureEdition/src/StructureEdition"
-], function(KeyboardManager, Cursor, NoteEdition, ChordEdition, StructureEdition) {
+	"modules/StructureEdition/src/StructureEdition",
+	"modules/Edition/src/TextElementManager"
+], function(KeyboardManager, Cursor, NoteEdition, ChordEdition, StructureEdition, TextElementManager) {
 
 	function Edition(viewer, songModel, menuModel, params) {
 		if (!params) {
@@ -12,6 +13,8 @@ define([
 		}
 
 		new KeyboardManager(true);
+		
+		new TextElementManager(viewer);
 
 		var values = {};
 		var cursorNote;

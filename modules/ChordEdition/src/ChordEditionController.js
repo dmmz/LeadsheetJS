@@ -27,6 +27,7 @@ define([
 
 			if (self.chordSpaceMng.isEnabled()) {
 				self[fn].call(self, param);
+				console.log("chord-toViewerDraw");
 				$.publish('ToViewer-draw', self.songModel);
 			}
 		});
