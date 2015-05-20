@@ -74,6 +74,7 @@ define([
 	/**
 	 * @inteface
 	 * @param  {Object} coords
+	 * @return {Object} e.g: {topY:44, bottomY: 23}
 	 */
 	NoteSpaceManager.prototype.getYs = function(coords) {
 		return this.elemMng.getYs(this.noteSpace, coords);
@@ -162,6 +163,12 @@ define([
 	 */
 	NoteSpaceManager.prototype.disable = function() {
 		this.enabled = false;
+	};
+	/**
+	 * @interface
+	 */
+	NoteSpaceManager.prototype.setCursorEditable = function(bool) {
+		this.cursor.setEditable(bool);
 	};
 
 	return NoteSpaceManager;

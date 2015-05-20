@@ -4,7 +4,7 @@ define([
 	"modules/NoteEdition/src/NoteEdition",
 	"modules/ChordEdition/src/ChordEdition",
 	"modules/StructureEdition/src/StructureEdition",
-	"modules/Edition/src/TextElementManager"
+	"modules/TextEdition/src/TextElementManager"
 ], function(KeyboardManager, Cursor, NoteEdition, ChordEdition, StructureEdition, TextElementManager) {
 
 	function Edition(viewer, songModel, menuModel, params) {

@@ -128,6 +128,15 @@ define([
         this.enabled = false;
     };
 
+    /**
+     * @interface
+     * @param  {[type]} ctx [description]
+     * @return {[type]}     [description]
+     */
+    WaveDrawer.prototype.inPath = function(coords) {
+        return !!this.elemMng.getElemsInPath(this.waveBarDimensions,coords);
+    };
+
     WaveDrawer.prototype.drawCursor = function(ctx) {
         ctx.beginPath();
         ctx.moveTo(this.cursorPos.x, this.cursorPos.y);
@@ -154,6 +163,12 @@ define([
         ctx.fillStyle = saveFillColor;
         ctx.globalAlpha = 1;
     
+    };
+
+    WaveDrawer.prototype.setCursorEditable = function(bool) {
+        if (this.cursor){
+            this.cursor.setEditable(bool);
+        }
     };
     WaveDrawer.prototype.updateCursorPlaying = function(time) {
         this.cursorPos = this._getCursorDims(time);

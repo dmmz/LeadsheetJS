@@ -62,13 +62,13 @@ define(['jquery','pubsub'], function($, pubsub) {
 			coords;
 		this.mouseDown = false;
 
-		function getElemsByYs() {
+		function getElemsByYs(coords) {
 			var minY = 999999, maxY = 0, minName, maxName, ys;
 			var activeElems = [];
 			for (var name in self.elems) {
 				//self.elems[name].updateCursor([null,null]);
 				if (typeof self.elems[name].getYs === 'function'){
-					ys = self.elems[name].getYs(self.coords);
+					ys = self.elems[name].getYs(coords);
 					if (ys.topY < minY){
 						minY = ys.topY;
 						minName = name;
@@ -78,10 +78,7 @@ define(['jquery','pubsub'], function($, pubsub) {
 						maxName = name;	
 					}
 				}
-				if (self.elems[name].cursor){
-					self.elems[name].cursor.setEditable(false);
-					self.elems[name].disable();
-				}
+				
 			}
 			if (minName){
 				activeElems.push(self.elems[minName]);
@@ -91,17 +88,38 @@ define(['jquery','pubsub'], function($, pubsub) {
 			}
 			return activeElems;
 		}
-
-		function selection(mouseUp) {
-			var cursorPos,
-				activElems = getElemsByYs();
+		function getOneActiveElement (coords) {
+			for (var name in self.elems){
+				
+				if (self.elems[name].inPath(coords)){
+					return [self.elems[name]];
+				}
+			}
+		}
+		function resetElems(){
+			for (var name in self.elems){
+				if (self.elems[name].cursor){
+					self.elems[name].setCursorEditable(false);
+					self.elems[name].disable();
+				}
+			}
+		}
+		function selection(clicked) {
+			var cursorPos;
+			resetElems();
+			if (clicked)
+				activElems = getOneActiveElement(self.coords);
+			else{
+				activElems = getElemsByYs(self.coords);
+			}
 			for (var i in activElems){
-				activElems[i].updateCursor(self.coords,mouseUp);
-				activElems[i].cursor.setEditable(true);
+				activElems[i].updateCursor(self.coords, clicked);
+				activElems[i].setCursorEditable(true);
 				activElems[i].enable();
 			}
 			self.viewer.canvasLayer.refresh();
 		}
+
 		function setPointerIfInPath (xy) {
 			if (typeof self.viewer.divContainer.style !== 'undefined'){
 				var found = false;
@@ -111,7 +129,6 @@ define(['jquery','pubsub'], function($, pubsub) {
 						continue;
 					}
 					if (self.elems[name].inPath(xy)){
-
 						self.viewer.divContainer.style.cursor = 'pointer';
 						found = true;
 					}
@@ -129,7 +146,8 @@ define(['jquery','pubsub'], function($, pubsub) {
 		});
 		$(this.canvasLayer).mouseup(function(evt) {
 			self.mouseDown = false;
-			selection(true);
+			selection(self.mouseDidntMove());	
+			
 		});
 		$(this.canvasLayer).mousemove(function(evt) {
 			//draw cursor selection
@@ -145,10 +163,11 @@ define(['jquery','pubsub'], function($, pubsub) {
 		$.subscribe('CanvasLayer-refresh',function(el,name){
 			self.viewer.canvasLayer.refresh(name);
 		});
-
 	};
 
-
+	CanvasLayer.prototype.mouseDidntMove = function() {
+		return (this.coords.x == this.coords.xe && this.coords.y == this.coords.ye);
+	};
 	CanvasLayer.prototype._setCoords = function(mouseCoordsIni, mouseCoordsEnd) {
 
 		function get(xory, type) {
@@ -194,7 +213,7 @@ define(['jquery','pubsub'], function($, pubsub) {
 			if (this.elems[name].isEnabled()){
 				this.elems[name].draw(this.ctx);
 			}
-			//TODO refactor, we are doing this only to make it work, but it's bad code
+			//TODO refactor, drawCursor only exists in WaveManager to draw playing cursor
 			if (typeof this.elems[name].drawCursor === 'function'){
 				this.elems[name].drawCursor(this.ctx);
 			}

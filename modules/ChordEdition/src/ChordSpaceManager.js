@@ -167,6 +167,12 @@ define([
 	ChordSpaceManager.prototype.inPath = function(coords) {
 		return !!this.getChordsInPath(coords);
 	};
+	/**
+	 * @interface
+	 */
+	ChordSpaceManager.prototype.setCursorEditable = function(bool) {
+		this.cursor.setEditable(bool);
+	};
 
 	ChordSpaceManager.prototype.updateChord = function(chordString, chordModel, chordSpace) {
 		if (typeof chordModel === "undefined" && typeof chordSpace !== "undefined") {
@@ -209,8 +215,9 @@ define([
 
 		this.undrawEditableChord();
 		for (var i = 0, c = this.chordSpace.length; i < c; i++) {
-			selected = (position[0] <= i && i <= position[1]);
-			this.chordSpace[i].drawEditableChord(this.songModel, selected, this.MARGIN_TOP, this.MARGIN_RIGHT);
+			if (i >= position[0] && i <= position[1]){
+				this.chordSpace[i].drawEditableChord(this.songModel, this.MARGIN_TOP, this.MARGIN_RIGHT);	
+			}
 		}
 	};
 
