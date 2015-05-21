@@ -54,7 +54,7 @@ define([
 	/**
 	 * if a duration function applied to a tuplet note, we expand cursor to include the other tuplet notes (to avoid strange durations
 	 */
-	NoteEditionController.prototype._reviseTuplets = function() {
+	NoteEditionController.prototype._ifTupletExpandCursor = function() {
 		var noteManager = this.songModel.getComponent('notes');
 		var notes = noteManager.getNotes();
 		var c = this.cursor.getStart();
@@ -144,13 +144,13 @@ define([
 			var iNextNote = nm.getNextIndexNoteByBeat(endBeat);
 			return isTupletBeat(nm.getNoteBeat(iPrevNote)) || isTupletBeat(nm.getNoteBeat(iNextNote));
 		}
-		this._reviseTuplets();
 		var initBeat = noteMng.getNoteBeat(this.cursor.getStart());
 		var endBeat = initBeat + durAfter;
 		if (durAfter < durBefore) {
 			tmpNm.fillGapWithRests(durBefore - durAfter, initBeat);
 		} else if (durAfter > durBefore) {
 			if (checkIfBreaksTuplet(initBeat, endBeat, noteMng)) {
+				//TODO: return object
 				UserLog.logAutoFade('error', "Can't break tuplet");
 				return;
 			}
@@ -189,7 +189,7 @@ define([
 			UserLog.logAutoFade('error', "Duration doesn't fit the bar");
 			return;
 		}
-
+		
 		tmpNm = this._checkDuration(noteMng, tmpNm, durBefore, durAfter);
 		noteMng.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
 		this.cursor.setPos(tmpCursorPos);
@@ -262,6 +262,7 @@ define([
 	 * @param {String} duration	represents the duration
 	 */
 	NoteEditionController.prototype.setCurrDuration = function(duration) {
+		this._ifTupletExpandCursor();
 		this._runDurationFn(function(tmpNm){
 
 			var arrDurs = {
@@ -411,6 +412,7 @@ define([
 	};
 
 	NoteEditionController.prototype.copyNotes = function() {
+		this._ifTupletExpandCursor();
 		var noteManager = this.songModel.getComponent('notes');
 		this.buffer = noteManager.cloneElems(this.cursor.getStart(), this.cursor.getEnd() + 1);
 	};

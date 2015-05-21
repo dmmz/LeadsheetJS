@@ -66,7 +66,6 @@ define(['modules/core/src/NoteModel',
 					nec.setCurrDuration("9");
 				}, 'throw error on impossible duration');
 
-
 				nec.setDot();
 				assert.equal(nec.getSelectedNotes()[0].getDuration(), 6, 'dot');
 
