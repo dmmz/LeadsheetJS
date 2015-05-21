@@ -302,7 +302,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		if (this.dot != null) noteObj.dot = this.dot;
 		if (this.tie != null && complete) noteObj.tie = this.tie;
 		if (this.tuplet != null && complete) noteObj.tuplet = this.tuplet;
-		if (this.time_modification != null && complete) noteObj.time_modification = this.time_modification;
+		if (this.timeModification != null && complete) noteObj.timeModification = this.timeModification;
 		if (this.isRest) noteObj.isRest = this.isRest;
 
 		return noteObj;

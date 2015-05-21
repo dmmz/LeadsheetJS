@@ -64,7 +64,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		if (note.dot != null) noteObj.dot = note.dot;
 		if (note.tie != null && complete) noteObj.tie = note.tie;
 		if (note.tuplet != null && complete) noteObj.tuplet = note.tuplet;
-		if (note.time_modification != null && complete) noteObj.time_modification = note.time_modification;
+		if (note.time_modification != null && complete) noteObj.time_modification = note.timeModification;
 		if (note.isRest) noteObj.duration += "r";
 
 		if (note.measure != null && withNumMeasure) noteObj.num_measure = note.measure;

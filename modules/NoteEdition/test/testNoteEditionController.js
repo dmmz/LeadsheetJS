@@ -78,10 +78,6 @@ define(['modules/core/src/NoteModel',
 				nec.addNote();
 				assert.equal(nec.getSelectedNotes().toString(), note, 'add note');
 
-				// remove note
-				nec.deleteNote();
-				//assert.equal(nec.getSelectedNotes().toString(), note, 'delete note');
-
 				// Editor test where delete is like silence
 				var necDelete = createRhythmicMelody();
 				necDelete.setSilence();

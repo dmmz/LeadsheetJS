@@ -235,6 +235,7 @@ define(['jquery','pubsub'], function($, pubsub) {
 		// console.log(this.elems);
 		for (var name in this.elems) {
 			if (this.elems[name].isEnabled()){
+				//drawing cursor for notesManager, chordsManager and WaveManager (selection cursor)
 				this.elems[name].draw(this.ctx);
 			}
 			//TODO refactor, drawCursor only exists in WaveManager to draw playing cursor
