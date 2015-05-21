@@ -26,66 +26,79 @@ define([
 	 * Publish event after receiving dom events
 	 */
 	StructureEditionView.prototype.initController = function() {
+		var fn;
 		$('#add-section').click(function() {
-			$.publish('StructureEditionView-addSection');
+			fn  = 'addSection';
+			$.publish('StructureEditionView',fn);
 		});
 		$('#rem-section').click(function() {
-			$.publish('StructureEditionView-removeSection');
+			fn = 'removeSection';
+			$.publish('StructureEditionView',fn);
 		});
 		$('#validateSectionTitle').click(function() {
 			var name = $('#inputSectionName').val();
-			$.publish('StructureEditionView-sectionName', name);
+			fn = 'setSectionName';
+			$.publish('StructureEditionView',[fn, name] );
 		});
 		$('#selectSectionRepeatTimes').change(function() {
 			var repeatTimes = parseInt($(this).val(), 10) - 1; // number of repetition is the number of played times minus 1
-			$.publish('StructureEditionView-repeatTimes', repeatTimes);
+			fn = 'setRepeatTimes';
+			$.publish('StructureEditionView', [fn, repeatTimes]);
 		});
 
+
 		$('#add-bar').click(function() {
-			$.publish('StructureEditionView-addBar');
+			fn = 'addBar';
+			$.publish('StructureEditionView', fn);
 		});
 		$('#rem-bar').click(function() {
-			$.publish('StructureEditionView-removeBar');
+			fn = 'removeBar';
+			$.publish('StructureEditionView', fn);
 		});
 
 		// Time Signature change
 		$('#edit_each_time_signature_container select').change(function() {
+			fn = 'setTimeSignature';
 			var timeSignature = $(this).val();
-			$.publish('StructureEditionView-timeSignature', timeSignature);
+			$.publish('StructureEditionView', [fn,timeSignature]);
 		});
 
 		// Tonality change
 		$('#edit_each_tonality_container select').change(function() {
+			fn = 'tonality';
 			var tonality = $(this).val();
-			$.publish('StructureEditionView-tonality', tonality);
+			$.publish('StructureEditionView', [fn, tonality]);
 		});
 
 		// Ending change
 		$('#edit_each_ending_container select').change(function() {
 			var ending = $(this).val();
-			$.publish('StructureEditionView-ending', ending);
+			fn = 'ending';
+			$.publish('StructureEditionView', [fn, ending]);
 		});
 
 		// Style change
 		$('#edit_each_style_container select').change(function() {
 			var style = $(this).val();
-			$.publish('StructureEditionView-style', style);
+			fn = 'style';
+			$.publish('StructureEditionView-', [fn, style]);
 		});
 
 		// Label change
 		$('#edit_each_label_container select').change(function() {
 			var label = $(this).val();
-			$.publish('StructureEditionView-label', label);
+			fn = 'label';
+			$.publish('StructureEditionView', [fn, label]);
 		});
 
 		// Sublabel change
 		$('#edit_each_sublabel_container select').change(function() {
 			var sublabel = $(this).val();
-			$.publish('StructureEditionView-sublabel', sublabel);
+			fn = 'subLabel';
+			$.publish('StructureEditionView', [fn, sublabel]);
 		});
 		$('#unfold').click(function() {
-			var sublabel = $(this).val();
-			$.publish('StructureEditionView-unfold');
+			$.publish('StructureEditionView','unfold');
 		});
 	};
 
