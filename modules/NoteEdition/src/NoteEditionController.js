@@ -239,23 +239,6 @@ define([
 		}
 	};
 
-	NoteEditionController.prototype.setSilence = function() {
-		var nm = this.songModel.getComponent('notes');
-		var selNotes = this._getSelectedNotes();
-		var note;
-		for (var i = 0; i < selNotes.length; i++) {
-			note = selNotes[i];
-			if (note.isTie()) {
-				note.removeTie();
-			}
-			if (note.isTuplet()) {
-				note.removeTuplet();
-			}
-			if (!note.isRest) note.setRest(true);
-		}
-		nm.reviseNotes();
-
-	};
 	//Duration functions
 	/**
 	 * setCurrDuration("4")
@@ -402,6 +385,25 @@ define([
 			}
 		});
 	};
+	NoteEditionController.prototype.setSilence = function() {
+		this._ifTupletExpandCursor();
+
+		this._runDurationFn(function(tmpNm){
+			var selNotes = tmpNm.getNotes();	
+			var note;
+			for (var i = 0; i < selNotes.length; i++) {
+				note = selNotes[i];
+				if (note.isTie()) {
+					note.removeTie();
+				}
+				if (note.isTuplet()) {
+					note.removeTuplet();
+				}
+				if (!note.isRest) note.setRest(true);
+			}
+		});
+	};
+
 
 	NoteEditionController.prototype.addNote = function() {
 		this._runDurationFn(function(tmpNm){
