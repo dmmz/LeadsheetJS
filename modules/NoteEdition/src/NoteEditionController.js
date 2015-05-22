@@ -10,12 +10,12 @@ define([
 ], function(Mustache, SongModel, NoteManager, CursorModel, NoteUtils, UserLog, $, pubsub) {
 
 	function NoteEditionController(songModel, cursor, noteSpaceMng) {
-		if (!songModel || !cursor || !noteSpaceMng){
+		if (!songModel || !cursor ){
 			throw "NoteEditionController params are wrong";
 		}
 		this.songModel = songModel;
 		this.cursor = cursor;
-		this.noteSpaceMng = noteSpaceMng;
+		this.noteSpaceMng = noteSpaceMng; // in tests we don't pass noteSpaceMng, it will be undefined
 		this.initSubscribe();
 	}
 

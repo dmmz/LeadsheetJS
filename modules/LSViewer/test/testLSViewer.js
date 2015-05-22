@@ -49,11 +49,11 @@ define(['tests/DisplayTester',
 				var viewer = new LSViewer(divContainer,{heightOverflow:'resizeDiv',layer:true});
 				var song = SongModel_CSLJson.importFromMusicCSLJSON(Solar);
 				var cM = new CursorModel(song.getComponent('notes'));
-				var neC = new NoteEditionController(song, cM);
-				
+			
 				var waveMng = new WaveManager(song, cM, viewer); //last parameter is called params and is not used here, so it's the default config
 				viewer.draw(song);	
-	
+				
+				//not used because is not interactive, but draws the score cursor
 				var noteSpaceManager = new NoteSpaceManager(cM, viewer);
 				
 				waveMng.load('/tests/audio/solar.wav',170);

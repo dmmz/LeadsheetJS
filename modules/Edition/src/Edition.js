@@ -14,6 +14,7 @@ define([
 
 		new KeyboardManager(true);
 		
+		//editing title
 		new TextElementManager(viewer, songModel);
 
 		var values = {};
