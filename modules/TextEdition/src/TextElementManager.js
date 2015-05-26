@@ -1,9 +1,10 @@
 define([
 	'modules/TextEdition/src/TextElementView',
 	'modules/Edition/src/ElementManager',
-	'modules/Edition/src/HtmlInputElement'
-
-	],function(TextElementView, ElementManager, HtmlInputElement){
+	'modules/Edition/src/HtmlInputElement',
+	'pubsub',
+	'jquery'
+	],function(TextElementView, ElementManager, HtmlInputElement, pubsub, $){
 	function TextElementManager (viewer, songModel) {
 		if (!viewer){
 			throw "TextElementManager - viewer not defined";

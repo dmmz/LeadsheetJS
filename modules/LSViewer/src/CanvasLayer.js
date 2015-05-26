@@ -123,6 +123,7 @@ define(['jquery','pubsub'], function($, pubsub) {
 		function selection(clicked) {
 			var cursorPos;
 			resetElems();
+			var activElems
 			if (clicked)
 				activElems = getOneActiveElement(self.coords);
 			else{

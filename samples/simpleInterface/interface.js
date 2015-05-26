@@ -107,14 +107,16 @@ define(function(require) {
 			menu: {
 				title: 'Notes',
 				order: 2
-			}
+			},
+			imgPath:'/modules/NoteEdition/img'
 		},
 		chords: {
 			active: true,
 			menu: {
 				title: 'Chords',
 				order: 3
-			}
+			},
+			imgPath:'/modules/NoteEdition/img'
 			// menu: false /* if we don't want menu*/
 		},
 		structure: {
@@ -122,7 +124,8 @@ define(function(require) {
 			menu: {
 				title: 'Structure',
 				order: 4
-			}
+			},
+			imgPath:'/modules/StructureEdition/img'
 		}
 	});
 
@@ -151,7 +154,6 @@ define(function(require) {
 
 	// Constraint menu
 	var constraint = new LJS.Constraint(songModel);
-
 
 
 	// Edit files menu
