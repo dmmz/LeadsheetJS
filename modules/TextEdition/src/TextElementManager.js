@@ -1,16 +1,18 @@
 define([
+	'jquery',
+	'pubsub',
 	'modules/TextEdition/src/TextElementView',
 	'modules/Edition/src/ElementManager',
 	'modules/Edition/src/HtmlInputElement'
 
-	],function(TextElementView, ElementManager, HtmlInputElement){
+	],function($, pubsub, TextElementView, ElementManager, HtmlInputElement){
 	function TextElementManager (viewer, songModel) {
 		if (!viewer){
 			throw "TextElementManager - viewer not defined";
 		}
 		this.name = 'title';
 		this.viewer = viewer;
-		this.initSubscribe();	
+		this.initSubscribe();
 		this.textView = null;
 		this.elemMng = new ElementManager();
 		this.songModel = songModel;
@@ -23,7 +25,7 @@ define([
 				throw "TextElementManager needs CanvasLayer";
 			}
 			self.textView  = new TextElementView(viewer.titleView, viewer.scaler);
-			viewer.canvasLayer.addElement(self); 
+			viewer.canvasLayer.addElement(self);
 			viewer.canvasLayer.refresh();
 		});
 	};
