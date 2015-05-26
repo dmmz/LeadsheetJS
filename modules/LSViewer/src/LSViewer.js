@@ -34,7 +34,7 @@ define([
 		function LSViewer(divContainer, params) {
 			this._init(divContainer, params);
 			this._initSubscribe();
-			this.el = divContainer;
+			this.divContainer = divContainer;
 		}
 		LSViewer.prototype._init = function(divContainer, params) {
 			params = params || {};
@@ -42,12 +42,12 @@ define([
 			this.scaler = new Scaler(); //object that scales objects. User in NoteSpaceView and ChordSpaceView
 			this.SCALE = null; //scale from 0 to
 			//0.999  fixes vexflow bug that doesn't draw last pixel on end bar
-			this.setScale(0.999);
-
-			this.CANVAS_DIV_WIDTH_PROPORTION = 0.97; //width proportion between canvas created and divContainer (space between canvas border and divContainer border)
+			this.SCALE_FIX = 0.995;
+			
+			this.CANVAS_DIV_WIDTH_PROPORTION = 0.9; //width proportion between canvas created and divContainer (space between canvas border and divContainer border)
 			this.NOTE_WIDTH = 20; // estimated note width in order to be more flexible
 			this.LINE_HEIGHT = 150;
-			this.LINE_WIDTH = 1160;
+			this.LINE_WIDTH = 1550;
 			this.BARS_PER_LINE = 4;
 			this.ENDINGS_Y = 20; //0 -> thisChordsPosY==40, the greater the closer to stave 
 			this.LABELS_Y = 0; //like this.ENDINGS_Y
@@ -56,24 +56,28 @@ define([
 			this.DISPLAY_TITLE = (params.displayTitle != undefined) ? params.displayTitle : true;
 			this.DISPLAY_COMPOSER = (params.displayComposer != undefined) ? params.displayComposer : true;
 			this.LINE_MARGIN_TOP = 0;
+			this.LAST_BAR_WIDTH_RATIO = 0.75; //in case of this.shortenLastBar = true (rendering audio), we make the last bar more compressed so that we left space for recordings longer than piece
+
+			this.shortenLastBar = false;
 
 			this.heightOverflow = params.heightOverflow || "auto";
 			this.divContainer = divContainer;
-
+			this.resizable = !params.width; //if there is a width specified, we assume that it wont be resized on window resize
+			
 			var idScore = "ls" + ($("canvas").length + 1),
-				width = (params.width) ? params.width : $(divContainer).width() * this.CANVAS_DIV_WIDTH_PROPORTION;
+				width = (params.width) ? params.width : this._getWidthFromContainer(divContainer);
 
 			this.canvas = this._createCanvas(idScore, width, this.DEFAULT_HEIGHT);
 			var renderer = new Vex.Flow.Renderer(this.canvas, Vex.Flow.Renderer.Backends.CANVAS);
 			this.ctx = renderer.getContext("2d");
 
-			if (params.typeResize == 'scale') {
-				this.setScale((width / this.LINE_WIDTH));
-			} else { // typeResize == 'fluid'
-				this._setWidth(width);
-			}
+			this.typeResize = params.typeResize || "fluid";
+			this._resize(width);
 			this.layer = params.layer;
 
+		};
+		LSViewer.prototype._getWidthFromContainer = function(divContainer) {
+			return $(this.divContainer).width() * this.CANVAS_DIV_WIDTH_PROPORTION;
 		};
 		/**
 		 * Creates and return a dom element
@@ -98,11 +102,28 @@ define([
 			$.subscribe('ToViewer-draw', function(el, songModel) {
 				self.draw(songModel);
 			});
+			$.subscribe('ToViewer-resize',function(el,songModel){
+				var width = self._getWidthFromContainer(this.divContainer);
+				self.canvas.width = width;
+				self._resize(width);
+				self.draw(songModel, {resize:true});
+			});
 		};
+		LSViewer.prototype._resize = function(width) {
+			if (this.typeResize == 'scale') {
+				var scale = width / this.LINE_WIDTH; 
+				this.setScale(scale * this.SCALE_FIX);
+			} else { // typeResize == 'fluid'
+				this.setScale(this.SCALE_FIX);
+				this._setWidth(width);
+			}
 
+		};
 		LSViewer.prototype._setWidth = function(width) {
 			var viewerWidth = width || this.LINE_WIDTH;
-			this.LINE_WIDTH = viewerWidth;
+			//if (viewerWidth < this.LINE_WIDTH){
+				this.LINE_WIDTH = viewerWidth;
+			//}
 		};
 
 		LSViewer.prototype.scale = function(ctx) {
@@ -125,7 +146,18 @@ define([
 			var oldTextAlign = this.ctx.textAlign;
 			this.ctx.textAlign = 'center';
 			this.ctx.font = "32px lato Verdana";
-			this.ctx.fillText(title, this._getNonScaledWidth() / 2, 60, this._getNonScaledWidth());
+			var x = this._getNonScaledWidth() / 2,
+				y = 60,
+				maxWidth = this.canvas.width;
+			this.ctx.fillText(title, x, y, maxWidth);
+	
+			var metrics = this.ctx.measureText(title);
+			this.titleView = {
+				x: x - metrics.actualBoundingBoxRight / 2,
+				y: y - metrics.actualBoundingBoxAscent,
+				w: metrics.actualBoundingBoxRight,
+				h: metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent
+			};
 			this.ctx.textAlign = oldTextAlign;
 		};
 
@@ -143,14 +175,15 @@ define([
 		LSViewer.prototype.setScale = function(scale) {
 			this.SCALE = scale;
 			this.scaler.setScale(scale);
-
 		};
 		LSViewer.prototype.setLineMarginTop = function(lineMarginTop, bottom) {
 			if (!bottom) {
 				this.MARGIN_TOP += lineMarginTop;
+			}else{
+				this.LINE_MARGIN_TOP = lineMarginTop;
 			}
 			this.LINE_HEIGHT += lineMarginTop;
-			this.LINE_MARGIN_TOP = lineMarginTop;
+			
 		};
 		LSViewer.prototype.setHeight = function(song, barWidthMng) {
 			var totalNumBars = song.getComponent("bars").getTotal();
@@ -163,13 +196,17 @@ define([
 				$(this.divContainer).height(this.canvas.height);
 			}
 		};
+		LSViewer.prototype.setShortenLastBar = function(bool) {
+			this.shortenLastBar = bool;
+		};
 
-
-		LSViewer.prototype.draw = function(song) {
+		LSViewer.prototype.draw = function(song, params) {
+			params = params || {};
 			if (typeof song === "undefined") {
 				console.warn('song is empty'); // only for debug, remove after 1 week safe
 				return;
 			}
+			//console.log("draw");
 			//console.time('whole draw');
 			var i, j, v, c;
 
@@ -192,7 +229,8 @@ define([
 				barDimensions,
 				tieMng = new TieManager();
 
-			this.barWidthMng = new BarWidthManager(this.LINE_HEIGHT, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE, this.MARGIN_TOP);
+			var lastBarWidthRatio = this.shortenLastBar ? this.LAST_BAR_WIDTH_RATIO : 1;
+			this.barWidthMng = new BarWidthManager(this.LINE_HEIGHT, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE, this.MARGIN_TOP, lastBarWidthRatio);
 			this.barWidthMng.calculateBarsStructure(song, nm);
 			this.setHeight(song, this.barWidthMng);
 
@@ -235,7 +273,9 @@ define([
 					//console.timeEnd('drawNotes');
 
 					barDimensions = self.barWidthMng.getDimensions(songIt.getBarIndex());
+					
 					barView = new LSBarView(barDimensions);
+
 					//console.time('drawBars');
 					barView.draw(self.ctx, songIt, sectionIt, self.ENDINGS_Y, self.LABELS_Y);
 					//console.timeEnd('drawBars');
@@ -289,14 +329,14 @@ define([
 			this.resetScale();
 			//console.timeEnd('whole draw');
 			// if we requested to have a layer and we haven't already created it
-			if (this.layer && !this.canvasLayer) {
+			if (this.layer && (!this.canvasLayer) || params.resize) {
 				this.canvasLayer = new CanvasLayer(this); //the canvasLayer needs to be created after the score has been drawn
 			}
 			$.publish('LSViewer-drawEnd', this);
 		};
 		/**
 		 * When drawing an element from another module, it has to use this function
-		 * @param  {Function} drawFunc function that draws the element, uses context determined by the other param layer
+		 * @param  {Function} drawFunc function that draws the element
 		 */
 		LSViewer.prototype.drawElem = function(drawFunc) {
 			this.scale(this.ctx);

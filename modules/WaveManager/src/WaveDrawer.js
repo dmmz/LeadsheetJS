@@ -30,11 +30,12 @@ define([
          * update viewer dimensions if needed (space between lines and margin top)
          */
     WaveDrawer.prototype._adaptViewer = function() {
-        if (this.topAudio > 0) {
+        
+        if (this.topAudio > 0) { // if audio is greater than 0 it measn audio will be on top of score line
             this.viewer.setLineMarginTop(this.topAudio);
-        } else {
-            distance = this.viewer.LINE_HEIGHT + this.topAudio + this.heightAudio;
-            if (distance < 0) {
+        } else { 
+            distance = (this.heightAudio - this.topAudio) - this.viewer.LINE_HEIGHT ;
+            if (distance > 0) {
                 this.viewer.setLineMarginTop(distance, true);
             }
         }
@@ -127,6 +128,15 @@ define([
         this.enabled = false;
     };
 
+    /**
+     * @interface
+     * @param  {[type]} ctx [description]
+     * @return {[type]}     [description]
+     */
+    WaveDrawer.prototype.inPath = function(coords) {
+        return !!this.elemMng.getElemsInPath(this.waveBarDimensions,coords);
+    };
+
     WaveDrawer.prototype.drawCursor = function(ctx) {
         ctx.beginPath();
         ctx.moveTo(this.cursorPos.x, this.cursorPos.y);
@@ -153,6 +163,12 @@ define([
         ctx.fillStyle = saveFillColor;
         ctx.globalAlpha = 1;
     
+    };
+
+    WaveDrawer.prototype.setCursorEditable = function(bool) {
+        if (this.cursor){
+            this.cursor.setEditable(bool);
+        }
     };
     WaveDrawer.prototype.updateCursorPlaying = function(time) {
         this.cursorPos = this._getCursorDims(time);
@@ -188,16 +204,27 @@ define([
     WaveDrawer.prototype.newCursor = function(audio) {
         this.cursor = new CursorModel(audio.getDuration());
     };
-    WaveDrawer.prototype.drawAudio = function(barTimesMng) {
+    WaveDrawer.prototype.drawAudio = function(barTimesMng, tempo, duration) {
+        if (!tempo || !duration){
+            throw "WaveDrawer - missing parameters";
+        }
         this.waveBarDimensions = [];
         var numBars = barTimesMng.getLength();
-        var area, dim, bar, barTime = 0,
-            sliceSong = 1 / numBars,
+        var area, dim, prevDim,bar, barTime = 0,
+            sliceSong,
             start = 0,
             peaks,
             toggleColor = 0;
+        
         for (var i = 0; i < barTimesMng.getLength(); i++) {
+            sliceSong = barTimesMng.getCurrBarTime(i) / duration;
+            prevDim = dim;
             dim = this.viewer.barWidthMng.getDimensions(i);
+            if (!dim){
+                dim = prevDim;
+                dim.left = dim.left + dim.width;
+                dim.width = dim.width / this.viewer.LAST_BAR_WIDTH_RATIO - dim.width;
+            }
             waveBarView = new WaveBarView({
                 x: dim.left,
                 y: dim.top - this.viewer.CHORDS_DISTANCE_STAVE - this.topAudio,
@@ -212,6 +239,7 @@ define([
             toggleColor = (toggleColor + 1) % 2;
             start += sliceSong;
         }
+        
         this.viewer.canvasLayer.addElement(this);
         this.updateCursorPlaying(0);
         this.viewer.canvasLayer.refresh();
@@ -241,11 +269,13 @@ define([
             var offsetY = area.y;
             var halfH = height / 2;
             var length = peaks.length;
-            var scale = 1;
+            var scale;
             var i, h, maxH;
+
             // if (self.params.fillParent && width != length) {
             //     scale = width / length;
             // }
+            maxH = self.showHalfWave ? halfH : height;
             scale = width / length;
             ctx.fillStyle = color;
             if (self.drawMargins) {
@@ -254,7 +284,7 @@ define([
 
             ctx.beginPath();
             ctx.moveTo(area.x + $, halfH + offsetY);
-            //Comment these 3 lines if we only want to print the superior half
+            // 3 lines for printing the inferior half
             if (!self.showHalfWave) {
                 for (i = 0; i < length; i++) {
                     h = Math.round(peaks[i] * halfH);
@@ -266,7 +296,6 @@ define([
             ctx.moveTo(area.x + $, halfH + offsetY);
 
             for (i = 0; i < length; i++) {
-                maxH = self.showHalfWave ? height : halfH;
                 h = Math.round(peaks[i] * maxH);
                 ctx.lineTo(area.x + i * scale + $, halfH - h + offsetY);
             }

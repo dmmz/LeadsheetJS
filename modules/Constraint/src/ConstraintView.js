@@ -8,25 +8,13 @@ define([
 
 	function ConstraintView() {
 		this.el = undefined;
+		this.render(); // TODO: remove 'render' function?? there seems to be  no reason to leave it (unless it is called from somenwhere else)
 	}
 
-	ConstraintView.prototype.render = function(parentHTML, callback) {
-		// case el has never been rendered
-		//if (typeof this.el === "undefined" || (typeof this.el !== "undefined" && force === true)) {
-		var rendered = Mustache.render(ConstraintTemplate);
-		if (typeof parentHTML !== "undefined") {
-			parentHTML.innerHTML = rendered;
-		}
-		this.el = rendered;
-		this.initController();
-		//$.publish('ConstraintView-render');
-		if (typeof callback === "function") {
-			callback();
-		}
-		return;
+	ConstraintView.prototype.render = function() {
+		this.el = Mustache.render(ConstraintTemplate);
 	};
 
-	
 /*
 	ConstraintView.prototype.buildSongsetSelectInterface = function(idSelect, username) {
 		getSongsetsByAuthor(username, function(data) {

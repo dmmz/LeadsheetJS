@@ -36,18 +36,6 @@ define([
 	 */
 	NoteSpaceManager.prototype.initSubscribe = function() {
 		var self = this;
-		$.subscribe('CanvasLayer-mousemove', function(el, position) {
-
-
-			var inPath = self.elemMng.getElemsInPath(self.noteSpace, position);
-			if (typeof self.viewer.el.style !== 'undefined'){
-				if (inPath) {
-					self.viewer.el.style.cursor = 'pointer';
-				} else {
-					self.viewer.el.style.cursor = 'default';
-				}
-			}
-		});
 
 		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
 			if (!self.viewer.canvasLayer) {
@@ -86,6 +74,7 @@ define([
 	/**
 	 * @inteface
 	 * @param  {Object} coords
+	 * @return {Object} e.g: {topY:44, bottomY: 23}
 	 */
 	NoteSpaceManager.prototype.getYs = function(coords) {
 		return this.elemMng.getYs(this.noteSpace, coords);
@@ -103,7 +92,14 @@ define([
 			//$.publish('ToViewer-draw',self.songModel);
 		}
 	};
-
+	/**
+	 * @interface
+	 * @param  {Object} coords {x: xval, y: yval}}
+	 * @return {Boolean}
+	 */
+	NoteSpaceManager.prototype.inPath = function(coords) {
+		return !!this.elemMng.getElemsInPath(this.noteSpace, coords);
+	};
 	/**
 	 * @interface
 	 * @param  {CanvasContext} ctx 
@@ -167,6 +163,12 @@ define([
 	 */
 	NoteSpaceManager.prototype.disable = function() {
 		this.enabled = false;
+	};
+	/**
+	 * @interface
+	 */
+	NoteSpaceManager.prototype.setCursorEditable = function(bool) {
+		this.cursor.setEditable(bool);
 	};
 
 	return NoteSpaceManager;

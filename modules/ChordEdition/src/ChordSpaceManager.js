@@ -16,7 +16,7 @@ define([
 		this.songModel = songModel;
 		this.cursor = cursor;
 		this.chordSpace = [];
-		this.name = 'chordCursor';
+		this.name = 'ChordsCursor';
 		this.elemMng = new ElementManager();
 		this.initSubscribe();
 		this.viewer = viewer;
@@ -40,19 +40,6 @@ define([
 		$.subscribe('ChordSpaceView-updateChord', function(el, update) {
 			self.updateChord(update.chordString, update.chordModel, update.chordSpace);
 			$.publish('ToViewer-draw', self.songModel);
-		});
-
-		$.subscribe('CanvasLayer-mousemove', function(el, position) {
-			if (!self.cursor.getEditable()) return;
-			var inPath = !!self.getChordsInPath({
-				x: position.x,
-				y: position.y
-			});
-			if (inPath) {
-				self.viewer.el.style.cursor = 'pointer';
-			} else {
-				self.viewer.el.style.cursor = 'default';
-			}
 		});
 		// cursor view subscribe
 		$.subscribe('Cursor-moveCursorByElement-chords', function(el, inc) {
@@ -172,6 +159,21 @@ define([
 		this.enabled = false;
 	};
 
+	/**
+	 * @interface
+	 * @param  {Object} coords {x: xval, y: yval}}
+	 * @return {Boolean}
+	 */
+	ChordSpaceManager.prototype.inPath = function(coords) {
+		return !!this.getChordsInPath(coords);
+	};
+	/**
+	 * @interface
+	 */
+	ChordSpaceManager.prototype.setCursorEditable = function(bool) {
+		this.cursor.setEditable(bool);
+	};
+
 	ChordSpaceManager.prototype.updateChord = function(chordString, chordModel, chordSpace) {
 		if (typeof chordModel === "undefined" && typeof chordSpace !== "undefined") {
 			chordModel = new ChordModel({
@@ -202,7 +204,10 @@ define([
 
 
 	ChordSpaceManager.prototype.undrawEditableChord = function() {
-		$('#canvas_container .chordSpaceInput').devbridgeAutocomplete('dispose').remove();
+		if (this.htmlInput){
+			this.htmlInput.input.devbridgeAutocomplete('dispose');
+			this.htmlInput.remove();
+		}
 	};
 	/**
 	 * draws the pulldown or the inpus in chords
@@ -212,10 +217,9 @@ define([
 			selected;
 
 		this.undrawEditableChord();
-		for (var i = 0, c = this.chordSpace.length; i < c; i++) {
-			selected = (position[0] <= i && i <= position[1]);
-			this.chordSpace[i].drawEditableChord(this.songModel, selected, this.MARGIN_TOP, this.MARGIN_RIGHT);
-		}
+		// position[0] === position[1] always
+		position = position[0];
+		this.htmlInput = this.chordSpace[position].drawEditableChord(this.songModel, this.MARGIN_TOP, this.MARGIN_RIGHT);	
 	};
 
 	return ChordSpaceManager;

@@ -1,11 +1,12 @@
 define(function() {
-	function BarWidthManager(lineHeight, lineWidth, noteWidth, barsPerLine, marginTop) {
+	function BarWidthManager(lineHeight, lineWidth, noteWidth, barsPerLine, marginTop, lastBarWidthRatio) {
 			if (!lineHeight) throw "BarWidthManager - lineHeight not defined";
 			if (!lineWidth) throw "BarWidthManager - lineWidth not defined";
 			if (!noteWidth) throw "BarWidthManager - noteWidth not defined";
 			if (!barsPerLine) throw "BarWidthManager - barsPerLine not defined";
 			if (!marginTop) throw "BarWidthManager - marginTop not defined";
 			
+			this.lastBarWidthRatio = lastBarWidthRatio || 1;
 
 			this.WIDTH_FACTOR = 1.6; // factor by witch we multiply the minimum width so that notes are not so crammed (always > 1)
 			this.barsStruct = [];
@@ -186,6 +187,12 @@ define(function() {
 			lineFinalWidths = setLineWidthList(minWidthsPerLine[i], this.lineWidth);
 			finalWidths.push(lineFinalWidths);
 		}
+
+		//we shorten last bar by lastBarWidthRatio	
+		var lastRow = finalWidths.length - 1,
+		lastColumn = finalWidths[lastRow].length - 1;
+		finalWidths[lastRow][lastColumn] *= this.lastBarWidthRatio;
+				
 		return finalWidths;
 	};
 	BarWidthManager.prototype.setBarsStruct = function(barsStruct) {

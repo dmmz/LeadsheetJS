@@ -1,8 +1,10 @@
 define(['modules/WaveManager/src/WaveAudio',
     'modules/WaveManager/src/WaveDrawer',
     'modules/WaveManager/src/BarTimesManager',
-    'modules/core/src/SongBarsIterator'
-], function(WaveAudio, WaveDrawer, BarTimesManager, SongBarsIterator) {
+    'modules/core/src/SongBarsIterator',
+    'jquery',
+    'pubsub'
+], function(WaveAudio, WaveDrawer, BarTimesManager, SongBarsIterator, $, pubsub) {
     /**
      * @param {SongModel} song
      * @param {cursorNotes} cModel     // notes cursor, it is updated when playing
@@ -30,7 +32,7 @@ define(['modules/WaveManager/src/WaveAudio',
         this.song = song;
         this.cursorNotes = cModel;
         this.isLoaded = false;
-        
+        this.viewer = viewer;
         this.audio = new WaveAudio();
 
         var paramsDrawer = {
@@ -42,35 +44,27 @@ define(['modules/WaveManager/src/WaveAudio',
             marginCursor: params.marginCursor
         };
         this.drawer = new WaveDrawer(viewer, paramsDrawer, this);
+        this._initSubscribe();
     }
+    WaveManager.prototype._initSubscribe = function() {
+         var self = this;
+         //when window is resized, leadsheet is drawn, and audio needs to be redrawn too
+         $.subscribe('LSViewer-drawEnd', function(){
+            if (self.isLoaded){
+                self.drawer.drawAudio(self.barTimesMng,self.audio.tempo,self.audio.getDuration());    
+            }
+        });
+    };
 
     WaveManager.prototype.isReady = function() {
         return this.isLoaded;
     };
 
-
-    WaveManager.prototype._getBarTime = function(songIt, barTime) {
-        return barTime + songIt.getBarTimeSignature().getBeats() * this.audio.beatDuration;
-    };
-
-    WaveManager.prototype.calculateBarTimes = function() {
-        var numBars = this.song.getComponent("bars").getTotal(),
-            songIt = new SongBarsIterator(this.song),
-            barTime = 0,
-            barTimes = [];
-
-        while (songIt.hasNext()) {
-            barTime = this._getBarTime(songIt, barTime);
-            barTimes.push(barTime);
-            songIt.next();
-        }
-        return barTimes;
-    };
-
-    WaveManager.prototype.load = function(url, tempo) {
+    WaveManager.prototype.load = function(url, tempo, redraw) {
         if (isNaN(tempo) || tempo <= 0) {
-            tempo = 120;
+            throw "WaveManager - No tempo speficied";
         }
+
         // TODO Use tempo to compute length
         var self = this;
         var xhr = new XMLHttpRequest();
@@ -80,11 +74,17 @@ define(['modules/WaveManager/src/WaveAudio',
 
         xhr.onload = function() {
             var audioData = xhr.response;
-            self.audio.load(audioData, self, function() {
+            self.audio.load(audioData, self, tempo, function() {
                 self.isLoaded = true;
-                self.barTimesMng.setBarTimes(self.calculateBarTimes());
+                self.barTimesMng.setBarTimes(self.song, self.audio);
                 self.drawer.newCursor(self.audio);
-                self.drawer.drawAudio(self.barTimesMng);
+                if (redraw){
+                    self.viewer.setShortenLastBar(true);
+                    self.viewer.draw(self.song); // no need to drawAudio(), as it is called on 'drawEnd'
+                }else{
+                    self.drawer.drawAudio(self.barTimesMng,self.audio.tempo,self.audio.getDuration());
+                }
+                
             });
         };
         xhr.send();

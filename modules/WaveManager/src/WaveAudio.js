@@ -2,6 +2,7 @@ define(function() {
 	function WaveAudio() {
 		this.audioCtx = new(window.AudioContext || window.webkitAudioContext)();
 		this.source = this.audioCtx.createBufferSource();
+		this.tempo = null;
 	}
 
 	WaveAudio.prototype._createSource = function() {
@@ -28,12 +29,13 @@ define(function() {
 		this.source.stop(0);
 	};
 
-	WaveAudio.prototype.load = function(audioData, waveMng, callback) {
+	WaveAudio.prototype.load = function(audioData, waveMng, tempo, callback) {
 		var self = this;
 		this.audioCtx.decodeAudioData(audioData, function(buffer) {
+				
 				self.buffer = buffer;
-				self.beatDuration = self.buffer.duration / waveMng.song.getSongTotalBeats();
-
+				self.tempo  = tempo;
+				self.beatDuration = 60 / tempo;
 				self.source.buffer = self.buffer;
 				//source.playbackRate.value = playbackControl.value;
 				self.source.connect(self.audioCtx.destination);
@@ -56,25 +58,25 @@ define(function() {
 		startPoint = startPoint || 0;
 		endPoint = endPoint || 1;
 
-		var sampleStart = ~~(startPoint * this.buffer.length);
-		var sampleEnd = ~~(endPoint * this.buffer.length);
-		var sampleSize = (sampleEnd - sampleStart) / length;
-		// var sampleSize = this.buffer.length / length;
-		var sampleStep = ~~(sampleSize / 10) || 1;
-		var channels = this.buffer.numberOfChannels;
-		var splitPeaks = [];
-		var mergedPeaks = [];
+		var sampleStart = ~~(startPoint * this.buffer.length),
+		sampleEnd = ~~(endPoint * this.buffer.length),
+		sampleSize = (sampleEnd - sampleStart) / length,
+		sampleStep = ~~(sampleSize / 10) || 1,
+		channels = this.buffer.numberOfChannels,
+		//splitPeaks = [],
+		mergedPeaks = [],
+		/*peaks,*/ chan, start, end, max, c, i, j, value, absMax = 0;
+		
+		for (c = 0; c < channels; c++) {
+			//peaks = splitPeaks[c] = [];
+			chan = this.buffer.getChannelData(c);
 
-		for (var c = 0; c < channels; c++) {
-			var peaks = splitPeaks[c] = [];
-			var chan = this.buffer.getChannelData(c);
-
-			for (var i = 0; i < length; i++) {
-				var start = ~~((i * sampleSize) + sampleStart);
-				var end = ~~(start + sampleSize);
-				var max = 0;
-				for (var j = start; j < end; j += sampleStep) {
-					var value = chan[j];
+			for (i = 0; i < length; i++) {
+				start = ~~((i * sampleSize) + sampleStart);
+				end = ~~(start + sampleSize);
+				max = 0;
+				for (j = start; j < end; j += sampleStep) {
+					value = chan[j];
 					if (value > max) {
 						max = value;
 						// faster than Math.abs
@@ -82,12 +84,14 @@ define(function() {
 						max = -value;
 					}
 				}
-				peaks[i] = max;
+				//peaks[i] = max;
 
-				if (c == 0 || max > mergedPeaks[i]) {
+				if (c === 0 || max > mergedPeaks[i]) {
 					mergedPeaks[i] = max;
+					if (max > absMax) absMax = max;
 				}
 			}
+			//console.log(absMax);
 		}
 		return mergedPeaks;
 

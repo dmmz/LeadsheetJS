@@ -4,8 +4,9 @@ define([
 	'jquery',
 	'pubsub',
 	'jquery_autocomplete',
-	'modules/Edition/src/ElementView'
-], function(ChordUtils, UserLog, $, pubsub, jquery_autocomplete, ElementView) {
+	'modules/Edition/src/ElementView',
+	'modules/Edition/src/HtmlInputElement'
+], function(ChordUtils, UserLog, $, pubsub, jquery_autocomplete, ElementView, HtmlInputElement) {
 
 	function ChordSpaceView(viewer, position, barNumber, beatNumber, viewerScaler) {
 		this.viewer = viewer;
@@ -60,100 +61,81 @@ define([
 	};
 
 
-	ChordSpaceView.prototype.drawEditableChord = function(songModel, selected, marginTop, marginRight) {
-		if (!!selected) {
-			var self = this;
-
-			// Get chord value
-			var inputVal = '';
-			if (typeof songModel !== "undefined") {
-				var chord = songModel.getComponent('chords').searchChordByBarAndBeat(this.barNumber, this.beatNumber);
-				if (typeof chord !== "undefined") {
-					inputVal = chord.toString('', false);
-				}
+	ChordSpaceView.prototype.drawEditableChord = function(songModel, marginTop, marginRight) {
+		var self = this;
+		// Get chord value
+		var inputVal = '';
+		if (typeof songModel !== "undefined") {
+			var chord = songModel.getComponent('chords').searchChordByBarAndBeat(this.barNumber, this.beatNumber);
+			if (typeof chord !== "undefined") {
+				inputVal = chord.toString('', false);
 			}
-
-			// // Then we create input
-			var offset = $("#canvas_container canvas").offset();
-			if (typeof offset === "undefined" || isNaN(offset.top) || isNaN(offset.left)) {
-				offset = {
-					top: 0,
-					left: 0
-				};
+		}
+		//we create html input, jquery object is in htmlInput.input (did not do getter because don't believe anymore in plain getters in javascript)
+		var htmlInput = new HtmlInputElement(this.viewer,'chordSpaceInput',this.getArea(), marginTop,marginRight);
+		var input = htmlInput.input;
+		// We create auto complete input
+		var chordTypeList = [];
+		if (typeof ChordUtils.allChords !== "undefined") {
+			chordTypeList = ChordUtils.allChords;
+		} else {
+			chordTypeList = ChordUtils.getAllChords();
+		}
+		// input.select();
+		input.devbridgeAutocomplete({
+			'lookup': chordTypeList,
+			'maxHeight': 200,
+			'width': 140,
+			'triggerSelectOnValidInput': false,
+			'showNoSuggestionNotice': true,
+			'autoSelectFirst': true,
+			// You may need to modify that if at first it appears incorrectly, it's probably because ur element is not absolute position
+			// 'appendTo': myAbsolutedPositionElement, // dom or jquery (see devbridgeAutocomplete doc)
+			'noSuggestionNotice': 'No Chord match',
+			lookupFilter: function(suggestion, originalQuery, queryLowerCase) {
+				return suggestion.value.indexOf(originalQuery) !== -1;
+			},
+			onSelect: function(suggestion) {
+				// console.log('select');
+				//$(input).val(suggestion.value);
+				input.devbridgeAutocomplete('dispose');
+				self.onChange(chord, suggestion.value);
 			}
-			var pos = this.viewer.scaler.getScaledObj(this.position);
-			var top = pos.y - marginTop - 1;
-			var left = pos.x + offset.left + window.pageXOffset - 1;
-			var width = pos.w - marginRight;
-			var height = pos.h + marginTop;
-			var input = $('<input/>').attr({
-				type: 'text',
-				style: "position:absolute; z-index: 11000;left:" + left + "px;top:" + top + "px; width:" + width + "px; height:" + height + "px",
-				'class': 'chordSpaceInput',
-			}).prependTo('#canvas_container');
-
-			// We create auto complete input
-			var chordTypeList = [];
-			if (typeof ChordUtils.allChords !== "undefined") {
-				chordTypeList = ChordUtils.allChords;
-			} else {
-				chordTypeList = ChordUtils.getAllChords();
-			}
-			// input.select();
-			input.devbridgeAutocomplete({
-				'lookup': chordTypeList,
-				'maxHeight': 200,
-				'width': 140,
-				'triggerSelectOnValidInput': false,
-				'showNoSuggestionNotice': true,
-				'autoSelectFirst': true,
-				// You may need to modify that if at first it appears incorrectly, it's probably because ur element is not absolute position
-				// 'appendTo': myAbsolutedPositionElement, // dom or jquery (see devbridgeAutocomplete doc)
-				'noSuggestionNotice': 'No Chord match',
-				lookupFilter: function(suggestion, originalQuery, queryLowerCase) {
-					return suggestion.value.indexOf(originalQuery) !== -1;
-				},
-				onSelect: function(suggestion) {
-					// console.log('select');
-					//$(input).val(suggestion.value);
-					input.devbridgeAutocomplete('dispose');
-					self.onChange(chord, suggestion.value);
-				}
-			});
-			input.focus(); // this focus allow setting cursor on end carac
-			input.val(inputVal);
-			input.focus(); // this focus launch autocomplete directly when value is not empty
-			/*// on blur event we change the value, blur is launched when we enter and click somewhere else
-			// We don't use blur because it prevent onclick element to be launched
-			input.on('blur', function() {
-				console.log('blur');
+		});
+		input.focus(); // this focus allow setting cursor on end carac
+		input.val(inputVal);
+		input.focus(); // this focus launch autocomplete directly when value is not empty
+		/*// on blur event we change the value, blur is launched when we enter and click somewhere else
+		// We don't use blur because it prevent onclick element to be launched
+		input.on('blur', function() {
+			console.log('blur');
+			self.onChange(chord, $(this).val());
+			input.devbridgeAutocomplete('dispose');
+		});*/
+		$('#autocomplete-suggestion').on('click', function() {
+			// console.log('click');
+			self.onChange(chord, $(input).val());
+			input.devbridgeAutocomplete('dispose');
+		});
+		// on tab call (tab doesn't trigger blur event)
+		input.keydown(function(e) {
+			var code = e.keyCode || e.which;
+			if (code == '9') {
+				// console.log('tab');
 				self.onChange(chord, $(this).val());
 				input.devbridgeAutocomplete('dispose');
-			});*/
-			$('#autocomplete-suggestion').on('click', function() {
-				// console.log('click');
-				self.onChange(chord, $(input).val());
+			}
+			if (code == '13') {
+				// console.log('enter');
+				self.onChange(chord, $(this).val());
 				input.devbridgeAutocomplete('dispose');
-			});
-			// on tab call (tab doesn't trigger blur event)
-			input.keydown(function(e) {
-				var code = e.keyCode || e.which;
-				if (code == '9') {
-					// console.log('tab');
-					self.onChange(chord, $(this).val());
-					input.devbridgeAutocomplete('dispose');
-				}
-				if (code == '13') {
-					// console.log('enter');
-					self.onChange(chord, $(this).val());
-					input.devbridgeAutocomplete('dispose');
-				}
-			});
-			// We use a filter function to make it easier for user to enter chords
-			input.on('input propertychange paste', function() {
-				$(this).val(self.filterFunction($(this).val()));
-			});
-		}
+			}
+		});
+		// We use a filter function to make it easier for user to enter chords
+		input.on('input propertychange paste', function() {
+			$(this).val(self.filterFunction($(this).val()));
+		});
+		return htmlInput;
 	};
 	/**
 	 * Set to upper case first notes, add a lot of replacement for french or not keyboard

@@ -9,29 +9,14 @@ define([
 
 	function HarmonizerView(parentHTML) {
 		this.el = undefined;
-		var self = this;
-		/*this.initView(parentHTML, function() {
-			self.initController();
-			$.publish('HarmonizerView-render', self);
-		});*/
+		this.render();
 	}
 
-	HarmonizerView.prototype.render = function(parentHTML, callback) {
-		// case el has never been rendered
-		//if (typeof this.el === "undefined" || (typeof this.el !== "undefined" && force === true)) {
-		var rendered = Mustache.render(HarmonizerTemplate);
-		if (typeof parentHTML !== "undefined") {
-			parentHTML.innerHTML = rendered;
-		}
-		this.el = rendered;
-		this.initController();
-		//$.publish('HarmonizerView-render');
-		if (typeof callback === "function") {
-			callback();
-		}
-		return;
+	HarmonizerView.prototype.render = function() {
+		this.el = Mustache.render(HarmonizerTemplate);
 	};
 
+	// called by 'mainMenuView'
 	HarmonizerView.prototype.initController = function() {
 		var self = this;
 		$('#harmonize').click(function() {

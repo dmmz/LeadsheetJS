@@ -31,10 +31,6 @@ require.config({
 
 define(function(require) {
 
-	var KeyboardManager = require('modules/Edition/src/KeyboardManager');
-	new KeyboardManager(true);
-
-
 	var WaveManager = require('modules/WaveManager/src/WaveManager');
 	var WaveManagerView = require('modules/WaveManager/src/WaveManagerView');
 	var WaveManagerController = require('modules/WaveManager/src/WaveManagerController');
@@ -43,6 +39,7 @@ define(function(require) {
 	var LJS = require('LJS');
 	var myApp = {};
 	window.myApp = myApp;
+
 
 
 	/*var popIn = new PopIn('Hello', 'Test<br />ok');
@@ -56,7 +53,10 @@ define(function(require) {
 	// tried for unfolding
 	// var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
 	var songModel = LJS.converters.MusicCSLJson.SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
-	// initPlayerModule(songModel);
+
+	new LJS.LSViewer.OnWindowResizer(songModel);
+
+	initPlayerModule(songModel);
 
 
 	new LJS.HistoryC(songModel);
@@ -96,19 +96,51 @@ define(function(require) {
 
 	myApp.viewer = new LJS.LSViewer.LSViewer($("#canvas_container")[0], {
 		layer: true
+			/*,
+					typeResize: "scale"*/
 	});
 	var menu = new LJS.MainMenu(document.getElementById('menu-container'));
 
+	var edition = new LJS.Edition.Edition(myApp.viewer, songModel, menu.model, {
+		notes: {
+			active: true,
+			menu: {
+				title: 'Notes',
+				order: 2
+			}
+		},
+		chords: {
+			active: true,
+			menu: {
+				title: 'Chords',
+				order: 3
+			}
+			// menu: false /* if we don't want menu*/
+		},
+		structure: {
+			active: true,
+			menu: {
+				title: 'Structure',
+				order: 4
+			}
+		}
+	});
 
-	// Edit notes on view
-	var cursorNote = new LJS.Cursor(songModel.getComponent('notes'), 'notes', 'arrow');
-	var noteEdition = new LJS.NoteEdition(songModel, cursorNote.controller.model, myApp.viewer, '/modules/NoteEdition/img');
+	//ALTERNATIVE WAY TO CREATE EDITION if not using edition constructor
+	// var KeyboardManager = require('modules/Edition/src/KeyboardManager');
+	// new KeyboardManager(true);
 
-	// // Edit chords on view
-	var cursorChord = new LJS.Cursor(songModel.getSongTotalBeats(), 'chords', 'tab');
-	cursorChord.controller.model.setEditable(false);
+	// // Edit notes on view
+	// var cursorNote = new LJS.Cursor(songModel.getComponent('notes'), 'notes', 'arrow');
+	// var noteEdition = new LJS.NoteEdition(songModel, cursorNote.controller.model, myApp.viewer, '/modules/NoteEdition/img');
 
-	var chordEdition = new LJS.ChordEdition(songModel, cursorChord.controller.model, myApp.viewer, '/modules/NoteEdition/img');
+	// // // Edit chords on view
+	// var cursorChord = new LJS.Cursor(songModel.getSongTotalBeats(), 'chords', 'tab');
+	// cursorChord.controller.model.setEditable(false);
+
+	// var chordEdition = new LJS.ChordEdition(songModel, cursorChord.controller.model, myApp.viewer, '/modules/NoteEdition/img');
+	//bars edition 
+	//var structEdition = new LJS.StructureEdition(songModel, edition.cursorNote.controller.model, '/modules/StructureEdition/img');
 
 	// Harmonize menu
 	var harm = new LJS.Harmonizer(songModel, menu.model);
@@ -120,82 +152,71 @@ define(function(require) {
 	// Constraint menu
 	var constraint = new LJS.Constraint(songModel);
 
-	//bars edition 
-	var structEdition = new LJS.StructureEdition(songModel, cursorNote.controller.model, '/modules/StructureEdition/img');
 
 
 	// Edit files menu
 	var fileEdition = new LJS.FileEdition(songModel, myApp.viewer.canvas);
-       
-    var params = {
-      showHalfWave: true,
-      //drawMargins: true,
-      topAudio: -100,
-      heightAudio: 75/*,
-      marginCursor: 20*/
-    };
-     var waveMng = new WaveManager(songModel, cursorNote.controller.model, myApp.viewer, params);
-    //noteSpaceManager.refresh();
-    waveMng.load('/tests/audio/solar.wav');
+
+	var params = {
+		showHalfWave: true,
+		//drawMargins: true,
+		topAudio: -120,
+		heightAudio: 75
+			/*,
+			      marginCursor: 20*/
+	};
+	var waveMng = new WaveManager(songModel, edition.cursorNote.controller.model, myApp.viewer, params);
+	//noteSpaceManager.refresh();
+	waveMng.load('/tests/audio/solar.wav', 170);
 	var wmc = new WaveManagerController(waveMng);
 
-	noteEdition.view.render(undefined, function() {
-		menu.model.addMenu({
-			title: 'Notes',
-			view: noteEdition.view,
-			order: 2
-		});
+	//ALTERNATIVE WAY TO ADD MENU if not done with edition constructor
+	/*menu.model.addMenu({
+		title: 'Notes',
+		view: noteEdition.view,
+		order: 2
 	});
 
-	chordEdition.view.render(undefined, function() {
-		menu.model.addMenu({
-			title: 'Chords',
-			view: chordEdition.view,
-			order: 3
-		});
+	menu.model.addMenu({
+		title: 'Chords',
+		view: chordEdition.view,
+		order: 3
 	});
-	structEdition.view.render(undefined, function() {
-		menu.model.addMenu({
-			title: 'Structure',
-			view: structEdition.view,
-			order: 4
-		});
-	});
-	constraint.view.render(undefined, function() {
-		menu.model.addMenu({
-			title: 'Constraint',
-			view: constraint.view,
-			order: 5
-		});
-		// menuC.activeMenu('Constraint');
-	});
-	harm.view.render(undefined, function() {
-		menu.model.addMenu({
-			title: 'Harmonizer',
-			view: harm.view,
-			order: 6
-		});
-	});
-	harmAn.view.render(undefined, function() {
-		menu.model.addMenu({
-			title: 'Harmonic Analysis',
-			view: harmAn.view,
-			order: 7
-		});
-	});
-	fileEdition.view.render(undefined, function() {
-		menu.model.addMenu({
-			title: 'File',
-			view: fileEdition.view,
-			order: 1
-		});
-		menu.controller.loadStateTab();
-		if (typeof menu.model.getCurrentMenu() === "undefined") {
-			menu.controller.activeMenu('File');
-		}
-	});
-	$.publish('ToViewer-draw', songModel);
+	menu.model.addMenu({
+		title: 'Structure',
+		view: structEdition.view,
+		order: 4
+	});*/
 
+	menu.model.addMenu({
+		title: 'Constraint',
+		view: constraint.view,
+		order: 5
+	});
+	// menuC.activeMenu('Constraint');
+
+	menu.model.addMenu({
+		title: 'Harmonizer',
+		view: harm.view,
+		order: 6
+	});
+
+	menu.model.addMenu({
+		title: 'Harmonic Analysis',
+		view: harmAn.view,
+		order: 7
+	});
+
+
+	menu.model.addMenu({
+		title: 'File',
+		view: fileEdition.view,
+		order: 1
+	});
+	menu.controller.loadStateTab();
+	if (typeof menu.model.getCurrentMenu() === "undefined") {
+		menu.controller.activeMenu('File');
+	}
 
 
 	function initPlayerModule(songModel) {

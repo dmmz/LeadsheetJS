@@ -1,4 +1,5 @@
-define(function() {
+define(['modules/core/src/SongBarsIterator'],
+	function(SongBarsIterator) {
 	/**
 	 * We save the time in which each bar finishes
 	 */
@@ -8,8 +9,27 @@ define(function() {
 	}
 
 	BarTimesManager.prototype = {
-		setBarTimes: function(barTimes){
-			this.barTimes = barTimes;
+		
+		setBarTimes: function(song, audio){
+			
+			function calculateBarTimes(song,audio) {
+				var numBars = song.getComponent("bars").getTotal(),
+				songIt = new SongBarsIterator(song),
+				barTime = 0,
+				barTimes = [];
+
+				while (songIt.hasNext()) {
+					barTime += songIt.getBarTimeSignature().getBeats() * audio.beatDuration;
+					barTimes.push(barTime);
+					songIt.next();
+				}
+				
+				if (barTime < audio.getDuration()){
+					barTimes.push(audio.getDuration());
+				}
+				return barTimes;
+			}
+			this.barTimes = calculateBarTimes(song,audio);
 		},
 		getLength: function(){
 			return this.barTimes.length;
@@ -19,15 +39,16 @@ define(function() {
 				this.index++;
 			}
 		},
-		/*getCurrentTimeLimits: function(){
-			return this.getTimeLimits(this.index);
-		},*/
 		getTimeLimits: function(index){
 			if (typeof index === "undefined") throw "BarTimesManager - error: index not defined";
 			return {
 				start: (index === 0) ? 0 : this.barTimes[index - 1],
 				end: this.barTimes[index]
 			};
+		},
+		getCurrBarTime: function(index){
+			var limits = this.getTimeLimits(index);
+			return limits.end - limits.start;
 		},
 		getIndexByTime: function(time){
 			for (var i = 0; i < this.barTimes.length; i++) {

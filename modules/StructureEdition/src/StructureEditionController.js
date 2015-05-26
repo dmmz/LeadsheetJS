@@ -22,42 +22,15 @@ define([
 	 */
 	StructureEditionController.prototype.initSubscribe = function() {
 		var self = this;
-		$.subscribe('StructureEditionView-addSection', function(el) {
-			self.addSection();
+		var fn;
+		// All functions related with note edition go here
+		$.subscribe('StructureEditionView', function(el, fn, param) {
+			//if (self.noteSpaceMng.isEnabled()) {
+				self[fn].call(self, param);
+				$.publish('ToViewer-draw', self.songModel);
+			//}
 		});
-		$.subscribe('StructureEditionView-removeSection', function(el) {
-			self.removeSection();
-		});
-		$.subscribe('StructureEditionView-sectionName', function(el, name) {
-			self.setSectionName(name);
-		});
-		$.subscribe('StructureEditionView-repeatTimes', function(el, repeatTimes) {
-			self.setRepeatTimes(repeatTimes);
-		});
-		$.subscribe('StructureEditionView-addBar', function(el) {
-			self.addBar();
-		});
-		$.subscribe('StructureEditionView-removeBar', function(el) {
-			self.removeBar();
-		});
-		$.subscribe('StructureEditionView-timeSignature', function(el, timeSignature) {
-			self.timeSignature(timeSignature);
-		});
-		$.subscribe('StructureEditionView-tonality', function(el, tonality) {
-			self.tonality(tonality);
-		});
-		$.subscribe('StructureEditionView-ending', function(el, ending) {
-			self.ending(ending);
-		});
-		$.subscribe('StructureEditionView-style', function(el, style) {
-			self.style(style);
-		});
-		$.subscribe('StructureEditionView-label', function(el, label) {
-			self.label(label);
-		});
-		$.subscribe('StructureEditionView-sublabel', function(el, sublabel) {
-			self.subLabel(sublabel);
-		});
+
 		$.subscribe('StructureEditionView-activeView', function(el) {
 			self.changeEditMode(true);
 			$.publish('ToViewer-draw', self.songModel);
@@ -65,9 +38,7 @@ define([
 		$.subscribe('StructureEditionView-unactiveView', function(el) {
 			self.changeEditMode(false);
 		});
-		$.subscribe('StructureEditionView-unfold', function() {
-			self.unfold();
-		});
+
 
 	};
 
@@ -255,7 +226,7 @@ define([
 		$.publish('ToViewer-draw', this.songModel);
 	};
 
-	StructureEditionController.prototype.timeSignature = function(timeSignature) {
+	StructureEditionController.prototype.setTimeSignature = function(timeSignature) {
 		var selBars = this._getSelectedBars();
 		if (selBars.length === 0) {
 			return;

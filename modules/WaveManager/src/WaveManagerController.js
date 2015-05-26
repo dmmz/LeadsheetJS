@@ -7,7 +7,6 @@ define([
 		if (!waveMng) throw "WaveManagerController - WaveMng not defined";
 
 		$.subscribe("ToPlayer-play", function() {
-			console.log(waveMng);
 			waveMng.play();
 		});
 		$.subscribe("ToPlayer-pause", function() {
@@ -19,7 +18,7 @@ define([
 		//when 
 		$.subscribe("ToViewer-draw", function(el, songModel) {
 			if (waveMng.isReady()) {
-				waveMng.drawer.drawAudio(waveMng.barTimesMng);
+				waveMng.drawer.drawAudio(waveMng.barTimesMng,waveMng.audio.tempo,waveMng.audio.getDuration());
 			}
 		});
 	}

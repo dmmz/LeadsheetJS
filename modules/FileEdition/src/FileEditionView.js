@@ -11,20 +11,11 @@ define([
 		this.el = undefined;
 		this.initSubscribe();
 		this.initKeyboard();
+		this.render();
 	}
 
-	FileEditionView.prototype.render = function(parentHTML, callback) {
-		var rendered = Mustache.render(FileEditionTemplate);
-		if (typeof parentHTML !== "undefined") {
-			parentHTML.innerHTML = rendered;
-		}
-		this.el = rendered;
-		this.initController();
-	//	$.publish('FileEditionView-render');
-		if (typeof callback === "function") {
-			callback();
-		}
-		return;	
+	FileEditionView.prototype.render = function() {
+		this.el = Mustache.render(FileEditionTemplate);
 	};
 	/**
 	 * Publish event after receiving dom events
