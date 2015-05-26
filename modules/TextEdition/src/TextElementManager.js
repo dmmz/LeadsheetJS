@@ -4,8 +4,8 @@ define([
 	'modules/TextEdition/src/TextElementView',
 	'modules/Edition/src/ElementManager',
 	'modules/Edition/src/HtmlInputElement'
-
 	],function($, pubsub, TextElementView, ElementManager, HtmlInputElement){
+
 	function TextElementManager (viewer, songModel) {
 		if (!viewer){
 			throw "TextElementManager - viewer not defined";

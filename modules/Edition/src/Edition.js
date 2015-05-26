@@ -22,7 +22,7 @@ define([
 		if (params.notes) {
 			// Edit notes on view
 			cursorNote = new Cursor(songModel.getComponent('notes'), 'notes', 'arrow');
-			var noteEdition = new NoteEdition(songModel, cursorNote.controller.model, viewer, '/modules/NoteEdition/img');
+			var noteEdition = new NoteEdition(songModel, cursorNote.controller.model, viewer, params.notes.imgPath);
 			values.cursorNote = cursorNote;
 			//values.notes = noteEdition;
 
@@ -39,7 +39,7 @@ define([
 			// // Edit chords on view
 			var cursorChord = new Cursor(songModel.getSongTotalBeats(), 'chords', 'tab');
 			cursorChord.controller.model.setEditable(false);
-			var chordEdition = new ChordEdition(songModel, cursorChord.controller.model, viewer, '/modules/NoteEdition/img');
+			var chordEdition = new ChordEdition(songModel, cursorChord.controller.model, viewer, params.chords.imgPath);
 			values.cursorChord = cursorChord;
 			//values.chords = chordEdition;
 			if (params.chords.menu){
@@ -56,7 +56,7 @@ define([
 				throw "Edition: to add structure, cursor of notes edition needed";
 			}
 			//bars edition 
-			var structEdition = new StructureEdition(songModel, cursorNote.controller.model, '/modules/StructureEdition/img');
+			var structEdition = new StructureEdition(songModel, cursorNote.controller.model, params.structure.imgPath);
 			//values.structure = structEdition;
 			if (params.structure.menu){
 				menuModel.addMenu({
