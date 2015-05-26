@@ -21,53 +21,53 @@ define([
 	 */
 	NoteEditionController.prototype.initSubscribe = function() {
 		var self = this;
-/*
-		$.subscribe('NoteEditionView-setPitch', function(el, decal) {
-			self.setPitch(decal);
-		});
-		$.subscribe('NoteEditionView-addAccidental', function(el, accidental) {
-			// Accidental contain as first argument the type of accidental (b,#,n) and as second argument true or false for double accidental
-			// Or it may contain a string
-			var acc = '';
-			if (accidental.hasOwnProperty('acc')) {
-				acc = accidental.acc;
-			} else {
-				acc = accidental;
-			}
-			var doubleAccidental = false;
-			if (accidental.hasOwnProperty('double')) {
-				doubleAccidental = accidental.double;
-			}
-			self.addAccidental(acc, doubleAccidental);
-		});
-		$.subscribe('NoteEditionView-setCurrDuration', function(el, duration) {
-			self.setCurrDuration(duration);
-		});
-		$.subscribe('NoteEditionView-setDot', function(el) {
-			self.setDot();
-		});
-		$.subscribe('NoteEditionView-setTie', function(el) {
-			self.setTie();
-		});
-		$.subscribe('NoteEditionView-setTuplet', function(el) {
-			self.setTuplet();
-		});
-		$.subscribe('NoteEditionView-setSilence', function(el) {
-			self.setSilence();
-		});
-		$.subscribe('NoteEditionView-deleteNote', function(el) {
-			self.setSilence();
-		});
-		$.subscribe('NoteEditionView-addNote', function(el) {
-			self.addNote();
-		});
-		$.subscribe('NoteEditionView-copyNotes', function(el) {
-			self.copyNotes();
-		});
-		$.subscribe('NoteEditionView-pasteNotes', function(el) {
-			self.pasteNotes();
-		});
-*/
+		/*
+				$.subscribe('NoteEditionView-setPitch', function(el, decal) {
+					self.setPitch(decal);
+				});
+				$.subscribe('NoteEditionView-addAccidental', function(el, accidental) {
+					// Accidental contain as first argument the type of accidental (b,#,n) and as second argument true or false for double accidental
+					// Or it may contain a string
+					var acc = '';
+					if (accidental.hasOwnProperty('acc')) {
+						acc = accidental.acc;
+					} else {
+						acc = accidental;
+					}
+					var doubleAccidental = false;
+					if (accidental.hasOwnProperty('double')) {
+						doubleAccidental = accidental.double;
+					}
+					self.addAccidental(acc, doubleAccidental);
+				});
+				$.subscribe('NoteEditionView-setCurrDuration', function(el, duration) {
+					self.setCurrDuration(duration);
+				});
+				$.subscribe('NoteEditionView-setDot', function(el) {
+					self.setDot();
+				});
+				$.subscribe('NoteEditionView-setTie', function(el) {
+					self.setTie();
+				});
+				$.subscribe('NoteEditionView-setTuplet', function(el) {
+					self.setTuplet();
+				});
+				$.subscribe('NoteEditionView-setSilence', function(el) {
+					self.setSilence();
+				});
+				$.subscribe('NoteEditionView-deleteNote', function(el) {
+					self.setSilence();
+				});
+				$.subscribe('NoteEditionView-addNote', function(el) {
+					self.addNote();
+				});
+				$.subscribe('NoteEditionView-copyNotes', function(el) {
+					self.copyNotes();
+				});
+				$.subscribe('NoteEditionView-pasteNotes', function(el) {
+					self.pasteNotes();
+				});
+		*/
 
 		//TODO: these two function are not verified / tested after refactoring
 
@@ -174,6 +174,7 @@ define([
 			selNotes[i].setDuration(newDur);
 		}
 		var durAfter = tmpNm.getTotalDuration();
+
 		tmpNm = this.checkDuration(tmpNm, durBefore, durAfter);
 		noteManager.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
 		noteManager.reviseNotes();
@@ -184,7 +185,6 @@ define([
 
 
 	NoteEditionController.prototype.setDot = function() {
-		var noteManager = this.songModel.getComponent('notes');
 		var tmpNm = this.cloneSelectedNotes();
 
 		//check if durations fit in the bar duration
@@ -206,9 +206,10 @@ define([
 			selNotes[i].setDot(numberOfDots);
 		}
 		tmpNm = this.checkDuration(tmpNm, durBefore, tmpNm.getTotalDuration());
+
+		var noteManager = this.songModel.getComponent('notes');
 		noteManager.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
 		noteManager.reviseNotes();
-
 		$.publish('ToViewer-draw', this.songModel);
 	};
 
