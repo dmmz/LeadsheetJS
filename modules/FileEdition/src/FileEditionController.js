@@ -99,7 +99,7 @@ define([
 	};
 
 	FileEditionController.prototype.loadWaveDisplay = function(path) {
-		if (!this.waveManager instanceof WaveManager){
+		if (!this.waveManager instanceof WaveManager) {
 			throw "FileEditionController -- this.waveManager is incorrect";
 		}
 		this.waveManager.load(path);

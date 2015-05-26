@@ -43,7 +43,7 @@ define([
 			this.SCALE = null; //scale from 0 to
 			//0.999  fixes vexflow bug that doesn't draw last pixel on end bar
 			this.SCALE_FIX = 0.995;
-			
+
 			this.CANVAS_DIV_WIDTH_PROPORTION = 0.9; //width proportion between canvas created and divContainer (space between canvas border and divContainer border)
 			this.NOTE_WIDTH = 20; // estimated note width in order to be more flexible
 			this.LINE_HEIGHT = 150;
@@ -63,7 +63,7 @@ define([
 			this.heightOverflow = params.heightOverflow || "auto";
 			this.divContainer = divContainer;
 			this.resizable = !params.width; //if there is a width specified, we assume that it wont be resized on window resize
-			
+
 			var idScore = "ls" + ($("canvas").length + 1),
 				width = (params.width) ? params.width : this._getWidthFromContainer(divContainer);
 
@@ -102,16 +102,18 @@ define([
 			$.subscribe('ToViewer-draw', function(el, songModel) {
 				self.draw(songModel);
 			});
-			$.subscribe('ToViewer-resize',function(el,songModel){
+			$.subscribe('ToViewer-resize', function(el, songModel) {
 				var width = self._getWidthFromContainer(this.divContainer);
 				self.canvas.width = width;
 				self._resize(width);
-				self.draw(songModel, {resize:true});
+				self.draw(songModel, {
+					resize: true
+				});
 			});
 		};
 		LSViewer.prototype._resize = function(width) {
 			if (this.typeResize == 'scale') {
-				var scale = width / this.LINE_WIDTH; 
+				var scale = width / this.LINE_WIDTH;
 				this.setScale(scale * this.SCALE_FIX);
 			} else { // typeResize == 'fluid'
 				this.setScale(this.SCALE_FIX);
@@ -122,7 +124,7 @@ define([
 		LSViewer.prototype._setWidth = function(width) {
 			var viewerWidth = width || this.LINE_WIDTH;
 			//if (viewerWidth < this.LINE_WIDTH){
-				this.LINE_WIDTH = viewerWidth;
+			this.LINE_WIDTH = viewerWidth;
 			//}
 		};
 
@@ -145,19 +147,32 @@ define([
 		LSViewer.prototype._displayTitle = function(title) {
 			var oldTextAlign = this.ctx.textAlign;
 			this.ctx.textAlign = 'center';
+			this.ctx.textBaseline = 'bottom';
 			this.ctx.font = "32px lato Verdana";
 			var x = this._getNonScaledWidth() / 2,
 				y = 60,
 				maxWidth = this.canvas.width;
 			this.ctx.fillText(title, x, y, maxWidth);
-	
+
 			var metrics = this.ctx.measureText(title);
-			this.titleView = {
-				x: x - metrics.actualBoundingBoxRight / 2,
-				y: y - metrics.actualBoundingBoxAscent,
-				w: metrics.actualBoundingBoxRight,
-				h: metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent
-			};
+			if (typeof metrics.actualBoundingBoxAscent !== "undefined") {
+				// case bouding bos is supported (for moment only chrome support it)
+				this.titleView = {
+					x: x - metrics.actualBoundingBoxRight / 2,
+					y: y - metrics.actualBoundingBoxAscent,
+					w: metrics.actualBoundingBoxRight,
+					h: metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent
+				};
+			}
+			else{
+				var height = 32;
+				this.titleView = {
+					x: x - metrics.width / 2,
+					y: y - height,
+					w: metrics.width,
+					h: height
+				};
+			}
 			this.ctx.textAlign = oldTextAlign;
 		};
 
@@ -179,11 +194,11 @@ define([
 		LSViewer.prototype.setLineMarginTop = function(lineMarginTop, bottom) {
 			if (!bottom) {
 				this.MARGIN_TOP += lineMarginTop;
-			}else{
+			} else {
 				this.LINE_MARGIN_TOP = lineMarginTop;
 			}
 			this.LINE_HEIGHT += lineMarginTop;
-			
+
 		};
 		LSViewer.prototype.setHeight = function(song, barWidthMng) {
 			var totalNumBars = song.getComponent("bars").getTotal();
@@ -265,7 +280,7 @@ define([
 						tupletMng.checkTuplet(barNotes[j], iNote);
 						noteView = new LSNoteView(barNotes[j]);
 						beamMng.checkBeam(nm, iNote, noteView);
-						
+
 						bar.push(noteView.getVexflowNote());
 						noteViews.push(noteView);
 						iNote++;
@@ -273,7 +288,7 @@ define([
 					//console.timeEnd('drawNotes');
 
 					barDimensions = self.barWidthMng.getDimensions(songIt.getBarIndex());
-					
+
 					barView = new LSBarView(barDimensions);
 
 					//console.time('drawBars');
