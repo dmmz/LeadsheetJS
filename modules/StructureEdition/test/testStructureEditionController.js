@@ -44,7 +44,7 @@ define(['modules/StructureEdition/src/StructureEditionController',
 				assert.deepEqual(selBar, [0,0], "Selected bar");
 
 				// Time Signature
-				sec.timeSignature('3/4');
+				sec.setTimeSignature('3/4');
 				assert.equal(bm.getBar(selBar[0]).getTimeSignature().toString(), "3/4", "Time Signature");
 
 				// tonality
