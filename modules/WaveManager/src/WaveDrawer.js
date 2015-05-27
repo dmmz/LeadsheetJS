@@ -239,10 +239,12 @@ define([
             toggleColor = (toggleColor + 1) % 2;
             start += sliceSong;
         }
-        
-        this.viewer.canvasLayer.addElement(this);
-        this.updateCursorPlaying(0);
-        this.viewer.canvasLayer.refresh();
+        //if there is no canvasLayer we don't paint cursor
+        if (this.viewer.canvasLayer){
+            this.viewer.canvasLayer.addElement(this);
+            this.updateCursorPlaying(0);
+            this.viewer.canvasLayer.refresh();
+        }     
     };
  
 
