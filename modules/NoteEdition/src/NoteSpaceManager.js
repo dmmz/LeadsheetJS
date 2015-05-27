@@ -44,12 +44,12 @@ define([
 
 			//if (self.cursor.getEditable()) {
 			self.noteSpace = self.createNoteSpace(self.viewer);
-			self.viewer.canvasLayer.addElement(self); 
+			self.viewer.canvasLayer.addElement(self);
 			self.viewer.canvasLayer.refresh();
 
 		});
 		// $.subscribe('CanvasLayer-updateCursors',function(el,coords){
-		// 	self.updateCursor(coords);
+		// self.updateCursor(coords);
 		// });
 	};
 	NoteSpaceManager.prototype.createNoteSpace = function(viewer) {

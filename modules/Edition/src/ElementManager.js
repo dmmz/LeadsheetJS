@@ -3,12 +3,13 @@ define(function() {
 	 * Abstraction class, used by NoteSpaceManager and ChordSpaceManager (by composition rather than heritage)
 	 */
 	function ElementManager() {}
-		/**
-		 *
-		 * @param  {Array} elems  array of elements; e.g. 'NoteSpaceView'
-		 * @param  {[type]} coords
-		 * @return {Array}  of two positions [min, max], or booelan false if nothing found
-		 */
+
+	/**
+	 *
+	 * @param  {Array} elems  array of elements; e.g. 'NoteSpaceView'
+	 * @param  {[type]} coords
+	 * @return {Array}  of two positions [min, max], or booelan false if nothing found
+	 */
 	ElementManager.prototype.getElemsInPath = function(elems, coords) {
 		var note,
 			min = null,
@@ -22,9 +23,10 @@ define(function() {
 					max = Number(i);
 				}
 			}
-		}
+			}
 		return (min === null && max === null) ? false : [min, max];
 	};
+	
 	/**
 	 * function to determine how high elements are situated
 	 * @param  {Array} elems  array of elements; e.g. 'NoteSpaceView'
@@ -41,6 +43,7 @@ define(function() {
 			return false;
 		}
 	};
+	
 	/**
 	 * @param  {Array} elems      [description]
 	 * @param  {[Integer, Integer]} cursor     [description]

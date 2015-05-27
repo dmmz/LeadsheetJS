@@ -2,9 +2,8 @@ define([
 	'jquery',
 	'pubsub',
 	'modules/TextEdition/src/TextElementView',
-	'modules/Edition/src/ElementManager',
 	'modules/Edition/src/HtmlInputElement'
-	],function($, pubsub, TextElementView, ElementManager, HtmlInputElement){
+	],function($, pubsub, TextElementView, HtmlInputElement){
 
 	function TextElementManager (viewer, songModel) {
 		if (!viewer){
@@ -14,7 +13,6 @@ define([
 		this.viewer = viewer;
 		this.initSubscribe();
 		this.textView = null;
-		this.elemMng = new ElementManager();
 		this.songModel = songModel;
 	}
 

@@ -216,16 +216,16 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		xeElement = element.width();
 		yeElement = element.height();
 		if (this.coords.x < 0) {
-			this.coords.x = 0;
+			this.coords.x = 1;
 		}
 		if (this.coords.y < 0) {
-			this.coords.y = 0;
+			this.coords.y = 1;
 		}
 		if (this.coords.xe > xeElement) {
-			this.coords.xe = Math.floor(xeElement);
+			this.coords.xe = Math.floor(xeElement) - 1;
 		}
 		if (this.coords.ye > yeElement) {
-			this.coords.ye = Math.floor(yeElement);
+			this.coords.ye = Math.floor(yeElement) - 1;
 		}
 	};
 
