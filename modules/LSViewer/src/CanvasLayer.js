@@ -47,11 +47,9 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 	};
 
 	CanvasLayer.prototype._getXandY = function(element, event) {
-		xpos = event.pageX - element.offset().left;
-		ypos = event.pageY - element.offset().top;
 		return {
-			x: xpos,
-			y: ypos
+			x: event.pageX - element.offset().left,
+			y: event.pageY - element.offset().top
 		};
 	};
 
@@ -169,12 +167,28 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			self._setCoords(self.mouseCoordsIni, self.mouseCoordsIni);
 			self.mouseDown = true;
 		});
-		$(this.canvasLayer).mouseup(function(evt) {
+
+		$('html').mouseup(function(evt) {
 			self.mouseDown = false;
 			selection(self.mouseDidntMove());
-
 		});
-		$(this.canvasLayer).mousemove(function(evt) {
+
+		$('html').mousemove(function(evt) {
+			//draw cursor selection
+			var xy = self._getXandY($(self.canvasLayer), evt);
+			if (self.mouseDown) {
+				//console.log('bodymove');
+				//console.log(xy);
+				var ctx = self.ctx;
+				self.mouseCoordsEnd = [xy.x, xy.y];
+				self._setCoords(self.mouseCoordsIni, self.mouseCoordsEnd);
+				self._clampCoords($(self.canvasLayer));
+				selection();
+			}
+			setPointerIfInPath(xy);
+		});
+
+		/*$(this.canvasLayer).mousemove(function(evt) {
 			//draw cursor selection
 			var xy = self._getXandY($(this), evt);
 			if (self.mouseDown) {
@@ -184,7 +198,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 				selection();
 			}
 			setPointerIfInPath(xy);
-		});
+		});*/
 		$.subscribe('CanvasLayer-refresh', function(el, name) {
 			self.viewer.canvasLayer.refresh(name);
 		});
@@ -196,6 +210,23 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 	 */
 	CanvasLayer.prototype.mouseDidntMove = function() {
 		return (Math.abs(this.coords.x - this.coords.xe) < 5 && Math.abs(this.coords.y - this.coords.ye) < 5);
+	};
+
+	CanvasLayer.prototype._clampCoords = function(element) {
+		xeElement = element.width();
+		yeElement = element.height();
+		if (this.coords.x < 0) {
+			this.coords.x = 0;
+		}
+		if (this.coords.y < 0) {
+			this.coords.y = 0;
+		}
+		if (this.coords.xe > xeElement) {
+			this.coords.xe = xeElement;
+		}
+		if (this.coords.ye > yeElement) {
+			this.coords.ye = yeElement;
+		}
 	};
 
 	CanvasLayer.prototype._setCoords = function(mouseCoordsIni, mouseCoordsEnd) {
