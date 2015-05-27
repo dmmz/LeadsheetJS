@@ -31,6 +31,9 @@ define(['modules/core/src/SongBarsIterator'],
 			}
 			this.barTimes = calculateBarTimes(song,audio);
 		},
+		reset: function(){
+			this.index = 0;
+		},
 		getLength: function(){
 			return this.barTimes.length;
 		},
@@ -38,6 +41,7 @@ define(['modules/core/src/SongBarsIterator'],
 			while (this.index < this.barTimes.length && this.barTimes[this.index] < time) {
 				this.index++;
 			}
+			return this.index; //to inform the value of index after being updated
 		},
 		getTimeLimits: function(index){
 			if (typeof index === "undefined") throw "BarTimesManager - error: index not defined";

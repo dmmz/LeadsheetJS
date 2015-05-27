@@ -19,9 +19,9 @@ define(['modules/WaveManager/src/WaveAudio',
         if (!song) {
             throw "WaveManager - song not defined";
         }
-        if (!cModel) {
-            throw "WaveManager - cModel not defined";
-        }
+        // if (!cModel) {
+        //     throw "WaveManager - cModel not defined";
+        // }
         if (!viewer) {
             throw "WaveManager - viewer not defined";
         }
@@ -65,7 +65,6 @@ define(['modules/WaveManager/src/WaveAudio',
             throw "WaveManager - No tempo speficied";
         }
 
-        // TODO Use tempo to compute length
         var self = this;
         var xhr = new XMLHttpRequest();
         xhr.open("GET", url);
@@ -100,7 +99,8 @@ define(['modules/WaveManager/src/WaveAudio',
         var requestFrame = window.requestAnimationFrame ||
             window.webkitRequestAnimationFrame;
         this.startTime = this.audio.audioCtx.currentTime;
-        var timeStep = 0;
+        this.barTimesMng.reset();   //every time we start playing we reset barTimesMng (= we set currBar to 0) because, for the moment, we play always from the beginning
+        var timeStep = 0,currBar = 0;
         var frame = function() {
             if (!self.isPause) {
                 if (self.getPlayedTime() >= timeStep + minBeatStep) {
@@ -112,10 +112,15 @@ define(['modules/WaveManager/src/WaveAudio',
                     timeStep += minBeatStep;
                 }
                 time = self.getPlayedTime();
-                self.barTimesMng.updateCurrBarByTime(time);
-                self.drawer.updateCursorPlaying(time);
-                self.drawer.viewer.canvasLayer.refresh();
-                requestFrame(frame);
+                currBar = self.barTimesMng.updateCurrBarByTime(time);
+                //to avoid problems when finishing audio, we play while currBar is in barTimesMng, if not, we pause
+                if (currBar < self.barTimesMng.getLength()){
+                    self.drawer.updateCursorPlaying(time);
+                    self.drawer.viewer.canvasLayer.refresh();
+                    requestFrame(frame);
+                }else{
+                    self.pause();
+                }
             }
         };
         frame();
@@ -126,6 +131,7 @@ define(['modules/WaveManager/src/WaveAudio',
             this.isPause = false;
             this.restartAnimationLoop();
             this.audio.play();
+
         }
     };
 
@@ -133,7 +139,7 @@ define(['modules/WaveManager/src/WaveAudio',
         if (this.isReady()) {
             this.isPause = true;
             this.audio.pause();
-            this.currBar = 0;
+            
         }
     };
 
