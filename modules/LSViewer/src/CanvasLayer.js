@@ -111,17 +111,18 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		}
 
 		function resetElems() {
-				for (var name in self.elems) {
-					if (self.elems[name].cursor) {
-						self.elems[name].setCursorEditable(false);
-					}
-					self.elems[name].disable();
+			for (var name in self.elems) {
+				if (self.elems[name].cursor) {
+					self.elems[name].setCursorEditable(false);
 				}
+				self.elems[name].disable();
 			}
-			/**
-			 * [selection description]
-			 * @param  {Boolean} clicked true when clicked (mouseDown and mouseUp in same position) false when moved mouse onMouseDown
-			 */
+		}
+
+		/**
+		 * [selection description]
+		 * @param  {Boolean} clicked true when clicked (mouseDown and mouseUp in same position) false when moved mouse onMouseDown
+		 */
 		function selection(clicked) {
 			var cursorPos;
 			resetElems();
@@ -188,13 +189,15 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			self.viewer.canvasLayer.refresh(name);
 		});
 	};
+
 	/**
-	 * true if position on mouseDown is the same as position on mouseUp
+	 * true if position on mouseDown is the same (or almost) as position on mouseUp
 	 * @return {Booelan}
 	 */
 	CanvasLayer.prototype.mouseDidntMove = function() {
-		return (this.coords.x == this.coords.xe && this.coords.y == this.coords.ye);
+		return (Math.abs(this.coords.x - this.coords.xe) < 5 && Math.abs(this.coords.y - this.coords.ye) < 5);
 	};
+
 	CanvasLayer.prototype._setCoords = function(mouseCoordsIni, mouseCoordsEnd) {
 
 		function get(xory, type) {
