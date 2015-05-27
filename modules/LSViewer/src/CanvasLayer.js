@@ -1,13 +1,13 @@
-	/**
-	 * CanvasLayer is a canvas place on top of the basic canvas to manage edition and to draw elements such as cursors (to optimize rendering)
-	 * @param {LSViewer} viewer 
-	 */
-define(['jquery','pubsub'], function($, pubsub) {
+/**
+ * CanvasLayer is a canvas place on top of the basic canvas to manage edition and to draw elements such as cursors (to optimize rendering)
+ * @param {LSViewer} viewer
+ */
+define(['jquery', 'pubsub'], function($, pubsub) {
 	function CanvasLayer(viewer) {
 		if (!viewer.canvas) {
 			throw "LSViewer cannot create layer because canvas does not exist";
 		}
-		
+
 		this.viewer = viewer;
 		var canvasLayer = this._createLayer(viewer);
 		this.canvasLayer = canvasLayer[0];
@@ -36,7 +36,7 @@ define(['jquery','pubsub'], function($, pubsub) {
 		};
 		var canvasLayer;
 		//we remove it, to create a new one (_createLayer it's called only at the beginning or when resizing)
-		if ($("canvas#" + idLayer).length !== 0) { 
+		if ($("canvas#" + idLayer).length !== 0) {
 			$("canvas#" + idLayer).remove();
 		}
 		$("<canvas id='" + idLayer + "' width='" + canvasEl.width() + "' height='" + canvasEl.height() + "'></canvas>").insertAfter(canvasEl);
@@ -62,60 +62,63 @@ define(['jquery','pubsub'], function($, pubsub) {
 		this.mouseDown = false;
 		/**
 		 * when selecting we need to know which kind of elements (being normally notes, chords or audio), are at the top and at the bottom of the selection.
-		 * We will decide by that, which elements will be editable. So far, we take maximum two. 
+		 * We will decide by that, which elements will be editable. So far, we take maximum two.
 		 * E.g.1 if notes at top and notes at bottom of selection, we only enable edition for notes (even if there are chords in the middle)
 		 * E.g.2 if notes at top and chords at bottom of selection, we enable edition on notes and chords at the same time.
 		 * @param  {Object} coords e.g.:  {x:12, y:21}
-		 * 
+		 *
 		 * @return {Array}        array of active elements (being elements like ChordSpaceManager, NoteSpaceManager, WaveDrawer. TextElementManager will never be returned because it is not selectable (it does not have getY() function), it is only thought for being clicked)
 		 */
 		function getElemsByYs(coords) {
-			var minY = 999999, maxY = 0, minName, maxName, ys;
-			var activeElems = [];
-			for (var name in self.elems) {
-				//self.elems[name].updateCursor([null,null]);
-				if (typeof self.elems[name].getYs === 'function'){
-					ys = self.elems[name].getYs(coords);
-					if (ys.topY < minY){
-						minY = ys.topY;
-						minName = name;
-					}
-					if (ys.bottomY > maxY){
-						maxY = ys.bottomY;
-						maxName = name;	
+				var minY = 999999,
+					maxY = 0,
+					minName, maxName, ys;
+				var activeElems = [];
+				for (var name in self.elems) {
+					//self.elems[name].updateCursor([null,null]);
+					if (typeof self.elems[name].getYs === 'function') {
+						ys = self.elems[name].getYs(coords);
+						if (ys.topY < minY) {
+							minY = ys.topY;
+							minName = name;
+						}
+						if (ys.bottomY > maxY) {
+							maxY = ys.bottomY;
+							maxName = name;
+						}
 					}
 				}
+				if (minName) {
+					activeElems.push(self.elems[minName]);
+				}
+				if (maxName && minName != maxName) {
+					activeElems.push(self.elems[maxName]);
+				}
+				return activeElems;
 			}
-			if (minName){
-				activeElems.push(self.elems[minName]);
-			}
-			if (maxName && minName != maxName){
-				activeElems.push(self.elems[maxName]);
-			}
-			return activeElems;
-		}
-		/**
-		 * when clicking on an element we will select one only element, this function chooses which one depending on coords
-		 * @param  {Object} coords  e.g.:  {x:12, y:21}
-		 * @return {Object}        class of active element (ChordSpaceManager, NoteSpaceManager, WaveDrawer. TextElementManager...etc.)
-		 */
-		function getOneActiveElement (coords) {
-			for (var name in self.elems){
-				
-				if (self.elems[name].inPath(coords)){
+			/**
+			 * when clicking on an element we will select one only element, this function chooses which one depending on coords
+			 * @param  {Object} coords  e.g.:  {x:12, y:21}
+			 * @return {Object}        class of active element (ChordSpaceManager, NoteSpaceManager, WaveDrawer. TextElementManager...etc.)
+			 */
+		function getOneActiveElement(coords) {
+			for (var name in self.elems) {
+
+				if (self.elems[name].inPath(coords)) {
 					return [self.elems[name]];
 				}
 			}
 		}
 
-		function resetElems(){
-			for (var name in self.elems){
-				if (self.elems[name].cursor){
+		function resetElems() {
+			for (var name in self.elems) {
+				if (self.elems[name].cursor) {
 					self.elems[name].setCursorEditable(false);
 				}
 				self.elems[name].disable();
 			}
 		}
+
 		/**
 		 * [selection description]
 		 * @param  {Boolean} clicked true when clicked (mouseDown and mouseUp in same position) false when moved mouse onMouseDown
@@ -123,13 +126,13 @@ define(['jquery','pubsub'], function($, pubsub) {
 		function selection(clicked) {
 			var cursorPos;
 			resetElems();
-			var activElems
+			var activElems;
 			if (clicked)
 				activElems = getOneActiveElement(self.coords);
-			else{
+			else {
 				activElems = getElemsByYs(self.coords);
 			}
-			for (var i in activElems){
+			for (var i in activElems) {
 				activElems[i].updateCursor(self.coords, clicked);
 				activElems[i].setCursorEditable(true);
 				activElems[i].enable();
@@ -142,20 +145,20 @@ define(['jquery','pubsub'], function($, pubsub) {
 		 * because it has to be centralized otherwise events where interfering to each other (notes pointer when mouse is over notes would not work if at the same time chords editor asks to set pointer to default when mouse is not over chords)
 		 * @param {Object} xy  e.g.:  {x:12, y:21}
 		 */
-		function setPointerIfInPath (xy) {
-			if (typeof self.viewer.divContainer.style !== 'undefined'){
+		function setPointerIfInPath(xy) {
+			if (typeof self.viewer.divContainer.style !== 'undefined') {
 				var found = false;
 
-				for (var name in self.elems){
-					if (typeof self.elems[name].inPath !== 'function'){
+				for (var name in self.elems) {
+					if (typeof self.elems[name].inPath !== 'function') {
 						continue;
 					}
-					if (self.elems[name].inPath(xy)){
+					if (self.elems[name].inPath(xy)) {
 						self.viewer.divContainer.style.cursor = 'pointer';
 						found = true;
 					}
 				}
-				if (!found){
+				if (!found) {
 					self.viewer.divContainer.style.cursor = 'default';
 				}
 			}
@@ -168,8 +171,8 @@ define(['jquery','pubsub'], function($, pubsub) {
 		});
 		$(this.canvasLayer).mouseup(function(evt) {
 			self.mouseDown = false;
-			selection(self.mouseDidntMove());	
-			
+			selection(self.mouseDidntMove());
+
 		});
 		$(this.canvasLayer).mousemove(function(evt) {
 			//draw cursor selection
@@ -182,17 +185,19 @@ define(['jquery','pubsub'], function($, pubsub) {
 			}
 			setPointerIfInPath(xy);
 		});
-		$.subscribe('CanvasLayer-refresh',function(el,name){
+		$.subscribe('CanvasLayer-refresh', function(el, name) {
 			self.viewer.canvasLayer.refresh(name);
 		});
 	};
+
 	/**
-	 * true if position on mouseDown is the same as position on mouseUp
-	 * @return {Booelan} 
+	 * true if position on mouseDown is the same (or almost) as position on mouseUp
+	 * @return {Booelan}
 	 */
 	CanvasLayer.prototype.mouseDidntMove = function() {
-		return (this.coords.x == this.coords.xe && this.coords.y == this.coords.ye);
+		return (Math.abs(this.coords.x - this.coords.xe) < 5 && Math.abs(this.coords.y - this.coords.ye) < 5);
 	};
+
 	CanvasLayer.prototype._setCoords = function(mouseCoordsIni, mouseCoordsEnd) {
 
 		function get(xory, type) {
@@ -220,7 +225,7 @@ define(['jquery','pubsub'], function($, pubsub) {
 	 * @param {Model} elem any model that has a draw function receiving a ctx
 	 */
 	CanvasLayer.prototype.addElement = function(elem) {
-		if (!elem || !elem.name){
+		if (!elem || !elem.name) {
 			throw 'CanvasLayer element needs name property';
 		}
 		this.elems[elem.name] = elem;
@@ -235,12 +240,12 @@ define(['jquery','pubsub'], function($, pubsub) {
 		// console.log(name1+","+name2);
 		// console.log(this.elems);
 		for (var name in this.elems) {
-			if (this.elems[name].isEnabled()){
+			if (this.elems[name].isEnabled()) {
 				//drawing cursor for notesManager, chordsManager and WaveManager (selection cursor)
 				this.elems[name].draw(this.ctx);
 			}
 			//TODO refactor, drawCursor only exists in WaveManager to draw playing cursor
-			if (typeof this.elems[name].drawCursor === 'function'){
+			if (typeof this.elems[name].drawCursor === 'function') {
 				this.elems[name].drawCursor(this.ctx);
 			}
 		}

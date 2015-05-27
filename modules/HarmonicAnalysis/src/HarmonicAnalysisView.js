@@ -1,10 +1,11 @@
 define([
+	'jquery',
 	'mustache',
 	'modules/core/src/SongModel',
 	'utils/UserLog',
 	'pubsub',
 	'text!modules/HarmonicAnalysis/src/HarmonicAnalysisTemplate.html'
-], function(Mustache, SongModel, UserLog, pubsub, HarmonicAnalysisTemplate) {
+], function($, Mustache, SongModel, UserLog, pubsub, HarmonicAnalysisTemplate) {
 
 	function HarmonicAnalysisView(parentHTML) {
 		this.el = undefined;
