@@ -222,10 +222,10 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			this.coords.y = 0;
 		}
 		if (this.coords.xe > xeElement) {
-			this.coords.xe = xeElement;
+			this.coords.xe = Math.floor(xeElement);
 		}
 		if (this.coords.ye > yeElement) {
-			this.coords.ye = yeElement;
+			this.coords.ye = Math.floor(yeElement);
 		}
 	};
 
