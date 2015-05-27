@@ -127,9 +127,9 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			var cursorPos;
 			resetElems();
 			var activElems;
-			if (clicked)
+			if (clicked) {
 				activElems = getOneActiveElement(self.coords);
-			else {
+			} else {
 				activElems = getElemsByYs(self.coords);
 			}
 			for (var i in activElems) {
@@ -137,7 +137,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 				activElems[i].setCursorEditable(true);
 				activElems[i].enable();
 			}
-			self.viewer.canvasLayer.refresh();
+			self.refresh();
 		}
 
 		/**
@@ -185,8 +185,8 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			}
 			setPointerIfInPath(xy);
 		});
-		$.subscribe('CanvasLayer-refresh', function(el, name) {
-			self.viewer.canvasLayer.refresh(name);
+		$.subscribe('CanvasLayer-refresh', function(el) {
+			self.refresh();
 		});
 	};
 
