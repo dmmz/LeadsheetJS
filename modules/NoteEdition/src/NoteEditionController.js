@@ -10,7 +10,7 @@ define([
 ], function(Mustache, SongModel, NoteManager, CursorModel, NoteUtils, UserLog, $, pubsub) {
 
 	function NoteEditionController(songModel, cursor, noteSpaceMng) {
-		if (!songModel || !cursor ){
+		if (!songModel || !cursor) {
 			throw "NoteEditionController params are wrong";
 		}
 		this.songModel = songModel;
@@ -121,10 +121,51 @@ define([
 			}
 		}
 	};
+
+	/**
+	 * Return a boolean that indicates is the whole tuplet is selected by the cursor from a note Index
+	 */
+	NoteEditionController.prototype._isWholeTupletSelected = function(noteIndex) {
+		if (isNaN(noteIndex)) {
+			throw 'NoteEditionController - _isWholeTupletSelected - You should send a noteIndex to get a valid answer ' + noteIndex;
+		}
+		var wholeTupletSelected = false;
+		var noteManager = this.songModel.getComponent('notes');
+		var notes = noteManager.getNotes();
+		var cursorStart = this.cursor.getStart();
+		var cursorEnd = this.cursor.getEnd();
+		if (noteIndex < cursorStart || cursorEnd < noteIndex) {
+			return false;
+		}
+		var cursorTmp = noteIndex;
+		if (!notes[cursorTmp].isTuplet('start')) {
+			// If selected note is not the start, then we search for tuplet start backward in the cursor selection
+			cursorTmp--;
+			while (cursorTmp >= cursorStart && !notes[cursorStart].isTuplet('start')) {
+				cursorTmp--;
+			}
+			if (cursorTmp < cursorStart) {
+				return false;
+			}
+		}
+		cursorTmp = noteIndex;
+		if (!notes[cursorTmp].isTuplet('stop')) {
+			// If selected note is not the stop, then we search for tuplet stop forward in the cursor selection
+			cursorTmp++;
+			while (cursorTmp <= cursorEnd && !notes[cursorTmp].isTuplet('stop')) {
+				cursorTmp++;
+			}
+			if (cursorEnd < cursorTmp) {
+				return false;
+			}
+		}
+		return true;
+	};
+
 	/**
 	 * for duration functions we will check always if change does not exceeds a bar duration
-	 * @param  {NoteManager} tmpNm 
-	 * @return {Boolean}       
+	 * @param  {NoteManager} tmpNm
+	 * @return {Boolean}
 	 */
 	NoteEditionController.prototype._fitsInBar = function(tmpNm) {
 		var noteManager = this.songModel.getComponent('notes');
@@ -213,19 +254,19 @@ define([
 	};
 
 	/**
-	 * wrapper for all duration functions 
+	 * wrapper for all duration functions
 	 * @param  {Function} fn function to be called
 	 */
 	NoteEditionController.prototype._runDurationFn = function(fn) {
-				
+
 		var noteMng = this.songModel.getComponent('notes');
 		var tmpNm = this._cloneSelectedNotes();
 		var tmpCursorPos = this.cursor.getPos();
 		var durBefore = tmpNm.getTotalDuration();
-		
+
 		//Here we run the actual function
 		var res = fn(tmpNm);
-		if (res && res.error){
+		if (res && res.error) {
 			UserLog.logAutoFade('error', res.error);
 			return;
 		}
@@ -236,7 +277,7 @@ define([
 			UserLog.logAutoFade('error', "Duration doesn't fit the bar");
 			return;
 		}
-		
+
 		tmpNm = this._checkDuration(noteMng, tmpNm, durBefore, durAfter);
 		noteMng.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
 		this.cursor.setPos(tmpCursorPos);
@@ -293,7 +334,7 @@ define([
 	 */
 	NoteEditionController.prototype.setCurrDuration = function(duration) {
 		this._ifTupletExpandCursor();
-		this._runDurationFn(function(tmpNm){
+		this._runDurationFn(function(tmpNm) {
 
 			var arrDurs = {
 				"1": "64",
@@ -310,7 +351,7 @@ define([
 			if (typeof newDur === "undefined") {
 				throw 'NoteEditionController - setCurrDuration not accepted duration ' + duration;
 			}
-			
+
 			for (var i = 0; i < notes.length; i++) {
 				notes[i].setDuration(newDur);
 			}
@@ -318,7 +359,7 @@ define([
 	};
 
 	NoteEditionController.prototype.setDot = function() {
-		this._runDurationFn(function(tmpNm){
+		this._runDurationFn(function(tmpNm) {
 			var notes = tmpNm.getNotes();
 			var numberOfDots = 0;
 			for (var i = 0, c = notes.length; i < c; i++) {
@@ -357,11 +398,12 @@ define([
 
 	NoteEditionController.prototype.setTuplet = function() {
 		var self = this;
-		this._runDurationFn(function(tmpNm){
+		this._runDurationFn(function(tmpNm) {
 
 			function validDur(notes) {
 				//get total duration
-				var dur = 0, i;
+				var dur = 0,
+					i;
 				for (i = 0; i < notes.length; i++) {
 					dur += notes[i].getDuration();
 				}
@@ -397,21 +439,21 @@ define([
 			var timeModif = "3/2";
 			if (selNotes.length > 3) {
 				return {
-				'error': 'You must select 3 notes or less'
+					'error': 'You must select 3 notes or less'
 				};
 			}
 			//check all notes have same dur
 			for (var i = 0; i < selNotes.length - 1; i++) {
 				if (selNotes[i].getDuration() != selNotes[i + 1].getDuration()) {
-					return{
-						'error':'Notes have not then same duration'
+					return {
+						'error': 'Notes have not then same duration'
 					};
 				}
 			}
 			if (selNotes.length < 3) {
 				if (!validDur(selNotes)) {
 					return {
-						'error' : 'You must choose to make a tuplet over simple durations (not dotted neither tuplet notes)'
+						'error': 'You must choose to make a tuplet over simple durations (not dotted neither tuplet notes)'
 					};
 				}
 			}
@@ -433,17 +475,17 @@ define([
 		});
 	};
 	NoteEditionController.prototype.setSilence = function() {
-		this._ifTupletExpandCursor();
-
-		this._runDurationFn(function(tmpNm){
-			var selNotes = tmpNm.getNotes();	
+		//this._ifTupletExpandCursor();
+		var self = this;
+		this._runDurationFn(function(tmpNm) {
+			var selNotes = tmpNm.getNotes();
 			var note;
 			for (var i = 0; i < selNotes.length; i++) {
 				note = selNotes[i];
 				if (note.isTie()) {
 					note.removeTie();
 				}
-				if (note.isTuplet()) {
+				if (self._isWholeTupletSelected(self.cursor.getStart() + i)) { // get realIndex and not the cursor dependent index
 					note.removeTuplet();
 				}
 				if (!note.isRest) note.setRest(true);
@@ -453,7 +495,7 @@ define([
 
 
 	NoteEditionController.prototype.addNote = function() {
-		this._runDurationFn(function(tmpNm){
+		this._runDurationFn(function(tmpNm) {
 			var cloned = tmpNm.getNotes()[0].clone(false);
 			tmpNm.insertNote(0, cloned);
 		});
@@ -469,7 +511,7 @@ define([
 
 	NoteEditionController.prototype.pasteNotes = function() {
 		notesToPaste = this.buffer;
-		this._runDurationFn(function(tmpNm){
+		this._runDurationFn(function(tmpNm) {
 			tmpNm.setNotes(notesToPaste);
 		});
 	};
