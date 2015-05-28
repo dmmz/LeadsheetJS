@@ -118,6 +118,10 @@ define([
 		this.setIndexPos(1, this.pos[1] += inc);
 	};
 
+	CursorModel.prototype.setListElements = function(listElements) {
+		this.listElements = listElements;
+	};
+
 	CursorModel.prototype.getListLength = function() {
 		if (typeof this.listElements === 'object') {
 			return this.listElements.getTotal();

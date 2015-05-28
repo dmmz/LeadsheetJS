@@ -106,9 +106,8 @@ define([
 				var width = self._getWidthFromContainer(this.divContainer);
 				self.canvas.width = width;
 				self._resize(width);
-				self.draw(songModel, {
-					resize: true
-				});
+				self.forceNewCanvasLayer = true;
+				self.draw(songModel);
 			});
 		};
 		LSViewer.prototype._resize = function(width) {
@@ -163,8 +162,7 @@ define([
 					w: metrics.actualBoundingBoxRight,
 					h: metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent
 				};
-			}
-			else{
+			} else {
 				var height = 32;
 				this.titleView = {
 					x: x - metrics.width / 2,
@@ -203,12 +201,24 @@ define([
 		LSViewer.prototype.setHeight = function(song, barWidthMng) {
 			var totalNumBars = song.getComponent("bars").getTotal();
 			this.canvas.height = (barWidthMng.getDimensions(totalNumBars - 1).top + this.LINE_HEIGHT) * this.SCALE;
-			if (this.canvas.height > $(this.divContainer).height() && this.heightOverflow == 'scroll') {
+			/*if (this.canvas.height > $(this.divContainer).height() && this.heightOverflow == 'scroll') {
 				$(this.divContainer).css({
 					overflowY: "scroll"
 				});
 			} else {
 				$(this.divContainer).height(this.canvas.height);
+			}*/
+
+			if (this.canvas.height != $(this.divContainer).height()) {
+				if (this.heightOverflow == 'scroll') {
+					$(this.divContainer).css({
+						overflowY: "scroll"
+					});
+				} else {
+					$(this.divContainer).height(this.canvas.height);
+				}
+				this.forceNewCanvasLayer = true;
+				//this.canvasLayer = new CanvasLayer(this); //the canvasLayer needs to be created after the score has been drawn
 			}
 		};
 		LSViewer.prototype.setShortenLastBar = function(bool) {
@@ -344,7 +354,8 @@ define([
 			this.resetScale();
 			//console.timeEnd('whole draw');
 			// if we requested to have a layer and we haven't already created it
-			if (this.layer && (!this.canvasLayer) || params.resize) {
+			if (this.layer && (!this.canvasLayer) || (this.layer && this.forceNewCanvasLayer)) {
+				this.forceNewCanvasLayer = false;
 				this.canvasLayer = new CanvasLayer(this); //the canvasLayer needs to be created after the score has been drawn
 			}
 			$.publish('LSViewer-drawEnd', this);

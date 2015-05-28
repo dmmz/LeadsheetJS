@@ -33,7 +33,7 @@ define([
         
         if (this.topAudio > 0) { // if audio is greater than 0 it measn audio will be on top of score line
             this.viewer.setLineMarginTop(this.topAudio);
-        } else { 
+        } else {
             distance = (this.heightAudio - this.topAudio) - this.viewer.LINE_HEIGHT ;
             if (distance > 0) {
                 this.viewer.setLineMarginTop(distance, true);
