@@ -168,9 +168,18 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			self.mouseDown = true;
 		});
 
-		$('html').mouseup(function(evt) {
+		// Mouseup on canvas is usefull to allow unselect
+		$(this.canvasLayer).mouseup(function(evt) {
 			self.mouseDown = false;
 			selection(self.mouseDidntMove());
+		});
+
+		// Mouseup on the whole page allow user to go out of the canvas when he selects (it only work in case a mousemove happened)
+		$('html').mouseup(function(evt) {
+			if (self.mouseDown === true) {
+				self.mouseDown = false;
+				selection(self.mouseDidntMove());
+			}
 		});
 
 		$('html').mousemove(function(evt) {
@@ -187,7 +196,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			}
 			setPointerIfInPath(xy);
 		});
-		
+
 		$.subscribe('CanvasLayer-refresh', function(el) {
 			self.refresh();
 		});
