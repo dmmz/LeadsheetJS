@@ -3,10 +3,10 @@ define([
 	'pubsub',
 	'modules/TextEdition/src/TextElementView',
 	'modules/Edition/src/HtmlInputElement'
-	],function($, pubsub, TextElementView, HtmlInputElement){
+], function($, pubsub, TextElementView, HtmlInputElement) {
 
-	function TextElementManager (viewer, songModel) {
-		if (!viewer){
+	function TextElementManager(viewer, songModel) {
+		if (!viewer) {
 			throw "TextElementManager - viewer not defined";
 		}
 		this.name = 'title';
@@ -19,12 +19,13 @@ define([
 	TextElementManager.prototype.initSubscribe = function() {
 		var self = this;
 		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
-			if (!viewer.canvasLayer) {
-				throw "TextElementManager needs CanvasLayer";
+			// If Lsviewer doesn't have a canvas layer we do nothing, otherwise we need to update textelement
+			if (viewer.canvasLayer) {
+				//throw "TextElementManager needs CanvasLayer";
+				self.textView = new TextElementView(viewer.titleView, viewer.scaler);
+				viewer.canvasLayer.addElement(self);
+				viewer.canvasLayer.refresh();
 			}
-			self.textView  = new TextElementView(viewer.titleView, viewer.scaler);
-			viewer.canvasLayer.addElement(self);
-			viewer.canvasLayer.refresh();
 		});
 	};
 
@@ -35,18 +36,18 @@ define([
 		//do nothing as we have no cursor and no selection
 	};
 	TextElementManager.prototype.updateCursor = function() {
-		var self  = this;
+		var self = this;
 		var inputVal = this.songModel.getTitle();
 
-		this.htmlInput = new HtmlInputElement(this.viewer,'title',this.textView.getArea());
+		this.htmlInput = new HtmlInputElement(this.viewer, 'title', this.textView.getArea());
 		var input = this.htmlInput.input;
-		
+
 		input.focus(); // this focus allow setting cursor on end carac
 		input.val(inputVal);
-		$(input).keyup(function(evt){
+		$(input).keyup(function(evt) {
 			var keyCode = (evt === null) ? event.keyCode : evt.keyCode;
 			self.songModel.setTitle($(this).val());
-			if (keyCode == 13){
+			if (keyCode == 13) {
 				self.disable();
 			}
 		});
@@ -58,7 +59,7 @@ define([
 		//do nothing
 	};
 	TextElementManager.prototype.disable = function() {
-		if (this.htmlInput){
+		if (this.htmlInput) {
 			this.htmlInput.remove();
 			$.publish('ToViewer-draw', this.songModel);
 		}
