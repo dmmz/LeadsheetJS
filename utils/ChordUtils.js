@@ -1,7 +1,6 @@
 define(['jquery', 'utils/NoteUtils', 'utils/ChordTypesCollection'], function($, NoteUtils, ChordTypesCollection) {
 	var ChordUtils = {};
 
-
 	// TODO put in API
 	/**
 	 * Retrieve an list of object containing chordtypes and notes
@@ -28,7 +27,6 @@ define(['jquery', 'utils/NoteUtils', 'utils/ChordTypesCollection'], function($, 
 		});
 	};
 
-
 	ChordUtils.getAllChordTypes = function() {
 		// case we already now allchords
 		if (typeof ChordUtils.allChords !== "undefined") {
@@ -39,8 +37,11 @@ define(['jquery', 'utils/NoteUtils', 'utils/ChordTypesCollection'], function($, 
 			ChordUtils.chordTypeToNote = [];
 			// tool function, building an associative array between chordnames and chordnotes (C root)
 			// Usage : chordTypeToNote['7b5'] will return ["C4", "E4", "Gb4", "Bb4"]
-			for (var chord in ChordTypesCollection.allChordNotes) {
-				ChordUtils.chordTypeToNote[chord] = NoteUtils.transformStringNote2ArrayNote(ChordTypesCollection.allChordNotes[chord]);
+
+			var chord;
+			for (var i = 0, c = ChordTypesCollection.length; i < c; i++) {
+				chord = ChordTypesCollection[i];
+				ChordUtils.chordTypeToNote[chord.ct] = NoteUtils.transformStringNote2ArrayNote(chord.cn);
 			}
 			return ChordUtils.chordTypeToNote;
 		}
@@ -58,8 +59,25 @@ define(['jquery', 'utils/NoteUtils', 'utils/ChordTypesCollection'], function($, 
 		}
 	};
 
+	ChordUtils.getAllChordTypesAsArray = function() {
+		// case we already now allchords
+		if (typeof ChordUtils.chordTypes !== "undefined") {
+			return ChordUtils.chordTypes;
+		}
+		else if (typeof ChordTypesCollection !== "undefined") {
+			ChordUtils.chordTypes = [];
+			for (var i = 0, c = ChordTypesCollection.length; i < c; i++) {
+				ChordUtils.chordTypes.push(ChordTypesCollection[i].ct);
+			}
+			return ChordUtils.chordTypes;
+		}
+		else{
+			return [];
+		}
+	};
+
 	ChordUtils.getAllChords = function() {
-		var chordTypes = this.getAllChordTypes();
+		var chordTypes = this.getAllChordTypesAsArray();
 		var pitchClasses = ["C", "C#", "Cb", "D", "D#", "Db", "E", "E#", "Eb", "F", "F#", "Fb", "G", "G#", "Gb", "A", "A#", "Ab", "B", "B#", "Bb", "%", "%%", "NC"];
 		var chords = [];
 		for (var pClass in pitchClasses) {
@@ -67,12 +85,12 @@ define(['jquery', 'utils/NoteUtils', 'utils/ChordTypesCollection'], function($, 
 				chords.push(pitchClasses[pClass]);
 				continue;
 			}
-
-			for (var chordType in chordTypes) {
-				if (chordType.substring(0, 1) == "#" || chordType.substring(0, 1) == "b") chordType = "_" + chordType;
-				chords.push(pitchClasses[pClass] + chordType);
+			for (var i = 0, c = chordTypes.length; i < c; i++) {
+				if (typeof chordTypes[i] !== "undefined") {
+					if (chordTypes[i].substring(0, 1) == "#" || chordTypes[i].substring(0, 1) == "b") chordTypes[i] = "_" + chordTypes[i];
+					chords.push(pitchClasses[pClass] + chordTypes[i]);
+				}
 			}
-
 		}
 		ChordUtils.allChords = chords;
 		return chords;
