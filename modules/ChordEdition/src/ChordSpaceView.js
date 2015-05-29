@@ -52,6 +52,7 @@ define([
 
 
 	ChordSpaceView.prototype.onChange = function(chord, value) {
+		console.log('change ',value);
 		var chordInfos = {
 			'chordString': value,
 			'chordModel': chord,
@@ -98,20 +99,20 @@ define([
 			onSelect: function(suggestion) {
 				// console.log('select');
 				//$(input).val(suggestion.value);
-				input.devbridgeAutocomplete('dispose');
 				self.onChange(chord, suggestion.value);
+				input.devbridgeAutocomplete('dispose');
 			}
 		});
 		input.focus(); // this focus allow setting cursor on end carac
 		input.val(inputVal);
 		input.focus(); // this focus launch autocomplete directly when value is not empty
-		/*// on blur event we change the value, blur is launched when we enter and click somewhere else
+		// on blur event we change the value, blur is launched when we enter and click somewhere else
 		// We don't use blur because it prevent onclick element to be launched
 		input.on('blur', function() {
-			console.log('blur');
-			self.onChange(chord, $(this).val());
-			input.devbridgeAutocomplete('dispose');
-		});*/
+			// console.log('blur');
+			//self.onChange(chord, $(this).val());
+			//input.devbridgeAutocomplete('dispose');
+		});
 		$('#autocomplete-suggestion').on('click', function() {
 			// console.log('click');
 			self.onChange(chord, $(input).val());
@@ -122,8 +123,8 @@ define([
 			var code = e.keyCode || e.which;
 			if (code == '9') {
 				// console.log('tab');
-				self.onChange(chord, $(this).val());
-				input.devbridgeAutocomplete('dispose');
+				//self.onChange(chord, $(this).val());
+				//input.devbridgeAutocomplete('dispose');
 			}
 			if (code == '13') {
 				// console.log('enter');
