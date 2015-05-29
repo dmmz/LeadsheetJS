@@ -56,7 +56,7 @@ define(function(require) {
 
 	new LJS.LSViewer.OnWindowResizer(songModel);
 
-	initPlayerModule(songModel);
+	// initPlayerModule(songModel);
 
 
 	new LJS.HistoryC(songModel);
