@@ -10,7 +10,7 @@ define(['tests/DisplayTester',
 	'modules/Cursor/src/CursorController',
 	'modules/Cursor/src/CursorListener',
 	'modules/NoteEdition/src/NoteEditionController',
-	'modules/NoteEdition/src/NoteSpaceManager',
+	'modules/Tag/src/TagManager',
 	'tests/songs/allRhythmicFigures',
 	'tests/songs/AloneTogether',
 	'tests/songs/Solar',
@@ -27,7 +27,7 @@ define(['tests/DisplayTester',
 	CursorController,
 	CursorView,
 	NoteEditionController,
-	NoteSpaceManager,
+	TagManager,
 	allRhythmicFigures,
 	AloneTogether,
 	Solar) 
@@ -89,15 +89,26 @@ define(['tests/DisplayTester',
 				viewer = new LSViewer(divContainer,{heightOverflow:'resizeDiv',layer:true});
 				viewer.draw(song);
 				//test drawing on layer 
-				
 				viewer.canvasLayer.ctx.font = "18px lato Verdana";
 				viewer.canvasLayer.ctx.fillText(" This square is drawn in a new layer (canvas) placed on top of the main canvas", 65, 30);
 				viewer.canvasLayer.ctx.fillStyle = "rgb(200,0,0)";
 				viewer.canvasLayer.ctx.fillRect (10, 10, 55, 50);
 
+				var cM = new CursorModel(song.getComponent('notes'));
+				var noteSpaceManager = new NoteSpaceManager(cM, viewer);
+
+				//drawing tags
+				var tagMng = new TagManager(songModel, noteSpaceManager, [], undefined, false);
+				tagMng.setActive(true);
+				tagMng.setTags([
+					{startBeat:1,endBeat:13,name: "F Major"},
+					{startBeat:13,endBeat:33,name: "G Major"}
+				]);
+				tagMng.draw(viewer);
+
 			},
 			{width:1200,height:1000},
-			"Real song: AloneTogether resideDiv. Same canvas as previous test,  same div height (1000), but now div height is adapted. Also, creating a new layer");
+			"Real song: AloneTogether resideDiv. Same canvas as previous test,  same div height (1000), but now div height is adapted. Also, creating a new layer. Also testing tags");
 			
 		}
 	};

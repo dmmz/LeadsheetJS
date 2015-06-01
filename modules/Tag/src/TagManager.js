@@ -1,8 +1,9 @@
 define([
 	'modules/Tag/src/TagSpaceView',
+	'modules/Edition/src/ElementManager',
 	'jquery',
 	'pubsub',
-], function(TagSpaceView, $, pubsub) {
+], function(TagSpaceView, ElementManager, $, pubsub) {
 
 	/**
 	 * Create and display tags
@@ -10,17 +11,21 @@ define([
 	 * @param {Array} tags      Array of object that contain at least a startBeat, a endBeat, can also contain a name
 	 * @param {Array} colors    Array of colors in rgba or hexadecimal or html color
 	 */
-	function TagManager(songModel, tags, colors, isActive) {
+	function TagManager(songModel, noteSpaceManager, tags, colors, isActive) {
+		if (!noteSpaceManager.noteSpace){
+			throw "TagManager - noteSpaceManager not well initialized";
+		}
+
 		this.songModel = songModel;
-		this.tags = (typeof tags !== "undefined") ? tags : [];
-		this.colors = (typeof colors !== "undefined") ? colors : ["#559", "#995", "#599", "#595"];
-		this.tagSpace = [];
+		this.noteSpaceManager = noteSpaceManager;
+
+		this.tags = tags || [];
+		this.colors = colors || ["#559", "#995", "#599", "#595"];
+		this.tagSpaces = [];
 		this.isActive = (typeof isActive !== "undefined") ? isActive : true;
+		
 		this.initSubscribe();
-		this.CURSOR_HEIGHT = 80;
-		this.CURSOR_MARGIN_TOP = 20;
-		this.CURSOR_MARGIN_LEFT = 6;
-		this.CURSOR_MARGIN_RIGHT = 9;
+		this.elemMng = new ElementManager();
 	}
 
 	TagManager.prototype.getTags = function() {
@@ -32,8 +37,6 @@ define([
 			throw 'TagManager - setTags tags must be an array ' + tags;
 		}
 		this.tags = tags;
-		$.publish('TagManager-setTags', this);
-		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	TagManager.prototype.getColors = function() {
@@ -45,8 +48,7 @@ define([
 			throw 'TagManager - setColors colors must be an array ' + colors;
 		}
 		this.colors = colors;
-		$.publish('TagManager-setColors', this);
-		$.publish('ToViewer-draw', this.songModel);
+		//$.publish('TagManager-setColors', this);
 	};
 
 	TagManager.prototype.setActive = function(active) {
@@ -67,13 +69,7 @@ define([
 		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
 			self.draw(viewer);
 		});
-		/*$.subscribe('CanvasLayer-mouseup', function(el, position) {
-			var inPath = self.isInPath(position.x, position.y);
-			console.log(inPath);
-			if (inPath !== false) {
-				$.publish('ToViewer-draw', self.songModel);
-			}
-		});*/
+
 	};
 
 	TagManager.prototype.isInPath = function(x, y) {
@@ -91,56 +87,20 @@ define([
 	 * Function takes tags and transform them into TagSpace View that can be displayed on leadsheet,
 	 * it basically transform beat position to x, y positions
 	 * @param  {Object} viewer LSViewer
-	 * @return {Array} array of TagSpaceView
+	 * @return {Array} array of TagSpaceViews
 	 */
-	TagManager.prototype.getTagsAreas = function(viewer) {
-		var areas = [];
-		var area = {};
-		var startEnd, fromIndex, toIndex, xi, yi, xe;
-		var currentNote, currentNoteStaveY, nextNoteStaveY;
-		var firstNoteLine, lastNoteLine;
+	TagManager.prototype.getTagAreas = function(i,viewer) {
+		
+		var tag;
 		var nm = this.songModel.getComponent('notes');
-		var tagName = '';
-		for (var i = 0, c = this.tags.length; i < c; i++) {
-			startEnd = nm.getIndexesStartingBetweenBeatInterval(this.tags[i].startBeat, this.tags[i].endBeat - 1);
-			fromIndex = startEnd[0];
-			toIndex = startEnd[1];
-			if (typeof viewer.vxfNotes[fromIndex] === "undefined" || typeof viewer.vxfNotes[toIndex] === "undefined") {
-				return areas;
-			}
-			firstNoteLine = viewer.vxfNotes[fromIndex];
-			while (fromIndex <= toIndex) {
-				currentNote = viewer.vxfNotes[fromIndex];
-				currentNoteStaveY = currentNote.stave.y;
-				if (typeof viewer.vxfNotes[fromIndex + 1] !== "undefined") {
-					nextNoteStaveY = viewer.vxfNotes[fromIndex + 1].stave.y;
-				}
-				if (currentNoteStaveY != nextNoteStaveY || fromIndex == toIndex) {
-					lastNoteLine = currentNote.getBoundingBox();
-					xi = firstNoteLine.getBoundingBox().x - this.CURSOR_MARGIN_LEFT;
-					xe = lastNoteLine.x - xi + lastNoteLine.w + this.CURSOR_MARGIN_RIGHT;
-					area = {
-						x: xi,
-						y: currentNoteStaveY + this.CURSOR_MARGIN_TOP,
-						xe: xe,
-						ye: this.CURSOR_HEIGHT
-					};
-					tagName = '';
-					if (typeof this.tags[i].name !== "undefined") {
-						tagName = this.tags[i].name;
-					}
-					areas.push(new TagSpaceView(area, tagName));
-					if (fromIndex != toIndex) {
-						firstNoteLine = viewer.vxfNotes[fromIndex + 1];
-					}
-				}
+		var fromIndex, toIndex;
 
-				fromIndex++;
-			}
-		}
-		return areas;
+		tag = this.tags[i];
+		startEnd = nm.getIndexesStartingBetweenBeatInterval(tag.startBeat, tag.endBeat - 1);
+		fromIndex = startEnd[0];
+		toIndex = startEnd[1];
+		return this.elemMng.getElementsAreaFromCursor(this.noteSpaceManager.noteSpace, [fromIndex, toIndex]);
 	};
-
 
 	TagManager.prototype.draw = function(viewer) {
 		if (this.isActive !== true) {
@@ -150,33 +110,55 @@ define([
 			return;
 		}
 
-		var saveFillColor = viewer.ctx.fillStyle;
-		viewer.ctx.font = "15px Arial";
-		this.tagSpace = this.getTagsAreas(viewer);
-		var yDecalToggle = 3;
-		var numberOfColors = this.colors.length;
-		for (var i = 0, c = this.tagSpace.length; i < c; i++) {
-			viewer.ctx.globalAlpha = 0.4;
-			viewer.ctx.fillStyle = this.colors[i % numberOfColors]; // permute colors each time
-			if (i % 2) {
-				this.tagSpace[i].position.y += yDecalToggle;
-				this.tagSpace[i].position.ye += yDecalToggle;
-			} else {
-				this.tagSpace[i].position.y -= yDecalToggle;
-				this.tagSpace[i].position.ye -= yDecalToggle;
-			}
-			viewer.ctx.fillRect(
-				this.tagSpace[i].position.x,
-				this.tagSpace[i].position.y,
-				this.tagSpace[i].position.xe,
-				this.tagSpace[i].position.ye
-			);
-			viewer.ctx.globalAlpha = 1;
-			viewer.ctx.fillStyle = "black";
-			viewer.ctx.fillText(this.tagSpace[i].name, this.tagSpace[i].position.x, this.tagSpace[i].position.y + this.tagSpace[i].position.ye + 12);
+		var ctx = viewer.ctx;
+		var tagSpaces = [];
+		var self = this;
+
+		for (var i = 0; i < self.tags.length; i++) {
+			tagSpaces.push(new TagSpaceView(self.getTagAreas(i,viewer),this.tags[i].name));	
 		}
-		viewer.ctx.fillStyle = saveFillColor;
-		viewer.ctx.globalAlpha = 1;
+
+		viewer.drawElem(function() {
+	
+			var tagSpace;
+			var saveFillColor = ctx.fillStyle;
+			ctx.font = "15px Arial";
+			
+			var yDecalToggle = 3;
+				var numberOfColors = self.colors.length;
+			for (var i = 0; i < tagSpaces.length; i++) {
+				ctx.globalAlpha = 0.4;
+				tagSpace = tagSpaces[i];
+				ctx.fillStyle = self.colors[i % numberOfColors]; // permute colors each time
+
+				for (var j = 0; j < tagSpace.position.length; j++) {
+					//this makes shift a bit tags , useful in case they overlap
+					if (i % 2) {
+						tagSpace.position[j].y += yDecalToggle;
+						tagSpace.position[j].h += yDecalToggle;
+					} else {
+						tagSpace.position[j].y -= yDecalToggle;
+						tagSpace.position[j].h -= yDecalToggle;
+					}
+					//we paint the area
+					ctx.fillRect(
+						tagSpace.position[j].x,
+						tagSpace.position[j].y,
+						tagSpace.position[j].w,
+						tagSpace.position[j].h
+					);
+				}
+				//we write the tag name
+				ctx.globalAlpha = 1;
+					ctx.fillStyle = "black";
+					ctx.fillText(tagSpace.name, tagSpace.position[0].x, tagSpace.position[0].y + tagSpace.position[0].h + 12);
+
+			}
+			ctx.fillStyle = saveFillColor;
+			ctx.globalAlpha = 1;
+			
+		});
+		
 	};
 
 	return TagManager;
