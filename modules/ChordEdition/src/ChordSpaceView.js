@@ -52,7 +52,7 @@ define([
 
 
 	ChordSpaceView.prototype.onChange = function(chord, value) {
-		console.log('change ',value);
+		console.log('change ', value);
 		var chordInfos = {
 			'chordString': value,
 			'chordModel': chord,
@@ -73,7 +73,7 @@ define([
 			}
 		}
 		//we create html input, jquery object is in htmlInput.input (did not do getter because don't believe anymore in plain getters in javascript)
-		var htmlInput = new HtmlInputElement(this.viewer,'chordSpaceInput',this.getArea(), marginTop,marginRight);
+		var htmlInput = new HtmlInputElement(this.viewer, 'chordSpaceInput', this.getArea(), marginTop, marginRight);
 		var input = htmlInput.input;
 		// We create auto complete input
 		var chordTypeList = [];
@@ -136,8 +136,28 @@ define([
 		input.on('input propertychange paste', function() {
 			$(this).val(self.filterFunction($(this).val()));
 		});
+		var chordList = this._getChordList(songModel);
+		//console.log(JSON.stringify(chordList));
 		return htmlInput;
 	};
+
+	ChordSpaceView.prototype._getChordList = function(songModel) {
+		var chordList = [];
+		var cm = songModel.getComponent('chords');
+		var chords = cm.getChords();
+		var chordItem = {};
+		for (var i = 0, c = chords.length; i < c; i++) {
+			chordItem = {
+				'note': chords[i].note,
+				'chordType': chords[i].chordType,
+				'startBeat': songModel.getStartBeatFromBarNumber(chords[i].barNumber) + chords[i].beat
+			};
+			chordList.push(chordItem);
+		}
+		return chordList;
+	};
+
+
 	/**
 	 * Set to upper case first notes, add a lot of replacement for french or not keyboard
 	 * @param  {String} s input string

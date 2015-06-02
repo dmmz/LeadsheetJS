@@ -509,9 +509,8 @@ define([
 			for (var k = 0; k < noteToDelete.length; k++) {
 				tmpNm.deleteNote(noteToDelete[k]);
 			}
-			self.cursor.setIndexPos(1, self.cursor.getEnd() - noteToDelete.length);
-
 		});
+		//self.cursor.setIndexPos(1, self.cursor.getEnd() - noteToDelete.length);
 	};
 
 
