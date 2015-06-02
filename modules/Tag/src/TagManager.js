@@ -113,9 +113,15 @@ define([
 		var ctx = viewer.ctx;
 		var tagSpaces = [];
 		var self = this;
+		var areas;
 
 		for (var i = 0; i < self.tags.length; i++) {
-			tagSpaces.push(new TagSpaceView(self.getTagAreas(i,viewer),this.tags[i].name));	
+			areas = self.getTagAreas(i,viewer);
+			if (areas.length === 0){
+				console.warn("area not found for "+i+"th tag" );
+				continue;
+			}
+			tagSpaces.push(new TagSpaceView(areas, this.tags[i].name));	
 		}
 
 		viewer.drawElem(function() {
