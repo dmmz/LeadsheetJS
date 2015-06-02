@@ -46,7 +46,9 @@ define([
 		$.subscribe('ToPlayer-onToggleMetronome', function(el, isMetronome) {
 			self.metronomeChange(isMetronome);
 		});
-		$.subscribe('ToPlayer-onTempo', function(el, tempo) {});
+		$.subscribe('ToPlayer-onTempo', function(el, tempo) {
+			self.onTempoChange(tempo);
+		});
 		$.subscribe('ToPlayer-onChordInstrumentChange', function(el, instrument) {
 			self.onChordInstrumentChange(instrument);
 		});
@@ -115,6 +117,10 @@ define([
 		} else {
 			this.model.muteMetronome();
 		}
+	};
+
+	PlayerController.prototype.onTempoChange = function(tempo) {
+		this.model.setTempo(tempo);
 	};
 
 	PlayerController.prototype.onVolumeChange = function(volume) {
