@@ -9,10 +9,10 @@ define([
 	'pubsub',
 ], function(Mustache, SongModel, SongModel_CSLJson, HarmonicAnalysisAPI, TagManager, UserLog, $, pubsub) {
 
-	function HarmonicAnalysisController(songModel, view) {
+	function HarmonicAnalysisController(songModel, noteSpaceMng) {
 		this.songModel = songModel;
 		this.initSubscribe();
-		this.tagManager = new TagManager(this.songModel, [], undefined, false);
+		this.tagManager = new TagManager(this.songModel, noteSpaceMng, [], undefined, false);
 	}
 
 	HarmonicAnalysisController.prototype.initSubscribe = function() {
