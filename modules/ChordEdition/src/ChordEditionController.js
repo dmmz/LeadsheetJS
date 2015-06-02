@@ -27,20 +27,8 @@ define([
 
 			if (self.chordSpaceMng.isEnabled()) {
 				self[fn].call(self, param);
-				console.log("chord-toViewerDraw");
 				$.publish('ToViewer-draw', self.songModel);
 			}
-		});
-		/*$.subscribe('ChordEditionView-chordTabEvent', function(el, way) {
-			self.chordTabEvent(way);
-		});*/
-		$.subscribe('ChordEditionView-activeView', function(el) {
-			self.changeEditMode(true);
-			// NOT WORKING: COMMENTED BECAUSE IT CREATES AN INFINITE LOOP OF PUBLISH - SUBSCRIBE
-			//$.publish('ToViewer-draw', self.songModel);
-		});
-		$.subscribe('ChordEditionView-unactiveView', function(el) {
-			self.changeEditMode(false);
 		});
 	};
 
@@ -92,10 +80,6 @@ define([
 		var chordManager = this.songModel.getComponent('chords');
 		var selectedChords = chordManager.getChords(this.cursor.getStart(), this.cursor.getEnd() + 1);
 		return selectedChords;
-	};
-
-	ChordEditionController.prototype.changeEditMode = function(isEditable) {
-		this.cursor.setEditable(isEditable);
 	};
 
 	return ChordEditionController;

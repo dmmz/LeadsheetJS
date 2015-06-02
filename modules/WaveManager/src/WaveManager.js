@@ -34,6 +34,8 @@ define(['modules/WaveManager/src/WaveAudio',
         this.isLoaded = false;
         this.viewer = viewer;
         this.audio = new WaveAudio();
+        this.file = params.file;
+        this.tempo = params.tempo;
 
         var paramsDrawer = {
             pixelRatio: window.devicePixelRatio,
@@ -52,6 +54,8 @@ define(['modules/WaveManager/src/WaveAudio',
          $.subscribe('LSViewer-drawEnd', function(){
             if (self.isLoaded){
                 self.drawer.drawAudio(self.barTimesMng,self.audio.tempo,self.audio.getDuration());    
+            }else if(self.file && self.tempo){
+                self.load(self.file, self.tempo);
             }
         });
     };

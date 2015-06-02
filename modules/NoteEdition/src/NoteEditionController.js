@@ -24,62 +24,6 @@ define([
 	 */
 	NoteEditionController.prototype.initSubscribe = function() {
 		var self = this;
-		/*
-				$.subscribe('NoteEditionView-setPitch', function(el, decal) {
-					self.setPitch(decal);
-				});
-				$.subscribe('NoteEditionView-addAccidental', function(el, accidental) {
-					// Accidental contain as first argument the type of accidental (b,#,n) and as second argument true or false for double accidental
-					// Or it may contain a string
-					var acc = '';
-					if (accidental.hasOwnProperty('acc')) {
-						acc = accidental.acc;
-					} else {
-						acc = accidental;
-					}
-					var doubleAccidental = false;
-					if (accidental.hasOwnProperty('double')) {
-						doubleAccidental = accidental.double;
-					}
-					self.addAccidental(acc, doubleAccidental);
-				});
-				$.subscribe('NoteEditionView-setCurrDuration', function(el, duration) {
-					self.setCurrDuration(duration);
-				});
-				$.subscribe('NoteEditionView-setDot', function(el) {
-					self.setDot();
-				});
-				$.subscribe('NoteEditionView-setTie', function(el) {
-					self.setTie();
-				});
-				$.subscribe('NoteEditionView-setTuplet', function(el) {
-					self.setTuplet();
-				});
-				$.subscribe('NoteEditionView-setSilence', function(el) {
-					self.setSilence();
-				});
-				$.subscribe('NoteEditionView-deleteNote', function(el) {
-					self.setSilence();
-				});
-				$.subscribe('NoteEditionView-addNote', function(el) {
-					self.addNote();
-				});
-				$.subscribe('NoteEditionView-copyNotes', function(el) {
-					self.copyNotes();
-				});
-				$.subscribe('NoteEditionView-pasteNotes', function(el) {
-					self.pasteNotes();
-				});
-		*/
-
-		//TODO: these two functions are not verified / tested after refactoring
-		$.subscribe('NoteEditionView-activeView', function(el) {
-			self.changeEditMode(true);
-			$.publish('ToViewer-draw', self.songModel);
-		});
-		$.subscribe('NoteEditionView-unactiveView', function(el) {
-			self.changeEditMode(false);
-		});
 
 		// cursor view subscribe
 		$.subscribe('Cursor-moveCursorByElement-notes', function(el, inc) {
@@ -554,10 +498,6 @@ define([
 
 		this.cursor.setPos(indexFirstNoteInNewBar);
 		$.publish('ToViewer-draw', this.songModel);
-	};
-
-	NoteEditionController.prototype.changeEditMode = function(isEditable) {
-		this.cursor.setEditable(isEditable);
 	};
 
 	return NoteEditionController;

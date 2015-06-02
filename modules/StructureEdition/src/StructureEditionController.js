@@ -31,15 +31,6 @@ define([
 			//}
 		});
 
-		$.subscribe('StructureEditionView-activeView', function(el) {
-			self.changeEditMode(true);
-			$.publish('ToViewer-draw', self.songModel);
-		});
-		$.subscribe('StructureEditionView-unactiveView', function(el) {
-			self.changeEditMode(false);
-		});
-
-
 	};
 
 
@@ -351,10 +342,6 @@ define([
 		selectedBars[0] = this.songModel.getComponent('notes').getNoteBarNumber(this.cursor.getStart(), this.songModel);
 		selectedBars[1] = this.songModel.getComponent('notes').getNoteBarNumber(this.cursor.getEnd(), this.songModel);
 		return selectedBars;
-	};
-
-	StructureEditionController.prototype.changeEditMode = function(isEditable) {
-		this.cursor.setEditable(isEditable);
 	};
 
 	StructureEditionController.prototype.unfold = function() {

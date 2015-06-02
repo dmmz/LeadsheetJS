@@ -116,14 +116,5 @@ define([
 		});
 	};
 
-
-	StructureEditionView.prototype.unactiveView = function(idElement) {
-		$.publish('StructureEditionView-unactiveView');
-	};
-
-	StructureEditionView.prototype.activeView = function(idElement) {
-		$.publish('StructureEditionView-activeView', 'notes');
-	};
-
 	return StructureEditionView;
 });
