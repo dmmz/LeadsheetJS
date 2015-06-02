@@ -6,9 +6,9 @@ define([
 		"modules/HarmonicAnalysis/src/HarmonicAnalysisView"
 	],function($, pubsub, HarmonicAnalysisAPI, HarmonicAnalysisController, HarmonicAnalysisView){
 	
-	function HarmonicAnalysis(songModel){
+	function HarmonicAnalysis(songModel, noteSpaceMng){
 		this.view = new HarmonicAnalysisView();
-		new HarmonicAnalysisController(songModel, this.view);
+		new HarmonicAnalysisController(songModel, noteSpaceMng);
 	}
 	return HarmonicAnalysis;
 });

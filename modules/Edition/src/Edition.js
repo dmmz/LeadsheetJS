@@ -11,25 +11,26 @@ define([
 		if (!params) {
 			throw "Edition - need params";
 		}
+		this.noteEdition = null; //noteEdition property, as we want it accessible from outside (e.g. for harmonicAnalysis)
+
 
 		new KeyboardManager(true);
 		
 		//editing title
 		new TextElementManager(viewer, songModel);
 
-		var values = {};
+		
 		var cursorNote;
 		if (params.notes) {
 			// Edit notes on view
 			cursorNote = new Cursor(songModel.getComponent('notes'), 'notes', 'arrow');
-			var noteEdition = new NoteEdition(songModel, cursorNote.controller.model, viewer, params.notes.imgPath);
-			values.cursorNote = cursorNote;
-			//values.notes = noteEdition;
-
+			this.noteEdition = new NoteEdition(songModel, cursorNote.controller.model, viewer, params.notes.imgPath); 
+			this.cursorNote = cursorNote;
+			
 			if (menuModel && params.notes.menu){
 				menuModel.addMenu({
 					title: params.notes.menu.title,
-					view: noteEdition.view,
+					view: this.noteEdition.view,
 					order: params.notes.menu.order
 				});
 			}
@@ -40,8 +41,8 @@ define([
 			var cursorChord = new Cursor(songModel.getSongTotalBeats(), 'chords', 'tab');
 			cursorChord.controller.model.setEditable(false);
 			var chordEdition = new ChordEdition(songModel, cursorChord.controller.model, viewer, params.chords.imgPath);
-			values.cursorChord = cursorChord;
-			//values.chords = chordEdition;
+			this.cursorChord = cursorChord;
+			
 			if (params.chords.menu){
 				menuModel.addMenu({
 					title:  params.chords.menu.title,
@@ -57,7 +58,7 @@ define([
 			}
 			//bars edition 
 			var structEdition = new StructureEdition(songModel, cursorNote.controller.model, params.structure.imgPath);
-			//values.structure = structEdition;
+
 			if (params.structure.menu){
 				menuModel.addMenu({
 					title: params.structure.menu.title,
@@ -66,7 +67,7 @@ define([
 				});
 			}
 		}
-		return values;
+		
 
 	}
 	return Edition;

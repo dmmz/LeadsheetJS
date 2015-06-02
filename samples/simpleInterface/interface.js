@@ -150,10 +150,10 @@ define(function(require) {
 
 	// Harmonic Analysis menu
 
-	var harmAn = new LJS.HarmonicAnalysis(songModel);
+	var harmAn = new LJS.HarmonicAnalysis(songModel, edition.noteEdition.noteSpaceMng);
 
 	// Constraint menu
-	var constraint = new LJS.Constraint(songModel);
+	var constraint = new LJS.Constraint(songModel, edition.noteEdition.noteSpaceMng);
 
 
 	// Edit files menu

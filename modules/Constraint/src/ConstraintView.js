@@ -4,7 +4,8 @@ define([
 	'modules/core/src/SongModel',
 	'utils/UserLog',
 	'pubsub',
-], function(Mustache, ConstraintTemplate, SongModel, UserLog, pubsub) {
+	'jquery'
+], function(Mustache, ConstraintTemplate, SongModel, UserLog, pubsub, $) {
 
 	function ConstraintView() {
 		this.el = undefined;

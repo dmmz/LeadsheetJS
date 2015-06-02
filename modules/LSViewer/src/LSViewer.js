@@ -366,7 +366,7 @@ define([
 		 */
 		LSViewer.prototype.drawElem = function(drawFunc) {
 			this.scale(this.ctx);
-			drawFunc(this.ctx);
+			drawFunc();
 			this.resetScale(this.ctx);
 		};
 		return LSViewer;

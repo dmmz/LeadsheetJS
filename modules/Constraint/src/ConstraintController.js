@@ -6,10 +6,12 @@ define([
 	'modules/Constraint/src/ConstraintAPI',
 	'utils/UserLog',
 	'pubsub',
-], function(Mustache, SongModel, TagManager, SongModel_CSLJson, ConstraintAPI, UserLog, pubsub) {
+	'jquery'
+], function(Mustache, SongModel, TagManager, SongModel_CSLJson, ConstraintAPI, UserLog, pubsub, $) {
 
-	function ConstraintController(songModel) {
-		this.songModel = songModel || new SongModel();
+	function ConstraintController(songModel, noteSpaceMng) {
+		this.songModel = songModel;
+		this.noteSpaceMng = noteSpaceMng;
 		this.initSubscribe();
 	}
 
@@ -73,7 +75,7 @@ define([
 				});
 
 				if (typeof data.tags !== "undefined") {
-					var tags = new TagManager(self.songModel, data.tags);
+					var tags = new TagManager(self.songModel, self.noteSpaceMng, data.tags);
 				}
 				$.publish('ToViewer-draw', self.songModel);
 				UserLog.logAutoFade('success', 'Constraint is finished');
