@@ -10,7 +10,7 @@ define(['modules/core/src/NoteModel',
 
 				var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
 				var cM = new CursorModel(songModel.getComponent('notes'));
-				
+
 				var nec = new NoteEditionController(songModel, cM);
 
 				assert.equal(nec._getSelectedNotes().toString(), "A/4-q");
@@ -100,14 +100,14 @@ define(['modules/core/src/NoteModel',
 				necDelete.setSilence();
 				assert.equal(necDelete._getSelectedNotes()[0].isTuplet(), false, 'tuplet after whole note deletion should no more be a tuplet');
 				assert.equal(necDelete._getSelectedNotes()[1].isTuplet(), false, 'tuplet after whole note  deletion should no more be a tuplet');
-				assert.equal(necDelete._getSelectedNotes()[2].isTuplet(), false, 'tuplet after whole note  deletion should no more be a tuplet');
-				
-				/*necDelete.cursor.setPos([3, 5]);
+				assert.deepEqual(necDelete.cursor.getPos(), [3, 4]);
+
+				necDelete.cursor.setPos([3, 5]);
 				necDelete.setSilence();
 				assert.equal(necDelete._getSelectedNotes()[0].isTuplet(), false, 'tuplet after whole tuplets deletion should no more be a tuplet');
 				assert.equal(necDelete._getSelectedNotes()[1].isTuplet(), false, 'tuplet after whole tuplets  deletion should no more be a tuplet');
 				assert.equal(necDelete._getSelectedNotes()[2].isTuplet(), false, 'tuplet after whole tuplets  deletion should no more be a tuplet');
-*/
+
 
 				// Tie notes
 				nec.setTie();
@@ -127,6 +127,7 @@ define(['modules/core/src/NoteModel',
 				assert.equal(nec._getSelectedNotes()[1].isTie(), false, 'remove tie end note');
 
 				// Tuplets
+				nec.cursor.setPos([3, 4]);
 				nec.setTuplet();
 				assert.equal(nec._getSelectedNotes()[0].isTuplet(), false, 'tuplet with not 3 notes same length selected');
 				assert.equal(nec._getSelectedNotes()[0].getTuplet(), undefined, 'type tuplet with not 3 notes same length selected');
