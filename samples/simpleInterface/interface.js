@@ -152,10 +152,7 @@ define(function(require) {
 
 	var harmAn = new LJS.HarmonicAnalysis(songModel, edition.noteEdition.noteSpaceMng);
 
-	// Constraint menu
-	var constraint = new LJS.Constraint(songModel, edition.noteEdition.noteSpaceMng);
-
-
+	
 	// Edit files menu
 	var fileEdition = new LJS.FileEdition(songModel, myApp.viewer.canvas);
 
@@ -190,23 +187,17 @@ define(function(require) {
 		order: 4
 	});*/
 
-	menu.model.addMenu({
-		title: 'Constraint',
-		view: constraint.view,
-		order: 5
-	});
-	// menuC.activeMenu('Constraint');
 
 	menu.model.addMenu({
 		title: 'Harmonizer',
 		view: harm.view,
-		order: 6
+		order: 5
 	});
 
 	menu.model.addMenu({
 		title: 'Harmonic Analysis',
 		view: harmAn.view,
-		order: 7
+		order: 6
 	});
 
 
