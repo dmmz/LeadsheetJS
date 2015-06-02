@@ -21,6 +21,9 @@ define([
 				waveMng.drawer.drawAudio(waveMng.barTimesMng,waveMng.audio.tempo,waveMng.audio.getDuration());
 			}
 		});
+		$.subscribe("ToLayers-removeLayer", function() {
+			// TODO Add an unload waveAudio when it will be available
+		});
 	}
 	return WaveManagerController;
 });

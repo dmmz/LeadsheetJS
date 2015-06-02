@@ -23,6 +23,10 @@ define([
 		$.subscribe('HarmonicAnalysisView-remove', function(el) {
 			self.removeHarmonicAnalysis();
 		});
+		// call each time we open a new song
+		$.subscribe('ToLayers-removeLayer', function(el) {
+			self.removeHarmonicAnalysis();
+		});
 	};
 
 	HarmonicAnalysisController.prototype.computeHarmonicAnalysis = function() {
