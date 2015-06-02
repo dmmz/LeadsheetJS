@@ -190,17 +190,5 @@ define([
 			$.publish('NoteEditionView', fn);
 		});
 	};
-
-	//TODO: not verified, nor tested, nor used
-	NoteEditionView.prototype.unactiveView = function(idElement) {
-		this.editMode = '';
-		$.publish('NoteEditionView-unactiveView');
-	};
-
-	NoteEditionView.prototype.activeView = function(idElement) {
-		this.editMode = 'notes';
-		$.publish('NoteEditionView-activeView', 'notes');
-	};
-
 	return NoteEditionView;
 });

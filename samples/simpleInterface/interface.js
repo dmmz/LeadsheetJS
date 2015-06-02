@@ -160,14 +160,12 @@ define(function(require) {
 		showHalfWave: true,
 		//drawMargins: true,
 		topAudio: -120,
-		heightAudio: 75
-			/*,
-			      marginCursor: 20*/
+		heightAudio: 75,
+		file: '/tests/audio/solar.wav', 
+		tempo: 170
 	};
-	var waveMng = new WaveManager(songModel, edition.cursorNote.controller.model, myApp.viewer, params);
-	//noteSpaceManager.refresh();
-	waveMng.load('/tests/audio/solar.wav', 170);
-	var wmc = new WaveManagerController(waveMng);
+	var waveMng = new LJS.WaveManager.WaveManager(songModel, edition.cursorNote.controller.model, myApp.viewer, params);
+	var wmc = new LJS.WaveManager.WaveManagerController(waveMng);
 
 	//ALTERNATIVE WAY TO ADD MENU if not done with edition constructor
 	/*menu.model.addMenu({
@@ -224,4 +222,5 @@ define(function(require) {
 		});
 		var pC = new LJS.MidiCSL.PlayerController(player, pV);
 	}
+	myApp.viewer.draw(songModel);
 });

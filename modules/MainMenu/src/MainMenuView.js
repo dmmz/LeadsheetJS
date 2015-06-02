@@ -127,9 +127,6 @@ define([
 
 	MainMenuView.prototype.showMenu = function(menu) {
 		var self = this;
-		if (menu.view && typeof menu.view.activeView === "function") {
-			menu.view.activeView();
-		}
 		// add active class
 		$('#' + this._concatTitle(menu.title) + '_first_level').addClass(self.selectedClassName);
 

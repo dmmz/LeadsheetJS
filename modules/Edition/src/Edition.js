@@ -14,7 +14,7 @@ define([
 		this.noteEdition = null; //noteEdition property, as we want it accessible from outside (e.g. for harmonicAnalysis)
 
 
-		new KeyboardManager(true);
+		new KeyboardManager(false);
 		
 		//editing title
 		new TextElementManager(viewer, songModel);

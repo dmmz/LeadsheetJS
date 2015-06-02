@@ -76,15 +76,5 @@ define([
 		return false;
 	};
 
-	ChordEditionView.prototype.unactiveView = function(idElement) {
-		this.editMode = '';
-		$.publish('ChordEditionView-unactiveView');
-	};
-
-	ChordEditionView.prototype.activeView = function(idElement) {
-		this.editMode = 'chords';
-		$.publish('ChordEditionView-activeView', 'chords');
-	};
-
 	return ChordEditionView;
 });
