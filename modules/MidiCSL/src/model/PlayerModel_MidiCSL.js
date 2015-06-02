@@ -26,8 +26,8 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 			this.isReady = false; // boolean that indicates if player is ready to be played
 			this.indexPosition = 0; // represent which notes have been lastly played
 			this.playState = false; // playState indicate if the player is currently playing or not, (paused player will return false)
-
 			this.songModel = songModel;
+			this.tempo = songModel.getTempo();
 			this.soundfontPath = soundfontPath;
 
 			var initVolume;
@@ -86,6 +86,13 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 
 		PlayerModel_MidiCSL.prototype.getReady = function() {
 			return this.isReady;
+		};
+
+		PlayerModel_MidiCSL.prototype.setTempo = function(tempo) {
+			if (!isNaN(tempo)) {
+				this.tempo = tempo;
+				this.songModel.setTempo(tempo);
+			}
 		};
 
 		PlayerModel_MidiCSL.prototype.setReady = function(isReady) {
@@ -308,7 +315,7 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 				var randomVelocityRange = 40;
 
 				var realIndex = 0;
-				var metronomeChannel = this.instrumentsIndex.length-1;
+				var metronomeChannel = this.instrumentsIndex.length - 1;
 
 				var currentNote, currentMidiNote, duration, velocityNote, channel, volume;
 				var playNote = false;
