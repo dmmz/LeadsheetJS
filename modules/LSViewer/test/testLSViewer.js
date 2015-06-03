@@ -76,8 +76,6 @@ define(['tests/DisplayTester',
 				waveMng.load('/tests/audio/solar.wav',170,true);
 				//audioComments.draw();
 
-
-
 			},{width:1200,height:1000}, "Painting audio");
 			
 			dispTest.runTest(
@@ -108,8 +106,6 @@ define(['tests/DisplayTester',
 			dispTest.runTest(function(divContainer) {
 				viewer = new LSViewer(divContainer,{heightOverflow:'resizeDiv',layer:true});
 				
-				
-
 				var cM = new CursorModel(song.getComponent('notes'));
 				var noteSpaceManager = new NoteSpaceManager(cM, viewer);
 

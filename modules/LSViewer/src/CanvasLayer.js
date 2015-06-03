@@ -146,7 +146,6 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		function setPointerIfInPath(xy) {
 			if (typeof self.viewer.divContainer.style !== 'undefined') {
 				var found = false;
-
 				for (var name in self.elems) {
 					if (typeof self.elems[name].inPath !== 'function') {
 						continue;

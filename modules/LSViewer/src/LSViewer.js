@@ -354,6 +354,7 @@ define([
 			this.resetScale();
 			//console.timeEnd('whole draw');
 			// if we requested to have a layer and we haven't already created it
+			// TODO: this.layer anhd this.forceNewLayer are more or less the same
 			if (this.layer && (!this.canvasLayer) || (this.layer && this.forceNewCanvasLayer)) {
 				this.forceNewCanvasLayer = false;
 				this.canvasLayer = new CanvasLayer(this); //the canvasLayer needs to be created after the score has been drawn

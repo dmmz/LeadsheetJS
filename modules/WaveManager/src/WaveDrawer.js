@@ -242,7 +242,8 @@ define([
             this.viewer.canvasLayer.addElement(this);
             this.updateCursorPlaying(0);
             this.viewer.canvasLayer.refresh();
-        }     
+        }
+        $.publish('Audio-drawn');
     };
  
 

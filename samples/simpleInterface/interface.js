@@ -31,9 +31,7 @@ require.config({
 
 define(function(require) {
 
-	var WaveManager = require('modules/WaveManager/src/WaveManager');
-	var WaveManagerView = require('modules/WaveManager/src/WaveManagerView');
-	var WaveManagerController = require('modules/WaveManager/src/WaveManagerController');
+	var AudioComments = require('modules/AudioComments/src/AudioComments');
 
 
 	var LJS = require('LJS');
@@ -222,5 +220,24 @@ define(function(require) {
 		});
 		var pC = new LJS.MidiCSL.PlayerController(player, pV);
 	}
+
+	var audioComments = new AudioComments(waveMng,myApp.viewer);
+				audioComments.addComment({
+					user: 'Dani',
+					img: '/tests/img/dani-profile.jpg',
+					text: 'I am hungry',
+					timeInterval: [1.5891220809932014, 2.668046112917529],
+					color: '#F00'
+				});
+
+				audioComments.addComment({
+					user: 'Dani',
+					img: '/tests/img/dani-profile.jpg',
+					text: 'I am not',
+					timeInterval: [3.3, 10.1],
+					color: '#0F0'
+				});
+
+
 	myApp.viewer.draw(songModel);
 });
