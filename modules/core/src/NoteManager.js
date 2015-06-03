@@ -275,14 +275,23 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	 * Similar to previous one (getNextIndexNote()), but if
 	 * exact beat is not found, it returns the closest previous note
 	 * @param  {float} beat global beat (first beat starts at 1, not 0)
+	 * @param  {ifExactExclude} 
+	 * 
 	 * @return {Integer} index of the note
 	 */
-	NoteManager.prototype.getPrevIndexNoteByBeat = function(beat) {
+	NoteManager.prototype.getPrevIndexNoteByBeat = function(beat, ifExactExclude) {
 		if (isNaN(beat) || beat < 0) {
 			throw 'NoteManager - getPrevIndexNoteByBeat - beat must be a positive float ' + beat;
 		}
 		var r = this._getIndexAndCurBeat(beat);
-		return (r.curBeat === beat) ? r.index : r.index - 1;
+		var index;
+		if (r.curBeat === beat){
+			index = ifExactExclude ? r.index - 1 : r.index;
+		}
+		else{
+			index = r.index - 1;
+		}
+		return index;
 	};
 
 	/**
@@ -299,7 +308,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 			throw 'NoteManager - getIndexesStartingBetweenBeatInterval - endBeat must be a positive integer ' + endBeat;
 		}
 		var index1 = this.getNextIndexNoteByBeat(startBeat);
-		var index2 = this.getPrevIndexNoteByBeat(endBeat);
+		var index2 = this.getPrevIndexNoteByBeat(endBeat,true);
 		return [index1, index2];
 	};
 

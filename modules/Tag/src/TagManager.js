@@ -53,7 +53,6 @@ define([
 
 	TagManager.prototype.setActive = function(active) {
 		this.isActive = !!active;
-		$.publish('ToViewer-draw', this.songModel);
 	};
 
 	TagManager.prototype.getActive = function() {
@@ -96,9 +95,9 @@ define([
 		var fromIndex, toIndex;
 
 		tag = this.tags[i];
-		startEnd = nm.getIndexesStartingBetweenBeatInterval(tag.startBeat, tag.endBeat - 1);
+		startEnd = nm.getIndexesStartingBetweenBeatInterval(tag.startBeat, tag.endBeat);
 		fromIndex = startEnd[0];
-		toIndex = startEnd[1];
+		toIndex = startEnd[1]; 
 		return this.elemMng.getElementsAreaFromCursor(this.noteSpaceManager.noteSpace, [fromIndex, toIndex]);
 	};
 

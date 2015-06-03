@@ -87,23 +87,25 @@ define(['tests/DisplayTester',
 
 			dispTest.runTest(function(divContainer) {
 				viewer = new LSViewer(divContainer,{heightOverflow:'resizeDiv',layer:true});
+				
+				
+
+				var cM = new CursorModel(song.getComponent('notes'));
+				var noteSpaceManager = new NoteSpaceManager(cM, viewer);
+
+				//drawing tags
+				var tagMng = new TagManager(song, noteSpaceManager, [], undefined, false);
+				tagMng.setActive(true);
+				tagMng.setTags([
+					{startBeat:5,endBeat:9,name: "F Major"}
+				]);
+
 				viewer.draw(song);
 				//test drawing on layer 
 				viewer.canvasLayer.ctx.font = "18px lato Verdana";
 				viewer.canvasLayer.ctx.fillText(" This square is drawn in a new layer (canvas) placed on top of the main canvas", 65, 30);
 				viewer.canvasLayer.ctx.fillStyle = "rgb(200,0,0)";
 				viewer.canvasLayer.ctx.fillRect (10, 10, 55, 50);
-
-				var cM = new CursorModel(song.getComponent('notes'));
-				var noteSpaceManager = new NoteSpaceManager(cM, viewer);
-
-				//drawing tags
-				var tagMng = new TagManager(songModel, noteSpaceManager, [], undefined, false);
-				tagMng.setActive(true);
-				tagMng.setTags([
-					{startBeat:1,endBeat:13,name: "F Major"},
-					{startBeat:13,endBeat:33,name: "G Major"}
-				]);
 				tagMng.draw(viewer);
 
 			},

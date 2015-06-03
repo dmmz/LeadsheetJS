@@ -185,13 +185,14 @@ define(['modules/core/src/NoteManager',
 					assert.equal(noteManager.getNextIndexNoteByBeat(3.1), 4);
 					assert.equal(noteManager.getNextIndexNoteByBeat(4.9), 6);
 
-					assert.equal(noteManager.getPrevIndexNoteByBeat(1.1), 0);
+					assert.equal(noteManager.getPrevIndexNoteByBeat(1.1), 0, "not exact prev");
 
 					assert.equal(noteManager.getNextIndexNoteByBeat(10), undefined); //exceeds last beat
 					assert.equal(noteManager.getNextIndexNoteByBeat(6.1), undefined, 'getNextIndexNoteByBeat last beat must throw error'); //exceeds last beat
 
 					assert.equal(noteManager.getNextIndexNoteByBeat(2), 1);
-					assert.equal(noteManager.getPrevIndexNoteByBeat(2), 1);
+					assert.equal(noteManager.getPrevIndexNoteByBeat(2), 1, 'exact prev');
+					assert.equal(noteManager.getPrevIndexNoteByBeat(2, true), 0, 'exact prev with ifExactExclude set to true'); //this is useful on tags
 					assert.equal(noteManager.getPrevIndexNoteByBeat(2.2), 1);
 					assert.equal(noteManager.getNextIndexNoteByBeat(2.2), 2);
 
