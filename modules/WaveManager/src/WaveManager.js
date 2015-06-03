@@ -87,7 +87,7 @@ define(['modules/WaveManager/src/WaveAudio',
                 }else{
                     self.drawer.drawAudio(self.barTimesMng,self.audio.tempo,self.audio.getDuration());
                 }
-                
+                $.publish('Audio-Loaded');
             });
         };
         xhr.send();

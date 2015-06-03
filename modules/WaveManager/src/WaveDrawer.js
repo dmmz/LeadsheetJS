@@ -151,7 +151,7 @@ define([
        var saveFillColor = ctx.fillStyle;
         ctx.fillStyle = "#9900FF";
         ctx.globalAlpha = 0.2;
-        var areas = this.getAreasFromCursor();
+        var areas = this.getAreasFromTimeInterval(this.cursor.getStart(), this.cursor.getEnd());
         for (i = 0, c = areas.length; i < c; i++) {
             ctx.fillRect(
                 areas[i].x,
@@ -174,10 +174,8 @@ define([
         this.cursorPos = this._getCursorDims(time);
     };
 
-    WaveDrawer.prototype.getAreasFromCursor = function() {
-        var barTimesMng = this.waveMng.barTimesMng,
-            startTime = this.cursor.getStart(),
-            endTime = this.cursor.getEnd();
+    WaveDrawer.prototype.getAreasFromTimeInterval = function(startTime, endTime) {
+        var barTimesMng = this.waveMng.barTimesMng;
         var startBar = barTimesMng.getIndexByTime(startTime);
         var endBar = barTimesMng.getIndexByTime(endTime);
         var areas = this.elemMng.getElementsAreaFromCursor(this.waveBarDimensions, [startBar, endBar]);

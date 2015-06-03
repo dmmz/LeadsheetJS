@@ -140,7 +140,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 
 		/**
 		 * cursor set to pointer to indicate when an element is clickable. Before it was managed by each element edition class (notes,chords...etc.) but we moved it here
-		 * because it has to be centralized otherwise events where interfering to each other (notes pointer when mouse is over notes would not work if at the same time chords editor asks to set pointer to default when mouse is not over chords)
+		 * because it has to be centralized otherwise events were interfering to each other (notes pointer when mouse is over notes would not work if at the same time chords editor asks to set pointer to default when mouse is not over chords)
 		 * @param {Object} xy  e.g.:  {x:12, y:21}
 		 */
 		function setPointerIfInPath(xy) {
@@ -168,13 +168,22 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			self.mouseDown = true;
 		});
 
+		//we prevent default mouse right-click
+		document.oncontextmenu = function() {
+			return false;
+		};
 		// Mouseup on canvas is usefull to allow unselect
 		$(this.canvasLayer).mouseup(function(evt) {
 			self.mouseDown = false;
-			selection(self.mouseDidntMove());
+			var isClick = self.mouseDidntMove();
+			if (isClick && evt.button == 2){
+				$.publish('right-click');
+			}else{
+				selection(isClick);	
+			}
 		});
 
-		// Mouseup on the whole page allow user to go out of the canvas when he selects (it only work in case a mousemove happened)
+		// Mouseup on the whole page allows user to go out of the canvas when he selects (it only work in case a mousemove happened)
 		$('html').mouseup(function(evt) {
 			if (self.mouseDown === true) {
 				self.mouseDown = false;
@@ -186,8 +195,6 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			//draw cursor selection
 			var xy = self._getXandY($(self.canvasLayer), evt);
 			if (self.mouseDown) {
-				//console.log('bodymove');
-				//console.log(xy);
 				var ctx = self.ctx;
 				self.mouseCoordsEnd = [xy.x, xy.y];
 				self._setCoords(self.mouseCoordsIni, self.mouseCoordsEnd);
