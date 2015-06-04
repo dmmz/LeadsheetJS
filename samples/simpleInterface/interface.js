@@ -152,7 +152,6 @@ define(function(require) {
 
 	var harmAn = new LJS.HarmonicAnalysis(songModel, edition.noteEdition.noteSpaceMng);
 
-	
 	// Edit files menu
 	var fileEdition = new LJS.FileEdition(songModel, myApp.viewer.canvas);
 
@@ -161,7 +160,7 @@ define(function(require) {
 		//drawMargins: true,
 		topAudio: -120,
 		heightAudio: 75,
-		file: '/tests/audio/solar.wav', 
+		file: '/tests/audio/solar.wav',
 		tempo: 170
 	};
 	var waveMng = new LJS.WaveManager.WaveManager(songModel, edition.cursorNote.controller.model, myApp.viewer, params);

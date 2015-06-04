@@ -1,5 +1,28 @@
 define(['jquery'], function($) {
-	var UserLog = {};
+	var UserLog = {
+		type: 'info',
+		title: 'Untitled',
+		element: $('body')[0],
+		speed: 5000
+	};
+
+	UserLog.setOptions = function(options) {
+		if (typeof options === "undefined") {
+			return;
+		}
+		if (typeof options.type !== "undefined") {
+			this.type = options.type;
+		}
+		if (typeof options.title !== "undefined" && !isNaN(title)) {
+			this.title = options.title;
+		}
+		if (typeof options.element !== "undefined") {
+			this.element = options.element;
+		}
+		if (typeof options.speed !== "undefined" && !isNaN(speed)) {
+			this.speed = options.speed;
+		}
+	};
 
 	/**
 	 * Call log function to send a message to user, message will automatically fadeOut quickly
@@ -9,16 +32,16 @@ define(['jquery'], function($) {
 	 */
 	UserLog.logAutoFade = function(type, title, element, speed) {
 		if (typeof type === "undefined") {
-			type = 'info';
+			type = this.type;
 		}
 		if (typeof title === "undefined") {
-			title = 'Untitled';
+			title = this.title;
 		}
 		if (typeof element === "undefined") {
-			element = $('body')[0];
+			element = this.element;
 		}
 		if (typeof speed === "undefined") {
-			speed = 5000;
+			speed = this.speed;
 		}
 		var className = '';
 		switch (type) {
@@ -52,13 +75,13 @@ define(['jquery'], function($) {
 	 */
 	UserLog.log = function(type, title, element) {
 		if (typeof type === "undefined") {
-			type = 'info';
+			type = this.type;
 		}
 		if (typeof title === "undefined") {
-			title = 'Untitled';
+			title = this.title;
 		}
 		if (typeof element === "undefined") {
-			element = $('body')[0];
+			element = this.element;
 		}
 		var className = '';
 		switch (type) {
@@ -78,7 +101,7 @@ define(['jquery'], function($) {
 				className = 'alert alert-info';
 		}
 		var id = Math.round((Math.random() * 1000)) + '-' + Date.now();
-		var saveMsg = "<span class='" + className + "' id='logId-" + id + "' style='position:fixed; z-index:9999; left:30%'>" + title + "</span>";
+		var saveMsg = "<span class='" + className + "' id='logId-" + id + "' style='position:fixed; z-index:9999; left:35%'>" + title + "</span>";
 		$(saveMsg).insertBefore(element);
 		return id;
 	};
