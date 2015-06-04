@@ -15,6 +15,7 @@ define(function() {
 	};
 	WaveAudio.prototype._disconnectSource = function() {
 		if (this.source) {
+			this.source.buffer.length = 0; // remove previous buffer (usefull for memory)
 			this.source.disconnect();
 		}
 	};
@@ -32,14 +33,14 @@ define(function() {
 	WaveAudio.prototype.load = function(audioData, waveMng, tempo, callback) {
 		var self = this;
 		this.audioCtx.decodeAudioData(audioData, function(buffer) {
-				
+				self.buffer = []; // remove previous buffer (usefull for memory)
 				self.buffer = buffer;
-				self.tempo  = tempo;
+				self.tempo = tempo;
 				self.beatDuration = 60 / tempo;
 				self.source.buffer = self.buffer;
 				//source.playbackRate.value = playbackControl.value;
 				self.source.connect(self.audioCtx.destination);
-				
+
 				if (typeof callback !== "undefined") {
 					callback();
 				}
@@ -59,14 +60,15 @@ define(function() {
 		endPoint = endPoint || 1;
 
 		var sampleStart = ~~(startPoint * this.buffer.length),
-		sampleEnd = ~~(endPoint * this.buffer.length),
-		sampleSize = (sampleEnd - sampleStart) / length,
-		sampleStep = ~~(sampleSize / 10) || 1,
-		channels = this.buffer.numberOfChannels,
-		//splitPeaks = [],
-		mergedPeaks = [],
-		/*peaks,*/ chan, start, end, max, c, i, j, value, absMax = 0;
-		
+			sampleEnd = ~~(endPoint * this.buffer.length),
+			sampleSize = (sampleEnd - sampleStart) / length,
+			sampleStep = ~~(sampleSize / 10) || 1,
+			channels = this.buffer.numberOfChannels,
+			//splitPeaks = [],
+			mergedPeaks = [],
+			/*peaks,*/
+			chan, start, end, max, c, i, j, value, absMax = 0;
+
 		for (c = 0; c < channels; c++) {
 			//peaks = splitPeaks[c] = [];
 			chan = this.buffer.getChannelData(c);
