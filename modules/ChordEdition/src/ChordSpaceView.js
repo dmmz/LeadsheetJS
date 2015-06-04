@@ -109,12 +109,12 @@ define([
 		// on blur event we change the value, blur is launched when we enter and click somewhere else
 		// We don't use blur because it prevent onclick element to be launched
 		input.on('blur', function() {
-			// console.log('blur');
+			console.log('blur');
 			//self.onChange(chord, $(this).val());
 			//input.devbridgeAutocomplete('dispose');
 		});
 		$('#autocomplete-suggestion').on('click', function() {
-			// console.log('click');
+			console.log('click');
 			self.onChange(chord, $(input).val());
 			input.devbridgeAutocomplete('dispose');
 		});
@@ -134,6 +134,7 @@ define([
 		});
 		// We use a filter function to make it easier for user to enter chords
 		input.on('input propertychange paste', function() {
+			console.log('evt');
 			$(this).val(self.filterFunction($(this).val()));
 		});
 		var chordList = this._getChordList(songModel);

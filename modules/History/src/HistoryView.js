@@ -47,42 +47,12 @@ define([
 	};
 
 	HistoryView.prototype.initKeyboard = function(evt) {
-		var self = this;
-		$(document).keydown(function(evt) {
-			if (self.editing === false) {
-				return;
-			}
-			var keyCode = (evt === null) ? event.keyCode : evt.keyCode;
-			var key = String.fromCharCode(keyCode).toLowerCase();
-
-			//prevent backspace
-			if (keyCode === 8) {
-				var doPrevent = false;
-				var d = evt.srcElement || evt.target;
-				if (d.tagName.toUpperCase() === 'TEXTAREA' || (d.tagName.toUpperCase() === 'INPUT' && (d.type.toUpperCase() === 'TEXT' || d.type.toUpperCase() === 'PASSWORD' || d.type.toUpperCase() === 'FILE'))) {
-					doPrevent = d.readOnly || d.disabled;
-				} else {
-					doPrevent = true;
-				}
-				if (doPrevent) {
-					stopEvent(evt);
-				}
-			}
-
-			if (keyCode === 90 && evt.ctrlKey) { // Ctrl + z
-				$.publish('HistoryView-moveSelectHistory', -1);
-				stopEvent(evt);
-			} else if (keyCode === 89 && evt.ctrlKey) { // Ctrl + y
-				$.publish('HistoryView-moveSelectHistory', 1);
-				stopEvent(evt);
-			}
-			// else console.log(key + " " + keyCode);
+		$.subscribe('ctrl-z', function(el) {
+			$.publish('HistoryView-moveSelectHistory', -1);
 		});
-
-		function stopEvent(evt) {
-			evt.preventDefault();
-			evt.stopPropagation();
-		}
+		$.subscribe('ctrl-z', function(el) {
+			$.publish('HistoryView-moveSelectHistory', 1);
+		});
 	};
 
 	/**

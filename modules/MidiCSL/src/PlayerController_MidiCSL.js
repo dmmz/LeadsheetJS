@@ -34,7 +34,7 @@ define([
 		});
 
 		$.subscribe('ToPlayer-playPause', function(el, tempo) {
-			self.pause();
+			self.playPause(tempo);
 		});
 
 		$.subscribe('ToPlayer-onToggleMute', function(el, volume) {
@@ -70,9 +70,9 @@ define([
 	 */
 	PlayerController.prototype.playPause = function(tempo) {
 		if (this.model.playState) {
-			this.model.pause();
+			this.pause();
 		} else {
-			this.model.play(tempo);
+			this.play(tempo);
 		}
 	};
 

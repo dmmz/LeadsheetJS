@@ -34,7 +34,7 @@ define([
 			self.viewer.canvasLayer.addElement(self);
 			self.chordSpace = self.createChordSpace(viewer);
 			self.viewer.canvasLayer.refresh();
-					
+
 		});
 
 		$.subscribe('ChordSpaceView-updateChord', function(el, update) {
@@ -180,8 +180,10 @@ define([
 				'beat': chordSpace.beatNumber,
 				'barNumber': chordSpace.barNumber,
 			});
+			console.log('add chord');
 			this.songModel.getComponent('chords').addChord(chordModel);
 		}
+		console.log('update chord');
 		chordModel.setChordFromString(chordString);
 	};
 
@@ -204,7 +206,7 @@ define([
 
 
 	ChordSpaceManager.prototype.undrawEditableChord = function() {
-		if (this.htmlInput){
+		if (this.htmlInput) {
 			this.htmlInput.input.devbridgeAutocomplete('dispose');
 			this.htmlInput.remove();
 		}
@@ -219,7 +221,7 @@ define([
 		this.undrawEditableChord();
 		// position[0] === position[1] always
 		position = position[0];
-		this.htmlInput = this.chordSpace[position].drawEditableChord(this.songModel, this.MARGIN_TOP, this.MARGIN_RIGHT);	
+		this.htmlInput = this.chordSpace[position].drawEditableChord(this.songModel, this.MARGIN_TOP, this.MARGIN_RIGHT);
 	};
 
 	return ChordSpaceManager;

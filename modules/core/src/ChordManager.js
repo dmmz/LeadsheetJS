@@ -54,7 +54,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 			throw 'Wrong Parameters';
 		}
 		this.chords[index] = chord;
-	}
+	};
 
 	/**
 	 * Add a new chord at the end of chords array, if chord is not set, it create a new instance of chordModel
@@ -66,7 +66,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 		} else {
 			this.chords.push(new ChordModel());
 		}
-	}
+	};
 
 	/**
 	 * Insert a  new chord to a specific index, all chords after index will have their index incremented
@@ -78,10 +78,10 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 			throw 'Index must be a int in insert chord';
 		}
 		if (typeof chord === "undefined" || !(chord instanceof ChordModel)) {
-			var chord = new ChordModel();
+			chord = new ChordModel();
 		}
 		this.chords.splice(index, 0, chord);
-	}
+	};
 
 	/**
 	 * Search and remove a chord from the array, chordModel is destroyed
