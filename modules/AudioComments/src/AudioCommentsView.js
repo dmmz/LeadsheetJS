@@ -1,35 +1,26 @@
-define([
-	'pubsub',
-	'jquery',
-	'modules/AudioComments/src/CommentSpaceManager'
-], function(pubsub, $, CommentSpaceManager) {
-	function AudioComments(waveMng, viewer) {
-		this.waveMng = waveMng;
+define(['modules/AudioComments/src/CommentSpaceManager'], function(CommentSpaceManager){
+	function AudioCommentsView(viewer){
 		this.viewer = viewer;
-		this.comments = [];
-		
-		this.initSubscribe();
+		this.commentSpaceMng = null;
 	}
-	AudioComments.prototype.initSubscribe = function(first_argument) {
+	AudioCommentsView.prototype.draw = function(audioCommentsModel, waveDrawer) {
+		//we construct it here because it add himself to canvasLayer which exists only after the score is drawn
+		this.commentSpaceMng = new CommentSpaceManager(this.viewer); 
+		var comments = audioCommentsModel.comments;
+		var ctx = this.viewer.ctx;
 		var self = this;
-		$.subscribe('Audio-drawn', function() {
-			self.commentSpaceMng = new CommentSpaceManager(self.viewer);
-			self.draw();
-		});
-		$.subscribe('clicked-comment', function(el) {
-			var indexElem = self.commentSpaceMng.clickedElem;
-			alert(self.comments[indexElem].text);
+		this.viewer.drawElem(function() {
+			for (var i = 0; i < comments.length; i++) {
+				self.drawComment(comments[i], ctx, waveDrawer);
+			}
 		});
 	};
-	AudioComments.prototype.addComment = function(comment) {
-		this.comments.push(comment);
-	};
-	AudioComments.prototype.drawComment = function(comment, ctx) {
+	AudioCommentsView.prototype.drawComment = function(comment, ctx, waveDrawer) {
 		var saveFillColor = ctx.fillStyle;
 		var clickableArea;
 		ctx.fillStyle = comment.color;
 		ctx.strokeStyle = comment.color;
-		var areas = this.waveMng.drawer.getAreasFromTimeInterval(comment.timeInterval[0], comment.timeInterval[1]);
+		var areas = waveDrawer.getAreasFromTimeInterval(comment.timeInterval[0], comment.timeInterval[1]);
 		for (i = 0, c = areas.length; i < c; i++) {
 			ctx.fillRect(
 				areas[i].x,
@@ -75,20 +66,8 @@ define([
 		ctx.font = "15px lato Verdana";
 		ctx.fillText(comment.user, areas[0].x + 40, areas[0].y - 10);
 		ctx.fillStyle = saveFillColor;
-
 		this.commentSpaceMng.addCommentSpace(clickableArea);
-
-
 	};
-	AudioComments.prototype.draw = function() {
-		var ctx = this.viewer.ctx;
-		var self = this;
-		this.viewer.drawElem(function() {
-			for (var i = 0; i < self.comments.length; i++) {
-				self.drawComment(self.comments[i], ctx);
-			}
-		});
 
-	};
-	return AudioComments;
+	return AudioCommentsView;
 });

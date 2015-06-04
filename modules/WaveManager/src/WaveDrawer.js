@@ -243,7 +243,7 @@ define([
             this.updateCursorPlaying(0);
             this.viewer.canvasLayer.refresh();
         }
-        $.publish('Audio-drawn');
+        $.publish('audio-drawn');
     };
  
 

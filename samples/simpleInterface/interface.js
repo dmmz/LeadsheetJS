@@ -31,7 +31,7 @@ require.config({
 
 define(function(require) {
 
-	var AudioComments = require('modules/AudioComments/src/AudioComments');
+	var AudioComments = require('modules/AudioComments/src/AudioCommentsController');
 
 
 	var LJS = require('LJS');
