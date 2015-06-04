@@ -88,17 +88,22 @@ define([
      * @interface
      * @param  {Object} coords 
      */
-    WaveDrawer.prototype.updateCursor = function(coords) {
+    WaveDrawer.prototype.updateCursor = function(coords, clicked, mouseUp) {
         var self = this;
-
+        
         var cursorBars = this.elemMng.getElemsInPath(this.waveBarDimensions,coords);
-
         if (cursorBars[0] != null && cursorBars[1] != null) {
             var pos1 = this._getAudioTimeFromPos(coords.x, cursorBars[0]);
             var pos2 = this._getAudioTimeFromPos(coords.xe, cursorBars[1]);
             this.cursor.setPos([pos1, pos2]);
         }
+        if (mouseUp){
+            var posCursor = this.cursor.getPos();
+            if (posCursor[0] != posCursor[1]){  //if there is something selected
+                $.publish('selected-audio', posCursor);
+            }
 
+        }
     };
     /**
      * @interface
@@ -203,6 +208,7 @@ define([
         this.cursor = new CursorModel(audio.getDuration());
     };
     WaveDrawer.prototype.drawAudio = function(barTimesMng, tempo, duration) {
+        
         if (!tempo || !duration){
             throw "WaveDrawer - missing parameters";
         }
@@ -243,7 +249,7 @@ define([
             this.updateCursorPlaying(0);
             this.viewer.canvasLayer.refresh();
         }
-        $.publish('audio-drawn');
+        $.publish('audio-drawn', this);
     };
  
 

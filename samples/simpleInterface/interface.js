@@ -31,7 +31,7 @@ require.config({
 
 define(function(require) {
 
-	var AudioComments = require('modules/AudioComments/src/AudioCommentsController');
+	var AudioCommentsController = require('modules/AudioComments/src/AudioCommentsController');
 
 
 	var LJS = require('LJS');
@@ -63,19 +63,6 @@ define(function(require) {
 		'item': testSongs.simpleLeadSheet,
 		'title': 'Open song - ' + songModel.getTitle()
 	});
-
-	new LJS.chordSequence(
-		$('#chordSequence1')[0],
-		songModel, {
-			displayTitle: true,
-			displayComposer: true,
-			displaySection: true,
-			displayBar: true,
-			delimiterBar: "|",
-			fillEmptyBar: true,
-			fillEmptyBarCharacter: "%"
-		}
-	);
 
 	/*
 		var optionChediak = {
@@ -221,22 +208,22 @@ define(function(require) {
 		var pC = new LJS.MidiCSL.PlayerController(player, pV);
 	}
 
-	var audioComments = new AudioComments(waveMng,myApp.viewer);
-				audioComments.addComment({
-					user: 'Dani',
-					img: '/tests/img/dani-profile.jpg',
-					text: 'I am hungry',
-					timeInterval: [1.5891220809932014, 2.668046112917529],
-					color: '#F00'
-				});
+	var audioComments = new AudioCommentsController(waveMng,myApp.viewer, songModel);
+	audioComments.addComment({
+		user: 'Dani',
+		img: '/tests/img/dani-profile.jpg',
+		text: 'I am hungry',
+		timeInterval: [1.5891220809932014, 2.668046112917529],
+		color: '#F00'
+	});
 
-				audioComments.addComment({
-					user: 'Dani',
-					img: '/tests/img/dani-profile.jpg',
-					text: 'I am not',
-					timeInterval: [3.3, 10.1],
-					color: '#0F0'
-				});
+	audioComments.addComment({
+		user: 'Dani',
+		img: '/tests/img/dani-profile.jpg',
+		text: 'Pos el otro dia iba por la calle y a que no sabes que pasó? pues te lo cuento igual, perdon, como? no no tengo suelto , lo siento, ya se lo comentaba a este que nunca llevo y no sé por qué la verdad, dbería pero las cajas no dan monedas sueltas solo dan billetes de dos en dos como lo oyes pues. JJAJA , sabes que solo digo tontunas para que jaja, bueno no se',
+		timeInterval: [3.3, 10.1],
+		color: '#0F0'
+	});
 
 
 	myApp.viewer.draw(songModel);

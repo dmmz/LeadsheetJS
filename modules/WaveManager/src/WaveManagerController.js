@@ -15,12 +15,6 @@ define([
 		$.subscribe('ToPlayer-stop', function() {
 			waveMng.pause();
 		});
-		//when 
-		$.subscribe("ToViewer-draw", function(el, songModel) {
-			if (waveMng.isReady()) {
-				waveMng.drawer.drawAudio(waveMng.barTimesMng,waveMng.audio.tempo,waveMng.audio.getDuration());
-			}
-		});
 		$.subscribe("ToLayers-removeLayer", function() {
 			// TODO Add an unload waveAudio when it will be available
 		});

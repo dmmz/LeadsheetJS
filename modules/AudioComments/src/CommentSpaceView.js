@@ -6,6 +6,7 @@ define(['modules/Edition/src/ElementView'], function(ElementView) {
 	function CommentSpaceView(position, viewerScaler) {
 		this.position = position;
 		this.scaler = viewerScaler;
+		this.shown = false;
 	}
 	/**
 	 * @interface

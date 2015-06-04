@@ -60,10 +60,6 @@ define(['modules/WaveManager/src/WaveAudio',
         });
     };
 
-    WaveManager.prototype.isReady = function() {
-        return this.isLoaded;
-    };
-
     WaveManager.prototype.load = function(url, tempo, redraw) {
         if (isNaN(tempo) || tempo <= 0) {
             throw "WaveManager - No tempo speficied";
@@ -130,7 +126,7 @@ define(['modules/WaveManager/src/WaveAudio',
     };
 
     WaveManager.prototype.play = function() {
-        if (this.isReady()) {
+        if (this.isLoaded) {
             this.isPause = false;
             this.restartAnimationLoop();
             this.audio.play();
@@ -139,7 +135,7 @@ define(['modules/WaveManager/src/WaveAudio',
     };
 
     WaveManager.prototype.pause = function() {
-        if (this.isReady()) {
+        if (this.isLoaded) {
             this.isPause = true;
             this.audio.pause();
             

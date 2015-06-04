@@ -100,9 +100,15 @@ define([
 		LSViewer.prototype._initSubscribe = function() {
 			var self = this;
 			$.subscribe('ToViewer-draw', function(el, songModel) {
+				if (!songModel){
+					throw "Need songModel to draw";
+				}
 				self.draw(songModel);
 			});
 			$.subscribe('ToViewer-resize', function(el, songModel) {
+				if (!songModel){
+					throw "Need songModel to draw";
+				}
 				var width = self._getWidthFromContainer(this.divContainer);
 				self.canvas.width = width;
 				self._resize(width);

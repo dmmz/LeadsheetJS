@@ -121,7 +121,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		 * [selection description]
 		 * @param  {Boolean} clicked true when clicked (mouseDown and mouseUp in same position) false when moved mouse onMouseDown
 		 */
-		function selection(clicked) {
+		function selection(clicked, mouseUp) {
 			var cursorPos;
 			resetElems();
 			var activElems;
@@ -131,7 +131,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 				activElems = getElemsByYs(self.coords);
 			}
 			for (var i in activElems) {
-				activElems[i].updateCursor(self.coords, clicked);
+				activElems[i].updateCursor(self.coords, clicked, mouseUp);
 				activElems[i].setCursorEditable(true);
 				activElems[i].enable();
 			}
@@ -178,7 +178,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			if (isClick && evt.button == 2){
 				$.publish('right-click');
 			}else{
-				selection(isClick);	
+				selection(isClick, true);	
 			}
 		});
 
@@ -186,7 +186,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		$('html').mouseup(function(evt) {
 			if (self.mouseDown === true) {
 				self.mouseDown = false;
-				selection(self.mouseDidntMove());
+				selection(self.mouseDidntMove(), true);
 			}
 		});
 
@@ -240,8 +240,6 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			var num = (xory == "x") ? 0 : 1;
 			if (type == "smaller") evaluation = (mouseCoordsIni[num] < mouseCoordsEnd[num]);
 			else if (type == "greater") evaluation = (mouseCoordsIni[num] > mouseCoordsEnd[num]);
-			else throw "not valid argument";
-
 			return evaluation ? mouseCoordsIni[num] : mouseCoordsEnd[num];
 		}
 		this.coords.x = get("x", "smaller");
