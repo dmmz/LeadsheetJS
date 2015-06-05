@@ -53,14 +53,15 @@ define(['modules/WaveManager/src/WaveAudio',
          //when window is resized, leadsheet is drawn, and audio needs to be redrawn too
          $.subscribe('LSViewer-drawEnd', function(){
             if (self.isLoaded){
-                self.drawer.drawAudio(self.barTimesMng,self.audio.tempo,self.audio.getDuration());    
+                self.drawer.drawAudio(self.barTimesMng,self.audio.tempo,self.audio.getDuration());
             }else if(self.file && self.tempo){
                 self.load(self.file, self.tempo);
             }
         });
     };
 
-    WaveManager.prototype.load = function(url, tempo, redraw) {
+    WaveManager.prototype.load = function(url, tempo, redraw, callback) {
+
         if (isNaN(tempo) || tempo <= 0) {
             throw "WaveManager - No tempo speficied";
         }
@@ -82,6 +83,10 @@ define(['modules/WaveManager/src/WaveAudio',
                     self.viewer.draw(self.song); // no need to drawAudio(), as it is called on 'drawEnd'
                 }else{
                     self.drawer.drawAudio(self.barTimesMng,self.audio.tempo,self.audio.getDuration());
+                }
+                $.publish('Audio-Loaded');
+                if(typeof callback !== "undefined"){
+                    callback();
                 }
             });
         };
