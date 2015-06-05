@@ -208,7 +208,7 @@ console.log(LJS);
 	audioComments.addComment({
 		user: 'Dani',
 		img: '/tests/img/dani-profile.jpg',
-		text: 'I am hungry',
+		text: 'This is an audio comment',
 		timeInterval: [1.5891220809932014, 2.668046112917529],
 		color: '#F00'
 	});
@@ -216,7 +216,7 @@ console.log(LJS);
 	audioComments.addComment({
 		user: 'Dani',
 		img: '/tests/img/dani-profile.jpg',
-		text: 'Pos el otro dia iba por la calle y a que no sabes que pasó? pues te lo cuento igual, perdon, como? no no tengo suelto , lo siento, ya se lo comentaba a este que nunca llevo y no sé por qué la verdad, dbería pero las cajas no dan monedas sueltas solo dan billetes de dos en dos como lo oyes pues. JJAJA , sabes que solo digo tontunas para que jaja, bueno no se',
+		text: 'lorem ipsum cumulum largo texto asolo en caso de que tal cual pascual ande vas con la moto que thas comprado, vaya tela',
 		timeInterval: [3.3, 10.1],
 		color: '#0F0'
 	});

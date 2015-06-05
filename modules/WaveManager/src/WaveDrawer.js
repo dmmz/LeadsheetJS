@@ -90,14 +90,8 @@ define([
      */
     WaveDrawer.prototype.updateCursor = function(coords, clicked, mouseUp) {
         var self = this;
-<<<<<<< HEAD
-        
-        var cursorBars = this.elemMng.getElemsInPath(this.waveBarDimensions,coords);
-=======
-
         var cursorBars = this.elemMng.getElemsInPath(this.waveBarDimensions, coords);
 
->>>>>>> master
         if (cursorBars[0] != null && cursorBars[1] != null) {
             var pos1 = this._getAudioTimeFromPos(coords.x, cursorBars[0]);
             var pos2 = this._getAudioTimeFromPos(coords.xe, cursorBars[1]);
@@ -255,10 +249,8 @@ define([
             this.updateCursorPlaying(0);
             this.viewer.canvasLayer.refresh();
         }
-<<<<<<< HEAD
         $.publish('audio-drawn', this);
-=======
->>>>>>> master
+
     };
 
 
