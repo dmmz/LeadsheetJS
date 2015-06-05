@@ -97,7 +97,7 @@ define([
 		tag = this.tags[i];
 		startEnd = nm.getIndexesStartingBetweenBeatInterval(tag.startBeat, tag.endBeat);
 		fromIndex = startEnd[0];
-		toIndex = startEnd[1]; 
+		toIndex = startEnd[1];
 		return this.elemMng.getElementsAreaFromCursor(this.noteSpaceManager.noteSpace, [fromIndex, toIndex]);
 	};
 

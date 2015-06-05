@@ -13,19 +13,20 @@ define(['utils/NoteUtils',
 
 		function preventBackspace(evt, d) {
 			var doPrevent = false;
-			if (d.tagName.toUpperCase() === 'TEXTAREA' || (d.tagName.toUpperCase() === 'INPUT' && (d.type.toUpperCase() === 'TEXT' || d.type.toUpperCase() === 'PASSWORD' || d.type.toUpperCase() === 'FILE'))) {
+			if (d.tagName.toUpperCase() === 'TEXTAREA' || (d.tagName.toUpperCase() === 'INPUT' && (d.type.toUpperCase() === 'TEXT' || d.type.toUpperCase() === 'PASSWORD' || d.type.toUpperCase() === 'FILE' || d.type.toUpperCase() === 'NUMBER'))) {
 				doPrevent = d.readOnly || d.disabled;
 			} else {
 				doPrevent = true;
 			}
 			if (doPrevent) {
+				console.log('prevent');
 				stopEvent(evt);
 			}
 		}
 
 		function isInHtmlInput(d) {
 			return (
-				d.tagName.toUpperCase() === 'TEXTAREA' || (d.tagName.toUpperCase() === 'INPUT' && (d.type.toUpperCase() === 'TEXT' || d.type.toUpperCase() === 'PASSWORD' || d.type.toUpperCase() === 'FILE'))
+				d.tagName.toUpperCase() === 'TEXTAREA' || (d.tagName.toUpperCase() === 'INPUT' && (d.type.toUpperCase() === 'TEXT' || d.type.toUpperCase() === 'PASSWORD' || d.type.toUpperCase() === 'FILE' || d.type.toUpperCase() === 'NUMBER'))
 			);
 		}
 
@@ -88,6 +89,12 @@ define(['utils/NoteUtils',
 				publish('ctrl-c-key', evt);
 			} else if ((keyCode == 86 && evt.ctrlKey) || (keyCode == 86 && metaKey)) { // Ctrl + v or Command + v (mac or windows specific key)
 				publish('ctrl-v-key', evt);
+			} else if (keyCode === 90 && evt.ctrlKey) { // Ctrl + z
+				publish('ctrl-z', evt);
+			} else if (keyCode === 89 && evt.ctrlKey) { // Ctrl + y
+				publish('ctrl-y', evt);
+			} else if (keyCode == 32) {
+				publish('spacebar', evt);
 			} else if (keyCode == 9) {
 				inc = (evt.shiftKey) ? -1 : 1;
 				publish('tab-key', evt, inc);
@@ -114,7 +121,6 @@ define(['utils/NoteUtils',
 					publish('end', evt);
 				}
 			}
-
 
 		});
 	}

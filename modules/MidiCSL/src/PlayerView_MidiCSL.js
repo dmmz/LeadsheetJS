@@ -28,6 +28,7 @@ define([
 			this.initView(parentHTML, function() {
 				self.initTemplate();
 				self.initController();
+				self.initKeyboard();
 				$.publish('PlayerView-render');
 				if (typeof callback === "function") {
 					callback();
@@ -45,21 +46,21 @@ define([
 	PlayerView.prototype.initView = function(parentHTML, callback) {
 		var self = this;
 		//$.get('/modules/MidiCSL/src/PlayerTemplate_MidiCSL.html', function(template) {
-			var rendered = Mustache.render(PlayerTemplate_MidiCSL, {
-				imgPath: self.imgPath,
-				displayLoop: self.displayLoop,
-				displayMetronome: self.displayMetronome,
-				displayTempo: self.displayTempo,
-				changeInstrument: self.changeInstrument,
-				progressBar: self.progressBar,
-			});
-			if (typeof parentHTML !== "undefined") {
-				parentHTML.innerHTML = rendered;
-			}
-			self.el = parentHTML;
-			if (typeof callback === "function") {
-				callback();
-			}
+		var rendered = Mustache.render(PlayerTemplate_MidiCSL, {
+			imgPath: self.imgPath,
+			displayLoop: self.displayLoop,
+			displayMetronome: self.displayMetronome,
+			displayTempo: self.displayTempo,
+			changeInstrument: self.changeInstrument,
+			progressBar: self.progressBar,
+		});
+		if (typeof parentHTML !== "undefined") {
+			parentHTML.innerHTML = rendered;
+		}
+		self.el = parentHTML;
+		if (typeof callback === "function") {
+			callback();
+		}
 		//});
 	};
 
@@ -181,19 +182,15 @@ define([
 
 			e.preventDefault();
 		});
-
-		$(document).keydown(function(evt) {
-			if (evt.keyCode == 32) { //barPressed
-				var d = evt.srcElement || evt.target;
-				if (!(d.tagName.toUpperCase() === 'TEXTAREA' || (d.tagName.toUpperCase() === 'INPUT' && (d.type.toUpperCase() === 'TEXT' || d.type.toUpperCase() === 'PASSWORD' || d.type.toUpperCase() === 'FILE')))) {
-					var tempo = self.getTempo();
-					$.publish('ToPlayer-play-pause', tempo);
-					evt.preventDefault();
-				}
-			}
-		});
 	};
 
+	PlayerView.prototype.initKeyboard = function() {
+		var self = this;
+		$.subscribe('spacebar', function(el) {
+			var tempo = self.getTempo();
+			$.publish('ToPlayer-playPause', tempo);
+		});
+	};
 
 	/**
 	 * Subscribe to model events
@@ -305,16 +302,14 @@ define([
 
 
 	PlayerView.prototype.adaptSoundButton = function(volume) {
-		if(volume < 0.33 ){
+		if (volume < 0.33) {
 			pic = 'sound_off';
 		}
-		if( 0 < volume && volume <= 0.33 ){
+		if (0 < volume && volume <= 0.33) {
 			pic = 'sound_1';
-		}
-		else if( 0.33 < volume && volume <= 0.66 ){
+		} else if (0.33 < volume && volume <= 0.66) {
 			pic = 'sound_2';
-		}
-		else if( 0.66 < volume){
+		} else if (0.66 < volume) {
 			pic = 'sound_on';
 		}
 		if (!$('#volume_container .' + pic).is(":visible")) {
