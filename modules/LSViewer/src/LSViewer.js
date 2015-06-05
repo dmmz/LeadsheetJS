@@ -64,10 +64,9 @@ define([
 			this.divContainer = divContainer;
 			this.resizable = !params.width; //if there is a width specified, we assume that it wont be resized on window resize
 
-			var idScore = "ls" + ($("canvas").length + 1),
-				width = (params.width) ? params.width : this._getWidthFromContainer(divContainer);
-
-			this.canvas = this._createCanvas(idScore, width, this.DEFAULT_HEIGHT);
+			this.canvasId = "ls" + ($("canvas").length + 1);
+			var	width = (params.width) ? params.width : this._getWidthFromContainer(divContainer);
+			this.canvas = this._createCanvas(this.canvasId, width, this.DEFAULT_HEIGHT);
 			var renderer = new Vex.Flow.Renderer(this.canvas, Vex.Flow.Renderer.Backends.CANVAS);
 			this.ctx = renderer.getContext("2d");
 
@@ -82,8 +81,8 @@ define([
 		/**
 		 * Creates and return a dom element
 		 */
-		LSViewer.prototype._createCanvas = function(idScore, width, height) {
-			var canvas = $("<canvas id='" + idScore + "'></canvas>");
+		LSViewer.prototype._createCanvas = function(canvasId, width, height) {
+			var canvas = $("<canvas id='" + canvasId + "'></canvas>");
 			canvas[0].width = width;
 			canvas[0].height = height;
 

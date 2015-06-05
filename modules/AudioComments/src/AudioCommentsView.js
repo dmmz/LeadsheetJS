@@ -10,13 +10,16 @@ define([
 		this.commentSpaceMng = null;
 		this.bindEvents();
 		this.newComment = {};
+		this.offset =  $("#" + viewer.canvasId).offset();
+		this.newCommentId = "newComment";
+		this.bubblePreId = "bubble"; //prefix Id, the comments of bubbles' id will be, bubble0, bubble1...etc.
 	}
 	AudioCommentsView.prototype.bindEvents = function() {
 		var self = this;
 		//close comment
 		$(document).on('click','.close',function(){
 			var id = $(this).closest('.speech-bubble').attr('id');
-			if (id == 'newComment'){
+			if (id == self.newCommentId){
 				self.hideNewComment();
 			}else{
 				self.hideBubble(id);	
@@ -29,19 +32,30 @@ define([
 		});
 
 	};
+	AudioCommentsView.prototype._htmlIdExists = function(id) {
+		return  $("#"+id).length !== 0;
+	};
 	AudioCommentsView.prototype.draw = function(audioCommentsModel, waveDrawer) {
 		//we construct it here because it add himself to canvasLayer which exists only after the score is drawn
 		this.commentSpaceMng = new CommentSpaceManager(this.viewer); 
 		var comments = audioCommentsModel.comments;
 		var ctx = this.viewer.ctx;
 		var self = this;
-
-		this.drawNewComment();
-
+		
+		if (!this._htmlIdExists(this.newCommentId)){ //draw only if doesn't exists
+			this.drawNewComment();
+		}
+		
+		var self = this;
 		this.viewer.drawElem(function() {
+			var bubbleId;
 			for (var i = 0; i < comments.length; i++) {
 				self.drawComment(comments[i], ctx, waveDrawer);
-				self.drawBubble(comments[i], i);
+				bubbleId = self.bubblePreId + i;
+
+				if (!self._htmlIdExists(bubbleId)){
+					self.drawBubble(comments[i], bubbleId, i);	
+				}
 			}
 		});
 	};
@@ -99,21 +113,19 @@ define([
 		this.commentSpaceMng.addCommentSpace(clickableArea);
 	};
 
-	AudioCommentsView.prototype.drawBubble = function(comment, index) {
-		
+	AudioCommentsView.prototype.drawBubble = function(comment, bubbleId, index) {
 		var el = Mustache.render(SpeechBubbleTpl,{textComment:comment.text});
-		var offset = $("#ls1").offset(); //TODO: dynamic id
-		$("body").append($(el).attr('id', "bubble"+index).hide());
-
+		$("body").append($(el).attr('id', bubbleId).hide());
 	};
 	AudioCommentsView.prototype.drawNewComment = function() {
 		var el = Mustache.render(NewCommentTpl);
-		$("body").append($(el).hide());		
+		$("body").append($(el).hide());			
 	};
 	AudioCommentsView.prototype.showBubble = function(index, comment) {
 		var height = $("#bubble"+index).height();
-		var offset = $("#ls1").offset();
+		
 		var area = this.commentSpaceMng.commentSpaces[index].getArea();
+		var offset = this.offset; //to avoid 'this' closure problem
 		$("#bubble"+index).css({
 			top: area.y - area.h  + offset.top - height ,
 			left:area.x + offset.left,
@@ -125,9 +137,9 @@ define([
 		var areas = waveDrawer.getAreasFromTimeInterval(cursorPos[0], cursorPos[1]);
 		this.newComment.timeInterval= [cursorPos[0], cursorPos[1]];
 
-		var offset = $("#ls1").offset();
-		height =  $("#newComment").height();
-		$("#newComment").css({
+		var offset = this.offset; //to avoid 'this' closure problem
+		height =  $("#"+this.newCommentId).height();
+		$("#"+this.newCommentId).css({
 			position: "absolute",
 			top: areas[0].y + offset.top - height - 20,
 			left: areas[0].x + offset.left,
@@ -139,8 +151,8 @@ define([
 	};
 	AudioCommentsView.prototype.hideNewComment = function() {
 		this.newComment = {};
-		$("#newComment").find('textarea').val("");
-		$("#newComment").hide();
+		$("#"+this.newCommentId).find('textarea').val("");
+		$("#"+this.newCommentId).hide();
 	};
 	return AudioCommentsView;
 });
