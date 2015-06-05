@@ -22,10 +22,12 @@ define([
 		});
 		$.subscribe('HarmonicAnalysisView-remove', function(el) {
 			self.removeHarmonicAnalysis();
+			$.publish('ToViewer-draw', self.songModel);
 		});
 		// call each time we open a new song
 		$.subscribe('ToLayers-removeLayer', function(el) {
 			self.removeHarmonicAnalysis();
+			$.publish('ToViewer-draw', self.songModel);
 		});
 	};
 

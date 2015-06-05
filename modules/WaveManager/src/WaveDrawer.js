@@ -30,11 +30,11 @@ define([
          * update viewer dimensions if needed (space between lines and margin top)
          */
     WaveDrawer.prototype._adaptViewer = function() {
-        
+
         if (this.topAudio > 0) { // if audio is greater than 0 it measn audio will be on top of score line
             this.viewer.setLineMarginTop(this.topAudio);
         } else {
-            distance = (this.heightAudio - this.topAudio) - this.viewer.LINE_HEIGHT ;
+            distance = (this.heightAudio - this.topAudio) - this.viewer.LINE_HEIGHT;
             if (distance > 0) {
                 this.viewer.setLineMarginTop(distance, true);
             }
@@ -81,17 +81,17 @@ define([
      */
     WaveDrawer.prototype._getCursorDims = function(time, barIndex) {
         barIndex = barIndex || this.waveMng.barTimesMng.index;
-        return this._getAudioPosFromTime(time,barIndex);
-        
+        return this._getAudioPosFromTime(time, barIndex);
+
     };
-        /**
+    /**
      * @interface
-     * @param  {Object} coords 
+     * @param  {Object} coords
      */
     WaveDrawer.prototype.updateCursor = function(coords) {
         var self = this;
 
-        var cursorBars = this.elemMng.getElemsInPath(this.waveBarDimensions,coords);
+        var cursorBars = this.elemMng.getElemsInPath(this.waveBarDimensions, coords);
 
         if (cursorBars[0] != null && cursorBars[1] != null) {
             var pos1 = this._getAudioTimeFromPos(coords.x, cursorBars[0]);
@@ -104,7 +104,7 @@ define([
      * @interface
      */
     WaveDrawer.prototype.getYs = function(coords) {
-        return this.elemMng.getYs(this.waveBarDimensions,coords);
+        return this.elemMng.getYs(this.waveBarDimensions, coords);
     };
 
     /**
@@ -134,7 +134,7 @@ define([
      * @return {[type]}     [description]
      */
     WaveDrawer.prototype.inPath = function(coords) {
-        return !!this.elemMng.getElemsInPath(this.waveBarDimensions,coords);
+        return !!this.elemMng.getElemsInPath(this.waveBarDimensions, coords);
     };
 
     WaveDrawer.prototype.drawCursor = function(ctx) {
@@ -145,10 +145,10 @@ define([
     };
     /**
      * @interface
-     * @param  {CanvasContext} ctx 
+     * @param  {CanvasContext} ctx
      */
     WaveDrawer.prototype.draw = function(ctx) {
-       var saveFillColor = ctx.fillStyle;
+        var saveFillColor = ctx.fillStyle;
         ctx.fillStyle = "#9900FF";
         ctx.globalAlpha = 0.2;
         var areas = this.getAreasFromCursor();
@@ -162,11 +162,11 @@ define([
         }
         ctx.fillStyle = saveFillColor;
         ctx.globalAlpha = 1;
-    
+
     };
 
     WaveDrawer.prototype.setCursorEditable = function(bool) {
-        if (this.cursor){
+        if (this.cursor) {
             this.cursor.setEditable(bool);
         }
     };
@@ -205,22 +205,22 @@ define([
         this.cursor = new CursorModel(audio.getDuration());
     };
     WaveDrawer.prototype.drawAudio = function(barTimesMng, tempo, duration) {
-        if (!tempo || !duration){
+        if (!tempo || !duration) {
             throw "WaveDrawer - missing parameters";
         }
         this.waveBarDimensions = [];
         var numBars = barTimesMng.getLength();
-        var area, dim, prevDim,bar, barTime = 0,
+        var area, dim, prevDim, bar, barTime = 0,
             sliceSong,
             start = 0,
             peaks,
             toggleColor = 0;
-        
+
         for (var i = 0; i < barTimesMng.getLength(); i++) {
             sliceSong = barTimesMng.getCurrBarTime(i) / duration;
             prevDim = dim;
             dim = this.viewer.barWidthMng.getDimensions(i);
-            if (!dim){
+            if (!dim) {
                 dim = prevDim;
                 dim.left = dim.left + dim.width;
                 dim.width = dim.width / this.viewer.LAST_BAR_WIDTH_RATIO - dim.width;
@@ -230,7 +230,7 @@ define([
                 y: dim.top - this.viewer.CHORDS_DISTANCE_STAVE - this.topAudio,
                 w: dim.width,
                 h: this.heightAudio
-            },this.viewer.scaler);
+            }, this.viewer.scaler);
 
             this.waveBarDimensions.push(waveBarView);
             area = waveBarView.getArea();
@@ -240,13 +240,13 @@ define([
             start += sliceSong;
         }
         //if there is no canvasLayer we don't paint cursor
-        if (this.viewer.canvasLayer){
+        if (this.viewer.canvasLayer) {
             this.viewer.canvasLayer.addElement(this);
             this.updateCursorPlaying(0);
             this.viewer.canvasLayer.refresh();
-        }     
+        }
     };
- 
+
 
     WaveDrawer.prototype._drawMargins = function(area, ctx) {
         ctx.beginPath();
