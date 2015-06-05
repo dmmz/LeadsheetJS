@@ -180,10 +180,8 @@ define([
 				'beat': chordSpace.beatNumber,
 				'barNumber': chordSpace.barNumber,
 			});
-			console.log('add chord');
 			this.songModel.getComponent('chords').addChord(chordModel);
 		}
-		console.log('update chord');
 		chordModel.setChordFromString(chordString);
 	};
 
