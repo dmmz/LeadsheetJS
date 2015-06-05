@@ -1,7 +1,7 @@
 define(['modules/Edition/src/ElementManager',
 	'modules/AudioComments/src/CommentSpaceView'
-	], function(ElementManager, CommentSpaceView){
-	function CommentSpaceManager (viewer) {
+], function(ElementManager, CommentSpaceView) {
+	function CommentSpaceManager(viewer) {
 		this.commentSpaces = [];
 		this.viewer = viewer;
 		this.elemMng = new ElementManager();
@@ -19,7 +19,7 @@ define(['modules/Edition/src/ElementManager',
 
 	CommentSpaceManager.prototype.inPath = function(coords) {
 		var elems = this.elemMng.getElemsInPath(this.commentSpaces, coords);
-		if (elems){
+		if (elems) {
 			this.clickedElem = elems[0]; // we know it will be only one, so pos 0 == pos 1, no matter which one we take
 		}
 		return !!elems;

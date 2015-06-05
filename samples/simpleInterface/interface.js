@@ -31,9 +31,6 @@ require.config({
 
 define(function(require) {
 
-	var AudioCommentsController = require('modules/AudioComments/src/AudioCommentsController');
-
-
 	var LJS = require('LJS');
 	var myApp = {};
 	window.myApp = myApp;
@@ -207,8 +204,8 @@ define(function(require) {
 		});
 		var pC = new LJS.MidiCSL.PlayerController(player, pV);
 	}
-
-	var audioComments = new AudioCommentsController(waveMng,myApp.viewer, songModel);
+console.log(LJS);
+	var audioComments = new LJS.AudioComments(waveMng,myApp.viewer, songModel);
 	audioComments.addComment({
 		user: 'Dani',
 		img: '/tests/img/dani-profile.jpg',

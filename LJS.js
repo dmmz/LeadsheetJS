@@ -18,6 +18,7 @@ define([
 		"modules/StructureEdition/src/StructureEdition",
 		"modules/Tag/src/main",
 		"modules/WaveManager/src/main",
+		"modules/AudioComments/src/AudioCommentsController",
 		"utils/main"
 	],
 	function(
@@ -40,6 +41,7 @@ define([
 		StructureEdition,
 		Tag,
 		WaveManager,
+		AudioComments,
 		utils
 	) {
 		return {
@@ -64,6 +66,7 @@ define([
 			"StructureEdition": StructureEdition,
 			"Tag": Tag,
 			"WaveManager": WaveManager,
+			"AudioComments": AudioComments,
 			"utils": utils
 		};
 	}
