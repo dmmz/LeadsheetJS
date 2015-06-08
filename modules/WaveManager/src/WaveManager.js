@@ -78,6 +78,7 @@ define(['modules/WaveManager/src/WaveAudio',
         xhr.onload = function() {
             var audioData = xhr.response;
             self.audio.load(audioData, self, tempo, function() {
+                self.isLoaded = true;
                 self.enable();
                 self.barTimesMng.setBarTimes(self.song, self.audio);
                 self.drawer.newCursor(self.audio);
@@ -87,6 +88,7 @@ define(['modules/WaveManager/src/WaveAudio',
                 }else{
                     self.drawer.drawAudio(self.barTimesMng,self.audio.tempo,self.audio.getDuration());
                 }
+
                
                 $.publish('Audio-Loaded');
                 if(typeof callback !== "undefined"){
