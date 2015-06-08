@@ -52,7 +52,7 @@ define(['modules/WaveManager/src/WaveAudio',
          var self = this;
          //when window is resized, leadsheet is drawn, and audio needs to be redrawn too
          $.subscribe('LSViewer-drawEnd', function(){
-            if (!this.isEnabled){
+            if (!self.isEnabled){
                 return; 
             }
             if (self.isLoaded){
@@ -78,7 +78,7 @@ define(['modules/WaveManager/src/WaveAudio',
         xhr.onload = function() {
             var audioData = xhr.response;
             self.audio.load(audioData, self, tempo, function() {
-                self.isLoaded = true;
+                self.enable();
                 self.barTimesMng.setBarTimes(self.song, self.audio);
                 self.drawer.newCursor(self.audio);
                 if (redraw){
@@ -87,7 +87,7 @@ define(['modules/WaveManager/src/WaveAudio',
                 }else{
                     self.drawer.drawAudio(self.barTimesMng,self.audio.tempo,self.audio.getDuration());
                 }
-                self.enable();
+               
                 $.publish('Audio-Loaded');
                 if(typeof callback !== "undefined"){
                     callback();
