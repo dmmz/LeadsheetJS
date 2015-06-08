@@ -11,6 +11,7 @@ define(['tests/DisplayTester',
 	'modules/Cursor/src/CursorListener',
 	'modules/NoteEdition/src/NoteEditionController',
 	'modules/Tag/src/TagManager',
+	'modules/AudioComments/src/AudioCommentsController',
 	'tests/songs/allRhythmicFigures',
 	'tests/songs/AloneTogether',
 	'tests/songs/Solar',
@@ -28,6 +29,7 @@ define(['tests/DisplayTester',
 	CursorView,
 	NoteEditionController,
 	TagManager,
+	AudioComments,
 	allRhythmicFigures,
 	AloneTogether,
 	Solar) 
@@ -51,12 +53,28 @@ define(['tests/DisplayTester',
 				var cM = new CursorModel(song.getComponent('notes'));
 			
 				var waveMng = new WaveManager(song, cM, viewer); //last parameter is called params and is not used here, so it's the default config
-				viewer.draw(song);	
-				
-				//not used because is not interactive, but draws the score cursor
 				var noteSpaceManager = new NoteSpaceManager(cM, viewer);
-				
-				waveMng.load('/tests/audio/solar.wav',170);
+				var audioComments = new AudioComments(waveMng,viewer);
+				audioComments.addComment({
+					user: 'Dani',
+					img: '/tests/img/dani-profile.jpg',
+					text: 'I am hungry',
+					timeInterval: [1.5891220809932014, 2.668046112917529],
+					color: '#F00'
+				});
+
+				audioComments.addComment({
+					user: 'Dani',
+					img: '/tests/img/dani-profile.jpg',
+					text: 'I am hungry',
+					timeInterval: [3.3, 10.1],
+					color: '#0F0'
+				});
+
+				viewer.draw(song);
+				//not used because is not interactive, but draws the score cursor
+				waveMng.load('/tests/audio/solar.wav',170,true);
+				//audioComments.draw();
 
 			},{width:1200,height:1000}, "Painting audio");
 			
@@ -88,8 +106,6 @@ define(['tests/DisplayTester',
 			dispTest.runTest(function(divContainer) {
 				viewer = new LSViewer(divContainer,{heightOverflow:'resizeDiv',layer:true});
 				
-				
-
 				var cM = new CursorModel(song.getComponent('notes'));
 				var noteSpaceManager = new NoteSpaceManager(cM, viewer);
 

@@ -88,9 +88,8 @@ define([
      * @interface
      * @param  {Object} coords
      */
-    WaveDrawer.prototype.updateCursor = function(coords) {
+    WaveDrawer.prototype.updateCursor = function(coords, clicked, mouseUp) {
         var self = this;
-
         var cursorBars = this.elemMng.getElemsInPath(this.waveBarDimensions, coords);
 
         if (cursorBars[0] != null && cursorBars[1] != null) {
@@ -98,7 +97,13 @@ define([
             var pos2 = this._getAudioTimeFromPos(coords.xe, cursorBars[1]);
             this.cursor.setPos([pos1, pos2]);
         }
+        if (mouseUp){
+            var posCursor = this.cursor.getPos();
+            if (posCursor[0] != posCursor[1]){  //if there is something selected
+                $.publish('selected-audio', posCursor);
+            }
 
+        }
     };
     /**
      * @interface
@@ -151,7 +156,7 @@ define([
         var saveFillColor = ctx.fillStyle;
         ctx.fillStyle = "#9900FF";
         ctx.globalAlpha = 0.2;
-        var areas = this.getAreasFromCursor();
+        var areas = this.getAreasFromTimeInterval(this.cursor.getStart(), this.cursor.getEnd());
         for (i = 0, c = areas.length; i < c; i++) {
             ctx.fillRect(
                 areas[i].x,
@@ -174,10 +179,8 @@ define([
         this.cursorPos = this._getCursorDims(time);
     };
 
-    WaveDrawer.prototype.getAreasFromCursor = function() {
-        var barTimesMng = this.waveMng.barTimesMng,
-            startTime = this.cursor.getStart(),
-            endTime = this.cursor.getEnd();
+    WaveDrawer.prototype.getAreasFromTimeInterval = function(startTime, endTime) {
+        var barTimesMng = this.waveMng.barTimesMng;
         var startBar = barTimesMng.getIndexByTime(startTime);
         var endBar = barTimesMng.getIndexByTime(endTime);
         var areas = this.elemMng.getElementsAreaFromCursor(this.waveBarDimensions, [startBar, endBar]);
@@ -205,6 +208,7 @@ define([
         this.cursor = new CursorModel(audio.getDuration());
     };
     WaveDrawer.prototype.drawAudio = function(barTimesMng, tempo, duration) {
+
         if (!tempo || !duration) {
             throw "WaveDrawer - missing parameters";
         }
@@ -245,6 +249,8 @@ define([
             this.updateCursorPlaying(0);
             this.viewer.canvasLayer.refresh();
         }
+        $.publish('audio-drawn', this);
+
     };
 
 

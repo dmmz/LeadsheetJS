@@ -36,7 +36,7 @@ define(['modules/WaveManager/src/WaveAudio',
         this.audio = new WaveAudio();
         this.file = params.file;
         this.tempo = params.tempo;
-
+        this.isEnabled = true; //this is initialized on load
         var paramsDrawer = {
             pixelRatio: window.devicePixelRatio,
             showHalfWave: params.showHalfWave,
@@ -52,6 +52,9 @@ define(['modules/WaveManager/src/WaveAudio',
          var self = this;
          //when window is resized, leadsheet is drawn, and audio needs to be redrawn too
          $.subscribe('LSViewer-drawEnd', function(){
+            if (!self.isEnabled){
+                return; 
+            }
             if (self.isLoaded){
                 self.drawer.drawAudio(self.barTimesMng,self.audio.tempo,self.audio.getDuration());
             }else if(self.file && self.tempo){
@@ -60,11 +63,8 @@ define(['modules/WaveManager/src/WaveAudio',
         });
     };
 
-    WaveManager.prototype.isReady = function() {
-        return this.isLoaded;
-    };
-
     WaveManager.prototype.load = function(url, tempo, redraw, callback) {
+
         if (isNaN(tempo) || tempo <= 0) {
             throw "WaveManager - No tempo speficied";
         }
@@ -79,6 +79,7 @@ define(['modules/WaveManager/src/WaveAudio',
             var audioData = xhr.response;
             self.audio.load(audioData, self, tempo, function() {
                 self.isLoaded = true;
+                self.enable();
                 self.barTimesMng.setBarTimes(self.song, self.audio);
                 self.drawer.newCursor(self.audio);
                 if (redraw){
@@ -87,6 +88,9 @@ define(['modules/WaveManager/src/WaveAudio',
                 }else{
                     self.drawer.drawAudio(self.barTimesMng,self.audio.tempo,self.audio.getDuration());
                 }
+
+               
+                $.publish('Audio-Loaded');
                 if(typeof callback !== "undefined"){
                     callback();
                 }
@@ -94,7 +98,12 @@ define(['modules/WaveManager/src/WaveAudio',
         };
         xhr.send();
     };
-
+    WaveManager.prototype.enable = function() {
+        this.isEnabled = true;
+    };
+    WaveManager.prototype.disable = function() {
+        this.isEnabled = false;
+    };
     WaveManager.prototype.restartAnimationLoop = function() {
         var self = this;
         var noteMng = this.song.getComponent('notes');
@@ -133,7 +142,7 @@ define(['modules/WaveManager/src/WaveAudio',
     };
 
     WaveManager.prototype.play = function() {
-        if (this.isReady()) {
+        if (this.isLoaded) {
             this.isPause = false;
             this.restartAnimationLoop();
             this.audio.play();
@@ -142,7 +151,7 @@ define(['modules/WaveManager/src/WaveAudio',
     };
 
     WaveManager.prototype.pause = function() {
-        if (this.isReady()) {
+        if (this.isLoaded) {
             this.isPause = true;
             this.audio.pause();
             

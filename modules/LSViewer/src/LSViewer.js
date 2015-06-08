@@ -64,10 +64,9 @@ define([
 			this.divContainer = divContainer;
 			this.resizable = !params.width; //if there is a width specified, we assume that it wont be resized on window resize
 
-			var idScore = "ls" + ($("canvas").length + 1),
-				width = (params.width) ? params.width : this._getWidthFromContainer(divContainer);
-
-			this.canvas = this._createCanvas(idScore, width, this.DEFAULT_HEIGHT);
+			this.canvasId = "ls" + ($("canvas").length + 1);
+			var	width = (params.width) ? params.width : this._getWidthFromContainer(divContainer);
+			this.canvas = this._createCanvas(this.canvasId, width, this.DEFAULT_HEIGHT);
 			var renderer = new Vex.Flow.Renderer(this.canvas, Vex.Flow.Renderer.Backends.CANVAS);
 			this.ctx = renderer.getContext("2d");
 
@@ -82,8 +81,8 @@ define([
 		/**
 		 * Creates and return a dom element
 		 */
-		LSViewer.prototype._createCanvas = function(idScore, width, height) {
-			var canvas = $("<canvas id='" + idScore + "'></canvas>");
+		LSViewer.prototype._createCanvas = function(canvasId, width, height) {
+			var canvas = $("<canvas id='" + canvasId + "'></canvas>");
 			canvas[0].width = width;
 			canvas[0].height = height;
 
@@ -100,9 +99,15 @@ define([
 		LSViewer.prototype._initSubscribe = function() {
 			var self = this;
 			$.subscribe('ToViewer-draw', function(el, songModel) {
+				if (!songModel){
+					throw "Need songModel to draw";
+				}
 				self.draw(songModel);
 			});
 			$.subscribe('ToViewer-resize', function(el, songModel) {
+				if (!songModel){
+					throw "Need songModel to draw";
+				}
 				var width = self._getWidthFromContainer(this.divContainer);
 				self.canvas.width = width;
 				self._resize(width);
@@ -354,6 +359,7 @@ define([
 			this.resetScale();
 			//console.timeEnd('whole draw');
 			// if we requested to have a layer and we haven't already created it
+			// TODO: this.layer anhd this.forceNewLayer are more or less the same
 			if (this.layer && (!this.canvasLayer) || (this.layer && this.forceNewCanvasLayer)) {
 				this.forceNewCanvasLayer = false;
 				this.canvasLayer = new CanvasLayer(this); //the canvasLayer needs to be created after the score has been drawn

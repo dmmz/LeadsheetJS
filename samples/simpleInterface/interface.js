@@ -31,11 +31,6 @@ require.config({
 
 define(function(require) {
 
-	var WaveManager = require('modules/WaveManager/src/WaveManager');
-	var WaveManagerView = require('modules/WaveManager/src/WaveManagerView');
-	var WaveManagerController = require('modules/WaveManager/src/WaveManagerController');
-
-
 	var LJS = require('LJS');
 	var myApp = {};
 	window.myApp = myApp;
@@ -65,19 +60,6 @@ define(function(require) {
 		'item': testSongs.simpleLeadSheet,
 		'title': 'Open song - ' + songModel.getTitle()
 	});
-
-	new LJS.chordSequence(
-		$('#chordSequence1')[0],
-		songModel, {
-			displayTitle: true,
-			displayComposer: true,
-			displaySection: true,
-			displayBar: true,
-			delimiterBar: "|",
-			fillEmptyBar: true,
-			fillEmptyBarCharacter: "%"
-		}
-	);
 
 	/*
 		var optionChediak = {
@@ -221,5 +203,24 @@ define(function(require) {
 		});
 		var pC = new LJS.MidiCSL.PlayerController(player, pV);
 	}
+console.log(LJS);
+	var audioComments = new LJS.AudioComments(waveMng,myApp.viewer, songModel);
+	audioComments.addComment({
+		user: 'Dani',
+		img: '/tests/img/dani-profile.jpg',
+		text: 'This is an audio comment',
+		timeInterval: [1.5891220809932014, 2.668046112917529],
+		color: '#F00'
+	});
+
+	audioComments.addComment({
+		user: 'Dani',
+		img: '/tests/img/dani-profile.jpg',
+		text: 'lorem ipsum cumulum largo texto asolo en caso de que tal cual pascual ande vas con la moto que thas comprado, vaya tela',
+		timeInterval: [3.3, 10.1],
+		color: '#0F0'
+	});
+
+
 	myApp.viewer.draw(songModel);
 });
