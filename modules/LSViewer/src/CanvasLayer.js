@@ -68,40 +68,40 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		 * @return {Array}        array of active elements (being elements like ChordSpaceManager, NoteSpaceManager, WaveDrawer. TextElementManager will never be returned because it is not selectable (it does not have getY() function), it is only thought for being clicked)
 		 */
 		function getElemsByYs(coords) {
-				var minY = 999999,
-					maxY = 0,
-					minName, maxName, ys;
-				var activeElems = [];
-				for (var name in self.elems) {
-					//self.elems[name].updateCursor([null,null]);
-					if (typeof self.elems[name].getYs === 'function') {
-						ys = self.elems[name].getYs(coords);
-						if (ys.topY < minY) {
-							minY = ys.topY;
-							minName = name;
-						}
-						if (ys.bottomY > maxY) {
-							maxY = ys.bottomY;
-							maxName = name;
-						}
+			var minY = 999999,
+				maxY = 0,
+				minName, maxName, ys;
+			var activeElems = [];
+			for (var name in self.elems) {
+				//self.elems[name].updateCursor([null,null]);
+				if (typeof self.elems[name].getYs === 'function') {
+					ys = self.elems[name].getYs(coords);
+					if (ys.topY < minY) {
+						minY = ys.topY;
+						minName = name;
+					}
+					if (ys.bottomY > maxY) {
+						maxY = ys.bottomY;
+						maxName = name;
 					}
 				}
-				if (minName) {
-					activeElems.push(self.elems[minName]);
-				}
-				if (maxName && minName != maxName) {
-					activeElems.push(self.elems[maxName]);
-				}
-				return activeElems;
 			}
-			/**
-			 * when clicking on an element we will select one only element, this function chooses which one depending on coords
-			 * @param  {Object} coords  e.g.:  {x:12, y:21}
-			 * @return {Object}        class of active element (ChordSpaceManager, NoteSpaceManager, WaveDrawer. TextElementManager...etc.)
-			 */
+			if (minName) {
+				activeElems.push(self.elems[minName]);
+			}
+			if (maxName && minName != maxName) {
+				activeElems.push(self.elems[maxName]);
+			}
+			return activeElems;
+		}
+
+		/**
+		 * when clicking on an element we will select one only element, this function chooses which one depending on coords
+		 * @param  {Object} coords  e.g.:  {x:12, y:21}
+		 * @return {Object}        class of active element (ChordSpaceManager, NoteSpaceManager, WaveDrawer. TextElementManager...etc.)
+		 */
 		function getOneActiveElement(coords) {
 			for (var name in self.elems) {
-
 				if (self.elems[name].inPath(coords)) {
 					return [self.elems[name]];
 				}
@@ -252,6 +252,18 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 	 * Elements to draw
 	 * @param {String} name
 	 * @param {Model} elem any model that has a draw function receiving a ctx
+	 *
+	 * Element class should have several arguments
+	 * name
+	 * and several functions:
+	 * getYs
+	 * updateCursor
+	 * inPath
+	 * draw
+	 * isEnabled
+	 * enable
+	 * disable
+	 * setCursorEditable
 	 */
 	CanvasLayer.prototype.addElement = function(elem) {
 		if (!elem || !elem.name) {

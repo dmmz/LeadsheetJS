@@ -23,10 +23,10 @@ define(function() {
 					max = Number(i);
 				}
 			}
-			}
+		}
 		return (min === null && max === null) ? false : [min, max];
 	};
-	
+
 	/**
 	 * function to determine how high elements are situated
 	 * @param  {Array} elems  array of elements; e.g. 'NoteSpaceView'
@@ -43,7 +43,7 @@ define(function() {
 			return false;
 		}
 	};
-	
+
 	/**
 	 * @param  {Array} elems      [description]
 	 * @param  {[Integer, Integer]} cursor     [description]

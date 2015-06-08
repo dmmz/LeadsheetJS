@@ -10,20 +10,24 @@ define([
 	 * @param {Object} songModel
 	 * @param {Array} tags      Array of object that contain at least a startBeat, a endBeat, can also contain a name
 	 * @param {Array} colors    Array of colors in rgba or hexadecimal or html color
+	 * @param {Boolean} isActive    Indicates if we draw it or not
+	 * @param {Boolean} isEditable  Indicates if it's editable or not
 	 */
-	function TagManager(songModel, noteSpaceManager, tags, colors, isActive) {
-		if (!noteSpaceManager.noteSpace){
+	function TagManager(songModel, noteSpaceManager, tags, colors, isActive, isEditable) {
+		if (!noteSpaceManager.noteSpace) {
 			throw "TagManager - noteSpaceManager not well initialized";
 		}
 
 		this.songModel = songModel;
 		this.noteSpaceManager = noteSpaceManager;
 
+		this.name = 'TagManager';
 		this.tags = tags || [];
 		this.colors = colors || ["#559", "#995", "#599", "#595"];
 		this.tagSpaces = [];
 		this.isActive = (typeof isActive !== "undefined") ? isActive : true;
-		
+		this.isEditable = (typeof isEditable !== "undefined") ? isEditable : false;
+
 		this.initSubscribe();
 		this.elemMng = new ElementManager();
 	}
@@ -59,6 +63,27 @@ define([
 		return this.isActive;
 	};
 
+	TagManager.prototype.updateCursor = function(coords, clicked) {
+		var indexTagClicked = this.inPathPosition(coords);
+		// console.log(indexTagClicked);
+		var self = this;
+		if (this.tagSpaces[indexTagClicked].isInPathDelete(coords)) {
+			//console.log('delete', indexTagClicked);
+			this.tags.splice(indexTagClicked, 1);
+			$.publish('ToViewer-draw', self.songModel);
+		}
+	};
+
+	TagManager.prototype.setCursorEditable = function() {
+		//do nothing as we have no cursor
+	};
+	TagManager.prototype.isEnabled = function() {
+		return this.isActive;
+	};
+	TagManager.prototype.enable = function() {
+		this.isActive = true;
+	};
+	TagManager.prototype.disable = function() {};
 
 	/**
 	 * Subscribe to view events
@@ -66,20 +91,34 @@ define([
 	TagManager.prototype.initSubscribe = function() {
 		var self = this;
 		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
-			self.draw(viewer);
+			self.drawTags(viewer);
+			if (self.noteSpaceManager.viewer.canvasLayer) {
+				self.noteSpaceManager.viewer.canvasLayer.addElement(self);
+			}
 		});
 
 	};
 
-	TagManager.prototype.isInPath = function(x, y) {
-		for (var i = 0, c = this.tagSpace.length; i < c; i++) {
-			if (typeof this.tagSpace[i] !== "undefined") {
-				if (this.tagSpace[i].isInPath(x, y)) {
+	TagManager.prototype.isEnabled = function() {
+		return this.isActive;
+	};
+
+	TagManager.prototype.inPathPosition = function(coords) {
+		for (var i = 0, c = this.tagSpaces.length; i < c; i++) {
+			if (typeof this.tagSpaces[i] !== "undefined") {
+				if (this.tagSpaces[i].isInPath(coords)) {
 					return i;
 				}
 			}
 		}
 		return false;
+	};
+
+	TagManager.prototype.inPath = function(coords) {
+		if (this.inPathPosition(coords) === false) {
+			return false;
+		}
+		return true;
 	};
 
 	/**
@@ -88,8 +127,8 @@ define([
 	 * @param  {Object} viewer LSViewer
 	 * @return {Array} array of TagSpaceViews
 	 */
-	TagManager.prototype.getTagAreas = function(i,viewer) {
-		
+	TagManager.prototype.getTagAreas = function(i, viewer) {
+
 		var tag;
 		var nm = this.songModel.getComponent('notes');
 		var fromIndex, toIndex;
@@ -101,42 +140,46 @@ define([
 		return this.elemMng.getElementsAreaFromCursor(this.noteSpaceManager.noteSpace, [fromIndex, toIndex]);
 	};
 
-	TagManager.prototype.draw = function(viewer) {
+	// interface function to display cursor
+	TagManager.prototype.draw = function() {};
+
+	TagManager.prototype.drawTags = function(viewer) {
 		if (this.isActive !== true) {
 			return;
 		}
 		if (this.tags.length <= 0) {
+			console.log('no tag');
 			return;
 		}
 
 		var ctx = viewer.ctx;
-		var tagSpaces = [];
+		this.tagSpaces = [];
 		var self = this;
 		var areas;
 
 		for (var i = 0; i < self.tags.length; i++) {
-			areas = self.getTagAreas(i,viewer);
-			if (areas.length === 0){
-				console.warn("area not found for "+i+"th tag" );
+			areas = self.getTagAreas(i, viewer);
+			if (areas.length === 0) {
+				console.warn("area not found for " + i + "th tag");
 				continue;
 			}
-			tagSpaces.push(new TagSpaceView(areas, this.tags[i].name));	
+			this.tagSpaces.push(new TagSpaceView(areas, this.tags[i].name));
 		}
 
 		viewer.drawElem(function() {
-	
+
 			var tagSpace;
 			var saveFillColor = ctx.fillStyle;
 			ctx.font = "15px Arial";
-			
-			var yDecalToggle = 3;
-				var numberOfColors = self.colors.length;
-			for (var i = 0; i < tagSpaces.length; i++) {
-				ctx.globalAlpha = 0.4;
-				tagSpace = tagSpaces[i];
-				ctx.fillStyle = self.colors[i % numberOfColors]; // permute colors each time
 
-				for (var j = 0; j < tagSpace.position.length; j++) {
+			var yDecalToggle = 3;
+			var numberOfColors = self.colors.length;
+			for (var i = 0; i < self.tagSpaces.length; i++) {
+				ctx.globalAlpha = 0.4;
+				tagSpace = self.tagSpaces[i];
+				ctx.fillStyle = self.colors[i % numberOfColors]; // permute colors each time
+				var numberOfTagPosition = tagSpace.position.length;
+				for (var j = 0; j < numberOfTagPosition; j++) {
 					//this makes shift a bit tags , useful in case they overlap
 					if (i % 2) {
 						tagSpace.position[j].y += yDecalToggle;
@@ -155,16 +198,29 @@ define([
 				}
 				//we write the tag name
 				ctx.globalAlpha = 1;
-					ctx.fillStyle = "black";
-					ctx.fillText(tagSpace.name, tagSpace.position[0].x, tagSpace.position[0].y + tagSpace.position[0].h + 12);
+				ctx.fillStyle = "black";
+				ctx.fillText(tagSpace.name, tagSpace.position[0].x, tagSpace.position[0].y + tagSpace.position[0].h + 15);
 
+				if (self.isEditable === true) {
+					ctx.fillStyle = "#666";
+					ctx.fillRect(
+						tagSpace.position[numberOfTagPosition - 1].x + tagSpace.position[numberOfTagPosition - 1].w - 20,
+						tagSpace.position[numberOfTagPosition - 1].y,
+						20,
+						20
+					);
+					ctx.fillStyle = "#eee";
+					ctx.fillText('X', tagSpace.position[numberOfTagPosition - 1].x + tagSpace.position[numberOfTagPosition - 1].w - 20 + 6, tagSpace.position[numberOfTagPosition - 1].y + 19);
+				}
 			}
 			ctx.fillStyle = saveFillColor;
 			ctx.globalAlpha = 1;
-			
+
 		});
-		
+
 	};
 
+
+	// no getYs function because it is not selectable
 	return TagManager;
 });

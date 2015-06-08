@@ -12,7 +12,7 @@ define([
 	function HarmonicAnalysisController(songModel, noteSpaceMng) {
 		this.songModel = songModel;
 		this.initSubscribe();
-		this.tagManager = new TagManager(this.songModel, noteSpaceMng, [], undefined, false);
+		this.tagManager = new TagManager(this.songModel, noteSpaceMng, [], undefined, false, false);
 	}
 
 	HarmonicAnalysisController.prototype.initSubscribe = function() {
