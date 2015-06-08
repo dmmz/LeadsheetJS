@@ -36,7 +36,7 @@ define(['modules/WaveManager/src/WaveAudio',
         this.audio = new WaveAudio();
         this.file = params.file;
         this.tempo = params.tempo;
-
+        this.isEnabled = true; //this is initialized on load
         var paramsDrawer = {
             pixelRatio: window.devicePixelRatio,
             showHalfWave: params.showHalfWave,
@@ -52,6 +52,9 @@ define(['modules/WaveManager/src/WaveAudio',
          var self = this;
          //when window is resized, leadsheet is drawn, and audio needs to be redrawn too
          $.subscribe('LSViewer-drawEnd', function(){
+            if (!this.isEnabled){
+                return; 
+            }
             if (self.isLoaded){
                 self.drawer.drawAudio(self.barTimesMng,self.audio.tempo,self.audio.getDuration());
             }else if(self.file && self.tempo){
@@ -84,6 +87,7 @@ define(['modules/WaveManager/src/WaveAudio',
                 }else{
                     self.drawer.drawAudio(self.barTimesMng,self.audio.tempo,self.audio.getDuration());
                 }
+                self.enable();
                 $.publish('Audio-Loaded');
                 if(typeof callback !== "undefined"){
                     callback();
@@ -92,7 +96,12 @@ define(['modules/WaveManager/src/WaveAudio',
         };
         xhr.send();
     };
-
+    WaveManager.prototype.enable = function() {
+        this.isEnabled = true;
+    };
+    WaveManager.prototype.disable = function() {
+        this.isEnabled = false;
+    };
     WaveManager.prototype.restartAnimationLoop = function() {
         var self = this;
         var noteMng = this.song.getComponent('notes');

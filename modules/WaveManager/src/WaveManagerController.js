@@ -16,7 +16,7 @@ define([
 			waveMng.pause();
 		});
 		$.subscribe("ToLayers-removeLayer", function() {
-			// TODO Add an unload waveAudio when it will be available
+			waveMng.disable();
 		});
 	}
 	return WaveManagerController;
