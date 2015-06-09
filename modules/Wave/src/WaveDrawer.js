@@ -11,7 +11,8 @@ define([
             if (!params.pixelRatio) {
                 throw "WaveDrawer - pixelRatio not defined";
             }
-            this.name = 'audioCursor';
+            this.CL_TYPE = 'CURSOR';
+            this.CL_NAME = 'audioCursor';
             this.pixelRatio = params.pixelRatio;
             this.showHalfWave = params.showHalfWave;
             this.marginCursor = params.marginCursor || 0;
@@ -39,6 +40,9 @@ define([
                 this.viewer.setLineMarginTop(distance, true);
             }
         }
+    };
+    WaveDrawer.prototype.getType = function() {
+        return this.CL_TYPE;
     };
 
     /**
@@ -88,7 +92,7 @@ define([
      * @interface
      * @param  {Object} coords
      */
-    WaveDrawer.prototype.updateCursor = function(coords, clicked, mouseUp) {
+    WaveDrawer.prototype.onSelected = function(coords, clicked, mouseUp) {
         var self = this;
         var cursorBars = this.elemMng.getElemsInPath(this.waveBarDimensions, coords);
 
@@ -142,7 +146,7 @@ define([
         return !!this.elemMng.getElemsInPath(this.waveBarDimensions, coords);
     };
 
-    WaveDrawer.prototype.drawCursor = function(ctx) {
+    WaveDrawer.prototype.drawPayingCursor = function(ctx) {
         ctx.beginPath();
         ctx.moveTo(this.cursorPos.x, this.cursorPos.y);
         ctx.lineTo(this.cursorPos.x, this.cursorPos.y + this.cursorPos.h);
@@ -152,7 +156,7 @@ define([
      * @interface
      * @param  {CanvasContext} ctx
      */
-    WaveDrawer.prototype.draw = function(ctx) {
+    WaveDrawer.prototype.drawCursor = function(ctx) {
         var saveFillColor = ctx.fillStyle;
         ctx.fillStyle = "#9900FF";
         ctx.globalAlpha = 0.2;

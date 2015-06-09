@@ -5,16 +5,16 @@ define(['modules/Edition/src/ElementManager',
 		this.commentSpaces = [];
 		this.viewer = viewer;
 		this.elemMng = new ElementManager();
-		this.name = 'AudioComments';
+		this.CL_TYPE = 'CLICKABLE';
+		this.CL_NAME = 'AudioComments';
 		viewer.canvasLayer.addElement(this);
 		this.clickedElem = null;
 	}
+	CommentSpaceManager.prototype.getType = function() {
+		return this.CL_TYPE;
+	};
 	CommentSpaceManager.prototype.addCommentSpace = function(commentArea) {
 		this.commentSpaces.push(new CommentSpaceView(commentArea, this.viewer.scaler));
-	};
-
-	CommentSpaceManager.prototype.draw = function() {
-		//do nothing as we have no cursor and no selection
 	};
 
 	CommentSpaceManager.prototype.inPath = function(coords) {
@@ -35,10 +35,8 @@ define(['modules/Edition/src/ElementManager',
 	CommentSpaceManager.prototype.isEnabled = function() {
 		return true;
 	};
-	CommentSpaceManager.prototype.setCursorEditable = function() {
-		//do nothing as we have no cursor
-	};
-	CommentSpaceManager.prototype.updateCursor = function() {
+
+	CommentSpaceManager.prototype.onSelected = function() {
 		$.publish('clicked-comment', this.clickedElem);
 	};
 	return CommentSpaceManager;

@@ -13,10 +13,11 @@ define([
 		if (!songModel || !cursor) {
 			throw "ChordSpaceManager missing params";
 		}
+		this.CL_NAME = 'ChordsCursor';
+		this.CL_TYPE = 'CURSOR';
 		this.songModel = songModel;
 		this.cursor = cursor;
 		this.chordSpace = [];
-		this.name = 'ChordsCursor';
 		this.elemMng = new ElementManager();
 		this.initSubscribe();
 		this.viewer = viewer;
@@ -45,6 +46,9 @@ define([
 		$.subscribe('Cursor-moveCursorByElement-chords', function(el, inc) {
 			self.moveCursorByBar(inc);
 		});
+	};
+	ChordSpaceManager.prototype.getType = function() {	
+		return this.CL_TYPE;
 	};
 	/**
 	 * Function return several areas to indicate which notes are selected, usefull for cursor or selection
@@ -91,7 +95,7 @@ define([
 	 * @param  {Object} coords
 	 * @param  {Booelan} mouseUp
 	 */
-	ChordSpaceManager.prototype.updateCursor = function(coords, mouseUp) {
+	ChordSpaceManager.prototype.onSelected = function(coords, mouseUp) {
 
 		this.undrawEditableChord();
 
@@ -111,7 +115,7 @@ define([
 	 *
 	 * @param  {CanvasContext} ctx
 	 */
-	ChordSpaceManager.prototype.draw = function(ctx) {
+	ChordSpaceManager.prototype.drawCursor = function(ctx) {
 		var self = this;
 
 		function drawChordSpaceBorders(ctx) {

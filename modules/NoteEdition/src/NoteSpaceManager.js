@@ -16,7 +16,8 @@ define([
 		if (!viewer) {
 			throw "NoteSpaceManager - missing viewer";
 		}
-		this.name = 'NotesCursor';
+		this.CL_TYPE = 'CURSOR';
+		this.CL_NAME = 'NotesCursor';
 		this.cursor = cursor;
 		this.viewer = viewer;
 		this.elemMng = new ElementManager();
@@ -48,9 +49,7 @@ define([
 			self.viewer.canvasLayer.refresh();
 
 		});
-		// $.subscribe('CanvasLayer-updateCursors',function(el,coords){
-		// self.updateCursor(coords);
-		// });
+
 	};
 	NoteSpaceManager.prototype.createNoteSpace = function(viewer) {
 		var noteSpace = [];
@@ -71,6 +70,9 @@ define([
 		}
 		return noteSpace;
 	};
+	NoteSpaceManager.prototype.getType = function() {	
+		return this.CL_TYPE;
+	};
 	/**
 	 * @inteface
 	 * @param  {Object} coords
@@ -83,13 +85,12 @@ define([
 	 * @interface
 	 * @param  {Object} coords 
 	 */
-	NoteSpaceManager.prototype.updateCursor = function(coords) {
+	NoteSpaceManager.prototype.onSelected = function(coords) {
 
 		var notes = this.elemMng.getElemsInPath(this.noteSpace, coords);
 
 		if (notes) {
 			this.cursor.setPos(notes);
-			//$.publish('ToViewer-draw',self.songModel);
 		}
 	};
 	/**
@@ -104,7 +105,7 @@ define([
 	 * @interface
 	 * @param  {CanvasContext} ctx 
 	 */
-	NoteSpaceManager.prototype.draw = function(ctx) {
+	NoteSpaceManager.prototype.drawCursor = function(ctx) {
 		if (this.noteSpace.length === 0) return;
 		var position = this.cursor.getPos();
 		var saveFillColor = ctx.fillStyle;
