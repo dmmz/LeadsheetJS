@@ -145,8 +145,7 @@ define(function(require) {
 		file: '/tests/audio/solar.wav',
 		tempo: 170
 	};
-	var waveMng = new LJS.WaveManager.WaveManager(songModel, edition.cursorNote.controller.model, myApp.viewer, params);
-	var wmc = new LJS.WaveManager.WaveManagerController(waveMng);
+	var waveMng = new LJS.Wave(songModel, edition.cursorNote.controller.model, myApp.viewer, params);
 
 	//ALTERNATIVE WAY TO ADD MENU if not done with edition constructor
 	/*menu.model.addMenu({

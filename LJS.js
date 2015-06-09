@@ -17,7 +17,7 @@ define([
 		"modules/NoteEdition/src/NoteEdition",
 		"modules/StructureEdition/src/StructureEdition",
 		"modules/Tag/src/main",
-		"modules/WaveManager/src/main",
+		"modules/Wave/src/WaveController",
 		"modules/AudioComments/src/AudioCommentsController",
 		"utils/main"
 	],
@@ -40,7 +40,7 @@ define([
 		NoteEdition,
 		StructureEdition,
 		Tag,
-		WaveManager,
+		Wave,
 		AudioComments,
 		utils
 	) {
@@ -65,7 +65,7 @@ define([
 			"NoteEdition": NoteEdition,
 			"StructureEdition": StructureEdition,
 			"Tag": Tag,
-			"WaveManager": WaveManager,
+			"Wave": Wave,
 			"AudioComments": AudioComments,
 			"utils": utils
 		};

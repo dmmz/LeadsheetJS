@@ -3,7 +3,7 @@ define([
 	'modules/core/src/SongModel',
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
 	'modules/converters/MusicXML/src/SongModel_MusicXML',
-	'modules/WaveManager/src/WaveManager',
+	'modules/Wave/src/WaveController',
 	'modules/LSViewer/src/LSViewer',
 	'pubsub',
 	'utils/UserLog',

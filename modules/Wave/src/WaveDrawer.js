@@ -3,7 +3,7 @@ define([
     'modules/core/src/SongBarsIterator',
     'modules/Cursor/src/CursorModel',
     'modules/Edition/src/ElementManager',
-    'modules/WaveManager/src/WaveBarView',
+    'modules/Wave/src/WaveBarView',
     'pubsub'
 ], function($, SongBarsIterator, CursorModel, ElementManager, WaveBarView, pubsub) {
     function WaveDrawer(viewer, params, waveMng) {
@@ -31,7 +31,7 @@ define([
          */
     WaveDrawer.prototype._adaptViewer = function() {
 
-        if (this.topAudio > 0) { // if audio is greater than 0 it measn audio will be on top of score line
+        if (this.topAudio > 0) { // if audio is greater than 0 it means audio will be on top of score line
             this.viewer.setLineMarginTop(this.topAudio);
         } else {
             distance = (this.heightAudio - this.topAudio) - this.viewer.LINE_HEIGHT;
