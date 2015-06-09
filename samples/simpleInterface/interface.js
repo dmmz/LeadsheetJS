@@ -90,7 +90,7 @@ define(function(require) {
 				title: 'Notes',
 				order: 2
 			},
-			imgPath:'/modules/NoteEdition/img'
+			imgPath: '/modules/NoteEdition/img'
 		},
 		chords: {
 			active: true,
@@ -98,8 +98,8 @@ define(function(require) {
 				title: 'Chords',
 				order: 3
 			},
-			imgPath:'/modules/NoteEdition/img'
-			// menu: false /* if we don't want menu*/
+			imgPath: '/modules/NoteEdition/img'
+				// menu: false /* if we don't want menu*/
 		},
 		structure: {
 			active: true,
@@ -107,7 +107,7 @@ define(function(require) {
 				title: 'Structure',
 				order: 4
 			},
-			imgPath:'/modules/StructureEdition/img'
+			imgPath: '/modules/StructureEdition/img'
 		}
 	});
 
@@ -203,8 +203,8 @@ define(function(require) {
 		});
 		var pC = new LJS.MidiCSL.PlayerController(player, pV);
 	}
-console.log(LJS);
-	var audioComments = new LJS.AudioComments(waveMng,myApp.viewer, songModel);
+	console.log(LJS);
+	var audioComments = new LJS.AudioComments(waveMng, myApp.viewer, songModel);
 	audioComments.addComment({
 		user: 'Dani',
 		img: '/tests/img/dani-profile.jpg',

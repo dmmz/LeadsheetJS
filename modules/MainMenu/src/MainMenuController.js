@@ -33,7 +33,7 @@ define([
 
 	MainMenuController.prototype.loadStateTab = function() {
 		// Init menu with current location
-		var id = window.location.href.split("#")[1];
+		var id = decodeURI(window.location.href.split("#")[1]);
 		if (typeof id !== "undefined") {
 			this.activeMenu(id);
 		}

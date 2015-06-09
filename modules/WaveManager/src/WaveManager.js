@@ -49,15 +49,15 @@ define(['modules/WaveManager/src/WaveAudio',
         this._initSubscribe();
     }
     WaveManager.prototype._initSubscribe = function() {
-         var self = this;
-         //when window is resized, leadsheet is drawn, and audio needs to be redrawn too
-         $.subscribe('LSViewer-drawEnd', function(){
-            if (!self.isEnabled){
-                return; 
+        var self = this;
+        //when window is resized, leadsheet is drawn, and audio needs to be redrawn too
+        $.subscribe('LSViewer-drawEnd', function() {
+            if (!self.isEnabled) {
+                return;
             }
-            if (self.isLoaded){
-                self.drawer.drawAudio(self.barTimesMng,self.audio.tempo,self.audio.getDuration());
-            }else if(self.file && self.tempo){
+            if (self.isLoaded) {
+                self.drawer.drawAudio(self.barTimesMng, self.audio.tempo, self.audio.getDuration());
+            } else if (self.file && self.tempo) {
                 self.load(self.file, self.tempo);
             }
         });
@@ -82,16 +82,14 @@ define(['modules/WaveManager/src/WaveAudio',
                 self.enable();
                 self.barTimesMng.setBarTimes(self.song, self.audio);
                 self.drawer.newCursor(self.audio);
-                if (redraw){
+                if (redraw) {
                     self.viewer.setShortenLastBar(true);
                     self.viewer.draw(self.song); // no need to drawAudio(), as it is called on 'drawEnd'
-                }else{
-                    self.drawer.drawAudio(self.barTimesMng,self.audio.tempo,self.audio.getDuration());
+                } else {
+                    self.drawer.drawAudio(self.barTimesMng, self.audio.tempo, self.audio.getDuration());
                 }
-
-               
-                $.publish('Audio-Loaded');
-                if(typeof callback !== "undefined"){
+                $.publish('Audio-loaded');
+                if (typeof callback !== "undefined") {
                     callback();
                 }
             });
@@ -114,8 +112,9 @@ define(['modules/WaveManager/src/WaveAudio',
         var requestFrame = window.requestAnimationFrame ||
             window.webkitRequestAnimationFrame;
         this.startTime = this.audio.audioCtx.currentTime;
-        this.barTimesMng.reset();   //every time we start playing we reset barTimesMng (= we set currBar to 0) because, for the moment, we play always from the beginning
-        var timeStep = 0,currBar = 0;
+        this.barTimesMng.reset(); //every time we start playing we reset barTimesMng (= we set currBar to 0) because, for the moment, we play always from the beginning
+        var timeStep = 0,
+            currBar = 0;
         var frame = function() {
             if (!self.isPause) {
                 if (self.getPlayedTime() >= timeStep + minBeatStep) {
@@ -129,11 +128,11 @@ define(['modules/WaveManager/src/WaveAudio',
                 time = self.getPlayedTime();
                 currBar = self.barTimesMng.updateCurrBarByTime(time);
                 //to avoid problems when finishing audio, we play while currBar is in barTimesMng, if not, we pause
-                if (currBar < self.barTimesMng.getLength()){
+                if (currBar < self.barTimesMng.getLength()) {
                     self.drawer.updateCursorPlaying(time);
                     self.drawer.viewer.canvasLayer.refresh();
                     requestFrame(frame);
-                }else{
+                } else {
                     self.pause();
                 }
             }
@@ -154,7 +153,7 @@ define(['modules/WaveManager/src/WaveAudio',
         if (this.isLoaded) {
             this.isPause = true;
             this.audio.pause();
-            
+
         }
     };
 
