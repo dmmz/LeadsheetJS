@@ -18,7 +18,8 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		this.coords = {};
 		this.mouseDown = false;
 		this._listenEvents(canvasLayer);
-		this.elems = {};
+		this.elems = {};	//elements to be added (can be CLICKABLE or CURSOR)
+		this.order = [];    //we keep trace of order in which elements are added, to decide which should be prioritized on click
 	}
 
 	CanvasLayer.prototype._createLayer = function(viewer) {
@@ -51,6 +52,40 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			x: event.pageX - element.offset().left,
 			y: event.pageY - element.offset().top
 		};
+	};
+
+	/**
+	 * Element should have properties:
+	 *		CL_NAME 
+	 *		CL_TYPE
+	 *	methods:
+	 *		getType
+	 *		iEnabled
+	 *		enable   
+	 *		disable
+	 *		onSelected
+	 *		inPath
+	 *
+	 * CLICKABLE elements will be enabled always, but 'disable' function is useful for example to simulate event 'onBlur' when unfocusing element
+	 * 
+	 * CL_TYPE can be 'CURSOR' or 'CLICKABLE'
+	 * if it's CURSOR, it needs to have also this methods:
+	 *		getYs
+     *		name
+     *		drawCursor
+     *		setCursorEditable
+     *		getYs
+	 */
+	CanvasLayer.prototype.addElement = function(elem) {
+		if (!elem || !elem.CL_NAME || !elem.getType()) {
+			throw 'CanvasLayer element needs CL_NAME and CL_TYPE property';
+		}
+
+		if (!(elem.CL_NAME in this.elems)){
+			this.elems[elem.CL_NAME] = elem;
+			this.order.push(elem.CL_NAME);	//order is useful to control z-index of drawn elements, last drawn elements will be prioritized on click. (see getOneActiveElement())
+		}
+		
 	};
 
 	CanvasLayer.prototype._listenEvents = function() {
@@ -100,7 +135,9 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			 * @return {Object}        class of active element (ChordSpaceManager, NoteSpaceManager, WaveDrawer. TextElementManager...etc.)
 			 */
 		function getOneActiveElement(coords) {
-			for (var name in self.elems) {
+			var name;
+			for (var i = self.order.length - 1; i >= 0; i--) {
+				name = self.order[i];
 				if (self.elems[name].inPath(coords)) {
 					return [self.elems[name]];
 				}
@@ -255,34 +292,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 	CanvasLayer.prototype.getCanvas = function() {
 		return this.canvasLayer;
 	};
-	/**
-	 * Element should have properties:
-	 *		CL_NAME 
-	 *		CL_TYPE
-	 *	methods:
-	 *		getType
-	 *		iEnabled
-	 *		enable   
-	 *		disable
-	 *		onSelected
-	 *		inPath
-	 *
-	 * CLICKABLE elements will be enabled always, but 'disable' function is useful for example to simulate event 'onBlur' when unfocusing element
-	 * 
-	 * CL_TYPE can be 'CURSOR' or 'CLICKABLE'
-	 * if it's CURSOR, it needs to have also this methods:
-	 *		getYs
-     *		name
-     *		drawCursor
-     *		setCursorEditable
-     *		getYs
-	 */
-	CanvasLayer.prototype.addElement = function(elem) {
-		if (!elem || !elem.CL_NAME || !elem.getType()) {
-			throw 'CanvasLayer element needs CL_NAME and CL_TYPE property';
-		}
-		this.elems[elem.CL_NAME] = elem;
-	};
+
 	/**
 	 * Refresh canvas layer: all elements in canvas layer should be elements cursors or elements that change fast
 	 */
