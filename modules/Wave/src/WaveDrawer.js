@@ -146,7 +146,7 @@ define([
         return !!this.elemMng.getElemsInPath(this.waveBarDimensions, coords);
     };
 
-    WaveDrawer.prototype.drawPayingCursor = function(ctx) {
+    WaveDrawer.prototype.drawPlayingCursor = function(ctx) {
         ctx.beginPath();
         ctx.moveTo(this.cursorPos.x, this.cursorPos.y);
         ctx.lineTo(this.cursorPos.x, this.cursorPos.y + this.cursorPos.h);
