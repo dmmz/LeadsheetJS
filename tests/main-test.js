@@ -69,7 +69,7 @@ define(function(require) {
 
   var testChordEditionController = require('modules/ChordEdition/test/testChordEditionController');
   var testNoteEditionController = require('modules/NoteEdition/test/testNoteEditionController');
-  var testNoteSpaceView = require('modules/NoteEdition/test/testNoteSpaceView');
+  var testElementView = require('modules/Edition/test/testElementView');
   var testStructureEditionController = require('modules/StructureEdition/test/testStructureEditionController');
   var testFileEditionController = require('modules/FileEdition/test/testFileEditionController');
 
@@ -116,7 +116,7 @@ define(function(require) {
 
   // Note Edition
   testNoteEditionController.run();
-  testNoteSpaceView.run();
+  testElementView.run();
 
   // Structure Edition
   testStructureEditionController.run();
