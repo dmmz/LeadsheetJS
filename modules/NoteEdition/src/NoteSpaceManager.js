@@ -6,7 +6,7 @@ define([
 	'modules/Edition/src/ElementManager',
 	'jquery',
 	'pubsub',
-], function(NoteModel, NoteSpaceView, CursorModel, UserLog, ElementManager,$, pubsub) {
+], function(NoteModel, NoteSpaceView, CursorModel, UserLog, ElementManager, $, pubsub) {
 
 	function NoteSpaceManager(cursor, viewer) {
 
@@ -52,6 +52,7 @@ define([
 		// self.updateCursor(coords);
 		// });
 	};
+
 	NoteSpaceManager.prototype.createNoteSpace = function(viewer) {
 		var noteSpace = [];
 		if (typeof viewer.vxfBars === "undefined") {
@@ -71,6 +72,7 @@ define([
 		}
 		return noteSpace;
 	};
+
 	/**
 	 * @inteface
 	 * @param  {Object} coords
@@ -79,9 +81,10 @@ define([
 	NoteSpaceManager.prototype.getYs = function(coords) {
 		return this.elemMng.getYs(this.noteSpace, coords);
 	};
+
 	/**
 	 * @interface
-	 * @param  {Object} coords 
+	 * @param  {Object} coords
 	 */
 	NoteSpaceManager.prototype.updateCursor = function(coords) {
 
@@ -92,6 +95,7 @@ define([
 			//$.publish('ToViewer-draw',self.songModel);
 		}
 	};
+
 	/**
 	 * @interface
 	 * @param  {Object} coords {x: xval, y: yval}}
@@ -100,9 +104,10 @@ define([
 	NoteSpaceManager.prototype.inPath = function(coords) {
 		return !!this.elemMng.getElemsInPath(this.noteSpace, coords);
 	};
+	
 	/**
 	 * @interface
-	 * @param  {CanvasContext} ctx 
+	 * @param  {CanvasContext} ctx
 	 */
 	NoteSpaceManager.prototype.draw = function(ctx) {
 		if (this.noteSpace.length === 0) return;

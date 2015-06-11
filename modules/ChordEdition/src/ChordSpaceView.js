@@ -89,6 +89,7 @@ define([
 		input.devbridgeAutocomplete({
 			'lookup': chordTypeList,
 			'maxHeight': 200,
+			'lookupLimit': 40,
 			'width': 140,
 			'triggerSelectOnValidInput': false,
 			'showNoSuggestionNotice': true,

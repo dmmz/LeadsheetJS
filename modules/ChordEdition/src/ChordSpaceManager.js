@@ -9,7 +9,7 @@ define([
 	'pubsub'
 ], function(SongModel, ChordModel, ChordSpaceView, CursorModel, UserLog, ElementManager, $, pubsub) {
 
-	function ChordSpaceManager(songModel, cursor, viewer) {
+	function ChordSpaceManager(songModel, cursor) {
 		if (!songModel || !cursor) {
 			throw "ChordSpaceManager missing params";
 		}
@@ -19,7 +19,6 @@ define([
 		this.name = 'ChordsCursor';
 		this.elemMng = new ElementManager();
 		this.initSubscribe();
-		this.viewer = viewer;
 		this.enabled = false;
 		this.MARGIN_TOP = 5;
 		this.MARGIN_RIGHT = 5;
@@ -31,10 +30,9 @@ define([
 	ChordSpaceManager.prototype.initSubscribe = function() {
 		var self = this;
 		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
-			self.viewer.canvasLayer.addElement(self);
+			viewer.canvasLayer.addElement(self);
 			self.chordSpace = self.createChordSpace(viewer);
-			self.viewer.canvasLayer.refresh();
-
+			viewer.canvasLayer.refresh();
 		});
 
 		$.subscribe('ChordSpaceView-updateChord', function(el, update) {

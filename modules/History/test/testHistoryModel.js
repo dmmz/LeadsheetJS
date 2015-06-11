@@ -4,7 +4,6 @@ define([
 	return {
 		run: function() {
 			test("HistoryModel", function(assert) {
-				
 				var hm = new HistoryModel();
 				assert.ok(hm instanceof HistoryModel);
 

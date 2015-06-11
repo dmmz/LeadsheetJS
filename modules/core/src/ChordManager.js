@@ -145,7 +145,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 	};
 
 	/**
-	 * Return all chords in a bar
+	 * Remove all chords in a bar
 	 * @param  {int} barNumber
 	 */
 	ChordManager.prototype.removeChordsByBarNumber = function(barNumber) {
@@ -159,7 +159,31 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 			}
 		}
 	};
-	
+
+	/**
+	 *
+	 * Remove all chords between 2 positions
+	 * @param  {int} barNumberStart [description]
+	 * @param  {int} beatStart      [description]
+	 * @param  {int} barNumberEnd  [description]
+	 * @param  {int} beatEnd        [description]
+	 */
+	ChordManager.prototype.removeChordsBetweenPositions = function(barNumberStart, beatStart, barNumberEnd, beatEnd) {
+		if (!isNaN(barNumberStart) && barNumberStart >= 0 && !isNaN(beatStart) && beatStart >= 1 && !isNaN(barNumberEnd) && barNumberEnd >= 0 && !isNaN(beatEnd) && beatEnd >= 1) {
+			var numStart = barNumberStart * 1000 + beatStart; // bar 4 beat 3 become 4003
+			var numEnd = barNumberEnd * 1000 + beatEnd; // bar 5 beat 1 become 5001
+			var numCurrent;
+			var currentChord;
+			for (var i = this.chords.length - 1; i >= 0; i--) {
+				currentChord = this.chords[i];
+				numCurrent = currentChord.getBarNumber() * 1000 + currentChord.getBeat();
+				if (numStart <= numCurrent && numCurrent <= numEnd) {
+					this.removeChordByIndex(i);
+				}
+			}
+		}
+	};
+
 	/**
 	 * Return a chord that is matching correct Bar and beat number
 	 * @param  {ChordModel} chord or undefined if no chord match
@@ -320,7 +344,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 			exact: r == "equal"
 		};
 	};
-	
+
 	ChordManager.prototype.getChordsAsString = function() {
 		var strChords = [];
 		for (var i = 0; i < this.chords.length; i++) {
@@ -336,15 +360,14 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 	 * @param  {integer} end
 	 * @return {Array}
 	 */
-	ChordManager.prototype.getBeatIntervalByIndexes = function(start, end) {
+	ChordManager.prototype.getBeatIntervalByIndexes = function(songModel, start, end) {
 		if (typeof start === "undefined" || isNaN(start) || typeof end === "undefined" || isNaN(end)) {
 			throw 'Start and End parameters should be number';
 		}
-		var song = this.songModel;
 		var startChord = this.getChord(start);
 		var endChord = this.getChord(end);
-		var startBeat = song.getBeatsBeforeBarNumber(startChord.getBarNumber()) + startChord.getBeat();
-		var endBeat = song.getBeatsBeforeBarNumber(endChord.getBarNumber()) + 1 + song.getTimeSignatureAt(endChord.getBarNumber()).getBeats();
+		var startBeat = songModel.getBeatsBeforeBarNumber(startChord.getBarNumber()) + startChord.getBeat();
+		var endBeat = songModel.getBeatsBeforeBarNumber(endChord.getBarNumber()) + 1 + songModel.getTimeSignatureAt(endChord.getBarNumber()).getBeats();
 		return [startBeat, endBeat];
 	};
 
@@ -358,18 +381,17 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 	 * @param  {Number} endBeat
 	 * @return {Array}  [indexStart, indexEnd]
 	 */
-	ChordManager.prototype.getIndexesStartingBetweenBeatInterval = function(startBeat, endBeat) {
+	/*ChordManager.prototype.getIndexesStartingBetweenBeatInterval = function(songModel, startBeat, endBeat) {
 		if (typeof startBeat === "undefined" || isNaN(startBeat) || typeof endBeat === "undefined" || isNaN(endBeat)) {
 			throw 'Start and End parameters should be number';
 		}
-		var song = this.songModel;
-		var pos1 = song.getPositionFromBeat(startBeat);
-		var pos2 = song.getPositionFromBeat(endBeat);
+		var pos1 = songModel.getPositionFromBeat(startBeat);
+		var pos2 = songModel.getPositionFromBeat(endBeat);
 		var index1 = this.getChordIndexByPosition(pos1, true);
 		var index2 = this.getChordIndexByPosition(pos2);
 		if (index2.exact) index2.index--;
 		return [index1.index, index2.index];
-	};
+	};*/
 
 	return ChordManager;
 });

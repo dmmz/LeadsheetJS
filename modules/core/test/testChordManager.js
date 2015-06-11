@@ -71,6 +71,19 @@ define(function(require) {
 				cm.removeChordsByBarNumber(0);
 				assert.equal(cm.getChordsByBarNumber(0)[0], undefined);
 
+				// Delete chords between positions
+				cm.addChord(chord);
+				var chord3 = new ChordModel({
+					'note': 'C',
+					'chordType': 'm',
+					'beat': 2,
+					'barNumber': 4
+				});
+				cm.addChord(chord3);
+				assert.equal(cm.getChords().toString(), "FM7,G7,Cm");
+				cm.removeChordsBetweenPositions(2, 1, 3, 3);
+				assert.equal(cm.getChords().toString(), "G7,Cm");
+
 			});
 		}
 	};

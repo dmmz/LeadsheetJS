@@ -3,6 +3,7 @@ require.config({
   baseUrl: "../",
   paths: {
     jquery: 'external-libs/jquery-2.1.0.min',
+    jquery_autocomplete: 'external-libs/jquery.autocomplete.min',
     qunit: 'external-libs/qunit/qunit',
     vexflow_helper: 'external-libs/qunit/vexflow_test_helpers',
     vexflow: 'external-libs/vexflow-min',
@@ -66,19 +67,20 @@ define(function(require) {
   var testHistoryModel = require('modules/History/test/testHistoryModel');
   var testHistoryController = require('modules/History/test/testHistoryController');
 
-  var testNoteEditionController  = require('modules/NoteEdition/test/testNoteEditionController');
-  var testNoteSpaceView  = require('modules/NoteEdition/test/testNoteSpaceView');
-  var testStructureEditionController  = require('modules/StructureEdition/test/testStructureEditionController');
-  var testFileEditionController  = require('modules/FileEdition/test/testFileEditionController');
+  var testChordEditionController = require('modules/ChordEdition/test/testChordEditionController');
+  var testNoteEditionController = require('modules/NoteEdition/test/testNoteEditionController');
+  var testNoteSpaceView = require('modules/NoteEdition/test/testNoteSpaceView');
+  var testStructureEditionController = require('modules/StructureEdition/test/testStructureEditionController');
+  var testFileEditionController = require('modules/FileEdition/test/testFileEditionController');
 
   var testHarmonizerController = require('modules/Harmonizer/test/testHarmonizerController');
   var testModuleManager = require('modules/ModuleManager/test/testModuleManager');
   var testMainMenuModel = require('modules/MainMenu/test/testMainMenuModel');
   var testMainMenuController = require('modules/MainMenu/test/testMainMenuController');
 
-  var testBarWidthManager  = require('modules/LSViewer/test/testBarWidthManager');
+  var testBarWidthManager = require('modules/LSViewer/test/testBarWidthManager');
 
-  var testCursorModel  = require('modules/Cursor/test/testCursorModel');
+  var testCursorModel = require('modules/Cursor/test/testCursorModel');
 
   // Utils
   //testUserLog.run();
@@ -109,6 +111,9 @@ define(function(require) {
   // Chord Sequence Module
   testSongView_chordSequence.run();
 
+  // Chord Edition
+  testChordEditionController.run();
+
   // Note Edition
   testNoteEditionController.run();
   testNoteSpaceView.run();
@@ -120,10 +125,10 @@ define(function(require) {
   testFileEditionController.run();
 
   // //LSViewer Module
-  testBarWidthManager.run(); 
+  testBarWidthManager.run();
 
   // Midi sound model Module
- // testPlayerModel_MidiCSL.run();
+  // testPlayerModel_MidiCSL.run();
   testSongModel_midiCSL.run();
   testNoteModel_midiCSL.run();
 
@@ -137,7 +142,7 @@ define(function(require) {
   testModuleManager.run();
   testMainMenuModel.run();
   testMainMenuController.run();
-  
+
   testCursorModel.run();
 
   QUnit.load();
