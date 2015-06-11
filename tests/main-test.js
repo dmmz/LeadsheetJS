@@ -32,8 +32,8 @@ require.config({
 
 define(function(require) {
   var QUnit = require('qunit');
-  // var testUserLog = require('utils/test/testUserlog');
-  // var testAjaxUtils = require('utils/test/testAjaxUtils');
+  var testUserLog = require('utils/test/testUserlog');
+  var testAjaxUtils = require('utils/test/testAjaxUtils');
 
   var testSongModel = require('modules/core/test/testSongModel');
   var testSectionModel = require('modules/core/test/testSectionModel');
@@ -61,7 +61,7 @@ define(function(require) {
   var testPlayerModel_MidiCSL = require('modules/MidiCSL/test/model/testPlayerModel_MidiCSL');
   var testSongConverterMidi_MidiCSL = require('modules/MidiCSL/test/converters/testSongConverterMidi_MidiCSL');
 
-  var testLSViewer = require('modules/LSViewer/test/testLSViewer');
+  //var testLSViewer = require('modules/LSViewer/test/testLSViewer');
 
 
   var testHistoryModel = require('modules/History/test/testHistoryModel');
@@ -83,8 +83,8 @@ define(function(require) {
   var testCursorModel = require('modules/Cursor/test/testCursorModel');
 
   // Utils
-  //testUserLog.run();
-  //testAjaxUtils.run();
+  testUserLog.run();
+  testAjaxUtils.run();
 
   // Core Module
   testNoteModel.run();

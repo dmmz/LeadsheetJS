@@ -2,7 +2,7 @@ define([
 	'modules/Edition/src/ElementView',
 	'modules/LSViewer/src/Scaler'
 	],
-	function(NoteSpaceView,Scaler) {
+	function(ElementView,Scaler) {
 	return {
 		run: function() {
 

@@ -14,7 +14,7 @@ define(['modules/core/src/ChordModel',
 				var cM = new CursorModel(songModel.getSongTotalBeats());
 				var csm = new ChordSpaceManager(songModel, cM);
 				var cec = new ChordEditionController(songModel, cM, csm);
-				var viewer = new LSViewer($("#vexflow_testoutput")[0], {
+				var viewer = new LSViewer($("#test")[0], {
 					layer: true
 				});
 
