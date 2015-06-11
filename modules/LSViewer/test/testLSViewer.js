@@ -118,7 +118,7 @@ define(['tests/DisplayTester',
 				viewer.canvasLayer.ctx.fillText(" This square is drawn in a new layer (canvas) placed on top of the main canvas", 65, 30);
 				viewer.canvasLayer.ctx.fillStyle = "rgb(200,0,0)";
 				viewer.canvasLayer.ctx.fillRect (10, 10, 55, 50);
-				tagMng.draw(viewer);
+				tagMng.drawTags(viewer);
 
 			},
 			{width:1200,height:1000},
