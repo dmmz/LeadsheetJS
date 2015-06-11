@@ -10,13 +10,17 @@ define([
 	'utils/apiFlowMachines/ComposerServlet',
 	'utils/AjaxUtils',
 	'jsPDF',
-], function(Mustache, SongModel, SongModel_CSLJson, SongModel_MusicXML, WaveManager, LSViewer, pubsub, UserLog, ComposerServlet, AjaxUtils, jsPDF) {
+	'jquery'
+], function(Mustache, SongModel, SongModel_CSLJson, SongModel_MusicXML, WaveManager, LSViewer, pubsub, UserLog, ComposerServlet, AjaxUtils, jsPDF, $) {
 
-	function FileEditionController(songModel, viewerCanvas, waveManager) {
+	function FileEditionController(songModel, viewerCanvas, saveFunction, waveManager ) {
 		this.viewerCanvas = viewerCanvas;
 		this.songModel = songModel || new SongModel();
 		this.waveManager = waveManager;
 		this.initSubscribe();
+		if (saveFunction){
+			this.saveFn = saveFunction;
+		}
 	}
 
 	/**
@@ -31,20 +35,6 @@ define([
 			self.importMusicXML(musicXMLSong);
 		});
 
-		$.subscribe('FileEditionView-sound_export', function(el, options) {
-			var exportType = (options && typeof options.exportType !== "undefined") ? options.exportType : 'mp3';
-			var chord = (options && typeof options.chord !== "undefined") ? options.chord : true;
-			var tick = (options && typeof options.tick !== "undefined") ? options.tick : false;
-			var style = (options && typeof options.style !== "undefined") ? options.style : "none";
-			var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(self.songModel);
-			JSONSong = JSON.stringify(JSONSong);
-			var tempo = self.songModel.getTempo();
-			if (exportType === 'mid') {
-				self.exportMidiFile(JSONSong, tempo, chord, tick);
-			} else {
-				self.exportAudioFile(JSONSong, tempo, exportType, chord, tick, style);
-			}
-		});
 		$.subscribe('FileEditionView-exportPNG', function(el) {
 			self.exportPNG();
 		});
@@ -54,6 +44,10 @@ define([
 		$.subscribe('FileEditionView-exportMusicCSLJSON', function(el) {
 			self.exportLeadsheetJSON();
 		});
+		$.subscribe('FileEditionView-save', function(el) {
+			self.save();
+		});
+
 	};
 
 	FileEditionController.prototype.importMusicCSLJSON = function(JSONSong) {
@@ -215,6 +209,28 @@ define([
 		}).prependTo('body');
 		export_link[0].click();
 		export_link.remove();
+	};
+
+	FileEditionController.prototype.save = function() {
+		var idLog = UserLog.log('info', 'Saving...');
+		var songId;
+		if (typeof this.songModel._id !== "undefined") {
+			songId = this.songModel._id;
+		}
+
+		this.songModel._id = undefined; // we need to clean songModel id otherwise update doesn't work
+		var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel);
+
+		var self = this;
+		this.saveFn(JSONSong, songId, function(data) {
+			UserLog.removeLog(idLog);
+			if (data.error){
+				UserLog.logAutoFade('error', data.msg);	
+			}else{
+				UserLog.logAutoFade('success', 'Leadsheet saved with success');	
+			}
+			self.songModel._id = data.id;
+		});
 	};
 
 	return FileEditionController;

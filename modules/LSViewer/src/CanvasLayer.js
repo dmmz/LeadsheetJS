@@ -74,8 +74,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
      *		name
      *		drawCursor
      *		setCursorEditable
-     *		getYs
-	 */
+  	 */
 	CanvasLayer.prototype.addElement = function(elem) {
 		if (!elem || !elem.CL_NAME || !elem.getType()) {
 			throw 'CanvasLayer element needs CL_NAME and CL_TYPE property';
