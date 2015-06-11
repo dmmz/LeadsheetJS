@@ -61,9 +61,6 @@ define(function(require) {
   var testPlayerModel_MidiCSL = require('modules/MidiCSL/test/model/testPlayerModel_MidiCSL');
   var testSongConverterMidi_MidiCSL = require('modules/MidiCSL/test/converters/testSongConverterMidi_MidiCSL');
 
-  //var testLSViewer = require('modules/LSViewer/test/testLSViewer');
-
-
   var testHistoryModel = require('modules/History/test/testHistoryModel');
   var testHistoryController = require('modules/History/test/testHistoryController');
 
