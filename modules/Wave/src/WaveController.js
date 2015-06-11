@@ -1,10 +1,10 @@
-define(['modules/WaveManager/src/WaveAudio',
-    'modules/WaveManager/src/WaveDrawer',
-    'modules/WaveManager/src/BarTimesManager',
+define(['modules/Wave/src/WaveModel',
+    'modules/Wave/src/WaveDrawer',
+    'modules/Wave/src/BarTimesManager',
     'modules/core/src/SongBarsIterator',
     'jquery',
     'pubsub'
-], function(WaveAudio, WaveDrawer, BarTimesManager, SongBarsIterator, $, pubsub) {
+], function(WaveModel, WaveDrawer, BarTimesManager, SongBarsIterator, $, pubsub) {
     /**
      * @param {SongModel} song
      * @param {cursorNotes} cModel     // notes cursor, it is updated when playing
@@ -15,15 +15,15 @@ define(['modules/WaveManager/src/WaveAudio',
      *   - topAudio: y distance to the actual bar from which audio is drawn, if 0 it will overwrite the current bar
      *   - heightAudio: height of the audio area, if 150 it will completely overwrite the current bar in the score
      */
-    function WaveManager(song, cModel, viewer, params) {
+    function WaveController(song, cModel, viewer, params) {
         if (!song) {
-            throw "WaveManager - song not defined";
+            throw "WaveController - song not defined";
         }
         // if (!cModel) {
-        //     throw "WaveManager - cModel not defined";
+        //     throw "WaveController - cModel not defined";
         // }
         if (!viewer) {
-            throw "WaveManager - viewer not defined";
+            throw "WaveController - viewer not defined";
         }
 
         params = params || {};
@@ -33,7 +33,7 @@ define(['modules/WaveManager/src/WaveAudio',
         this.cursorNotes = cModel;
         this.isLoaded = false;
         this.viewer = viewer;
-        this.audio = new WaveAudio();
+        this.audio = new WaveModel();
         this.file = params.file;
         this.tempo = params.tempo;
         this.isEnabled = true; //this is initialized on load
@@ -48,7 +48,7 @@ define(['modules/WaveManager/src/WaveAudio',
         this.drawer = new WaveDrawer(viewer, paramsDrawer, this);
         this._initSubscribe();
     }
-    WaveManager.prototype._initSubscribe = function() {
+    WaveController.prototype._initSubscribe = function() {
         var self = this;
         //when window is resized, leadsheet is drawn, and audio needs to be redrawn too
         $.subscribe('LSViewer-drawEnd', function() {
@@ -61,12 +61,24 @@ define(['modules/WaveManager/src/WaveAudio',
                 self.load(self.file, self.tempo);
             }
         });
+        $.subscribe("ToPlayer-play", function() {
+            self.play();
+        });
+        $.subscribe("ToPlayer-pause", function() {
+            self.pause();
+        });
+        $.subscribe('ToPlayer-stop', function() {
+            self.pause();
+        });
+        $.subscribe("ToLayers-removeLayer", function() {
+            self.disable();
+        });
     };
 
-    WaveManager.prototype.load = function(url, tempo, redraw, callback) {
+    WaveController.prototype.load = function(url, tempo, redraw, callback) {
 
         if (isNaN(tempo) || tempo <= 0) {
-            throw "WaveManager - No tempo speficied";
+            throw "WaveController - No tempo speficied";
         }
 
         var self = this;
@@ -96,13 +108,13 @@ define(['modules/WaveManager/src/WaveAudio',
         };
         xhr.send();
     };
-    WaveManager.prototype.enable = function() {
+    WaveController.prototype.enable = function() {
         this.isEnabled = true;
     };
-    WaveManager.prototype.disable = function() {
+    WaveController.prototype.disable = function() {
         this.isEnabled = false;
     };
-    WaveManager.prototype.restartAnimationLoop = function() {
+    WaveController.prototype.restartAnimationLoop = function() {
         var self = this;
         var noteMng = this.song.getComponent('notes');
         var iNote = 0,
@@ -140,7 +152,7 @@ define(['modules/WaveManager/src/WaveAudio',
         frame();
     };
 
-    WaveManager.prototype.play = function() {
+    WaveController.prototype.play = function() {
         if (this.isLoaded) {
             this.isPause = false;
             this.restartAnimationLoop();
@@ -149,7 +161,7 @@ define(['modules/WaveManager/src/WaveAudio',
         }
     };
 
-    WaveManager.prototype.pause = function() {
+    WaveController.prototype.pause = function() {
         if (this.isLoaded) {
             this.isPause = true;
             this.audio.pause();
@@ -157,10 +169,10 @@ define(['modules/WaveManager/src/WaveAudio',
         }
     };
 
-    WaveManager.prototype.getPlayedTime = function() {
+    WaveController.prototype.getPlayedTime = function() {
         //var dur = this.buffer.duration;
         return this.audio.audioCtx.currentTime - this.startTime;
     };
 
-    return WaveManager;
+    return WaveController;
 });

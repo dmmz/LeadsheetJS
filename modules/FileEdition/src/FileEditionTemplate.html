@@ -1,4 +1,13 @@
 <div id="editor_menu_second_level" class="hidden">
+	{{#save}}
+	<div id="save_container">
+		<div id="save_menu_each_container">
+			<button class="btn btn-primary" id="leadsheet_save">Save</button>
+			<!--button class="btn btn-primary" id="save_as_main_button">Save As</button-->
+		</div>
+	</div>
+	{{/save}}
+	{{#import}}
 	<div id="import_container">
 		<div id="editor_menu_each_import_container">
 			<div class="current_button" title="Import leadsheet as MusicCSL JSON or MusicXML">
@@ -9,23 +18,8 @@
 			Import
 		</div>
 	</div>
-	<div id="sound_export_container">
-		<div id="editor_menu_each_sound_export_container">
-			<div class="current_button" id="export_mp3" title="Export leadsheet as mp3">MP3</div>
-			<div class="current_button" id="export_wav" title="Export leadsheet as wav">WAV</div>
-			<div class="current_button" id="export_midi" title="Export leadsheet as midi">MIDI</div>
-			<div class="sound_export_options">
-				<label for="export_sound_chords">Chords: <input id="export_sound_chords" type="checkbox" name="export_sound_chords" checked />						</label>
-				<label for="export_sound_tick">Tick: <input id="export_sound_tick" type="checkbox" name="export_sound_tick" /></label>
-			</div>
-			<select id="sound_export_style">
-				<option value="none">Standard</option>
-			</select>
-		</div>
-		<div class="button_text">
-			Sound Export
-		</div>
-	</div>
+	{{/import}}
+	{{#export}}
 	<div id="export_container">
 		<div id="editor_menu_each_export_container">
 			<div class="current_button" id="export_png" title="Export leadsheet as png">PNG</div>
@@ -36,4 +30,6 @@
 			Leadsheet Export
 		</div>
 	</div>
+	{{/export}}
+
 </div>

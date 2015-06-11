@@ -9,7 +9,8 @@ define([
 		if (!viewer) {
 			throw "TextElementManager - viewer not defined";
 		}
-		this.name = 'title';
+		this.CL_NAME = 'title';
+		this.CL_TYPE = 'CLICKABLE';
 		this.viewer = viewer;
 		this.initSubscribe();
 		this.textView = null;
@@ -28,14 +29,15 @@ define([
 			}
 		});
 	};
+	TextElementManager.prototype.getType = function() {
+		return this.CL_TYPE;
+	};
 
 	TextElementManager.prototype.isEnabled = function() {
 		return true;
 	};
-	TextElementManager.prototype.draw = function() {
-		//do nothing as we have no cursor and no selection
-	};
-	TextElementManager.prototype.updateCursor = function() {
+
+	TextElementManager.prototype.onSelected = function() {
 		var self = this;
 		var inputVal = this.songModel.getTitle();
 
@@ -51,9 +53,6 @@ define([
 				self.disable();
 			}
 		});
-	};
-	TextElementManager.prototype.setCursorEditable = function() {
-		//do nothing as we have no cursor
 	};
 	TextElementManager.prototype.enable = function() {
 		//do nothing

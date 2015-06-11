@@ -6,30 +6,40 @@ define([
 	'pubsub',
 	'text!modules/FileEdition/src/FileEditionTemplate.html',
 ], function($, Mustache, SongModel, UserLog, pubsub, FileEditionTemplate) {
-
-	function FileEditionView(parentHTML) {
+	/**
+	 * [FileEditionView description]
+	 * @param {Object} params {
+	 *	import: Boolean,
+	 *	export: Boolean,
+	 *	save: Boolean
+	 * }
+	 */
+	function FileEditionView(params) {
 		this.el = undefined;
 		this.initSubscribe();
 		this.initKeyboard();
-		this.render();
+		this.render(params);
 	}
 
-	FileEditionView.prototype.render = function() {
-		this.el = Mustache.render(FileEditionTemplate);
+	FileEditionView.prototype.render = function(params) {
+		params = params || {
+			import:true,
+			export: true,
+			save: true
+		};
+		this.el = Mustache.render(FileEditionTemplate, params);
 	};
 	/**
 	 * Publish event after receiving dom events
 	 */
 	FileEditionView.prototype.initController = function() {
-		$('#add-bar').click(function() {
-			$.publish('FileEditionView-addBar');
-		});
+
 		var self = this;
 		// Leadsheet parameters
-		/*$('#leadsheet_save').click(function() {
-
+		$('#leadsheet_save').click(function() {
+			$.publish('FileEditionView-save');
 		});
-
+		/*
 		$('#leadsheet_edit_chord_sequence').click(function() {
 
 		});
@@ -58,40 +68,6 @@ define([
 			return false;
 		});
 
-		// export sound
-		$('#export_mp3').click(function() {
-			var chord = $('#export_sound_chords').prop("checked");
-			var tick = $('#export_sound_tick').prop("checked");
-			var style = $('#sound_export_style').val();
-			$.publish('FileEditionView-sound_export', {
-				'exportType': 'mp3',
-				'chord': chord,
-				'tick': tick,
-				'style': style
-			});
-		});
-
-		$('#export_wav').click(function() {
-			var chord = $('#export_sound_chords').prop("checked");
-			var tick = $('#export_sound_tick').prop("checked");
-			var style = $('#sound_export_style').val();
-			$.publish('FileEditionView-sound_export', {
-				'exportType': 'wav',
-				'chord': chord,
-				'tick': tick,
-				'style': style
-			});
-		});
-
-		$('#export_midi').click(function() {
-			var chord = $('#export_sound_chords').prop("checked");
-			var tick = $('#export_sound_tick').prop("checked");
-			$.publish('FileEditionView-sound_export', {
-				'exportType': 'mid',
-				'chord': chord,
-				'tick': tick
-			});
-		});
 
 		// leadsheet export
 		$('#export_png').click(function() {

@@ -21,7 +21,8 @@ define([
 		this.songModel = songModel;
 		this.noteSpaceManager = noteSpaceManager;
 
-		this.name = 'TagManager';
+		this.CL_NAME = 'TagManager';
+		this.CL_TYPE = 'CLICKABLE'
 		this.tags = tags || [];
 		this.colors = colors || ["#559", "#995", "#599", "#595"];
 		this.tagSpaces = [];
@@ -31,6 +32,9 @@ define([
 		this.initSubscribe();
 		this.elemMng = new ElementManager();
 	}
+	TagManager.prototype.getType = function() {
+		return this.CL_TYPE;
+	};
 
 	TagManager.prototype.getTags = function() {
 		return this.tags;
@@ -63,7 +67,7 @@ define([
 		return this.isActive;
 	};
 
-	TagManager.prototype.updateCursor = function(coords, clicked) {
+	TagManager.prototype.onSelected = function(coords, clicked) {
 		var indexTagClicked = this.inPathPosition(coords);
 		// console.log(indexTagClicked);
 		var self = this;
@@ -74,15 +78,11 @@ define([
 		}
 	};
 
-	TagManager.prototype.setCursorEditable = function() {
-		//do nothing as we have no cursor
-	};
+	
 	TagManager.prototype.isEnabled = function() {
-		return this.isActive;
+		return true;
 	};
-	TagManager.prototype.enable = function() {
-		this.isActive = true;
-	};
+	TagManager.prototype.enable = function() {};
 	TagManager.prototype.disable = function() {};
 
 	/**
@@ -139,9 +139,6 @@ define([
 		toIndex = startEnd[1];
 		return this.elemMng.getElementsAreaFromCursor(this.noteSpaceManager.noteSpace, [fromIndex, toIndex]);
 	};
-
-	// interface function to display cursor
-	TagManager.prototype.draw = function() {};
 
 	TagManager.prototype.drawTags = function(viewer) {
 		if (this.isActive !== true) {

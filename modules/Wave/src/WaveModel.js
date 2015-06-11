@@ -1,11 +1,11 @@
 define(function() {
-	function WaveAudio() {
+	function WaveModel() {
 		this.audioCtx = new(window.AudioContext || window.webkitAudioContext)();
 		this.source = this.audioCtx.createBufferSource();
 		this.tempo = null;
 	}
 
-	WaveAudio.prototype._createSource = function() {
+	WaveModel.prototype._createSource = function() {
 
 		this._disconnectSource();
 		this.source = this.audioCtx.createBufferSource();
@@ -13,24 +13,24 @@ define(function() {
 		this.source.connect(this.audioCtx.destination);
 
 	};
-	WaveAudio.prototype._disconnectSource = function() {
+	WaveModel.prototype._disconnectSource = function() {
 		if (this.source) {
 			this.source.buffer.length = 0; // remove previous buffer (usefull for memory)
 			this.source.disconnect();
 		}
 	};
 
-	WaveAudio.prototype.play = function() {
+	WaveModel.prototype.play = function() {
 		this._createSource();
 		this.source.start(0);
 	};
 
-	WaveAudio.prototype.pause = function() {
+	WaveModel.prototype.pause = function() {
 		this._disconnectSource();
 		this.source.stop(0);
 	};
 
-	WaveAudio.prototype.load = function(audioData, waveMng, tempo, callback) {
+	WaveModel.prototype.load = function(audioData, waveMng, tempo, callback) {
 		var self = this;
 		this.audioCtx.decodeAudioData(audioData, function(buffer) {
 				self.buffer = []; // remove previous buffer (usefull for memory)
@@ -51,10 +51,10 @@ define(function() {
 			}
 		);
 	};
-	WaveAudio.prototype.getDuration = function() {
+	WaveModel.prototype.getDuration = function() {
 		return this.buffer.duration;
 	};
-	WaveAudio.prototype.getPeaks = function(length, startPoint, endPoint) {
+	WaveModel.prototype.getPeaks = function(length, startPoint, endPoint) {
 
 		startPoint = startPoint || 0;
 		endPoint = endPoint || 1;
@@ -98,5 +98,5 @@ define(function() {
 		return mergedPeaks;
 
 	};
-	return WaveAudio;
+	return WaveModel;
 });

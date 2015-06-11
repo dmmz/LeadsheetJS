@@ -18,7 +18,8 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		this.coords = {};
 		this.mouseDown = false;
 		this._listenEvents(canvasLayer);
-		this.elems = {};
+		this.elems = {};	//elements to be added (can be CLICKABLE or CURSOR)
+		this.order = [];    //we keep trace of order in which elements are added, to decide which should be prioritized on click
 	}
 
 	CanvasLayer.prototype._createLayer = function(viewer) {
@@ -53,6 +54,39 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		};
 	};
 
+	/**
+	 * Element should have properties:
+	 *		CL_NAME 
+	 *		CL_TYPE
+	 *	methods:
+	 *		getType
+	 *		iEnabled
+	 *		enable   
+	 *		disable
+	 *		onSelected
+	 *		inPath
+	 *
+	 * CLICKABLE elements will be enabled always, but 'disable' function is useful for example to simulate event 'onBlur' when unfocusing element
+	 * 
+	 * CL_TYPE can be 'CURSOR' or 'CLICKABLE'
+	 * if it's CURSOR, it needs to have also this methods:
+	 *		getYs
+     *		name
+     *		drawCursor
+     *		setCursorEditable
+  	 */
+	CanvasLayer.prototype.addElement = function(elem) {
+		if (!elem || !elem.CL_NAME || !elem.getType()) {
+			throw 'CanvasLayer element needs CL_NAME and CL_TYPE property';
+		}
+
+		if (!(elem.CL_NAME in this.elems)){
+			this.elems[elem.CL_NAME] = elem;
+			this.order.push(elem.CL_NAME);	//order is useful to control z-index of drawn elements, last drawn elements will be prioritized on click. (see getOneActiveElement())
+		}
+		
+	};
+
 	CanvasLayer.prototype._listenEvents = function() {
 		var self = this,
 			xy,
@@ -68,40 +102,41 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		 * @return {Array}        array of active elements (being elements like ChordSpaceManager, NoteSpaceManager, WaveDrawer. TextElementManager will never be returned because it is not selectable (it does not have getY() function), it is only thought for being clicked)
 		 */
 		function getElemsByYs(coords) {
-			var minY = 999999,
-				maxY = 0,
-				minName, maxName, ys;
-			var activeElems = [];
-			for (var name in self.elems) {
-				//self.elems[name].updateCursor([null,null]);
-				if (typeof self.elems[name].getYs === 'function') {
-					ys = self.elems[name].getYs(coords);
-					if (ys.topY < minY) {
-						minY = ys.topY;
-						minName = name;
-					}
-					if (ys.bottomY > maxY) {
-						maxY = ys.bottomY;
-						maxName = name;
+				var minY = 999999,
+					maxY = 0,
+					minName, maxName, ys;
+				var activeElems = [];
+				for (var name in self.elems) {
+					if (self.elems[name].getType() === 'CURSOR') {
+
+						ys = self.elems[name].getYs(coords);
+						if (ys.topY < minY) {
+							minY = ys.topY;
+							minName = name;
+						}
+						if (ys.bottomY > maxY) {
+							maxY = ys.bottomY;
+							maxName = name;
+						}
 					}
 				}
+				if (minName) {
+					activeElems.push(self.elems[minName]);
+				}
+				if (maxName && minName != maxName) {
+					activeElems.push(self.elems[maxName]);
+				}
+				return activeElems;
 			}
-			if (minName) {
-				activeElems.push(self.elems[minName]);
-			}
-			if (maxName && minName != maxName) {
-				activeElems.push(self.elems[maxName]);
-			}
-			return activeElems;
-		}
-
-		/**
-		 * when clicking on an element we will select one only element, this function chooses which one depending on coords
-		 * @param  {Object} coords  e.g.:  {x:12, y:21}
-		 * @return {Object}        class of active element (ChordSpaceManager, NoteSpaceManager, WaveDrawer. TextElementManager...etc.)
-		 */
+			/**
+			 * when clicking on an element we will select one only element, this function chooses which one depending on coords
+			 * @param  {Object} coords  e.g.:  {x:12, y:21}
+			 * @return {Object}        class of active element (ChordSpaceManager, NoteSpaceManager, WaveDrawer. TextElementManager...etc.)
+			 */
 		function getOneActiveElement(coords) {
-			for (var name in self.elems) {
+			var name;
+			for (var i = self.order.length - 1; i >= 0; i--) {
+				name = self.order[i];
 				if (self.elems[name].inPath(coords)) {
 					return [self.elems[name]];
 				}
@@ -110,10 +145,11 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 
 		function resetElems() {
 			for (var name in self.elems) {
-				if (self.elems[name].cursor) {
+				if(self.elems[name].getType() == 'CURSOR'){
 					self.elems[name].setCursorEditable(false);
 				}
 				self.elems[name].disable();
+				
 			}
 		}
 
@@ -130,9 +166,12 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			} else {
 				activElems = getElemsByYs(self.coords);
 			}
+
 			for (var i in activElems) {
-				activElems[i].updateCursor(self.coords, clicked, mouseUp);
-				activElems[i].setCursorEditable(true);
+				activElems[i].onSelected(self.coords, clicked, mouseUp);
+				if ( activElems[i].getType() == 'CURSOR'){
+					activElems[i].setCursorEditable(true);
+				}
 				activElems[i].enable();
 			}
 			self.refresh();
@@ -252,29 +291,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 	CanvasLayer.prototype.getCanvas = function() {
 		return this.canvasLayer;
 	};
-	/**
-	 * Elements to draw
-	 * @param {String} name
-	 * @param {Model} elem any model that has a draw function receiving a ctx
-	 *
-	 * Element class should have several arguments
-	 * name
-	 * and several functions:
-	 * getYs
-	 * updateCursor
-	 * inPath
-	 * draw
-	 * isEnabled
-	 * enable
-	 * disable
-	 * setCursorEditable
-	 */
-	CanvasLayer.prototype.addElement = function(elem) {
-		if (!elem || !elem.name) {
-			throw 'CanvasLayer element needs name property';
-		}
-		this.elems[elem.name] = elem;
-	};
+
 	/**
 	 * Refresh canvas layer: all elements in canvas layer should be elements cursors or elements that change fast
 	 */
@@ -284,14 +301,16 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		this.viewer.scale(this.ctx);
 		// console.log(name1+","+name2);
 		// console.log(this.elems);
+		var elem;
 		for (var name in this.elems) {
-			if (this.elems[name].isEnabled()) {
+			elem = this.elems[name];
+			if (elem.isEnabled() && elem.getType() == 'CURSOR') {
 				//drawing cursor for notesManager, chordsManager and WaveManager (selection cursor)
-				this.elems[name].draw(this.ctx);
+				elem.drawCursor(this.ctx);
 			}
 			//TODO refactor, drawCursor only exists in WaveManager to draw playing cursor
-			if (typeof this.elems[name].drawCursor === 'function') {
-				this.elems[name].drawCursor(this.ctx);
+			if (typeof elem.drawPlayingCursor === 'function') {
+				elem.drawPlayingCursor(this.ctx);
 			}
 		}
 		this.viewer.resetScale(this.ctx);
