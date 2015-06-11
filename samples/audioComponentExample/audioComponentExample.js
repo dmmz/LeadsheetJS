@@ -36,9 +36,7 @@ define(function(require) {
           CursorModel = require('modules/Cursor/src/CursorModel'),
           NoteEditionController = require('modules/NoteEdition/src/NoteEditionController'),
           NoteSpaceManager = require('modules/NoteEdition/src/NoteSpaceManager'),
-          WaveManager = require('modules/WaveManager/src/WaveManager'),
-          WaveManagerView = require('modules/WaveManager/src/WaveManagerView'),
-          WaveManagerController = require('modules/WaveManager/src/WaveManagerController');
+          WaveManager = require('modules/Wave/src/WaveController');
 
         var viewer = new LSViewer($("#audioExample")[0],{heightOverflow:'resizeDiv',layer:true});
         var song = SongModel_CSLJson.importFromMusicCSLJSON(Solar);
@@ -58,10 +56,10 @@ define(function(require) {
 
         
         //noteSpaceManager.refresh();
-        waveMng.load('/tests/audio/solar.wav');
+        waveMng.load('/tests/audio/solar.wav',170);
 
-        var wmv = new WaveManagerView($("#main-container")[0]),
-        wmc = new WaveManagerController(waveMng);
+        // var wmv = new WaveManagerView($("#main-container")[0]),
+        // wmc = new WaveManagerController(waveMng);
 
         wmv.render();
 
