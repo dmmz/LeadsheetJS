@@ -444,11 +444,15 @@ define([
 		this.init();
 	};
 
-	SongModel.prototype.unfold = function() {
-		var self = this;
+	SongModel.prototype.clone = function() {
+		var songModelCloned = jQuery.extend(true, new SongModel(), this);
+		return songModelCloned;
+	};
 
-		function getUnfoldedNotes() {
-			var barNotes = self.getUnfoldedSongComponents("notes");
+	SongModel.prototype.unfold = function() {
+
+		function getUnfoldedNotes(oldSong) {
+			var barNotes = oldSong.getUnfoldedSongComponents("notes");
 			var newNoteMng = new NoteManager();
 			for (var i in barNotes) {
 				newNoteMng.addNotes(barNotes[i]);
@@ -456,10 +460,10 @@ define([
 			return newNoteMng.getNotes();
 		}
 
-		function getUnfoldedChords() {
+		function getUnfoldedChords(oldSong) {
 			var newChords = [];
 			var chord;
-			var barChords = self.getUnfoldedSongComponents("chords");
+			var barChords = oldSong.getUnfoldedSongComponents("chords");
 			for (var i in barChords) {
 				for (var j in barChords[i]) {
 					chord = barChords[i][j].clone();
@@ -470,17 +474,17 @@ define([
 			return newChords;
 		}
 
-		function getUnfoldedSectionsAndBars() {
+		function getUnfoldedSectionsAndBars(oldSong) {
 			var i, c, j,
 				section,
 				pointerBarNumberStructure,
 				newSections = [],
 				newBars = [],
-				barMng = self.getComponent("bars");
+				barMng = oldSong.getComponent("bars");
 
-			for (i = 0, c = self.getSections().length; i < c; i++) {
-				section = self.getSection(i);
-				pointerBarNumberStructure = self.getUnfoldedSongSection(i);
+			for (i = 0, c = oldSong.getSections().length; i < c; i++) {
+				section = oldSong.getSection(i);
+				pointerBarNumberStructure = oldSong.getUnfoldedSongSection(i);
 				newSections.push(
 					section.cloneUnfolded(pointerBarNumberStructure.length)
 				);
@@ -497,41 +501,42 @@ define([
 			};
 		}
 
-		// Copy basic song data. 
-		var newSong = new SongModel({
-			title: this.getTitle(),
-			composers: this.composers,
-			style: this.getStyle(),
-			source: this.getSource(),
-			tempo: this.getTempo(),
-			tonality: this.getTonality(),
-			timeSignature: this.getTimeSignature()
-		});
+		var oldSong = this.clone();
+		// Copy basic song data.
+		this.clear();
+		this.setTitle(oldSong.getTitle());
+		this.composers = oldSong.composers;
+		this.setStyle(oldSong.getStyle());
+		this.setSource(oldSong.getSource());
+		this.setTempo(oldSong.getTempo());
+		this.setTonality(oldSong.getTonality());
+		this.setTimeSignature(oldSong.getTimeSignature().toString());
+
 
 		// BARS and SECTIONS
-		var r = getUnfoldedSectionsAndBars();
+		var r = getUnfoldedSectionsAndBars(oldSong);
 
 		var barMng = new BarManager();
 		barMng.setBars(r.newBars);
 
-		newSong.sections = [];
+		this.sections = [];
 		for (var i in r.newSections) {
-			newSong.addSection(r.newSections[i]);
+			this.addSection(r.newSections[i]);
 		}
 
 		//NOTES
 		var noteMng = new NoteManager();
-		noteMng.setNotes(getUnfoldedNotes());
+		noteMng.setNotes(getUnfoldedNotes(oldSong));
 
 		//CHORDS
 		var chordMng = new ChordManager();
-		chordMng.setAllChords(getUnfoldedChords());
+		chordMng.setAllChords(getUnfoldedChords(oldSong));
 
-		newSong.addComponent('notes', noteMng);
-		newSong.addComponent('chords', chordMng);
-		newSong.addComponent('bars', barMng);
+		this.addComponent('notes', noteMng);
+		this.addComponent('chords', chordMng);
+		this.addComponent('bars', barMng);
 
-		return newSong;
+		return this;
 	};
 
 

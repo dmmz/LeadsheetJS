@@ -28,17 +28,17 @@ define([
 	StructureEditionView.prototype.initController = function() {
 		var fn;
 		$('#add-section').click(function() {
-			fn  = 'addSection';
-			$.publish('StructureEditionView',fn);
+			fn = 'addSection';
+			$.publish('StructureEditionView', fn);
 		});
 		$('#rem-section').click(function() {
 			fn = 'removeSection';
-			$.publish('StructureEditionView',fn);
+			$.publish('StructureEditionView', fn);
 		});
 		$('#validateSectionTitle').click(function() {
 			var name = $('#inputSectionName').val();
 			fn = 'setSectionName';
-			$.publish('StructureEditionView',[fn, name] );
+			$.publish('StructureEditionView', [fn, name]);
 		});
 		$('#selectSectionRepeatTimes').change(function() {
 			var repeatTimes = parseInt($(this).val(), 10) - 1; // number of repetition is the number of played times minus 1
@@ -60,7 +60,7 @@ define([
 		$('#edit_each_time_signature_container select').change(function() {
 			fn = 'setTimeSignature';
 			var timeSignature = $(this).val();
-			$.publish('StructureEditionView', [fn,timeSignature]);
+			$.publish('StructureEditionView', [fn, timeSignature]);
 		});
 
 		// Tonality change
@@ -98,7 +98,7 @@ define([
 			$.publish('StructureEditionView', [fn, sublabel]);
 		});
 		$('#unfold').click(function() {
-			$.publish('StructureEditionView','unfold');
+			$.publish('StructureEditionView', 'unfold');
 		});
 	};
 
@@ -110,7 +110,7 @@ define([
 	 * Subscribe to model events
 	 */
 	StructureEditionView.prototype.initSubscribe = function() {
-		$.subscribe('StructureEditionModel-toggleUnfolded', function(el, unfolded) {
+		$.subscribe('StructureEditionModel-setUnfolded', function(el, unfolded) {
 			var textButton = unfolded ? "Fold" : "Unfold";
 			$("#unfold").val(textButton);
 		});

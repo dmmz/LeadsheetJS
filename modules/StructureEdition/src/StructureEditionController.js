@@ -26,8 +26,8 @@ define([
 		// All functions related with note edition go here
 		$.subscribe('StructureEditionView', function(el, fn, param) {
 			//if (self.noteSpaceMng.isEnabled()) {
-				self[fn].call(self, param);
-				$.publish('ToViewer-draw', self.songModel);
+			self[fn].call(self, param);
+			$.publish('ToViewer-draw', self.songModel);
 			//}
 		});
 
@@ -344,12 +344,19 @@ define([
 		return selectedBars;
 	};
 
-	StructureEditionController.prototype.unfold = function() {
-		if (!this.structEditionModel.unfolded) {
+	StructureEditionController.prototype.unfold = function(force) {
+		var unfold = true;
+		if (typeof force === "undefined" || force === false) {
+			unfold = !this.structEditionModel.unfolded;
+		}
+		if (unfold) {
 			this.oldSong = this.songModel;
 			var newSongModel = this.songModel.unfold();
-			$.publish('ToViewer-draw', newSongModel);
+			this.songModel = newSongModel;
+			this.cursor.setListElements(this.songModel.getComponent('notes'));
+			$.publish('ToViewer-draw', this.songModel);
 		} else {
+			this.cursor.setListElements(this.songModel.getComponent('notes'));
 			$.publish('ToViewer-draw', this.oldSong);
 		}
 		this.structEditionModel.toggleUnfolded();

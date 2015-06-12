@@ -17,7 +17,6 @@ define([
 					assert.equal(unfoldedBars.length,20,"getUnfoldedSongComponents: unfolded bars"); //we know there are 20 
 					assert.equal(unfoldedBars[14][0].pitchClass[0],"A","getUnfoldedSongComponents: note in 14th bar has pitch A");
 					
-					var unfoldedSong = song.unfold();
 					
 					assert.deepEqual(
 						song.getComponent("notes").getNotesAsString(),
@@ -25,6 +24,14 @@ define([
 						"D/5-w", "F/5-w", "E/5-w", "E/5-w"],
 						"compare folded notes"
 					);
+					
+					assert.deepEqual(
+						song.getComponent("chords").getChordsAsString(),
+						["Dm", "F7", "Am", "G7", "E7", "F", "D", "G7", "CM7"],
+						"compare folded chords"
+					);
+
+					var unfoldedSong = song.unfold();
 
 					assert.deepEqual(
 						unfoldedSong.getComponent("notes").getNotesAsString(),
@@ -34,12 +41,6 @@ define([
 						"Db/4-w", "E/4-w", "Ab/4-w", "G#/4-w",
 						"D/5-w", "F/5-w", "E/5-w", "E/5-w"],
 						"compare unfolded notes"
-					);
-
-					assert.deepEqual(
-						song.getComponent("chords").getChordsAsString(),
-						["Dm", "F7", "Am", "G7", "E7", "F", "D", "G7", "CM7"],
-						"compare folded chords"
 					);
 
 					assert.deepEqual(
@@ -83,6 +84,7 @@ define([
 
 				assert.equal(song.getSongTotalBeats(), 29);
 				unfold();
+				// assert.deepEqual(song.clone(), song, 'clone');
 
 				/* MISSING TESTS: 
 					Song with no notes

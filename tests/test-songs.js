@@ -2984,250 +2984,184 @@ define(function() {
 	};
 
 	var foldedSong = {
-	"title": "Folded song",
- "composer": "Dani Martin",
- "time": "4\/4",
- "keySignature": "C",
- "style": "Medium Swing",
- "source": "51b6fe4067ca227d25665b0e",
- "changes": [  {
-   "name": "",
-   "repeat": 3,
-   "numBars": 10,
-   "bars": [
-    {
-     "chords": [
-      {
-       "p": "D",
-       "ch": "m",
-       "beat": 1
-      }
-     ],
-     "melody": [
-      {
-       "keys": [
-        "Db\/4"
-       ],
-       "duration": "w"
-      }
-     ]
-    },
-    {
-     "melody": [
-      {
-       "keys": [
-        "E\/4"
-       ],
-       "duration": "w"
-      }
-     ]
-    },
-    {
-     "ending": "1",
-     "chords": [
-      {
-       "p": "F",
-       "ch": "7",
-       "beat": 1
-      }
-     ],
-     "melody": [
-      {
-       "keys": [
-        "F\/4"
-       ],
-       "duration": "w"
-      }
-     ]
-    },
-    {
-     "melody": [
-      {
-       "keys": [
-        "A#\/4"
-       ],
-       "duration": "w"
-      }
-     ]
-    },
-    {
-     "ending": "2",
-     "chords": [
-      {
-       "p": "A",
-       "ch": "m",
-       "beat": 1
-      }
-     ],
-     "melody": [
-      {
-       "keys": [
-        "C\/5"
-       ],
-       "duration": "w"
-      }
-     ]
-    },
-    {
-     "melody": [
-      {
-       "keys": [
-        "B\/4"
-       ],
-       "duration": "h"
-      },
-      {
-       "keys": [
-        "A\/4"
-       ],
-       "duration": "h",
-      }
-     ]
-    },
-    {
-     "ending": "3",
-     "chords": [
-      {
-       "p": "G",
-       "ch": "7",
-       "beat": 1
-      }
-     ],
-     "melody": [
-      {
-       "keys": [
-        "A\/4"
-       ],
-       "duration": "h",
-      },
-      {
-       "keys": [
-        "B\/4"
-       ],
-       "duration": "qr"
-      },
-      {
-       "keys": [
-        "B\/4"
-       ],
-       "duration": "qr"
-      }
-     ]
-    },
-    {
-     "melody": [
-      {
-       "keys": [
-        "B\/4"
-       ],
-       "duration": "w"
-      }
-     ]
-    },
-    {
-     "ending": "4",
-     "chords": [
-      {
-       "p": "E",
-       "ch": "7",
-       "beat": 1
-      },
-      {
-       "p": "F",
-       "beat": 3
-      }
-     ],
-     "melody": [
-      {
-       "keys": [
-        "Ab\/4"
-       ],
-       "duration": "w"
-      }
-     ]
-    },
-    {
-     "melody": [
-      {
-       "keys": [
-        "G#\/4"
-       ],
-       "duration": "w"
-      }
-     ]
-    }
-   ]
-  },
-  {
-   "name": "",
-   "repeat": 0,
-   "numBars": 4,
-   "bars": [
-    {
-     "chords": [
-      {
-       "p": "D",
-       "ch": "",
-       "beat": 1
-      }
-     ],
-     "melody": [
-      {
-       "keys": [
-        "D\/5"
-       ],
-       "duration": "w"
-      }
-     ]
-    },
-    {
-     "chords": [
-      {
-       "p": "G",
-       "ch": "7",
-       "beat": 1
-      }
-     ],
-     "melody": [
-      {
-       "keys": [
-        "F\/5"
-       ],
-       "duration": "w"
-      }
-     ]
-    },
-    {
-     "chords": [
-      {
-       "p": "C",
-       "ch": "M7",
-       "beat": 1
-      }
-     ],
-     "melody": [
-      {
-       "keys": [
-        "E\/5"
-       ],
-       "duration": "w"
-      }
-     ]
-    },
-    {
-     "melody": [
-      {
-       "keys": [
-        "E\/5"
-       ],
-       "duration": "w"
-      }
-     ]
-    }
-   ]
-  }
- ]
-};
+		"title": "Folded song",
+		"composer": "Dani Martin",
+		"time": "4\/4",
+		"keySignature": "C",
+		"style": "Medium Swing",
+		"source": "51b6fe4067ca227d25665b0e",
+		"changes": [{
+			"name": "",
+			"repeat": 3,
+			"numBars": 10,
+			"bars": [{
+				"chords": [{
+					"p": "D",
+					"ch": "m",
+					"beat": 1
+				}],
+				"melody": [{
+					"keys": [
+						"Db\/4"
+					],
+					"duration": "w"
+				}]
+			}, {
+				"melody": [{
+					"keys": [
+						"E\/4"
+					],
+					"duration": "w"
+				}]
+			}, {
+				"ending": "1",
+				"chords": [{
+					"p": "F",
+					"ch": "7",
+					"beat": 1
+				}],
+				"melody": [{
+					"keys": [
+						"F\/4"
+					],
+					"duration": "w"
+				}]
+			}, {
+				"melody": [{
+					"keys": [
+						"A#\/4"
+					],
+					"duration": "w"
+				}]
+			}, {
+				"ending": "2",
+				"chords": [{
+					"p": "A",
+					"ch": "m",
+					"beat": 1
+				}],
+				"melody": [{
+					"keys": [
+						"C\/5"
+					],
+					"duration": "w"
+				}]
+			}, {
+				"melody": [{
+					"keys": [
+						"B\/4"
+					],
+					"duration": "h"
+				}, {
+					"keys": [
+						"A\/4"
+					],
+					"duration": "h",
+				}]
+			}, {
+				"ending": "3",
+				"chords": [{
+					"p": "G",
+					"ch": "7",
+					"beat": 1
+				}],
+				"melody": [{
+					"keys": [
+						"A\/4"
+					],
+					"duration": "h",
+				}, {
+					"keys": [
+						"B\/4"
+					],
+					"duration": "qr"
+				}, {
+					"keys": [
+						"B\/4"
+					],
+					"duration": "qr"
+				}]
+			}, {
+				"melody": [{
+					"keys": [
+						"B\/4"
+					],
+					"duration": "w"
+				}]
+			}, {
+				"ending": "4",
+				"chords": [{
+					"p": "E",
+					"ch": "7",
+					"beat": 1
+				}, {
+					"p": "F",
+					"beat": 3
+				}],
+				"melody": [{
+					"keys": [
+						"Ab\/4"
+					],
+					"duration": "w"
+				}]
+			}, {
+				"melody": [{
+					"keys": [
+						"G#\/4"
+					],
+					"duration": "w"
+				}]
+			}]
+		}, {
+			"name": "",
+			"repeat": 0,
+			"numBars": 4,
+			"bars": [{
+				"chords": [{
+					"p": "D",
+					"ch": "",
+					"beat": 1
+				}],
+				"melody": [{
+					"keys": [
+						"D\/5"
+					],
+					"duration": "w"
+				}]
+			}, {
+				"chords": [{
+					"p": "G",
+					"ch": "7",
+					"beat": 1
+				}],
+				"melody": [{
+					"keys": [
+						"F\/5"
+					],
+					"duration": "w"
+				}]
+			}, {
+				"chords": [{
+					"p": "C",
+					"ch": "M7",
+					"beat": 1
+				}],
+				"melody": [{
+					"keys": [
+						"E\/5"
+					],
+					"duration": "w"
+				}]
+			}, {
+				"melody": [{
+					"keys": [
+						"E\/5"
+					],
+					"duration": "w"
+				}]
+			}]
+		}]
+	};
 	return {
 		simpleLeadSheet: simpleLeadSheet,
 		simpleIncompleteLeadSheet: simpleIncompleteLeadSheet,
