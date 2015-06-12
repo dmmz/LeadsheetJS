@@ -31,6 +31,7 @@ define([
 		return this.title;
 	};
 	SongModel.prototype.setTitle = function(title) {
+		title = title || 'Untitled';
 		this.title = title;
 	};
 
@@ -39,6 +40,7 @@ define([
 		return this.composers[i];
 	};
 	SongModel.prototype.setComposer = function(composer) {
+		composer = composer || 'No Composer';
 		this.composers[0] = composer;
 	};
 	SongModel.prototype.addComposer = function(composer) {

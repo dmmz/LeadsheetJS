@@ -19,9 +19,11 @@ define([
 		
 		//editing title
 		
-		new TextElementManager('titleView', 'Title', viewer, songModel);
+		var titleSuggs = params.title ? params.title.suggestions : null;
+		new TextElementManager('titleView', 'Title', viewer, songModel,titleSuggs);
 
-		new TextElementManager('composerView', 'Composer', viewer,songModel);
+		var composerSuggs = params.composer ? params.composer.suggestions : null;
+		new TextElementManager('composerView', 'Composer', viewer, songModel, composerSuggs);
 		
 
 		var cursorNote;

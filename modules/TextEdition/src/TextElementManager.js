@@ -10,8 +10,10 @@ define([
 	 * @param {String} name         should be UpperCamelCase (first letter capital), and there should a setter and a getter in songModel. e.g. name = 'Title', functions songModel.getTitle() and songModel.setTitle() exists, same for name = 'Composer', songModel.setComposer(), songModel.getComposer(). TODO: composers will be treated as ana array, so we have function 'addComposer'. It is not solved yet how to update a composer (or several). When we'll do it, maybe we should pass set and get functions as arguments instead of 'name'
 	 * @param {LSViewer} viewer       
 	 * @param {SongModel} songModel    
+	 * @param {Array} suggestions	Array of suggestions in case input need autocomplete
+	 * 
 	 */
-	function TextElementManager(fieldElement, name, viewer, songModel) {
+	function TextElementManager(fieldElement, name, viewer, songModel, suggestions) {
 		if (typeof fieldElement !== 'string' || typeof name !== 'string' || !viewer) {
 			throw "TextElementManager error params";
 		}
@@ -25,8 +27,8 @@ define([
 		this.songModel = songModel;
 		this.songSetNameFn = 'set' + name;
 		this.songGetNameFn = 'get' + name;
+		this.suggestions = suggestions;
 
-		console.log(typeof this.songModel[this.songSetNameFn]);
 		if (typeof this.songModel[this.songSetNameFn] !== 'function' || typeof this.songModel[this.songGetNameFn] !== 'function') {
 			throw "TextElementManager - missing get or set function in songModel";
 		}
@@ -56,10 +58,10 @@ define([
 		var self = this;
 		var inputVal = this.songModel[this.songGetNameFn].call(this.songModel);
 
-		this.htmlInput = new HtmlInputElement(this.viewer, 'title', this.textView.getArea());
+		this.htmlInput = new HtmlInputElement(this.viewer, this.CL_NAME, this.textView.getArea());
 		var input = this.htmlInput.input;
 
-		input.focus(); // this focus allow setting cursor on end carac
+		input.focus();
 		input.val(inputVal);
 		$(input).keyup(function(evt) {
 			var keyCode = (evt === null) ? event.keyCode : evt.keyCode;
@@ -69,6 +71,20 @@ define([
 				self.disable();
 			}
 		});
+
+		if (this.suggestions){
+			$(input).devbridgeAutocomplete({
+				'lookup': this.suggestions,
+				'width': 500,
+				lookupFilter: function(suggestion, originalQuery, queryLowerCase) {
+					return suggestion.value.toLowerCase().indexOf(queryLowerCase) === 0;
+				},
+				onSelect: function(suggestion) {
+					self.songModel[self.songSetNameFn].call(self.songModel, suggestion.value);
+				},
+
+			});
+		}
 	};
 	TextElementManager.prototype.enable = function() {
 		//do nothing
