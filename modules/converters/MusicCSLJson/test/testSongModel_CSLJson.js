@@ -6,7 +6,7 @@ define(['modules/converters/MusicCSLJson/src/SongModel_CSLJson', 'modules/core/s
 				var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
 								
 				var exportedCSLJson = SongModel_CSLJson.exportToMusicCSLJSON(song);
-				///assert.deepEqual(exportedCSLJson, testSongs.simpleLeadSheet);
+				//assert.deepEqual(exportedCSLJson, testSongs.simpleLeadSheet);
 				
 				//var songWithKeySigChanges = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.leadSheetTimeSigChanges, new SongModel());
 				
