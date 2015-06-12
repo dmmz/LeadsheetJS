@@ -38,6 +38,9 @@ define([
 		i = i || 0;
 		return this.composers[i];
 	};
+	SongModel.prototype.setComposer = function(composer) {
+		this.composers[0] = composer;
+	};
 	SongModel.prototype.addComposer = function(composer) {
 		if (typeof composer !== "undefined") {
 			this.composers.push(composer);

@@ -147,7 +147,36 @@ define([
 		LSViewer.prototype._getNonScaledWidth = function() {
 			return this.canvas.width / this.SCALE;
 		};
-
+		/**
+		 * gets the BoundingBox
+		 * @param  {Object} metrics ( return by ctx.getMeasureText )
+		 * @param  {Integer} height  
+		 * @return {Object}   with properties x,y,w,h
+		 */
+		LSViewer.prototype._getTextBoundingBox = function(ctx,  value, x, y) {
+			var metrics = ctx.measureText(value);
+			var calcHalfX = (ctx.textAlign === 'center'); //textAlign is 
+			var boundingBox;
+			if (typeof metrics.actualBoundingBoxAscent !== "undefined") {
+				// case bounding box is supported (for the moment only Chrome supports it)
+				boundingBox = {
+					x: calcHalfX ? x - metrics.actualBoundingBoxRight / 2 : x - metrics.actualBoundingBoxRight,
+					y: y - metrics.actualBoundingBoxAscent,
+					w: metrics.actualBoundingBoxRight,
+					h: metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent
+				};
+			} else {
+				//if not supported, it's a worse solution, as height is arbitrary, passed as parameter
+				var height = Number(ctx.font.substr(0,ctx.font.indexOf("px")));
+				boundingBox = {
+					x: calcHalfX ? x - metrics.width / 2 : x - metrics.width,
+					y: y - height,
+					w: metrics.width,
+					h: height
+				};
+			}
+			return boundingBox;
+		};
 		LSViewer.prototype._displayTitle = function(title) {
 			var oldTextAlign = this.ctx.textAlign;
 			this.ctx.textAlign = 'center';
@@ -157,25 +186,7 @@ define([
 				y = 60,
 				maxWidth = this.canvas.width;
 			this.ctx.fillText(title, x, y, maxWidth);
-
-			var metrics = this.ctx.measureText(title);
-			if (typeof metrics.actualBoundingBoxAscent !== "undefined") {
-				// case bouding bos is supported (for moment only chrome support it)
-				this.titleView = {
-					x: x - metrics.actualBoundingBoxRight / 2,
-					y: y - metrics.actualBoundingBoxAscent,
-					w: metrics.actualBoundingBoxRight,
-					h: metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent
-				};
-			} else {
-				var height = 32;
-				this.titleView = {
-					x: x - metrics.width / 2,
-					y: y - height,
-					w: metrics.width,
-					h: height
-				};
-			}
+			this.titleView = this._getTextBoundingBox(this.ctx, title, x, y);
 			this.ctx.textAlign = oldTextAlign;
 		};
 
@@ -186,7 +197,11 @@ define([
 			if (typeof composer === "undefined") {
 				composer = 'Unknown';
 			}
-			this.ctx.fillText(composer, this._getNonScaledWidth() - 20, 20, this._getNonScaledWidth());
+			var x = this._getNonScaledWidth() - 20,
+				y = 20,
+				maxWidth = this._getNonScaledWidth();
+			this.ctx.fillText(composer, x, y, maxWidth);
+			this.composerView = this._getTextBoundingBox(this.ctx, composer, x, y);
 			this.ctx.textAlign = oldTextAlign;
 
 		};
