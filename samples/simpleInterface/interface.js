@@ -108,6 +108,9 @@ define(function(require) {
 				order: 4
 			},
 			imgPath: '/modules/StructureEdition/img'
+		},
+		composer:{
+			suggestions:['Adam Smith','Kim Jong-il','Iñigo Errejón','Mia Khalifa','Jose Monge']
 		}
 	});
 
