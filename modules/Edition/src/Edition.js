@@ -1,3 +1,4 @@
+
 define([
 	"modules/Edition/src/KeyboardManager",
 	"modules/Cursor/src/Cursor",
@@ -17,9 +18,12 @@ define([
 		new KeyboardManager(false);
 		
 		//editing title
-		new TextElementManager(viewer, songModel);
-
 		
+		new TextElementManager('titleView', 'Title', viewer, songModel);
+
+		new TextElementManager('composerView', 'Composer', viewer,songModel);
+		
+
 		var cursorNote;
 		if (params.notes) {
 			// Edit notes on view

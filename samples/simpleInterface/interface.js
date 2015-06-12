@@ -51,7 +51,7 @@ define(function(require) {
 
 	new LJS.LSViewer.OnWindowResizer(songModel);
 
-	// initPlayerModule(songModel);
+	initPlayerModule(songModel);
 
 
 	new LJS.HistoryC(songModel);
@@ -202,7 +202,7 @@ define(function(require) {
 		});
 		var pC = new LJS.MidiCSL.PlayerController(player, pV);
 	}
-	console.log(LJS);
+	
 	var audioComments = new LJS.AudioComments(waveMng, myApp.viewer, songModel);
 	audioComments.addComment({
 		user: 'Dani',
