@@ -33,6 +33,7 @@ define([
 		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
 			viewer.canvasLayer.addElement(self);
 			self.chordSpace = self.createChordSpace(viewer);
+			self.cursor.setListElements(self.chordSpace.length);
 			viewer.canvasLayer.refresh();
 		});
 
@@ -45,7 +46,7 @@ define([
 			self.moveCursorByBar(inc);
 		});
 	};
-	ChordSpaceManager.prototype.getType = function() {	
+	ChordSpaceManager.prototype.getType = function() {
 		return this.CL_TYPE;
 	};
 	/**

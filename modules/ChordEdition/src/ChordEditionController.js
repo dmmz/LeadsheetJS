@@ -32,6 +32,7 @@ define([
 	};
 
 	ChordEditionController.prototype.deleteChords = function() {
+		// console.log('deleteChords');
 		/**
 		 * @param  {positon} argument
 		 * @return {Object}          position as {numBar: valBar, numBeat: valBeat}

@@ -353,10 +353,8 @@ define([
 			this.oldSong = this.songModel;
 			var newSongModel = this.songModel.unfold();
 			this.songModel = newSongModel;
-			this.cursor.setListElements(this.songModel.getComponent('notes'));
 			$.publish('ToViewer-draw', this.songModel);
 		} else {
-			this.cursor.setListElements(this.songModel.getComponent('notes'));
 			$.publish('ToViewer-draw', this.oldSong);
 		}
 		this.structEditionModel.toggleUnfolded();

@@ -53,7 +53,7 @@ define(['modules/core/src/ChordModel',
 				assert.deepEqual(cec2.getSelectedChordsIndexes(), [1], 'getSelectedChordsIndexes');
 				assert.deepEqual(chordManager2.getChords().toString(), "AM7,B7,Em,F7", 'Chords Name at start');
 				cec2.pasteChords();
-				assert.deepEqual(chordManager2.getChords().toString(), "AM7,F7,AM7,B7", 'Paste chords');
+				assert.deepEqual(chordManager2.getChords().toString(), "AM7,AM7,B7,F7", 'Paste chords');
 			});
 		}
 	};
