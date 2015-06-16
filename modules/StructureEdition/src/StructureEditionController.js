@@ -63,6 +63,7 @@ define([
 			'numberOfBars': numberOfBarsToCreate
 		});
 		this.songModel.addSection(section);
+		UserLog.logAutoFade('info', "Section have been added successfully");
 		$.publish('ToViewer-draw', this.songModel);
 	};
 
@@ -100,6 +101,7 @@ define([
 		}
 		// Remove section in songmodel is not needed because it's done when we remove last sections bar
 		//this.songModel.removeSection(sectionNumber);
+		UserLog.logAutoFade('info', "Section have been removed successfully");
 		$.publish('ToViewer-draw', this.songModel);
 	};
 
