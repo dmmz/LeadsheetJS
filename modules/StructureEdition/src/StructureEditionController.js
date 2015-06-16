@@ -157,6 +157,24 @@ define([
 		var numBeat = this.songModel.getStartBeatFromBarNumber(numBar);
 		// get the index of that note
 		var index = nm.getNextIndexNoteByBeat(numBeat);
+
+		// remove a possibly tied notes
+		if (nm.getNote(index).isTie('stop')) {
+			var tieType = nm.getNote(index).getTie();
+			if (tieType === "stop") {
+				nm.getNote(index).removeTie();
+				var tieTypePrevious = nm.getNote(index - 1).getTie();
+				if (tieTypePrevious === 'start') {
+					nm.getNote(index - 1).removeTie();
+				} else if (tieTypePrevious === 'start_stop') {
+					nm.getNote(index - 1).setTie("stop");
+				}
+			} else {
+				// case it's start or stop_start
+				nm.getNote(index).setTie("start");
+			}
+		}
+		
 		nm.notesSplice([index, index - 1], newBarNm.getNotes());
 
 		//add bar to barManager
