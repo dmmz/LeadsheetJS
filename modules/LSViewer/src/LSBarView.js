@@ -43,12 +43,11 @@ define(['vexflow'], function(Vex) {
 		var bar = songIt.getBar(),
 			followingBar = songIt.getFollowingBar(),
 			ending = bar.getEnding();
-		//endings
+		// endings
 		if (ending) {
-			songIt.setEndingState(followingBar.getEnding() ? 'BEGIN_END' : 'BEGIN');
+			songIt.setEndingState((sectionIt.isLastBar() || followingBar.getEnding()) ? 'BEGIN_END' : 'BEGIN');
 			this.vexflowStave.setVoltaType(Vex.Flow.Volta.type[songIt.getEndingState()], ending + ".", endingsY);
 		} else {
-
 			if (songIt.getEndingState() != null) {
 				if (sectionIt.isLastBar() || followingBar.getEnding()) {
 					songIt.setEndingState('END');
@@ -62,6 +61,9 @@ define(['vexflow'], function(Vex) {
 					this.vexflowStave.setVoltaType(Vex.Flow.Volta.type[songIt.getEndingState()], ending + ".", endingsY);
 				}
 			}
+		}
+		if (sectionIt.isLastBar()) {
+			songIt.setEndingState(null);
 		}
 
 		var label = bar.getLabel();
