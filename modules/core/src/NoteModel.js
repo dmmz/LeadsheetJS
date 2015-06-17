@@ -32,42 +32,41 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		}
 	}
 
-
-	NoteModel.prototype.toString = function(string, index) {
-		if (this.isRest){
-			return this.duration + "r";
-		}else{
-			var str = this.pitchClass[0] + this.accidental[0] + "/" + this.octave[0] + "-" + this.duration;
-			for (var i = 0; i < this.dot; i++){
-				str += ".";
-			}
-			return str;
+	/**
+	 *		
+	 * @return {String} examples: "A#/4-q", "E/4-q.", "qr", "w.r"
+	 */
+	NoteModel.prototype.toString = function() {
+		var str, dur = this.duration;
+		for (var i = 0; i < this.dot; i++){
+			dur += ".";
 		}
-		
+		if (this.isRest){
+			str = dur + "r";
+		}else{
+			str = this.pitchClass[0] + this.accidental[0] + "/" + this.octave[0] + "-" + dur;
+		}
+		return str;
 	};
-
+	/**
+	 * String examples: C#/4-8. 
+	 * @param {[type]} string [description]
+	 * @param {[type]} index  [description]
+	 */
 	NoteModel.prototype.setNoteFromString = function(string, index) {
 		index = index || 0;
 		var re = /[a-g|A-G](#{1,2}|b{1,2}|n)?(-[w|h|q|8|16|32|64])?\.{0,2}\/\d/;
+		var partDuration;
 		if (string.match(re)) {
 			var parts = string.split("-");
-			var partsPitch = parts[0].split("/");
-			this.pitchClass[index] = partsPitch[0].substr(0, 1).toUpperCase();
-			this.accidental[index] = partsPitch[0].substr(1, partsPitch[0].length);
-			this.octave[index] = partsPitch[1];
+			var partPitch = parts[0].split("/");
+			this.pitchClass[index] = partPitch[0].substr(0, 1).toUpperCase();
+			this.accidental[index] = partPitch[0].substr(1, partPitch[0].length);
+			this.octave[index] = partPitch[1];
+			
 			if (parts.length == 2) {
-				var partsDuration = parts[1].split("/");
-
-				// look if there is a dot
-				var dotPosition = partsDuration[0].indexOf(".");
-				if (dotPosition == -1) {
-					this.duration = partsDuration[0];
-				} else {
-					this.duration = partsDuration[0].split('.')[0];
-					this.dot = partsDuration[0].length - dotPosition;
-				}
+				partDuration = parts[1];
 			}
-
 		} else {
 			re = /[w|h|q|8|16|32|64](r)?/;
 			if (!string.match(re)) {
@@ -78,11 +77,21 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 			this.accidental[0] = '';
 			var restPosition = string.indexOf("r");
 			if (restPosition === -1) {
-				this.duration = string;
+				partDuration = string;
 			} else {
-				this.duration = string.substr(0, restPosition);
+				partDuration = string.substr(0, restPosition);
 			}
 			this.isRest = true;
+		}
+		if (partDuration){
+			// check if there is a dot
+			var dotPosition = partDuration.indexOf(".");
+			if (dotPosition == -1) {
+				this.duration = partDuration;
+			} else {
+				this.duration = partDuration.split('.')[0];
+				this.dot = partDuration.length - dotPosition;
+			}
 		}
 	};
 

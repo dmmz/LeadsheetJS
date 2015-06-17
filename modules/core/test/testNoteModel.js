@@ -76,10 +76,10 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 
 
 				var noteMinuscule = new NoteModel({
-					pitchList: ["E/4"],
+					pitchList: ["e/4"],
 					duration: "q"
 				});
-				assert.equal(noteMinuscule.getPitch(), "E/4");
+				assert.equal(noteMinuscule.getPitch(), "E/4", 'note minuscule');
 				assert.equal(noteMinuscule.getNumPitches(), 1);
 
 				var polyphonicNote = new NoteModel({
@@ -87,13 +87,13 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 					duration: "q"
 				});
 
-				assert.equal(polyphonicNote.getPitch(0), "G#/3");
+				assert.equal(polyphonicNote.getPitch(0), "G#/3", 'polyphonic');
 				assert.equal(polyphonicNote.getPitch(1), "C/4");
 				assert.equal(polyphonicNote.getPitch(2), "E/4");
 				assert.equal(polyphonicNote.getNumPitches(), 3);
 
 				var restNote = new NoteModel("h");
-				assert.equal(restNote.getDuration(), 2);
+				assert.equal(restNote.getDuration(), 2,'rest note');
 				assert.ok(restNote.isRest);
 
 				restNote = new NoteModel("hr");
@@ -101,7 +101,7 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 				assert.ok(restNote.isRest);
 
 				var inlineNote = new NoteModel('C#/4-8.');
-				assert.equal(inlineNote.getPitch(), 'C#/4');
+				assert.equal(inlineNote.getPitch(), 'C#/4', 'inline note');
 				assert.equal(inlineNote.getNumPitches(), 1);
 				assert.equal(inlineNote.getAccidental(), "#");
 				assert.equal(inlineNote.getDuration(), 0.75);
@@ -122,6 +122,9 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 
 				var clonedNotes2 = inlineNote2.clone();
 				assert.deepEqual(clonedNotes2, inlineNote2, "clone test with silence");
+
+				var noteSilenceDot = new NoteModel('q.r');
+				assert.equal(noteSilenceDot.getDot(),1,'q.r has dot')
 
 			});
 		}

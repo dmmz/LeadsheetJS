@@ -177,8 +177,8 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		var startBeat = 1,
 			endBeat;
 		startBeat = song.getStartBeatFromBarNumber(barNumber);
-		endBeat = startBeat + song.getTimeSignatureAt(barNumber).getBeats();
-
+		endBeat = startBeat + song.getTimeSignatureAt(barNumber).getQuarterBeats();
+		
 		if (this.getTotalDuration() + 1 < endBeat) {
 			console.warn("NoteManager - getNotesAtBarNumber - notes on bar " + barNumber + " do not fill the total bar duration" + (this.getTotalDuration() + 1) + ' ' + endBeat);
 			//throw "NoteManager - getNotesAtBarNumber - notes on bar " + barNumber + " do not fill the total bar duration" + (this.getTotalDuration() + 1) + ' ' + endBeat;

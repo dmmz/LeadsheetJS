@@ -54,7 +54,7 @@ define([
 					);
 				}
 
-				var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
+				song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
 
 				//Get Tonality
 				song.getComponent('bars').getBar(5).setTonality("Eb");
@@ -86,6 +86,7 @@ define([
 				unfold();
 				// assert.deepEqual(song.clone(), song, 'clone');
 
+				
 				/* MISSING TESTS: 
 					Song with no notes
 					Song with no chords
