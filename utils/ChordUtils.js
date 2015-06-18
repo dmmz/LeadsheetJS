@@ -63,35 +63,33 @@ define(['jquery', 'utils/NoteUtils', 'utils/ChordTypesCollection'], function($, 
 		// case we already now allchords
 		if (typeof ChordUtils.chordTypes !== "undefined") {
 			return ChordUtils.chordTypes;
-		}
-		else if (typeof ChordTypesCollection !== "undefined") {
+		} else if (typeof ChordTypesCollection !== "undefined") {
 			ChordUtils.chordTypes = [];
 			for (var i = 0, c = ChordTypesCollection.length; i < c; i++) {
 				ChordUtils.chordTypes.push(ChordTypesCollection[i].ct);
 			}
 			return ChordUtils.chordTypes;
-		}
-		else{
+		} else {
 			return [];
 		}
 	};
 
 	ChordUtils.getAllChords = function() {
 		var chordTypes = this.getAllChordTypesAsArray();
-		var pitchClasses = ["C", "C#", "Cb", "D", "D#", "Db", "E", "E#", "Eb", "F", "F#", "Fb", "G", "G#", "Gb", "A", "A#", "Ab", "B", "B#", "Bb", "%", "%%", "NC"];
+		var pitchClasses = ["C", "C#", "Cb", "D", "D#", "Db", "E", "E#", "Eb", "F", "F#", "Fb", "G", "G#", "Gb", "A", "A#", "Ab", "B", "B#", "Bb"];
 		var chords = [];
-		for (var pClass in pitchClasses) {
-			if (pitchClasses[pClass].indexOf("%") != -1 || pitchClasses[pClass] == 'NC') {
-				chords.push(pitchClasses[pClass]);
-				continue;
-			}
-			for (var i = 0, c = chordTypes.length; i < c; i++) {
-				if (typeof chordTypes[i] !== "undefined") {
+
+		for (var i = 0, c = chordTypes.length; i < c; i++) {
+			if (typeof chordTypes[i] !== "undefined") {
+				for (var pClass in pitchClasses) {
 					if (chordTypes[i].substring(0, 1) == "#" || chordTypes[i].substring(0, 1) == "b") chordTypes[i] = "_" + chordTypes[i];
 					chords.push(pitchClasses[pClass] + chordTypes[i]);
 				}
 			}
 		}
+		chords.push('NC');
+		chords.push('%');
+		chords.push('%%');
 		ChordUtils.allChords = chords;
 		return chords;
 	};
