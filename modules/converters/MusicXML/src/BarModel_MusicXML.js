@@ -12,9 +12,9 @@ define(['modules/core/src/BarModel'], function(BarModel) {
 		}
 		bar.setClef(clef);
 		if (MusicXMLBar.hasOwnProperty('time')) {
-			bar.setTimeSignature(MusicXMLBar.time.num_beats + '/' + MusicXMLBar.time.beat_value);
+			bar.setTimeSignatureChange(MusicXMLBar.time.num_beats + '/' + MusicXMLBar.time.beat_value);
 		} else {
-			bar.setTimeSignature('4/4');
+			bar.setTimeSignatureChange('4/4');
 		}
 		return bar;
 	};

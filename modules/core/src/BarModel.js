@@ -61,7 +61,7 @@ define(['modules/core/src/TimeSignatureModel'], function(TimeSignatureModel) {
 		return this.style;
 	};
 
-	BarModel.prototype.setTimeSignature = function(timeSignature) {
+	BarModel.prototype.setTimeSignatureChange = function(timeSignature) {
 		if (!timeSignature) {
 			this.timeSignature = undefined;
 		} else {
@@ -69,7 +69,7 @@ define(['modules/core/src/TimeSignatureModel'], function(TimeSignatureModel) {
 		}
 	};
 
-	BarModel.prototype.getTimeSignature = function() {
+	BarModel.prototype.getTimeSignatureChange = function() {
 		return this.timeSignature;
 	};
 

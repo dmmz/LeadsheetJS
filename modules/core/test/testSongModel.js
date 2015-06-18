@@ -63,7 +63,7 @@ define([
 				assert.equal(song.getTonalityAt(6), "Eb");
 
 				// //Get TimeSignature
-				song.getComponent('bars').getBar(5).setTimeSignature("3/4");
+				song.getComponent('bars').getBar(5).setTimeSignatureChange("3/4");
 
 				assert.throws(function() {
 					song.getTimeSignatureAt();

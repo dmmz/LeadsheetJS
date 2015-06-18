@@ -167,7 +167,19 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		}
 		return undefined;
 	};
-
+	NoteManager.prototype.getIndexesBetweenBarNumbers = function(barNum1, barNum2, song) {
+		if (!song){
+			throw "NoteManager - getNotesBetweenBarNumbers - missing parameter song";
+		}
+		var barMng = song.getComponent('bars');
+		var startBeat = song.getStartBeatFromBarNumber(barNum1);
+		var endBeat = (barMng.getTotal() - 1 === barNum2) ? null : song.getStartBeatFromBarNumber(barNum2 + 1);
+		return this.getIndexesStartingBetweenBeatInterval(startBeat, endBeat);
+	};
+	NoteManager.prototype.getNotesBetweenBarNumbers = function(barNum1, barNum2, song) {
+		var indexes = this.getIndexesBetweenBarNumbers(barNum1, barNum2, song);
+		return this.getNotes(indexes[0],indexes[1]);
+	};
 
 	NoteManager.prototype.getNotesAtBarNumber = function(barNumber, song) {
 		if (!song) {
@@ -275,7 +287,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	 * Similar to previous one (getNextIndexNote()), but if
 	 * exact beat is not found, it returns the closest previous note
 	 * @param  {float} beat global beat (first beat starts at 1, not 0)
-	 * @param  {ifExactExclude}
+	 * @param  {ifExactExclude} if note with index X starts at beat, we will not include it, we'll return index X-1
 	 *
 	 * @return {Integer} index of the note
 	 */
@@ -294,12 +306,17 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	};
 
 	/**
+	 * gets index of note who's start is between startBeat and endBeat, if endBeat exceed total duration, it returns last index end index
 	 * @param  {Integer} startBeat
 	 * @param  {Integer} endBeat
+	 * @param {Boolean} ifExactExlude, default is false. 
+	 *                                 ex: to get all notes of bar 1 we should do getIndexesStartingBetweenBeatInterval(1,5,true) or getIndexesStartingBetweenBeatInterval(1,4.99)
+	 *                                 normally we want to not exclude because function getNotes(start,end) already excludes 'end' index and gets notes until end - 1
 	 * @return {Array}           indexes e.g. [1,2]
 	 */
 
-	NoteManager.prototype.getIndexesStartingBetweenBeatInterval = function(startBeat, endBeat) {
+	NoteManager.prototype.getIndexesStartingBetweenBeatInterval = function(startBeat, endBeat, ifExactExclude) {
+		
 		if (isNaN(startBeat) || startBeat < 0) {
 			startBeat = 1;
 		}
@@ -307,7 +324,12 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 			throw 'NoteManager - getIndexesStartingBetweenBeatInterval - endBeat must be a positive integer ' + endBeat;
 		}
 		var index1 = this.getNextIndexNoteByBeat(startBeat);
-		var index2 = this.getPrevIndexNoteByBeat(endBeat, true);
+		var index2;
+		if (endBeat > this.getTotalDuration()  || endBeat == null){ // important == to be true if null or undefined
+			index2 = ifExactExclude ? this.getTotal() - 1 : this.getTotal();
+		}else{
+			index2 = this.getPrevIndexNoteByBeat(endBeat, ifExactExclude); //ifExactExclude is true, that means that we wont return note starting exactly at endBeat
+		}
 		return [index1, index2];
 	};
 

@@ -155,7 +155,7 @@ define([
 		var bm = this.getComponent("bars");
 		// loop in all previous bar in the current section
 		while (barNumber >= startBarSection) {
-			timeSig = bm.getBar(barNumber).getTimeSignature();
+			timeSig = bm.getBar(barNumber).getTimeSignatureChange();
 			if (typeof timeSig !== "undefined") {
 				return timeSig;
 			}
@@ -244,11 +244,11 @@ define([
 	 */
 	SongModel.prototype.getBarNumBeats = function(numBar, currentBeats) {
 		//console.log(currentBeats, numBar, this.getComponent("bars").getTotal());
-		var barTimeSig = this.getComponent("bars").getBar(numBar).getTimeSignature(),
+		var barTimeSig = this.getComponent("bars").getBar(numBar).getTimeSignatureChange(),
 			timeSig = barTimeSig || this.getTimeSignature();
 		if (!timeSig && !currentBeats) throw "bad use: either song is not well formatted, either currentBeats is not sent";
 
-		return (timeSig) ? timeSig.getBeats() : currentBeats;
+		return (timeSig) ? timeSig.getQuarterBeats() : currentBeats;
 	};
 
 	SongModel.prototype.getBars = function() {
@@ -382,7 +382,7 @@ define([
 		var numberOfBeats = 1;
 		if (typeof barNumber !== "undefined" && !isNaN(barNumber) && barNumber >= 0) {
 			for (var i = 0; i < barNumber; i++) {
-				numberOfBeats += this.getTimeSignatureAt(i).getBeats();
+				numberOfBeats += this.getTimeSignatureAt(i).getQuarterBeats();
 			}
 		}
 		return numberOfBeats;
@@ -395,12 +395,12 @@ define([
 	SongModel.prototype.getSongTotalBeats = function() {
 		var numberOfBeats = 0;
 		var bm = this.getComponent('bars');
-		var currentNumberBeatsByBar = this.getTimeSignature().getBeats();
+		var currentNumberBeatsByBar = this.getTimeSignature().getQuarterBeats();
 		var barNumber = 0;
 		for (var i = 0, c = this.sections.length; i < c; i++) {
 			for (var j = 0, v = this.sections[i].getNumberOfBars(); j < v; j++) {
-				if (typeof bm.getBar(barNumber) !== "undefined" && typeof bm.getBar(barNumber).getTimeSignature() !== "undefined") {
-					currentNumberBeatsByBar = bm.getBar(barNumber).getTimeSignature().getBeats();
+				if (typeof bm.getBar(barNumber) !== "undefined" && typeof bm.getBar(barNumber).getTimeSignatureChange() !== "undefined") {
+					currentNumberBeatsByBar = bm.getBar(barNumber).getTimeSignatureChange().getQuarterBeats();
 				}
 				numberOfBeats += currentNumberBeatsByBar;
 				barNumber++;

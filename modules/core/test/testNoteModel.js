@@ -124,7 +124,7 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 				assert.deepEqual(clonedNotes2, inlineNote2, "clone test with silence");
 
 				var noteSilenceDot = new NoteModel('q.r');
-				assert.equal(noteSilenceDot.getDot(),1,'q.r has dot')
+				assert.equal(noteSilenceDot.getDot(),1,'q.r has dot');
 
 			});
 		}

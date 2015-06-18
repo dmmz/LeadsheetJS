@@ -200,6 +200,10 @@ define(['modules/core/src/NoteManager',
 					assert.deepEqual(noteManager.getBeatIntervalByIndexes(1, 5), [2, 5]);
 
 					assert.deepEqual(noteManager.getIndexesStartingBetweenBeatInterval(1, 3.1), [0, 3]);
+					assert.deepEqual(noteManager.getIndexesStartingBetweenBeatInterval(1,10000000),[0,7], 'if endBeat exceeds total duration, we get lastIndex + 1...');	
+					assert.deepEqual(noteManager.getIndexesStartingBetweenBeatInterval(1,10000000,true),[0,6], '...or lastIndex (6) ifExactExclude==true');	
+
+
 					var newNote = new NoteModel({
 						pitchList: ["A/5"],
 						duration: "q",
@@ -231,7 +235,7 @@ define(['modules/core/src/NoteManager',
 					assert.equal(notes[2].getPitch(), "G/4");
 					assert.equal(notes[3].getPitch(), "E/4");
 
-					assert.equal(noteMng.getNoteBarNumber(0, song), 0);
+					assert.equal(noteMng.getNoteBarNumber(0, song), 0, 'getNoteBarNumber');
 					assert.equal(noteMng.getNoteBarNumber(1, song), 0);
 					assert.equal(noteMng.getNoteBarNumber(2, song), 0);
 					assert.equal(noteMng.getNoteBarNumber(3, song), 0);
@@ -242,6 +246,8 @@ define(['modules/core/src/NoteManager',
 					assert.equal(noteMng.getNoteBarNumber(8, song), 1);
 					assert.equal(noteMng.getNoteBarNumber(9, song), 2);
 					assert.equal(noteMng.getNoteBarNumber(10, song), 2);
+					assert.equal(noteMng.getNotesBetweenBarNumbers(0,1, song),'A/4-q,G/4-8,E/4-8,F/4-q,C/4-q,A/4-q,F/4-q,G/4-q,E/4-q');
+					assert.equal(noteMng.getNotesBetweenBarNumbers(6,7, song),'A/4-q,F/4-q,G/4-q,E/4-q,A/4-q,F/4-q,G/4-q,E/4-q');
 				}
 				var noteManager = new NoteManager();
 
