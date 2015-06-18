@@ -37,7 +37,7 @@ define(['modules/Edition/src/ElementManager',
 	};
 
 	CommentSpaceManager.prototype.onSelected = function() {
-		$.publish('clicked-comment', this.clickedElem);
+		$.publish('CommentSpaceManager-clickedComment', this.clickedElem);
 	};
 	return CommentSpaceManager;
 });
