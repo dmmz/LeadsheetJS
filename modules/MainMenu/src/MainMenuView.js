@@ -25,12 +25,12 @@ define([
 	MainMenuView.prototype.initView = function(parentHTML, callback) {
 		var self = this;
 		//$.get('/modules/MainMenu/src/MainMenuTemplate.html', function(template) {
-			var rendered = Mustache.render(MainMenuTemplate);
-			parentHTML.innerHTML += rendered;
-			self.el = parentHTML;
-			if (typeof callback === "function") {
-				callback();
-			}
+		var rendered = Mustache.render(MainMenuTemplate);
+		parentHTML.innerHTML += rendered;
+		self.el = parentHTML;
+		if (typeof callback === "function") {
+			callback();
+		}
 		//});
 	};
 
@@ -132,7 +132,9 @@ define([
 
 		$('#' + this._concatTitle(menu.title) + '_second_level').show(0, function() {
 			// self.initController(menuTitle);
-			// menu.initView('main_menu_second_level');
+			if (typeof menu.view.activeView === "function") {
+				menu.view.activeView();
+			}
 		});
 	};
 

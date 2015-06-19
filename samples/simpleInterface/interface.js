@@ -56,10 +56,7 @@ define(function(require) {
 
 	new LJS.HistoryC(songModel);
 
-	$.publish('ToHistory-add', {
-		'item': testSongs.simpleLeadSheet,
-		'title': 'Open song - ' + songModel.getTitle()
-	});
+	$.publish('ToHistory-add', 'Open song - ' + songModel.getTitle());
 
 	/*
 		var optionChediak = {

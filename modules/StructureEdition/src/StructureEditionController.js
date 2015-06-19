@@ -65,6 +65,7 @@ define([
 		this.songModel.addSection(section);
 		UserLog.logAutoFade('info', "Section have been added successfully");
 		$.publish('ToViewer-draw', this.songModel);
+		$.publish('ToHistory-add', 'Add Section');
 	};
 
 	StructureEditionController.prototype.removeSection = function() {
@@ -103,6 +104,7 @@ define([
 		//this.songModel.removeSection(sectionNumber);
 		UserLog.logAutoFade('info', "Section have been removed successfully");
 		$.publish('ToViewer-draw', this.songModel);
+		$.publish('ToHistory-add', 'Remove Section');
 	};
 
 	StructureEditionController.prototype.setSectionName = function(name) {
@@ -116,6 +118,7 @@ define([
 		var sectionNumber = this.songModel.getSectionNumberFromBarNumber(selBars[0]);
 		this.songModel.getSection(sectionNumber).setName(name);
 		$.publish('ToViewer-draw', this.songModel);
+		$.publish('ToHistory-add', 'Rename Section ' + name);
 	};
 
 	// Carefull, if a section is played 2 times, repeatTimes = 1
@@ -130,6 +133,7 @@ define([
 		var sectionNumber = this.songModel.getSectionNumberFromBarNumber(selBars[0]);
 		this.songModel.getSection(sectionNumber).setRepeatTimes(repeatTimes);
 		$.publish('ToViewer-draw', this.songModel);
+		$.publish('ToHistory-add', 'Change Section repeat' + repeatTimes);
 	};
 
 	StructureEditionController.prototype.addBar = function() {
@@ -174,7 +178,7 @@ define([
 				nm.getNote(index).setTie("start");
 			}
 		}
-		
+
 		nm.notesSplice([index, index - 1], newBarNm.getNotes());
 
 		//add bar to barManager
@@ -191,6 +195,7 @@ define([
 
 
 		$.publish('ToViewer-draw', this.songModel);
+		$.publish('ToHistory-add', 'Add Bar');
 	};
 
 	/**
@@ -205,6 +210,7 @@ define([
 			this._removeBar(selBars[i]);
 		}
 		$.publish('ToViewer-draw', this.songModel);
+		$.publish('ToHistory-add', 'Remove Bar');
 	};
 
 	/**
@@ -265,6 +271,7 @@ define([
 		var durationAfter = this.songModel.getSongTotalBeats();
 		this._checkDuration(durationBefore, durationAfter);
 		$.publish('ToViewer-draw', this.songModel);
+		$.publish('ToHistory-add', 'Time signature set to ' + timeSignature);
 	};
 
 	StructureEditionController.prototype._checkDuration = function(durBefore, durAfter) {
@@ -312,6 +319,7 @@ define([
 			this.songModel.getComponent("bars").getBar(selBars[i]).setTonality(tonality);
 		}
 		$.publish('ToViewer-draw', this.songModel);
+		$.publish('ToHistory-add', 'Tonality set to ' + tonality);
 	};
 
 	StructureEditionController.prototype.ending = function(ending) {
@@ -326,6 +334,7 @@ define([
 			this.songModel.getComponent("bars").getBar(selBars[i]).setEnding(ending);
 		}
 		$.publish('ToViewer-draw', this.songModel);
+		$.publish('ToHistory-add', 'Ending set to ' + ending);
 	};
 
 	StructureEditionController.prototype.style = function(style) {
@@ -340,6 +349,7 @@ define([
 			this.songModel.getComponent("bars").getBar(selBars[i]).setStyle(style);
 		}
 		$.publish('ToViewer-draw', this.songModel);
+		$.publish('ToHistory-add', 'Style set to ' + style);
 	};
 
 	StructureEditionController.prototype.label = function(label) {
@@ -354,6 +364,7 @@ define([
 			this.songModel.getComponent("bars").getBar(selBars[i]).setLabel(label);
 		}
 		$.publish('ToViewer-draw', this.songModel);
+		$.publish('ToHistory-add', 'Label set to ' + label);
 	};
 
 	StructureEditionController.prototype.subLabel = function(sublabel) {
@@ -368,6 +379,7 @@ define([
 			this.songModel.getComponent("bars").getBar(selBars[i]).setSublabel(sublabel);
 		}
 		$.publish('ToViewer-draw', this.songModel);
+		$.publish('ToHistory-add', 'Sublabel set to ' + sublabel);
 	};
 
 	StructureEditionController.prototype._getSelectedBars = function() {

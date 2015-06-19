@@ -55,7 +55,6 @@ define([
 	};
 
 	AudioCommentsController.prototype.addComment = function(comment) {
-		console.log(comment);
 		this.model.addComment(comment);
 	};
 

@@ -69,10 +69,7 @@ define([
 			if (data.success === true) {
 				self._compareObj(request.leadsheet, data.result);
 				SongModel_CSLJson.importFromMusicCSLJSON(data.result, self.songModel);
-				$.publish('ToHistory-add', {
-					'item': data.result,
-					'title': 'Constraint'
-				});
+				$.publish('ToHistory-add', 'Constraint');
 
 				if (typeof data.tags !== "undefined") {
 					var tags = new TagManager(self.songModel, self.noteSpaceMng, data.tags);

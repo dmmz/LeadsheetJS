@@ -12,6 +12,7 @@ define([
 		this.initKeyboard();
 		this.initSubscribe();
 		this.render();
+		this.activeView();
 	}
 
 	/**
@@ -86,7 +87,7 @@ define([
 	};
 
 	HistoryView.prototype.unactiveView = function() {
-		$('#rightPanel').hide('slow');
+		//$('#rightPanel').hide('slow');
 	};
 
 	HistoryView.prototype.activeView = function() {

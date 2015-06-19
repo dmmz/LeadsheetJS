@@ -37,6 +37,7 @@ define([
 			if (self.noteSpaceMng.isEnabled()) {
 				self[fn].call(self, param);
 				$.publish('ToViewer-draw', self.songModel);
+				$.publish('ToHistory-add', 'Change Notes');
 			}
 		});
 
