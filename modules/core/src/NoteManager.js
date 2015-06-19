@@ -325,7 +325,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		}
 		var index1 = this.getNextIndexNoteByBeat(startBeat);
 		var index2;
-		if (endBeat > this.getTotalDuration()  || endBeat == null){ // important == to be true if null or undefined
+		if (endBeat > this.getTotalDuration()  || endBeat == null){ // important ==, to be true if null or undefined
 			index2 = ifExactExclude ? this.getTotal() - 1 : this.getTotal();
 		}else{
 			index2 = this.getPrevIndexNoteByBeat(endBeat, ifExactExclude); //ifExactExclude is true, that means that we wont return note starting exactly at endBeat
@@ -361,7 +361,33 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 			}
 		});
 	};
+	NoteManager.prototype.onlyRests = function() {
+		
+		for (var i = 0; i < this.notes.length; i++) {
+			if (!this.notes[i].isRest){
+				return false;
+			}
+		}
+		return true;
+	};
+	/**
+	 * n
+	 * @param  {TimeSignatureModel} timeSig 
+	 * @return {Array}         of NoteModel
+	 */
+	NoteManager.prototype.getNotesAdaptedToTimeSig = function(timeSig,numBars) {
+		var newNoteMng = new NoteManager();
+		var numBeats = timeSig.getQuarterBeats();
+		var initBeat = 0;
+		if (this.onlyRests()){
+			for (var i = 0; i < numBars; i++) {
+				newNoteMng.fillGapWithRests(numBeats, initBeat);
+				initBeat += numBeats;
+			}
+		}
+		return newNoteMng.getNotes();
 
+	};
 	/**
 	 * if there are ties that with different pitches, we remove the tie
 	 */
@@ -491,17 +517,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		return Math.round(beat * 1000000) / 1000000;
 	}
 
-	// NoteManager.prototype.incrOffset = function(offset, dur) {
-	// 	offset += dur;
-	// 	var roundOffset = Math.round(offset);
-	// 	if (Math.abs(roundOffset - offset) < 0.01) offset = roundOffset; //0.01 to round only for 0.99999
-	// 	return offset;
-	// };
-	//NoteManager.prototype.toString = function() {
-	//	this.getNotes().forEach(function(note) {
-	//		console.log(note.toString());
-	//	});
-	//};
+	
 
 	return NoteManager;
 });

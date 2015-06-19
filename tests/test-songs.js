@@ -3162,12 +3162,105 @@ define(function() {
 			}]
 		}]
 	};
+
+	var wholeSilencesSong = {
+		composer: "Random Composer",
+		title: "Whatever song",
+		time: "4/4",
+		changes: [{
+			id: 0,
+			name: "A",
+			bars: [
+			{
+				chords: [{
+					p: "C",
+					ch: "",
+					beat: 1
+				}],
+				melody: [{
+					keys: ["B/4"],
+					duration: "wr"
+				}]
+			},{
+				chords: [{
+					p: "C",
+					ch: "",
+					beat: 1
+				}],
+				melody: [{
+					keys: ["B/4"],
+					duration: "wr"
+				}]
+			},{
+				chords: [{
+					p: "C",
+					ch: "",
+					beat: 1
+				}],
+				melody: [{
+					keys: ["B/4"],
+					duration: "wr"
+				}]
+			},{
+				chords: [{
+					p: "C",
+					ch: "",
+					beat: 1
+				}],
+				melody: [{
+					keys: ["B/4"],
+					duration: "wr"
+				}]
+			},{
+				chords: [{
+					p: "C",
+					ch: "",
+					beat: 1
+				}],
+				melody: [{
+					keys: ["B/4"],
+					duration: "wr"
+				}]
+			},{
+				chords: [{
+					p: "C",
+					ch: "",
+					beat: 1
+				}],
+				melody: [{
+					keys: ["B/4"],
+					duration: "wr",
+				}]
+			},{
+				chords: [{
+					p: "C",
+					ch: "",
+					beat: 1
+				}],
+				melody: [{
+					keys: ["B/4"],
+					duration: "wr"
+				}]
+			},{
+				chords: [{
+					p: "C",
+					ch: "",
+					beat: 1
+				}],
+				melody: [{
+					keys: ["B/4"],
+					duration: "wr"
+				}]
+			}]
+		}]
+	};
 	return {
 		simpleLeadSheet: simpleLeadSheet,
 		simpleIncompleteLeadSheet: simpleIncompleteLeadSheet,
 		leadSheetTimeSigChanges: leadSheetTimeSigChanges,
 		afoxe: afoxe,
-		foldedSong: foldedSong
+		foldedSong: foldedSong,
+		wholeSilencesSong: wholeSilencesSong
 	};
 
 });

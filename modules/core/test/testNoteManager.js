@@ -1,9 +1,10 @@
 define(['modules/core/src/NoteManager',
 	'modules/core/src/NoteModel',
 	'modules/core/src/SongModel',
+	'modules/core/src/TimeSignatureModel',
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
 	'tests/test-songs'
-], function(NoteManager, NoteModel, SongModel, SongModel_CSLJson, testSongs) {
+], function(NoteManager, NoteModel, SongModel, TimeSignature, SongModel_CSLJson, testSongs) {
 	return {
 		run: function() {
 			test("NoteManager", function(assert) {
@@ -246,15 +247,34 @@ define(['modules/core/src/NoteManager',
 					assert.equal(noteMng.getNoteBarNumber(8, song), 1);
 					assert.equal(noteMng.getNoteBarNumber(9, song), 2);
 					assert.equal(noteMng.getNoteBarNumber(10, song), 2);
-					assert.equal(noteMng.getNotesBetweenBarNumbers(0,1, song),'A/4-q,G/4-8,E/4-8,F/4-q,C/4-q,A/4-q,F/4-q,G/4-q,E/4-q');
-					assert.equal(noteMng.getNotesBetweenBarNumbers(6,7, song),'A/4-q,F/4-q,G/4-q,E/4-q,A/4-q,F/4-q,G/4-q,E/4-q');
+					assert.equal(noteMng.getNotesBetweenBarNumbers(0,1, song),'A/4-q,G/4-8,E/4-8,F/4-q,C/4-q,A/4-q,F/4-q,G/4-q,E/4-q','notes on two first bars'); 
+					assert.equal(noteMng.getNotesBetweenBarNumbers(6,7, song),'A/4-q,F/4-q,G/4-q,E/4-q,A/4-q,F/4-q,G/4-q,E/4-q','notes on two last bars');
+				}
+				function timeSignatureChanges () {
+					// rhythm  q,8,16,16, triplet(q,q,q)
+					function createSilencesMelody() {
+						var silencesMelody = [];
+						silencesMelody.push(new NoteModel('wr'));
+						silencesMelody.push(new NoteModel('wr'));
+						return silencesMelody;
+					}
+					noteManager.setNotes(createSilencesMelody());
+					var notes;
+					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('6/8'),2);
+					assert.equal(notes,'qr,qr,qr,qr,qr,qr'); //it seems not to be necessary toString
+
+					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('3/8'),3);
+					assert.equal(notes,'qr,8r,qr,8r,8r,qr'); 
+					
+					//assert.equal(notes,'qr,qr,qr,qr,qr,qr');
+					
 				}
 				var noteManager = new NoteManager();
 
 				managingMelodies(noteManager);
 				durationFunctions(noteManager);
 				otherFunctions(noteManager,testSongs);
-				// TODO: add tests for time signature changes
+				timeSignatureChanges(noteManager);
 
 			});
 
