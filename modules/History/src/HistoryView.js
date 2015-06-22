@@ -5,9 +5,10 @@ define([
 	'pubsub',
 ], function(Mustache, UserLog, $, pubsub) {
 
-	function HistoryView(parentHTML) {
+	function HistoryView(parentHTML, displayTime) {
 		this.el = undefined;
 		this.parentHTML = (parentHTML) ? parentHTML : $('#rightPanel');
+		this.displayTime = !!displayTime;
 		this.initController();
 		this.initKeyboard();
 		this.initSubscribe();
@@ -38,7 +39,9 @@ define([
 				if (model.historyList[i]['title'] !== '') {
 					text += model.historyList[i]['title'] + ' ';
 				}
-				text += model.historyList[i]['time'];
+				if (this.displayTime) {
+					text += model.historyList[i]['time'];
+				}
 				history += '<li class="' + classCurrent + '" data-history="' + i + '">' + text + '</li>';
 			}
 		}

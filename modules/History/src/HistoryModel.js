@@ -10,6 +10,7 @@ define([
 	 */
 	var HistoryModel = function(options) {
 		this.init();
+		this.maxHistoryLength = (typeof options !== "undefined" && !isNaN(options.maxHistoryLength)) ? options.maxHistoryLength : 20;
 	};
 
 	/**
@@ -52,6 +53,11 @@ define([
 			'time': time
 		};
 		this.historyList.push(newHistorical);
+		var safety = 1000;
+		while (this.historyList.length > this.maxHistoryLength && safety > 0) {
+			safety--;
+			this.historyList.shift();
+		}
 		$.publish('HistoryModel-addToHistory', this);
 	};
 
