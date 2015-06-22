@@ -27,6 +27,10 @@ define([
 		$.subscribe('ToHistory-add', function(el, title) {
 			self.addToHistory(title);
 		});
+		$.subscribe('ToHistory-updateLastEntry', function() {
+			self.updateLastEntry();
+		});
+
 	};
 
 
@@ -67,6 +71,14 @@ define([
 		var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel); // Exporting current songModel to json
 		this.model.addToHistory(JSONSong, title);
 		this.model.setCurrentPosition(this.model.historyList.length - 1);
+	};
+
+	/**
+	 * Function is call to update last entry songModel state, but title is merged, it's used to not create another entry in history state
+	 */
+	HistoryController.prototype.updateLastEntry = function() {
+		var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel); // Exporting current songModel to json
+		this.model.getCurrentState().leadsheet = JSONSong;
 	};
 
 	return HistoryController;
