@@ -5,9 +5,10 @@ define([
 	'pubsub',
 ], function(Mustache, UserLog, $, pubsub) {
 
-	function HistoryView(parentHTML, displayTime) {
+	function HistoryView(parentHTML, displayHistory, displayTime) {
 		this.el = undefined;
 		this.parentHTML = (parentHTML) ? parentHTML : $('#rightPanel');
+		this.displayHistory = (typeof displayHistory !== "undefined") ? displayHistory : true;
 		this.displayTime = !!displayTime;
 		this.initController();
 		this.initKeyboard();
@@ -21,10 +22,14 @@ define([
 	 * @return {[type]} [description]
 	 */
 	HistoryView.prototype.render = function(model) {
+		if (this.displayHistory === false) {
+			return;
+		}
 		if (typeof this.parentHTML === "undefined") {
 			return;
 		}
-		var history = '<h3>History</h3>';
+		var history = '';
+		history += '<h3>History</h3>';
 		history += '<ul class="history_ul">';
 		var text = '',
 			classCurrent = "";

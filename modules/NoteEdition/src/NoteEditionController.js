@@ -17,6 +17,7 @@ define([
 		this.cursor = cursor;
 		this.noteSpaceMng = noteSpaceMng; // in tests we don't pass noteSpaceMng, it will be undefined
 		this.initSubscribe();
+		this._lastCursorIndexHistory = -1; // we add an entry in history only when cursor is changed (it adds only one entry in histo)
 	}
 
 	/**
@@ -37,7 +38,6 @@ define([
 			if (self.noteSpaceMng.isEnabled()) {
 				self[fn].call(self, param);
 				$.publish('ToViewer-draw', self.songModel);
-				$.publish('ToHistory-add', 'Change Notes');
 			}
 		});
 
@@ -251,6 +251,12 @@ define([
 				note.setNoteFromString(newKey);
 			}
 		}
+		if (this._lastCursorIndexHistory !== this.cursor.getPos()) {
+			$.publish('ToHistory-add', 'Change pitch');
+			this._lastCursorIndexHistory = this.cursor.getPos();
+		} else {
+			$.publish('ToHistory-updateLastEntry');
+		}
 	};
 
 	NoteEditionController.prototype.addAccidental = function(accidental) {
@@ -267,6 +273,12 @@ define([
 			} else {
 				note.setAccidental(accidental);
 			}
+		}
+		if (this._lastCursorIndexHistory !== this.cursor.getPos()) {
+			$.publish('ToHistory-add', 'Change note accidental');
+			this._lastCursorIndexHistory = this.cursor.getPos();
+		} else {
+			$.publish('ToHistory-updateLastEntry');
 		}
 	};
 
@@ -299,6 +311,12 @@ define([
 				notes[i].setDuration(newDur);
 			}
 		});
+		if (this._lastCursorIndexHistory !== this.cursor.getPos()) {
+			$.publish('ToHistory-add', 'Change note duration');
+			this._lastCursorIndexHistory = this.cursor.getPos();
+		} else {
+			$.publish('ToHistory-updateLastEntry');
+		}
 	};
 
 	NoteEditionController.prototype.setDot = function() {
@@ -316,6 +334,12 @@ define([
 			}
 			return notes;
 		});
+		if (this._lastCursorIndexHistory !== this.cursor.getPos()) {
+			$.publish('ToHistory-add', 'Change note duration');
+			this._lastCursorIndexHistory = this.cursor.getPos();
+		} else {
+			$.publish('ToHistory-updateLastEntry');
+		}
 	};
 
 	NoteEditionController.prototype.setTie = function() {
@@ -336,6 +360,12 @@ define([
 						note.setTie("stop");
 				}
 			}
+		}
+		if (this._lastCursorIndexHistory !== this.cursor.getPos()) {
+			$.publish('ToHistory-add', 'Add tie notes');
+			this._lastCursorIndexHistory = this.cursor.getPos();
+		} else {
+			$.publish('ToHistory-updateLastEntry');
 		}
 	};
 
@@ -416,7 +446,14 @@ define([
 				}
 			}
 		});
+		if (this._lastCursorIndexHistory !== this.cursor.getPos()) {
+			$.publish('ToHistory-add', 'Add tuplets');
+			this._lastCursorIndexHistory = this.cursor.getPos();
+		} else {
+			$.publish('ToHistory-updateLastEntry');
+		}
 	};
+	
 	NoteEditionController.prototype.setSilence = function() {
 		//this._ifTupletExpandCursor();
 		var self = this;
@@ -455,6 +492,12 @@ define([
 				tmpNm.deleteNote(noteToDelete[k]);
 			}
 		});
+		if (this._lastCursorIndexHistory !== this.cursor.getPos()) {
+			$.publish('ToHistory-add', 'Change note');
+			this._lastCursorIndexHistory = this.cursor.getPos();
+		} else {
+			$.publish('ToHistory-updateLastEntry');
+		}
 		//self.cursor.setIndexPos(1, self.cursor.getEnd() - noteToDelete.length);
 	};
 
@@ -465,6 +508,12 @@ define([
 			tmpNm.insertNote(0, cloned);
 		});
 
+		if (this._lastCursorIndexHistory !== this.cursor.getPos()) {
+			$.publish('ToHistory-add', 'Add note');
+			this._lastCursorIndexHistory = this.cursor.getPos();
+		} else {
+			$.publish('ToHistory-updateLastEntry');
+		}
 	};
 
 	NoteEditionController.prototype.copyNotes = function() {
@@ -479,6 +528,12 @@ define([
 		this._runDurationFn(function(tmpNm) {
 			tmpNm.setNotes(notesToPaste);
 		});
+		if (this._lastCursorIndexHistory !== this.cursor.getPos()) {
+			$.publish('ToHistory-add', 'Paste notes');
+			this._lastCursorIndexHistory = this.cursor.getPos();
+		} else {
+			$.publish('ToHistory-updateLastEntry');
+		}
 	};
 
 	NoteEditionController.prototype.moveCursorByBar = function(inc) {

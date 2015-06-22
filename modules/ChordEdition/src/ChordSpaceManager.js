@@ -185,8 +185,10 @@ define([
 			});
 			this.songModel.getComponent('chords').addChord(chordModel);
 		}
-		chordModel.setChordFromString(chordString);
-		$.publish('ToHistory-add', 'Update Chords ' + chordString);
+		if (chordString !== chordModel.toString()) {
+			chordModel.setChordFromString(chordString);
+			$.publish('ToHistory-add', 'Update Chords ' + chordString);
+		}
 	};
 
 	ChordSpaceManager.prototype.getChordsInPath = function(coords) {

@@ -9,7 +9,7 @@ define([
 
 	function HistoryController(model, songModel) {
 		this.model = model || new HistoryModel();
-		this.songModel = songModel;
+		this.songModel = songModel || new SongModel();
 		this.initSubscribe();
 	}
 
