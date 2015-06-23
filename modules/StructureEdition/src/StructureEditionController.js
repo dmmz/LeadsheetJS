@@ -100,8 +100,6 @@ define([
 			this.cursor.setPos(indexLastNote);
 		}
 
-		this.songModel.removeSection(sectionNumber);
-
 		// Remove section in songmodel is not needed because it's done when we remove last sections bar
 		//this.songModel.removeSection(sectionNumber);
 		UserLog.logAutoFade('info', "Section have been removed successfully");
