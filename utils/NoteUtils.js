@@ -10,6 +10,15 @@ define(function() {
 		0.125: "32",
 		0.0625: "64"
 	};
+	NoteUtils.ARR_DUR = [
+	{strDur:'w',numDur:4},
+	{strDur:'h',numDur:2},
+	{strDur:'q',numDur:1},
+	{strDur:'8',numDur:0.5},
+	{strDur:'16',numDur:0.25},
+	{strDur:'32',numDur:0.125},
+	{strDur:'64',numDur:0.0625}
+	];
 
 	NoteUtils.getStringFromBeatDuration = function(beat) {
 		return NoteUtils.DURATIONS[beat];

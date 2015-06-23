@@ -126,6 +126,125 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 				var noteSilenceDot = new NoteModel('q.r');
 				assert.equal(noteSilenceDot.getDot(),1,'q.r has dot');
 
+
+				// set duration functions
+				var durNote = new NoteModel('A/4-q');
+				assert.equal(durNote.getDot(),0,'no dot for quarter note');
+				assert.throws(function() { 
+					durNote.setDurationByNumber(1.3333);
+				});
+				assert.throws(function() { 
+					durNote.setDurationByNumber('1.3333');
+				});
+					assert.throws(function() { 
+					durNote.setDuration('1.3333');
+				});
+
+				var dur;
+				
+				dur = 6;
+				durNote.setDurationByNumber(dur);
+				assert.equal(durNote.getDot(),1,'whole note with dot');
+				assert.equal(durNote.duration,'w');
+				assert.equal(durNote.getDuration(),dur);
+
+				dur = 7;
+				durNote.setDurationByNumber(dur);
+				assert.equal(durNote.getDot(),2,'whole note with double dot');
+				assert.equal(durNote.duration,'w');
+				assert.equal(durNote.getDuration(),dur);
+
+				dur = 3;
+				durNote.setDurationByNumber(dur);
+				assert.equal(durNote.getDot(),1,'half note with dot');
+				assert.equal(durNote.duration,'h');
+				assert.equal(durNote.getDuration(),dur);
+
+				dur = 3.5;
+				durNote.setDurationByNumber(dur);
+				assert.equal(durNote.getDot(),2,'half note with double dot');
+				assert.equal(durNote.duration,'h');
+				assert.equal(durNote.getDuration(),dur);
+
+				dur = 1.5;
+				durNote.setDurationByNumber(dur);
+				assert.equal(durNote.getDot(),1,'quarter note with dot');
+				assert.equal(durNote.duration,'q');
+				assert.equal(durNote.getDuration(),dur);
+
+				dur = 1.75;
+				durNote.setDurationByNumber(dur);
+				assert.equal(durNote.getDot(),2,'quarter note with double dot');
+				assert.equal(durNote.duration,'q');
+				assert.equal(durNote.getDuration(),dur);
+
+				dur = 0.75;
+				durNote.setDurationByNumber(dur);
+				assert.equal(durNote.getDot(),1,'8th note with dot');
+				assert.equal(durNote.duration,'8');
+				assert.equal(durNote.getDuration(),dur);
+
+				dur = 0.875;
+				durNote.setDurationByNumber(dur);
+				assert.equal(durNote.getDot(),2,'8th note with double dot');
+				assert.equal(durNote.duration,'8');
+				assert.equal(durNote.getDuration(),dur);
+
+				dur = 0.375;
+				durNote.setDurationByNumber(dur);
+				assert.equal(durNote.getDot(),1,'16th note with dot');
+				assert.equal(durNote.duration,'16');
+				assert.equal(durNote.getDuration(),dur);
+
+				dur = 0.4375;
+				durNote.setDurationByNumber(dur);
+				assert.equal(durNote.getDot(),2,'16th note with double dot');
+				assert.equal(durNote.duration,'16');
+				assert.equal(durNote.getDuration(),dur);
+
+				dur = 0.1875;
+				durNote.setDurationByNumber(dur);
+				assert.equal(durNote.getDot(),1,'32th note with dot');
+				assert.equal(durNote.duration,'32');
+				assert.equal(durNote.getDuration(),dur);
+
+				dur = 0.21875;
+				durNote.setDurationByNumber(dur);
+				assert.equal(durNote.getDot(),2,'32th note with double dot');
+				assert.equal(durNote.duration,'32');
+				assert.equal(durNote.getDuration(),dur);
+
+				dur = 0.09375;
+				durNote.setDurationByNumber(dur);
+				assert.equal(durNote.getDot(),1,'64th note with dot');
+				assert.equal(durNote.duration,'64');
+				assert.equal(durNote.getDuration(),dur);
+
+				dur = 0.109375;
+				durNote.setDurationByNumber(dur);
+				assert.equal(durNote.getDot(),2,'64th note with double dot');
+				assert.equal(durNote.duration,'64');
+				assert.equal(durNote.getDuration(),dur);
+				
+				assert.throws(function() { 
+					durNote.setDurationByNumber('whatever');
+				});
+
+				assert.throws(function() { 
+					durNote.setDuration('whatever');
+				});
+				
+				assert.throws(function() { 
+					durNote.setDuration(1.2346);
+				});
+
+				dur = 'h';
+				durNote.setDuration(dur);
+				assert.equal(durNote.duration,'h');
+				assert.equal(durNote.getDuration(),3.5, 'setDuration does not modifies dots, we have getDot == 2');
+				durNote.setDot(0);
+				assert.equal(durNote.getDuration(),2, 'now it is the duration of h');
+
 			});
 		}
 	};

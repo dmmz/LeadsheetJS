@@ -366,7 +366,7 @@ define([
 
 				for (var i = 0; i < 3; i++) {
 					tmpNote = firstNote.clone();
-					tmpNote.setDuration(newDuration);
+					tmpNote.setDurationByNumber(newDuration);
 
 					if (i === 0) tmpNote.setTuplet("start", timeModif);
 					else if (i === 1) tmpNote.setTuplet("middle", timeModif);
@@ -454,7 +454,7 @@ define([
 				tmpNm.deleteNote(noteToDelete[k]);
 			}
 		});
-		//self.cursor.setIndexPos(1, self.cursor.getEnd() - noteToDelete.length);
+		self.cursor.setIndexPos(1, self.cursor.getEnd() - noteToDelete.length);
 	};
 
 

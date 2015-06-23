@@ -154,12 +154,7 @@ define([
 
 		//add bar to barManager
 		var barManager = this.songModel.getComponent('bars');
-		var newBar = barManager.getBar(numBar).clone();
-		barManager.addBar(newBar);
-
-		//increment the number of bars of current section
-		var section = this.songModel.getSection(this.songModel.getSectionNumberFromBarNumber(numBar));
-		section.setNumberOfBars(section.getNumberOfBars() + 1);
+		barManager.insertBar(numBar, this.songModel);
 
 		// decal chords
 		this.songModel.getComponent('chords').incrementChordsBarNumberFromBarNumber(1, numBar);
@@ -220,18 +215,17 @@ define([
 		 * this behaviour is copied from Sibelius
 		 * @return {Boolean} tells if we actually reduced selection or not, later we set Time Signature change to the previous only if we did not reduce. 
 		 */
-		function reduceSelectionIfChanges(){
+		function reduceSelectionIfChanges() {
 			//if there are timeSig changes in selection we just take until change
 			var barsIt = new SongBarsIterator(song);
 			var timeSigChangesInSelection = false,
 				iBar,
 				prevTimeSignature;
 			barsIt.setBarIndex(selBars[0] + 1); //we check if there is a timeSig change in the middle (not in first bar) 
-			while (barsIt.getBarIndex() <= selBars[1])
-			{
+			while (barsIt.getBarIndex() <= selBars[1]) {
 				iBar = barsIt.getBarIndex();
-				
-				if (barsIt.doesTimeSignatureChange()){
+
+				if (barsIt.doesTimeSignatureChange()) {
 					timeSigChangesInSelection = true;
 					selBars[1] = barsIt.getBarIndex() - 1;
 					break;
@@ -243,14 +237,20 @@ define([
 		/**
 		 * @param  {Array} selBars       indexes of bars selected
 		 * @param  {Array} selectedNotes notes selected
+		 * @param  {Integer} numSelectedBars notes selected
 		 * @param  {TimeSignaureModel} newTimeSig    new time signature
 		 * @return {Array}               notes adapted to new time signature
 		 */
-		function getAdaptedNotes (selBars, selectedNotes, newTimeSig) {
+		function calcAdaptedNotes(selBars, selectedNotes, numSelectedBars, newTimeSig) {
 			var tmpNm = new NoteManager();
 			tmpNm.setNotes(selectedNotes);
-			var numBars = selBars[1] + 1 - selBars[0];
-			return tmpNm.getNotesAdaptedToTimeSig(newTimeSig, numBars);
+			var notes = tmpNm.getNotesAdaptedToTimeSig(newTimeSig, numSelectedBars);
+			tmpNm.setNotes(notes);
+			var numBars = tmpNm.getTotalDuration() / newTimeSig.getQuarterBeats();
+			return {
+				notes: notes,
+				numBars: numBars
+			};
 		}
 
 		//actually starts here
@@ -264,33 +264,47 @@ define([
 			barMng = song.getComponent("bars"),
 			noteMng = song.getComponent("notes"),
 			newTimeSig = new TimeSignatureModel(timeSignature);
-		
-		//selBars[1] is modified if there are time signature changes
+
+		//we check if there are time signature changes within the selection in that case selection is reduced until first change, selBars[1] is modified 
 		var timeSigChangesInSelection = reduceSelectionIfChanges();
-		
-		//get notes between bars
+
+		//we get start and en beats of selection
 		var startBeat = song.getStartBeatFromBarNumber(selBars[0]);
 		var endBeat = (barMng.getTotal() - 1 === selBars[1]) ? null : song.getStartBeatFromBarNumber(selBars[1] + 1);
-		
-		//get selected notes and adapt them to new time signature
+
+		//we get selected notes and adapt them to new time signature
 		var indexes = noteMng.getIndexesStartingBetweenBeatInterval(startBeat, endBeat);
 		var selectedNotes = noteMng.cloneElems(indexes[0], indexes[1]);
-		var adaptedNotes = getAdaptedNotes(selBars, selectedNotes, newTimeSig);
-		
-		//change time signature
+		var numSelectedBars = selBars[1] + 1 - selBars[0];
+
+		var calc = calcAdaptedNotes(selBars, selectedNotes, numSelectedBars, newTimeSig);
+		var adaptedNotes = calc.notes;
+		var numBarsAdaptedNotes = calc.numBars;
+
+		//HERE change time signature
 		prevTimeSignature = song.getTimeSignatureAt(selBars[0]);
 		barMng.getBar(selBars[0]).setTimeSignatureChange(timeSignature);
 
-		//we set previous time signature in the bar just after the selection, only if there are not changes
-		if (barMng.getTotal() - 1 > selBars[1] && !timeSigChangesInSelection && !barMng.getBar(selBars[1] + 1).getTimeSignatureChange()){
-			barMng.getBar(selBars[1] + 1).setTimeSignatureChange(prevTimeSignature.toString());
+		//check if we have to create bars to fit melody (normally if new time sign. has less beats than old one)
+		var diffBars = numBarsAdaptedNotes - numSelectedBars;
+		if (diffBars) {
+			barMng.insertBar(selBars[1], song, diffBars);
 		}
-		
+
+
+		//we set previous time signature in the bar just after the selection, only if there are not changes and if we are not at end of song
+		var indexFollowingBar = selBars[1] + diffBars + 1; 
+		if (barMng.getTotal() > indexFollowingBar  && // if following bar exists
+			!timeSigChangesInSelection && 
+			!barMng.getBar(indexFollowingBar).getTimeSignatureChange())  //if there is no time signature change in following bar
+		{
+			barMng.getBar(indexFollowingBar).setTimeSignatureChange(prevTimeSignature.toString());
+		}
+
 		//we set end index to -1 because notesSplice indexes are inclusive (so if we want to paste notes over indexes [0,5] we don't have to send 0,6 like in cloneElems). These differences among the code are confusing. TODO: refactor 
-		indexes[1]--; 
+		indexes[1]--;
 		//we overwrite adapted notes in general note manager
-		noteMng.notesSplice(indexes,adaptedNotes);
-		
+		noteMng.notesSplice(indexes, adaptedNotes);
 	};
 
 	StructureEditionController.prototype._checkDuration = function(durBefore, durAfter) {

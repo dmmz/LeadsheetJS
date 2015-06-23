@@ -79,11 +79,11 @@ define(['modules/StructureEdition/src/StructureEditionController',
 				//		- if new time signature makes measures longer than before, we add as many bars as needed. we fill with gaps if needed
 				// 
 				// 
-				//We load a new Song
+				//With Silences
 				//SetTimeSignature
 				//Empty song in 4/4, with a whole rest in each bar
 				var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.wholeSilencesSong, song);
-				console.log(song);
+				
 				cM = new CursorModel(song.getComponent('notes'));
 				sec = new StructureEditionController(song, cM);
 				var noteMng = song.getComponent('notes');
@@ -120,7 +120,34 @@ define(['modules/StructureEdition/src/StructureEditionController',
 				cM.setPos(lastNoteIndex);
 				sec.setTimeSignature("3/8");
 				assert.equal(noteMng.getNotes().toString(),/*bar 0*/'wr,wr,wr,wr,'+/*bar 4:*/'qr,qr,qr,qr,'+/*bar 5*/'qr,qr,qr,wr,qr,8r','notes after changing time signature');
-				assert.equal(song.getTimeSignatureAt(7).toString(),'3/8');
+				assert.equal(song.getTimeSignatureAt(7),'3/8');
+
+				//SONG WITH NOTES
+				var simpleSong = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
+				cursor = new CursorModel(simpleSong.getComponent('notes'));
+				structEdition = new StructureEditionController(simpleSong, cursor);
+				noteMng = simpleSong.getComponent('notes');
+				barMng = simpleSong.getComponent('bars');
+
+
+				cursor.setPos(5); //set cursor in first note of 2nd bar
+				assert.equal(noteMng.getNotes(5,9),"A/4-q,F/4-q,G/4-q,E/4-q");
+				assert.equal(barMng.getTotal(),8);
+				assert.equal(simpleSong.getSections()[0].getNumberOfBars(),8);
+
+				//We change time singature to 3/8 in 2nd bar
+				structEdition.setTimeSignature("3/8");
+				assert.equal(noteMng.getNotes(5,11),"A/4-q,F/4-8,F/4-8,G/4-q,E/4-q,8r","after changing time signature, F is cut in 2 (they are tied)");
+				assert.equal(barMng.getTotal(),10,'2 bars added as a result of changing 2nd bar to 3/8');
+				assert.equal(simpleSong.getSections()[0].getNumberOfBars(),10);
+				assert.equal(barMng.getBar(1).getTimeSignatureChange(),'3/8','in 2nd bar there is a time signature change to 3/8');
+				assert.equal(barMng.getBar(4).getTimeSignatureChange(),'4/4','after adding 2 bars, in 4th bar we have set again a time signature change to 4/4');
+				
+				//We change time singature to 5/4 in 2nd bar
+				cursor.setPos(cursor.getListLength()-1); //set cursor in last note
+				assert.equal(noteMng.getNotes(noteMng.getTotal()-4,noteMng.getTotal()).toString(),'A/4-q,F/4-q,G/4-q,E/4-q','last 4 notes');
+				structEdition.setTimeSignature("5/4");
+				assert.equal(noteMng.getNotes(noteMng.getTotal()-5,noteMng.getTotal()).toString(),'A/4-q,F/4-q,G/4-q,E/4-q,qr','last 5 notes, we have added a rest to fit in 5/4');
 
 			});
 

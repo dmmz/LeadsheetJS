@@ -370,23 +370,55 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		}
 		return true;
 	};
+	
 	/**
-	 * n
 	 * @param  {TimeSignatureModel} timeSig 
+	 * @param  {integer} numBars number of bars to change, used when there are only rests, when there are notes, numBars can be undefined
 	 * @return {Array}         of NoteModel
 	 */
 	NoteManager.prototype.getNotesAdaptedToTimeSig = function(timeSig,numBars) {
 		var newNoteMng = new NoteManager();
-		var numBeats = timeSig.getQuarterBeats();
+		var numBeatsBar = timeSig.getQuarterBeats();
 		var initBeat = 0;
+		var i;
 		if (this.onlyRests()){
-			for (var i = 0; i < numBars; i++) {
-				newNoteMng.fillGapWithRests(numBeats, initBeat);
-				initBeat += numBeats;
+			for (i = 0; i < numBars; i++) {
+				newNoteMng.fillGapWithRests(numBeatsBar, initBeat);
+				initBeat += numBeatsBar;
 			}
 		}
-		return newNoteMng.getNotes();
+		else{
+			var accDuration = 0; //accumulated Duration
+			var note, newNote;
+			for (i = 0; i < this.notes.length; i++) {
+				note = this.notes[i];
+				accDuration += note.getDuration();
+				if (roundBeat(accDuration) == numBeatsBar && i < this.notes.length - 1){
+					accDuration = 0;
+					newNoteMng.addNote(note);
+				}else if(roundBeat(accDuration) > numBeatsBar){
+					var diff = roundBeat(accDuration) - numBeatsBar;
+					note.setDurationByNumber(note.getDuration() - diff);
+					note.setTie('start');
+					newNoteMng.addNote(note);
+					newNote = note.clone();
+					newNote.setDurationByNumber(diff);
+					
+					newNote.removeTie();
+					newNote.setTie('stop');
+					newNoteMng.addNote(newNote);
 
+					accDuration = diff;
+
+				}else{
+					newNoteMng.addNote(note);	
+				}
+			}
+			var startingBeat = newNoteMng.getTotalDuration() + 1; //beat is 1 based
+			var gapDuration = numBeatsBar - accDuration;
+			newNoteMng.fillGapWithRests(gapDuration, startingBeat);
+		}
+		return newNoteMng.getNotes();
 	};
 	/**
 	 * if there are ties that with different pitches, we remove the tie

@@ -258,14 +258,50 @@ define(['modules/core/src/NoteManager',
 						silencesMelody.push(new NoteModel('wr'));
 						return silencesMelody;
 					}
+					/**
+					 * creates a melody with ony only figure
+					 * @param  {String} figure ex: 'h','q','8','16'...etc.
+					 * @param  {Number} number how many figures
+					 * @return {Array}        of NoteModels
+					 */
+					function createSimpleRhythm (figure, number) {
+						var simpleRhythm = [];
+						for (var i = 0; i < number; i++) {
+							simpleRhythm.push(new NoteModel('A/4-'+figure));	
+						}
+						return simpleRhythm;
+
+					}
 					noteManager.setNotes(createSilencesMelody());
 					var notes;
 					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('6/8'),2);
-					assert.equal(notes,'qr,qr,qr,qr,qr,qr'); //it seems not to be necessary toString
+					assert.equal(notes,'qr,qr,qr,qr,qr,qr','getNotesAdaptedToTimeSig for only silences'); //it seems not to be necessary toString, (useful to put if test fails)
 
 					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('3/8'),3);
 					assert.equal(notes,'qr,8r,qr,8r,8r,qr'); 
+
+					noteManager.setNotes(createSimpleRhythm('q',4));
+					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('3/4'));
+					assert.equal(notes,'A/4-q,A/4-q,A/4-q,A/4-q,qr,qr','getNotesAdaptedToTimeSig for notes'); 
+
+					noteManager.setNotes(createSimpleRhythm('q',4));
+					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('3/4'));
+					assert.equal(notes,'A/4-q,A/4-q,A/4-q,A/4-q,qr,qr','getNotesAdaptedToTimeSig for notes'); 
+
+					noteManager.setNotes(createSimpleRhythm('8',5));
+					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('3/8'));
+					assert.equal(notes,'A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,8r'); 
+
+					noteManager.setNotes(createSimpleRhythm('8',9));
+					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('2/2'));
+					assert.equal(notes.toString(),'A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,8r,qr,qr,qr'); 
 					
+					//breaking notes notes
+					noteManager.setNotes(createSimpleRhythm('q',4));
+					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('3/8'));
+					
+					//tuplets
+
 					//assert.equal(notes,'qr,qr,qr,qr,qr,qr');
 					
 				}

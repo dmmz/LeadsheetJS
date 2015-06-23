@@ -9,7 +9,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		this.pitchClass = []; // Note c, b
 		this.octave = []; // octave from 0 to 8
 		this.accidental = []; // b or #
-		this.duration = (param && param.duration) ? param.duration : undefined;
+		this.duration = (param && param.duration) ? param.duration : undefined; // string duration "h", "q", "8", "16" ...etc
 		this.isRest = (param && param.isRest) ? param.isRest : false;
 		this.dot = (param && param.dot) ? param.dot : 0; // 0,1,2
 		this.tie = (param && param.tie) ? param.tie : undefined; // contain "start", "stop", "stop_start"
@@ -38,12 +38,12 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 	 */
 	NoteModel.prototype.toString = function() {
 		var str, dur = this.duration;
-		for (var i = 0; i < this.dot; i++){
+		for (var i = 0; i < this.dot; i++) {
 			dur += ".";
 		}
-		if (this.isRest){
+		if (this.isRest) {
 			str = dur + "r";
-		}else{
+		} else {
 			str = this.pitchClass[0] + this.accidental[0] + "/" + this.octave[0] + "-" + dur;
 		}
 		return str;
@@ -63,7 +63,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 			this.pitchClass[index] = partPitch[0].substr(0, 1).toUpperCase();
 			this.accidental[index] = partPitch[0].substr(1, partPitch[0].length);
 			this.octave[index] = partPitch[1];
-			
+
 			if (parts.length == 2) {
 				partDuration = parts[1];
 			}
@@ -83,7 +83,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 			}
 			this.isRest = true;
 		}
-		if (partDuration){
+		if (partDuration) {
 			// check if there is a dot
 			var dotPosition = partDuration.indexOf(".");
 			if (dotPosition == -1) {
@@ -289,9 +289,52 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		return dur;
 	};
 
+	NoteModel.prototype.setDurationByNumber = function(dur) {
+		if (typeof dur !== 'number') {
+			throw "NoteModel - setDurationByNumber -  dur is not a number ";
+		}
+
+		if (!Number.isInteger(dur * 64)) {
+			throw "NoteModel - setDuration - dur should be fraction of 2, dur =" + dur;
+		}
+		var finalStringDur,
+			durObj,
+			newNumDur,
+			residualDur;
+
+		for (var i in NoteUtils.ARR_DUR) {
+			durObj = NoteUtils.ARR_DUR[i];
+			if (durObj.numDur == dur) {
+				finalStringDur = durObj.strDur;
+				break;
+			} else if (durObj.numDur < dur) {
+				finalStringDur = durObj.strDur;
+				//if not equal, must have dots, check
+				newNumDur = dur - durObj.numDur;
+				residualDur = dur - newNumDur;
+				if (newNumDur == residualDur / 2) {
+					this.setDot(1);
+				} else if (newNumDur > residualDur / 2) {
+					newNumDur = newNumDur - residualDur / 2;
+					if (newNumDur == residualDur / 4) {
+						this.setDot(2);
+					} else {
+						throw "NoteModel - setDuration - could not find mapping duration for " + dur;
+					}
+				}
+				break;
+			}
+		}
+		this.duration = finalStringDur;
+	};
+
+	/**
+	 
+	 * @param {string|number} dur can be a string "h" , "q" , "8" ...etc. or a number 
+	 */
 	NoteModel.prototype.setDuration = function(dur) {
-		if (typeof dur === "number") {
-			dur = NoteUtils.getStringFromBeatDuration(dur);
+		if (!NoteUtils.getBeatFromStringDuration(dur)) {
+			throw "NoteModel - setDuration - did not found string duration: " + dur;
 		}
 		this.duration = dur;
 	};
