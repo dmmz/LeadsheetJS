@@ -93,7 +93,7 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 				assert.equal(polyphonicNote.getNumPitches(), 3);
 
 				var restNote = new NoteModel("h");
-				assert.equal(restNote.getDuration(), 2,'rest note');
+				assert.equal(restNote.getDuration(), 2, 'rest note');
 				assert.ok(restNote.isRest);
 
 				restNote = new NoteModel("hr");
@@ -124,126 +124,76 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 				assert.deepEqual(clonedNotes2, inlineNote2, "clone test with silence");
 
 				var noteSilenceDot = new NoteModel('q.r');
-				assert.equal(noteSilenceDot.getDot(),1,'q.r has dot');
+				assert.equal(noteSilenceDot.getDot(), 1, 'q.r has dot');
 
 
 				// set duration functions
 				var durNote = new NoteModel('A/4-q');
-				assert.equal(durNote.getDot(),0,'no dot for quarter note');
-				assert.throws(function() { 
-					durNote.setDurationByNumber(1.3333);
+				assert.equal(durNote.getDot(), 0, 'no dot for quarter note');
+				assert.throws(function() {
+					durNote.setDurationByBeats(1.3333);
 				});
-				assert.throws(function() { 
-					durNote.setDurationByNumber('1.3333');
+				assert.throws(function() {
+					durNote.setDurationByBeats('1.3333');
 				});
-					assert.throws(function() { 
+				assert.throws(function() {
 					durNote.setDuration('1.3333');
 				});
 
 				var dur;
+
+				function testDuration (dur, dot, strDur, titleTest) {
+					durNote.setDurationByBeats(dur);
+					assert.equal(durNote.getDot(), dot, titleTest);
+					assert.equal(durNote.duration, strDur);
+					assert.equal(durNote.getDuration(), dur);	
+				}
 				
-				dur = 6;
-				durNote.setDurationByNumber(dur);
-				assert.equal(durNote.getDot(),1,'whole note with dot');
-				assert.equal(durNote.duration,'w');
-				assert.equal(durNote.getDuration(),dur);
+				testDuration(6, 1, 'w','whole note with dot');
+				testDuration(7, 2, 'w','whole note with double dot');
+				testDuration(4, 0, 'w','whole note, no dot');
+				testDuration(3, 1, 'h','half note with dot');
+				testDuration(2, 0, 'h','half note, no dot');
+				testDuration(3.5, 2, 'h','half note with double dot');
+				testDuration(1.5, 1,'q','quarter note with dot');
+				testDuration(1, 0,'q','no dot');
+				testDuration(1.75, 2,'q','quarter note with double dot');
+				testDuration(0.875,2,'8','8th note with double dot');
+				testDuration(0.75,1,'8','8th note with dot');
+				testDuration(0.5,0,'8','8th note with no dot');
+				testDuration(0.4375,2,'16', '16th note with double dot');
+				testDuration(0.375,1,'16','16th note with dot');
+				testDuration(0.25,0,'16','16th note with no dot');
+				testDuration(0.21875,2,'32','32th note with double dot');
+				testDuration(0.1875,1,'32','32th note with dot');
+				testDuration(0.125,0,'32','32th note with no dot');
+				testDuration(0.109375,2,'64','64th note with double dot');
+				testDuration(0.09375,1,'64','64th note with dot');
+				testDuration(0.0625,0,'64','64th note with no dot');
 
-				dur = 7;
-				durNote.setDurationByNumber(dur);
-				assert.equal(durNote.getDot(),2,'whole note with double dot');
-				assert.equal(durNote.duration,'w');
-				assert.equal(durNote.getDuration(),dur);
-
-				dur = 3;
-				durNote.setDurationByNumber(dur);
-				assert.equal(durNote.getDot(),1,'half note with dot');
-				assert.equal(durNote.duration,'h');
-				assert.equal(durNote.getDuration(),dur);
-
-				dur = 3.5;
-				durNote.setDurationByNumber(dur);
-				assert.equal(durNote.getDot(),2,'half note with double dot');
-				assert.equal(durNote.duration,'h');
-				assert.equal(durNote.getDuration(),dur);
-
-				dur = 1.5;
-				durNote.setDurationByNumber(dur);
-				assert.equal(durNote.getDot(),1,'quarter note with dot');
-				assert.equal(durNote.duration,'q');
-				assert.equal(durNote.getDuration(),dur);
-
-				dur = 1.75;
-				durNote.setDurationByNumber(dur);
-				assert.equal(durNote.getDot(),2,'quarter note with double dot');
-				assert.equal(durNote.duration,'q');
-				assert.equal(durNote.getDuration(),dur);
-
-				dur = 0.75;
-				durNote.setDurationByNumber(dur);
-				assert.equal(durNote.getDot(),1,'8th note with dot');
-				assert.equal(durNote.duration,'8');
-				assert.equal(durNote.getDuration(),dur);
-
-				dur = 0.875;
-				durNote.setDurationByNumber(dur);
-				assert.equal(durNote.getDot(),2,'8th note with double dot');
-				assert.equal(durNote.duration,'8');
-				assert.equal(durNote.getDuration(),dur);
-
-				dur = 0.375;
-				durNote.setDurationByNumber(dur);
-				assert.equal(durNote.getDot(),1,'16th note with dot');
-				assert.equal(durNote.duration,'16');
-				assert.equal(durNote.getDuration(),dur);
-
-				dur = 0.4375;
-				durNote.setDurationByNumber(dur);
-				assert.equal(durNote.getDot(),2,'16th note with double dot');
-				assert.equal(durNote.duration,'16');
-				assert.equal(durNote.getDuration(),dur);
-
-				dur = 0.1875;
-				durNote.setDurationByNumber(dur);
-				assert.equal(durNote.getDot(),1,'32th note with dot');
-				assert.equal(durNote.duration,'32');
-				assert.equal(durNote.getDuration(),dur);
-
-				dur = 0.21875;
-				durNote.setDurationByNumber(dur);
-				assert.equal(durNote.getDot(),2,'32th note with double dot');
-				assert.equal(durNote.duration,'32');
-				assert.equal(durNote.getDuration(),dur);
-
-				dur = 0.09375;
-				durNote.setDurationByNumber(dur);
-				assert.equal(durNote.getDot(),1,'64th note with dot');
-				assert.equal(durNote.duration,'64');
-				assert.equal(durNote.getDuration(),dur);
-
-				dur = 0.109375;
-				durNote.setDurationByNumber(dur);
-				assert.equal(durNote.getDot(),2,'64th note with double dot');
-				assert.equal(durNote.duration,'64');
-				assert.equal(durNote.getDuration(),dur);
-				
-				assert.throws(function() { 
-					durNote.setDurationByNumber('whatever');
+				assert.throws(function() {
+					durNote.setDurationByBeats('whatever');
 				});
 
-				assert.throws(function() { 
+				assert.throws(function() {
 					durNote.setDuration('whatever');
 				});
-				
-				assert.throws(function() { 
+
+				assert.throws(function() {
 					durNote.setDuration(1.2346);
+				});
+				durNote.setDurationByBeats(1.5);
+
+				assert.throws(function() {
+					durNote.setDurationByBeats(1.2346);
 				});
 
 				dur = 'h';
 				durNote.setDuration(dur);
-				assert.equal(durNote.duration,'h');
-				assert.equal(durNote.getDuration(),3.5, 'setDuration does not modifies dots, we have getDot == 2');
+				assert.equal(durNote.duration, dur);
+				assert.equal(durNote.getDuration(), 3, 'setDuration does not modifies dots, we have getDot == 1');
 				durNote.setDot(0);
-				assert.equal(durNote.getDuration(),2, 'now it is the duration of h');
+				assert.equal(durNote.getDuration(), 2, 'now it is the duration of h');
 
 			});
 		}

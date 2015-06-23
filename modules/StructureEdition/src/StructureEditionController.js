@@ -276,35 +276,43 @@ define([
 		var indexes = noteMng.getIndexesStartingBetweenBeatInterval(startBeat, endBeat);
 		var selectedNotes = noteMng.cloneElems(indexes[0], indexes[1]);
 		var numSelectedBars = selBars[1] + 1 - selBars[0];
+		var calc;
+		try{
+			calc = calcAdaptedNotes(selBars, selectedNotes, numSelectedBars, newTimeSig);
+			var adaptedNotes = calc.notes;
+			var numBarsAdaptedNotes = calc.numBars;
 
-		var calc = calcAdaptedNotes(selBars, selectedNotes, numSelectedBars, newTimeSig);
-		var adaptedNotes = calc.notes;
-		var numBarsAdaptedNotes = calc.numBars;
+			//HERE change time signature
+			prevTimeSignature = song.getTimeSignatureAt(selBars[0]);
+			barMng.getBar(selBars[0]).setTimeSignatureChange(timeSignature);
 
-		//HERE change time signature
-		prevTimeSignature = song.getTimeSignatureAt(selBars[0]);
-		barMng.getBar(selBars[0]).setTimeSignatureChange(timeSignature);
+			//check if we have to create bars to fit melody (normally if new time sign. has less beats than old one)
+			var diffBars = numBarsAdaptedNotes - numSelectedBars;
+			if (diffBars) {
+				barMng.insertBar(selBars[1], song, diffBars);
+			}
 
-		//check if we have to create bars to fit melody (normally if new time sign. has less beats than old one)
-		var diffBars = numBarsAdaptedNotes - numSelectedBars;
-		if (diffBars) {
-			barMng.insertBar(selBars[1], song, diffBars);
+
+			//we set previous time signature in the bar just after the selection, only if there are not changes and if we are not at end of song
+			var indexFollowingBar = selBars[1] + diffBars + 1; 
+			if (barMng.getTotal() > indexFollowingBar  && // if following bar exists
+				!timeSigChangesInSelection && 
+				!barMng.getBar(indexFollowingBar).getTimeSignatureChange())  //if there is no time signature change in following bar
+			{
+				barMng.getBar(indexFollowingBar).setTimeSignatureChange(prevTimeSignature.toString());
+			}
+
+			//we set end index to -1 because notesSplice indexes are inclusive (so if we want to paste notes over indexes [0,5] we don't have to send 0,6 like in cloneElems). These differences among the code are confusing. TODO: refactor 
+			indexes[1]--;
+			//we overwrite adapted notes in general note manager
+			noteMng.notesSplice(indexes, adaptedNotes);
+		}catch(e){
+			//console.log(e);
+			UserLog.logAutoFade('error', "Tuplets can't be broken");
+			return;
 		}
-
-
-		//we set previous time signature in the bar just after the selection, only if there are not changes and if we are not at end of song
-		var indexFollowingBar = selBars[1] + diffBars + 1; 
-		if (barMng.getTotal() > indexFollowingBar  && // if following bar exists
-			!timeSigChangesInSelection && 
-			!barMng.getBar(indexFollowingBar).getTimeSignatureChange())  //if there is no time signature change in following bar
-		{
-			barMng.getBar(indexFollowingBar).setTimeSignatureChange(prevTimeSignature.toString());
-		}
-
-		//we set end index to -1 because notesSplice indexes are inclusive (so if we want to paste notes over indexes [0,5] we don't have to send 0,6 like in cloneElems). These differences among the code are confusing. TODO: refactor 
-		indexes[1]--;
-		//we overwrite adapted notes in general note manager
-		noteMng.notesSplice(indexes, adaptedNotes);
+		
+		
 	};
 
 	StructureEditionController.prototype._checkDuration = function(durBefore, durAfter) {

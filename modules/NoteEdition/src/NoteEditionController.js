@@ -366,7 +366,7 @@ define([
 
 				for (var i = 0; i < 3; i++) {
 					tmpNote = firstNote.clone();
-					tmpNote.setDurationByNumber(newDuration);
+					tmpNote.setDurationByBeats(newDuration);
 
 					if (i === 0) tmpNote.setTuplet("start", timeModif);
 					else if (i === 1) tmpNote.setTuplet("middle", timeModif);

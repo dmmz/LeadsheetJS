@@ -289,9 +289,9 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		return dur;
 	};
 
-	NoteModel.prototype.setDurationByNumber = function(dur) {
+	NoteModel.prototype.setDurationByBeats = function(dur) {
 		if (typeof dur !== 'number') {
-			throw "NoteModel - setDurationByNumber -  dur is not a number ";
+			throw "NoteModel - setDurationByBeats -  dur is not a number ";
 		}
 
 		if (!Number.isInteger(dur * 64)) {
@@ -301,7 +301,8 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 			durObj,
 			newNumDur,
 			residualDur;
-
+		
+		this.setDot(0);			
 		for (var i in NoteUtils.ARR_DUR) {
 			durObj = NoteUtils.ARR_DUR[i];
 			if (durObj.numDur == dur) {
@@ -312,6 +313,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 				//if not equal, must have dots, check
 				newNumDur = dur - durObj.numDur;
 				residualDur = dur - newNumDur;
+
 				if (newNumDur == residualDur / 2) {
 					this.setDot(1);
 				} else if (newNumDur > residualDur / 2) {

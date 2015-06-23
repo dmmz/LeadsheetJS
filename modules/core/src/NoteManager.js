@@ -398,11 +398,11 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 					newNoteMng.addNote(note);
 				}else if(roundBeat(accDuration) > numBeatsBar){
 					var diff = roundBeat(accDuration) - numBeatsBar;
-					note.setDurationByNumber(note.getDuration() - diff);
+					note.setDurationByBeats(note.getDuration() - diff);
 					note.setTie('start');
 					newNoteMng.addNote(note);
 					newNote = note.clone();
-					newNote.setDurationByNumber(diff);
+					newNote.setDurationByBeats(diff);
 					
 					newNote.removeTie();
 					newNote.setTie('stop');
