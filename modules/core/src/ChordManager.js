@@ -66,14 +66,16 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 		} else {
 			this.chords.push(new ChordModel());
 		}
+		this._sortChordsList();
 	};
 
+	// ---- ChordManager - insertChord - may be not use anymore since _sortChordsList ------
 	/**
 	 * Insert a  new chord to a specific index, all chords after index will have their index incremented
 	 * @param {ChordModel} chord
 	 * @param {int} index
 	 */
-	ChordManager.prototype.insertChord = function(index, chord) {
+	/*ChordManager.prototype.insertChord = function(index, chord) {
 		if (typeof index !== "undefined" && isNaN(index)) {
 			throw 'Index must be a int in insert chord';
 		}
@@ -81,7 +83,8 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 			chord = new ChordModel();
 		}
 		this.chords.splice(index, 0, chord);
-	};
+		this_sortChordsList();
+	};*/
 
 	/**
 	 * Search and remove a chord from the array, chordModel is destroyed
@@ -305,22 +308,24 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 	 * returns the index of the chord in the demanded position. If there is no chord with that exact position , it returns the closest previous one (or the following one, depending on 'next' param)
 	 * returns also if it found the exact one or not
 	 * @param  {Object} pos {	numBar: valNumBar,
-	 *	                     	numBeat: valNumBeat}
+	 *		                    numBeat: valNumBeat}
 	 * @param  {boolean} next if true, when there is no chord found at the exact position we get the next one, if false or undefined, we get the previous one
-	 * @return {Object}     {
-	 *         					index: number
-	 *			exact: boolean
-	 * 	       				}
+	 * @return {Object} {
+	 *         index: number
+	 *         exact: boolean
+	 * }
 	 */
 	ChordManager.prototype.getChordIndexByPosition = function(pos, next) {
 		function equalPosition(pos, chord) {
-				return pos.numBar == chord.getBarNumber() && pos.numBeat == chord.getBeat();
-			}
-			//greater than
+			return pos.numBar == chord.getBarNumber() && pos.numBeat == chord.getBeat();
+		}
+
+		//greater than
 		function posGtChordPos(pos, chord) {
-				return pos.numBar > chord.getBarNumber() || (pos.numBar == chord.getBarNumber() && pos.numBeat > chord.getBeat());
-			}
-			//less than
+			return pos.numBar > chord.getBarNumber() || (pos.numBar == chord.getBarNumber() && pos.numBeat > chord.getBeat());
+		}
+
+		//less than
 		function posLtChordPos(pos, chord) {
 			return pos.numBar < chord.getBarNumber() || (pos.numBar == chord.getBarNumber() && pos.numBeat < chord.getBeat());
 		}
@@ -351,6 +356,12 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 			strChords.push(this.chords[i].toString());
 		}
 		return strChords;
+	};
+
+	ChordManager.prototype._sortChordsList = function() {
+		this.chords.sort(function(a, b) {
+			return ((a.barNumber * 1000 + a.beat) - (b.barNumber * 1000 + b.beat));
+		});
 	};
 
 	/**

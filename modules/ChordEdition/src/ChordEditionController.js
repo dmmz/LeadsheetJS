@@ -32,6 +32,7 @@ define([
 	};
 
 	ChordEditionController.prototype.deleteChords = function() {
+		// console.log('deleteChords');
 		/**
 		 * @param  {positon} argument
 		 * @return {Object}          position as {numBar: valBar, numBeat: valBeat}
@@ -54,6 +55,7 @@ define([
 		for (var i = this.cursor.getStart(); i <= this.cursor.getEnd(); i++) {
 			removeChordIfExists(i);
 		}
+		$.publish('ToHistory-add', 'Remove chord');
 	};
 
 	/*ChordEditionController.prototype.addChord = function() {
@@ -88,6 +90,7 @@ define([
 			this.buffer[i].setBeat(this.buffer[i].getBeat() + decalBeat);
 			chordManager.addChord(this.buffer[i]);
 		}
+		$.publish('ToHistory-add', 'Paste chord');
 	};
 
 	/*ChordEditionController.prototype.chordTabEvent = function(way) {

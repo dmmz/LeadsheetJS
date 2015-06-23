@@ -177,6 +177,7 @@ define([
 			}
 			return boundingBox;
 		};
+		
 		LSViewer.prototype._displayTitle = function(title) {
 			var oldTextAlign = this.ctx.textAlign;
 			this.ctx.textAlign = 'center';

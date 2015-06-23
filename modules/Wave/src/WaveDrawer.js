@@ -104,9 +104,8 @@ define([
         if (mouseUp){
             var posCursor = this.cursor.getPos();
             if (posCursor[0] != posCursor[1]){  //if there is something selected
-                $.publish('selected-audio', posCursor);
+                $.publish('WaveDrawer-selectedAudio', posCursor);
             }
-
         }
     };
     /**
@@ -253,7 +252,7 @@ define([
             this.updateCursorPlaying(0);
             this.viewer.canvasLayer.refresh();
         }
-        $.publish('audio-drawn', this);
+        $.publish('WaveDrawer-audioDrawn', this);
 
     };
 

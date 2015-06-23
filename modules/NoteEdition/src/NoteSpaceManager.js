@@ -45,6 +45,7 @@ define([
 
 			//if (self.cursor.getEditable()) {
 			self.noteSpace = self.createNoteSpace(self.viewer);
+			self.cursor.setListElements(self.noteSpace.length);
 			self.viewer.canvasLayer.addElement(self);
 			self.viewer.canvasLayer.refresh();
 

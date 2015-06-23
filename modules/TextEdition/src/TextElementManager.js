@@ -72,7 +72,7 @@ define([
 			}
 		});
 
-		if (this.suggestions){
+		if (this.suggestions) {
 			$(input).devbridgeAutocomplete({
 				'lookup': this.suggestions,
 				'width': 500,

@@ -30,10 +30,7 @@ define([
 			if (data.success === true) {
 				UserLog.logAutoFade('success', 'Harmonization is finished');
 				SongModel_CSLJson.importFromMusicCSLJSON(data.sequence, self.songModel);
-				$.publish('ToHistory-add', {
-					'item': data.sequence,
-					'title': 'Harmonization - ' + style
-				});
+				$.publish('ToHistory-add', 'Harmonization - ' + style);
 				$.publish('ToViewer-draw', self.songModel);
 			} else {
 				UserLog.logAutoFade('error', data.error);

@@ -19,7 +19,7 @@ define(function(require) {
 				});
 				var chord = new ChordModel();
 				chord.setNote('NC');
-				chordManager.insertChord(0, chord);
+				chordManager.addChord(chord);
 				assert.equal(chordManager.getTotal(), 2);
 
 				chordManager.removeChord(chord);
@@ -80,7 +80,7 @@ define(function(require) {
 					'barNumber': 4
 				});
 				cm.addChord(chord3);
-				assert.equal(cm.getChords().toString(), "FM7,G7,Cm");
+				assert.equal(cm.getChords().toString(), "G7,FM7,Cm");
 				cm.removeChordsBetweenPositions(2, 1, 3, 3);
 				assert.equal(cm.getChords().toString(), "G7,Cm");
 

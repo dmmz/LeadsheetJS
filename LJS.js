@@ -1,4 +1,5 @@
 define([
+		"modules/AudioComments/src/AudioCommentsController",
 		"modules/ChordEdition/src/ChordEdition",
 		"modules/chordSequence/src/SongView_chordSequence",
 		"modules/Constraint/src/Constraint",
@@ -18,10 +19,10 @@ define([
 		"modules/StructureEdition/src/StructureEdition",
 		"modules/Tag/src/main",
 		"modules/Wave/src/WaveController",
-		"modules/AudioComments/src/AudioCommentsController",
 		"utils/main"
 	],
 	function(
+		AudioComments,
 		ChordEdition,
 		chordSequence,
 		Constraint,
@@ -41,10 +42,10 @@ define([
 		StructureEdition,
 		Tag,
 		Wave,
-		AudioComments,
 		utils
 	) {
 		return {
+			"AudioComments": AudioComments,
 			"ChordEdition": ChordEdition,
 			"chordSequence": chordSequence,
 			"Constraint": Constraint,
@@ -66,7 +67,6 @@ define([
 			"StructureEdition": StructureEdition,
 			"Tag": Tag,
 			"Wave": Wave,
-			"AudioComments": AudioComments,
 			"utils": utils
 		};
 	}

@@ -32,9 +32,7 @@ define([
 			$.publish('ToViewer-draw', self.songModel);
 			//}
 		});
-
 	};
-
 
 	StructureEditionController.prototype.addSection = function() {
 		/*var selBars = this._getSelectedBars();
@@ -65,6 +63,8 @@ define([
 			'numberOfBars': numberOfBarsToCreate
 		});
 		this.songModel.addSection(section);
+		UserLog.logAutoFade('info', "Section have been added successfully");
+		$.publish('ToHistory-add', 'Add Section');
 	};
 
 	StructureEditionController.prototype.removeSection = function() {
@@ -81,15 +81,17 @@ define([
 		var startBar = this.songModel.getStartBarNumberFromSectionNumber(sectionNumber);
 		var numberOfBars = this.songModel.getSection(sectionNumber).getNumberOfBars();
 
-		var barManager = this.songModel.getComponent('bars');
+		//var barManager = this.songModel.getComponent('bars');
 		var noteManager = this.songModel.getComponent('notes');
 		//var notes;
+		// console.log(sectionNumber, startBar, numberOfBars);
 		for (var i = 0; i < numberOfBars; i++) {
 			//notes = noteManager.getNotesAtBarNumber(startBar, this.songModel);
 			//for (var j = notes.length - 1; j >= 0; j--) {
 			//	noteManager.deleteNote(noteManager.getNoteIndex(notes[j]));
 			//}
-			barManager.removeBar(startBar); // each time we remove index move so we don't need to sum startBar with i
+			this._removeBar(startBar);
+			//barManager.removeBar(startBar); // each time we remove index move so we don't need to sum startBar with i
 
 		}
 		// check if cursor not outside
@@ -97,7 +99,14 @@ define([
 		if (this.cursor.getEnd() > indexLastNote) {
 			this.cursor.setPos(indexLastNote);
 		}
+
 		this.songModel.removeSection(sectionNumber);
+
+		// Remove section in songmodel is not needed because it's done when we remove last sections bar
+		//this.songModel.removeSection(sectionNumber);
+		UserLog.logAutoFade('info', "Section have been removed successfully");
+		$.publish('ToHistory-add', 'Remove Section');
+
 	};
 
 	StructureEditionController.prototype.setSectionName = function(name) {
@@ -110,6 +119,8 @@ define([
 		}
 		var sectionNumber = this.songModel.getSectionNumberFromBarNumber(selBars[0]);
 		this.songModel.getSection(sectionNumber).setName(name);
+		$.publish('ToViewer-draw', this.songModel);
+		$.publish('ToHistory-add', 'Rename Section ' + name);
 	};
 
 	// Carefull, if a section is played 2 times, repeatTimes = 1
@@ -123,6 +134,9 @@ define([
 		}
 		var sectionNumber = this.songModel.getSectionNumberFromBarNumber(selBars[0]);
 		this.songModel.getSection(sectionNumber).setRepeatTimes(repeatTimes);
+
+		$.publish('ToHistory-add', 'Change Section repeat' + repeatTimes);
+
 	};
 
 	StructureEditionController.prototype.addBar = function() {
@@ -150,6 +164,24 @@ define([
 		var numBeat = this.songModel.getStartBeatFromBarNumber(numBar);
 		// get the index of that note
 		var index = nm.getNextIndexNoteByBeat(numBeat);
+
+		// remove a possibly tied notes
+		if (nm.getNote(index).isTie('stop')) {
+			var tieType = nm.getNote(index).getTie();
+			if (tieType === "stop") {
+				nm.getNote(index).removeTie();
+				var tieTypePrevious = nm.getNote(index - 1).getTie();
+				if (tieTypePrevious === 'start') {
+					nm.getNote(index - 1).removeTie();
+				} else if (tieTypePrevious === 'start_stop') {
+					nm.getNote(index - 1).setTie("stop");
+				}
+			} else {
+				// case it's start or stop_start
+				nm.getNote(index).setTie("start");
+			}
+		}
+
 		nm.notesSplice([index, index - 1], newBarNm.getNotes());
 
 		//add bar to barManager
@@ -158,57 +190,68 @@ define([
 
 		// decal chords
 		this.songModel.getComponent('chords').incrementChordsBarNumberFromBarNumber(1, numBar);
+		$.publish('ToHistory-add', 'Add Bar');
+
 	};
 
+	/**
+	 * Function deletes selected bars
+	 */
 	StructureEditionController.prototype.removeBar = function() {
 		var selBars = this._getSelectedBars();
 		if (selBars.length === 0) {
 			return;
 		}
+		for (var i = selBars.length - 1; i >= 0; i--) {
+			this._removeBar(selBars[i]);
+		}
+		$.publish('ToHistory-add', 'Remove Bar');
+	};
+
+	/**
+	 * Function deletes bar and all it's components with index, it also delete section if it was the last bar of the section
+	 */
+	StructureEditionController.prototype._removeBar = function(barNumber) {
 		var bm = this.songModel.getComponent('bars');
-		var sectionNumber;
-		var sectionNumberOfBars;
 		var nm = this.songModel.getComponent('notes');
 		var cm = this.songModel.getComponent('chords');
-		var beatDuration, numBeat, index, index2;
-		var section;
-		for (var i = selBars.length - 1; i > 0; i--) {
-			sectionNumber = this.songModel.getSectionNumberFromBarNumber(selBars[i]);
-			section = this.songModel.getSection(sectionNumber);
-			sectionNumberOfBars = section.getNumberOfBars();
-			if (sectionNumberOfBars === 1) {
-				if (this.songModel.getSections().length === 1) {
-					UserLog.logAutoFade('warn', "Can't delete the last bar of the last section.");
-				} else {
-					this.removeSection(sectionNumber);
-				}
-			} else {
-				// adjust section number of bars
-				section.setNumberOfBars(sectionNumberOfBars - 1);
 
-				// remove notes in bar
-				beatDuration = this.songModel.getTimeSignatureAt(selBars[i]).getQuarterBeats() - 1; // I am not sure why we remove 1 here
-				numBeat = this.songModel.getStartBeatFromBarNumber(selBars[i]);
-				index = nm.getNextIndexNoteByBeat(numBeat);
-				index2 = nm.getNextIndexNoteByBeat(numBeat + beatDuration);
-				nm.notesSplice([index, index2], []);
 
-				// remove chords in bar
-				cm.removeChordsByBarNumber(selBars[i]);
-				// adjust all chords bar number
-				cm.incrementChordsBarNumberFromBarNumber(-1, selBars[i]);
+		var sectionNumber = this.songModel.getSectionNumberFromBarNumber(barNumber);
+		var section = this.songModel.getSection(sectionNumber);
+		var sectionNumberOfBars = section.getNumberOfBars();
+		if (sectionNumberOfBars === 1 && this.songModel.getSections().length === 1) {
+			UserLog.logAutoFade('warn', "Can't delete the last bar of the last section.");
+			return;
+		}
 
-				bm.removeBar(selBars[i]);
-			}
+		// adjust section number of bars
+		section.setNumberOfBars(sectionNumberOfBars - 1);
+
+		// remove notes in bar
+		var beatDuration = this.songModel.getTimeSignatureAt(barNumber).getQuarterBeats() - 1; // I am not sure why we remove 1 here
+		var numBeat = this.songModel.getStartBeatFromBarNumber(barNumber);
+		var index = nm.getNextIndexNoteByBeat(numBeat);
+		var index2 = nm.getNextIndexNoteByBeat(numBeat + beatDuration);
+		nm.notesSplice([index, index2], []);
+
+		// remove chords in bar
+		cm.removeChordsByBarNumber(barNumber);
+
+		// adjust all chords bar number
+		cm.incrementChordsBarNumberFromBarNumber(-1, barNumber);
+
+		bm.removeBar(barNumber);
+
+		// We remove the section in songModel if it was the last bar of the section
+		if (sectionNumberOfBars === 1) {
+			this.songModel.removeSection(sectionNumber);
 		}
 		this.cursor.setPos(index - 1);
-		/*console.log(this.cursor.getPos());
-		console.log(nm.getNotes());*/
-
 	};
-	/**
-	 * @param {String} timeSignature should be always a valid timeSignature
-	 */
+
+
+
 	StructureEditionController.prototype.setTimeSignature = function(timeSignature) {
 		/**
 		 * modifies selBars end index, if there is a time signature change, selection is reduced until the bar before the time change,
@@ -311,8 +354,8 @@ define([
 			UserLog.logAutoFade('error', "Tuplets can't be broken");
 			return;
 		}
-		
-		
+
+		$.publish('ToHistory-add', 'Time signature set to ' + timeSignature);
 	};
 
 	StructureEditionController.prototype._checkDuration = function(durBefore, durAfter) {
@@ -359,7 +402,7 @@ define([
 		for (var i = 0, c = selBars.length; i < c; i++) {
 			this.songModel.getComponent("bars").getBar(selBars[i]).setTonality(tonality);
 		}
-		$.publish('ToViewer-draw', this.songModel);
+		$.publish('ToHistory-add', 'Tonality set to ' + tonality);
 	};
 
 	StructureEditionController.prototype.ending = function(ending) {
@@ -373,7 +416,7 @@ define([
 			}
 			this.songModel.getComponent("bars").getBar(selBars[i]).setEnding(ending);
 		}
-		$.publish('ToViewer-draw', this.songModel);
+		$.publish('ToHistory-add', 'Ending set to ' + ending);
 	};
 
 	StructureEditionController.prototype.style = function(style) {
@@ -387,7 +430,7 @@ define([
 			}
 			this.songModel.getComponent("bars").getBar(selBars[i]).setStyle(style);
 		}
-		$.publish('ToViewer-draw', this.songModel);
+		$.publish('ToHistory-add', 'Style set to ' + style);
 	};
 
 	StructureEditionController.prototype.label = function(label) {
@@ -401,7 +444,7 @@ define([
 			}
 			this.songModel.getComponent("bars").getBar(selBars[i]).setLabel(label);
 		}
-		$.publish('ToViewer-draw', this.songModel);
+		$.publish('ToHistory-add', 'Label set to ' + label);
 	};
 
 	StructureEditionController.prototype.subLabel = function(sublabel) {
@@ -415,7 +458,7 @@ define([
 			}
 			this.songModel.getComponent("bars").getBar(selBars[i]).setSublabel(sublabel);
 		}
-		$.publish('ToViewer-draw', this.songModel);
+		$.publish('ToHistory-add', 'Sublabel set to ' + sublabel);
 	};
 
 	StructureEditionController.prototype._getSelectedBars = function() {
@@ -434,10 +477,8 @@ define([
 			this.oldSong = this.songModel;
 			var newSongModel = this.songModel.unfold();
 			this.songModel = newSongModel;
-			this.cursor.setListElements(this.songModel.getComponent('notes'));
 			$.publish('ToViewer-draw', this.songModel);
 		} else {
-			this.cursor.setListElements(this.songModel.getComponent('notes'));
 			$.publish('ToViewer-draw', this.oldSong);
 		}
 		this.structEditionModel.toggleUnfolded();

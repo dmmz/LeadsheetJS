@@ -113,11 +113,11 @@ define([
 		*/
 	};
 
-	ConstraintView.prototype.unactiveView = function(idElement) {
+	ConstraintView.prototype.unactiveView = function() {
 		$.publish('toHistoryView-unactiveView');
 	};
 
-	ConstraintView.prototype.activeView = function(idElement) {
+	ConstraintView.prototype.activeView = function() {
 		$.publish('toHistoryView-activeView');
 	};
 

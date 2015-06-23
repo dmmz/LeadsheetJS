@@ -5,13 +5,16 @@ define([
 	'pubsub',
 ], function(Mustache, UserLog, $, pubsub) {
 
-	function HistoryView(parentHTML) {
+	function HistoryView(parentHTML, displayHistory, displayTime) {
 		this.el = undefined;
 		this.parentHTML = (parentHTML) ? parentHTML : $('#rightPanel');
+		this.displayHistory = (typeof displayHistory !== "undefined") ? displayHistory : true;
+		this.displayTime = !!displayTime;
 		this.initController();
 		this.initKeyboard();
 		this.initSubscribe();
 		this.render();
+		this.activeView();
 	}
 
 	/**
@@ -19,10 +22,14 @@ define([
 	 * @return {[type]} [description]
 	 */
 	HistoryView.prototype.render = function(model) {
+		if (this.displayHistory === false) {
+			return;
+		}
 		if (typeof this.parentHTML === "undefined") {
 			return;
 		}
-		var history = '<h3>History</h3>';
+		var history = '';
+		history += '<h3>History</h3>';
 		history += '<ul class="history_ul">';
 		var text = '',
 			classCurrent = "";
@@ -37,7 +44,9 @@ define([
 				if (model.historyList[i]['title'] !== '') {
 					text += model.historyList[i]['title'] + ' ';
 				}
-				text += model.historyList[i]['time'];
+				if (this.displayTime) {
+					text += model.historyList[i]['time'];
+				}
 				history += '<li class="' + classCurrent + '" data-history="' + i + '">' + text + '</li>';
 			}
 		}
@@ -86,7 +95,7 @@ define([
 	};
 
 	HistoryView.prototype.unactiveView = function() {
-		$('#rightPanel').hide('slow');
+		//$('#rightPanel').hide('slow');
 	};
 
 	HistoryView.prototype.activeView = function() {

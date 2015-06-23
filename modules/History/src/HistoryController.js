@@ -1,14 +1,15 @@
 define([
+	'modules/core/src/SongModel',
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
 	'mustache',
 	'utils/UserLog',
 	'jquery',
 	'pubsub',
-], function(SongModel_CSLJson, Mustache, UserLog, $, pubsub) {
+], function(SongModel, SongModel_CSLJson, Mustache, UserLog, $, pubsub) {
 
 	function HistoryController(model, songModel) {
 		this.model = model || new HistoryModel();
-		this.songModel = songModel;
+		this.songModel = songModel || new SongModel();
 		this.initSubscribe();
 	}
 
@@ -23,17 +24,13 @@ define([
 		$.subscribe('HistoryView-moveSelectHistory', function(el, inc) {
 			self.moveSelectHistory(inc);
 		});
-		$.subscribe('ToHistory-add', function(el, itemObject) {
-			var item = '';
-			var title = '';
-			if (typeof itemObject === "string") {
-				item = itemObject;
-			} else {
-				item = itemObject.item;
-				title = itemObject.title;
-			}
-			self.addToHistory(item, title);
+		$.subscribe('ToHistory-add', function(el, title) {
+			self.addToHistory(title);
 		});
+		$.subscribe('ToHistory-updateLastEntry', function() {
+			self.updateLastEntry();
+		});
+
 	};
 
 
@@ -69,11 +66,19 @@ define([
 
 	/**
 	 * Function is call to save a state to history
-	 * @param  {item} represent the item of history that will be inserted
 	 */
-	HistoryController.prototype.addToHistory = function(item, title) {
-		this.model.addToHistory(item, title);
+	HistoryController.prototype.addToHistory = function(title) {
+		var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel); // Exporting current songModel to json
+		this.model.addToHistory(JSONSong, title);
 		this.model.setCurrentPosition(this.model.historyList.length - 1);
+	};
+
+	/**
+	 * Function is call to update last entry songModel state, but title is merged, it's used to not create another entry in history state
+	 */
+	HistoryController.prototype.updateLastEntry = function() {
+		var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel); // Exporting current songModel to json
+		this.model.getCurrentState().leadsheet = JSONSong;
 	};
 
 	return HistoryController;

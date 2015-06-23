@@ -394,6 +394,18 @@ define([
 	};
 
 	/**
+	 * Get number of bars of the whole song
+	 * @return {int} length of the song in bars
+	 */
+	SongModel.prototype.getNumberOfBars = function() {
+		var barNumber = 0;
+		for (var i = 0, c = this.sections.length; i < c; i++) {
+			barNumber += this.sections[i].getNumberOfBars();
+		}
+		return barNumber;
+	};
+
+	/**
 	 * Compute song length in beats
 	 * @return {int} length of the song in beats
 	 */

@@ -9,7 +9,7 @@ define([
 	function AudioCommentsView(viewer) {
 		this.viewer = viewer;
 		this.commentSpaceMng = null;
-		this.bindEvents();
+		this.initController();
 		this.newComment = {};
 		this.offset = $("#" + viewer.canvasId).offset();
 		this.newCommentId = "newComment";
@@ -19,7 +19,7 @@ define([
 	/**
 	 * jquery events
 	 */
-	AudioCommentsView.prototype.bindEvents = function() {
+	AudioCommentsView.prototype.initController = function() {
 		var self = this;
 		//close comment
 		$(document).on('click', '.close', function() {
@@ -37,10 +37,10 @@ define([
 			var commentId = commentEl.find('input[name="commentId"]').val();
 
 			if (commentId.length !== 0) {
-				$.publish('update-comment', [commentId, text]);
+				$.publish('AudioCommentsView-updateComment', [commentId, text]);
 			} else {
 				self.newComment.text = text;
-				$.publish('save-comment', self.newComment);
+				$.publish('AudioCommentsView-saveComment', self.newComment);
 			}
 			self.hideNewComment();
 		});
@@ -49,14 +49,14 @@ define([
 		$(document).on('click', '.edit-comment', function() {
 			var commentEl = $(this).closest('.speech-bubble'),
 				commentId = commentEl.attr('data-commentId');
-			$.publish('editing-comment', [commentEl, commentId]);
+			$.publish('AudioCommentsView-editingComment', [commentEl, commentId]);
 		});
 
 		//remove comment
 		$(document).on('click', '.remove-comment', function() {
 			var commentEl = $(this).closest('.speech-bubble'),
 				commentId = commentEl.attr('data-commentId');
-			$.publish('removing-comment', [commentEl, commentId]);
+			$.publish('AudioCommentsView-removingComment', [commentEl, commentId]);
 		});
 	};
 
@@ -94,6 +94,7 @@ define([
 			}
 		});
 	};
+
 	AudioCommentsView.prototype.drawComment = function(comment, ctx, waveDrawer) {
 		var saveFillColor = ctx.fillStyle;
 		var clickableArea;
@@ -101,32 +102,26 @@ define([
 		ctx.strokeStyle = comment.color;
 		var areas = waveDrawer.getAreasFromTimeInterval(comment.timeInterval[0], comment.timeInterval[1]);
 
+		ctx.beginPath();
+		ctx.lineWidth = 5;
 		//draw border top of comment marker
 		for (i = 0, c = areas.length; i < c; i++) {
-			ctx.fillRect(
-				areas[i].x,
-				areas[i].y,
-				areas[i].w,
-				areas[i].h / 20
-			);
+			ctx.moveTo(areas[i].x, areas[i].y);
+			ctx.lineTo(areas[i].x + areas[i].w, areas[i].y);
 		}
+		ctx.stroke();
 
+		ctx.lineWidth = 1;
 		//draw border left, to indicate time start of audio comment
-		ctx.fillRect(
-			areas[0].x,
-			areas[0].y,
-			1,
-			areas[0].h
-		);
+		ctx.moveTo(areas[0].x, areas[0].y);
+		ctx.lineTo(areas[0].x, areas[0].y + areas[0].h);
 
 		//draw border right, to indicate time end of audio comment
 		var lastArea = areas.length - 1;
-		ctx.fillRect(
-			areas[lastArea].x + areas[lastArea].w - 1,
-			areas[lastArea].y,
-			1,
-			areas[0].h
-		);
+		ctx.moveTo(areas[lastArea].x + areas[lastArea].w - 1, areas[lastArea].y);
+		ctx.lineTo(areas[lastArea].x + areas[lastArea].w - 1, areas[lastArea].y + areas[0].h);
+		ctx.closePath();
+		ctx.stroke();
 
 		//draw little box with picture and name, which will be clickable
 		clickableArea = {
@@ -135,12 +130,11 @@ define([
 			w: 100,
 			h: 30
 		};
-		ctx.beginPath();
-		ctx.rect(clickableArea.x, clickableArea.y, clickableArea.w, clickableArea.h);
+
+		ctx.strokeRect(clickableArea.x, clickableArea.y, clickableArea.w, clickableArea.h);
 		ctx.globalAlpha = 0.2;
 		ctx.fillRect(clickableArea.x, clickableArea.y, clickableArea.w, clickableArea.h);
 		ctx.globalAlpha = 1;
-		ctx.stroke();
 		var img = new Image();
 		img.onload = function() {
 			ctx.drawImage(img, areas[0].x, areas[0].y - 30, 30, 30);
@@ -206,15 +200,15 @@ define([
 	 */
 	AudioCommentsView.prototype.showEditingComment = function(bubbleEl, commentText, commentId) {
 		function getOldCommentPosition(bubbleEl, newCommentId) {
-				var offset = $(bubbleEl).offset();
-				var oldCommentHeight = $(bubbleEl).outerHeight(true);
-				var newCommentHeight = $("#" + newCommentId).outerHeight(true);
-				return {
-					x: offset.left,
-					y: offset.top + oldCommentHeight - newCommentHeight
-				};
-			}
-			//need to get point before hiding bubble
+			var offset = $(bubbleEl).offset();
+			var oldCommentHeight = $(bubbleEl).outerHeight(true);
+			var newCommentHeight = $("#" + newCommentId).outerHeight(true);
+			return {
+				x: offset.left,
+				y: offset.top + oldCommentHeight - newCommentHeight
+			};
+		}
+		//need to get point before hiding bubble
 		var point = getOldCommentPosition(bubbleEl, this.newCommentId);
 		this.hideBubble(bubbleEl.attr('id'));
 

@@ -61,6 +61,6 @@ define(function(require) {
         // var wmv = new WaveManagerView($("#main-container")[0]),
         // wmc = new WaveManagerController(waveMng);
 
-        wmv.render();
+        //wmv.render();
 
 });

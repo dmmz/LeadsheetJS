@@ -26,11 +26,11 @@ define([
 		});
 	};
 	
-	HarmonizerView.prototype.unactiveView = function(idElement) {
+	HarmonizerView.prototype.unactiveView = function() {
 		$.publish('toHistoryView-unactiveView');
 	};
 
-	HarmonizerView.prototype.activeView = function(idElement) {
+	HarmonizerView.prototype.activeView = function() {
 		$.publish('toHistoryView-activeView');
 	};
 
