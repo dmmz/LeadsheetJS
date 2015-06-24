@@ -79,11 +79,13 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		if (!elem || !elem.CL_NAME || !elem.getType()) {
 			throw 'CanvasLayer element needs CL_NAME and CL_TYPE property';
 		}
-
+		// if it's new, we save its order
 		if (!(elem.CL_NAME in this.elems)){
-			this.elems[elem.CL_NAME] = elem;
 			this.order.push(elem.CL_NAME);	//order is useful to control z-index of drawn elements, last drawn elements will be prioritized on click. (see getOneActiveElement())
 		}
+		//this will update it if not new, and will create the value in the object if it is new. We were having problems when entering it only when it was not new, because
+		//audioComments where not updated
+		this.elems[elem.CL_NAME] = elem;
 		
 	};
 

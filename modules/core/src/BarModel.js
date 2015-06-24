@@ -1,16 +1,16 @@
 define(['modules/core/src/TimeSignatureModel'], function(TimeSignatureModel) {
-	function BarModel(option) {
-		if (typeof option === "undefined") {
-			option = {};
+	function BarModel(options) {
+		if (typeof options === "undefined") {
+			options = {};
 		}
-		this.begining = (typeof(option.begining) !== "undefined") ? option.begining : undefined;
-		this.clef = (typeof(option.clef) !== "undefined") ? option.clef : undefined; // empty clef means it doesn't change from previous 
-		this.ending = (typeof(option.ending) !== "undefined") ? option.ending : undefined; // object with repeat, type (BEGIN,END, BEGIN_END, MID) and ending (text)
-		this.style = (typeof(option.style) !== "undefined") ? option.style : '';
-		this.timeSignature = (typeof(option.timeSignature) !== "undefined") ? option.timeSignature : undefined; // empty timeSignature means it doesn't change from previous
-		this.tonality = (typeof(option.tonality) !== "undefined") ? option.tonality : undefined;
-		this.label = (typeof(option.label) !== "undefined") ? option.label : undefined; // Segno, fine, coda, on cue ...
-		this.sublabel = (typeof(option.sublabel) !== "undefined") ? option.sublabel : undefined; // Ds, Ds al fine, ds al capo ...
+		this.begining = (typeof(options.begining) !== "undefined") ? options.begining : undefined;
+		this.clef = (typeof(options.clef) !== "undefined") ? options.clef : undefined; // empty clef means it doesn't change from previous 
+		this.ending = (typeof(options.ending) !== "undefined") ? options.ending : undefined; // object with repeat, type (BEGIN,END, BEGIN_END, MID) and ending (text)
+		this.style = (typeof(options.style) !== "undefined") ? options.style : '';
+		this.timeSignature = (typeof(options.timeSignature) !== "undefined") ? options.timeSignature : undefined; // empty timeSignature means it doesn't change from previous
+		this.tonality = (typeof(options.tonality) !== "undefined") ? options.tonality : undefined;
+		this.label = (typeof(options.label) !== "undefined") ? options.label : undefined; // Segno, fine, coda, on cue ...
+		this.sublabel = (typeof(options.sublabel) !== "undefined") ? options.sublabel : undefined; // Ds, Ds al fine, ds al capo ...
 	}
 
 
@@ -61,7 +61,7 @@ define(['modules/core/src/TimeSignatureModel'], function(TimeSignatureModel) {
 		return this.style;
 	};
 
-	BarModel.prototype.setTimeSignature = function(timeSignature) {
+	BarModel.prototype.setTimeSignatureChange = function(timeSignature) {
 		if (!timeSignature) {
 			this.timeSignature = undefined;
 		} else {
@@ -69,7 +69,7 @@ define(['modules/core/src/TimeSignatureModel'], function(TimeSignatureModel) {
 		}
 	};
 
-	BarModel.prototype.getTimeSignature = function() {
+	BarModel.prototype.getTimeSignatureChange = function() {
 		return this.timeSignature;
 	};
 

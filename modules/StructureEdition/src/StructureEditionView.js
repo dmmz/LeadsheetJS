@@ -60,6 +60,9 @@ define([
 		$('#edit_each_time_signature_container select').change(function() {
 			fn = 'setTimeSignature';
 			var timeSignature = $(this).val();
+			if (timeSignature === 'select'){
+				return;
+			}
 			$.publish('StructureEditionView', [fn, timeSignature]);
 		});
 

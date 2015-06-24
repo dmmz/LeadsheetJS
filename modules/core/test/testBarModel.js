@@ -36,11 +36,11 @@ define(['modules/core/src/BarModel'], function(BarModel) {
 				assert.equal(bar.getStyle(), 'Jazz');
 
 				// time signature
-				bar.setTimeSignature();
-				assert.equal(bar.getTimeSignature(), undefined);
+				bar.setTimeSignatureChange();
+				assert.equal(bar.getTimeSignatureChange(), undefined);
 
-				bar.setTimeSignature('4/4');
-				assert.equal(typeof bar.getTimeSignature(), "object");
+				bar.setTimeSignatureChange('4/4');
+				assert.equal(typeof bar.getTimeSignatureChange(), "object");
 
 				// Tonality
 				bar.setTonality();

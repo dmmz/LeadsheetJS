@@ -167,7 +167,19 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		}
 		return undefined;
 	};
-
+	NoteManager.prototype.getIndexesBetweenBarNumbers = function(barNum1, barNum2, song) {
+		if (!song){
+			throw "NoteManager - getNotesBetweenBarNumbers - missing parameter song";
+		}
+		var barMng = song.getComponent('bars');
+		var startBeat = song.getStartBeatFromBarNumber(barNum1);
+		var endBeat = (barMng.getTotal() - 1 === barNum2) ? null : song.getStartBeatFromBarNumber(barNum2 + 1);
+		return this.getIndexesStartingBetweenBeatInterval(startBeat, endBeat);
+	};
+	NoteManager.prototype.getNotesBetweenBarNumbers = function(barNum1, barNum2, song) {
+		var indexes = this.getIndexesBetweenBarNumbers(barNum1, barNum2, song);
+		return this.getNotes(indexes[0],indexes[1]);
+	};
 
 	NoteManager.prototype.getNotesAtBarNumber = function(barNumber, song) {
 		if (!song) {
@@ -177,8 +189,8 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		var startBeat = 1,
 			endBeat;
 		startBeat = song.getStartBeatFromBarNumber(barNumber);
-		endBeat = startBeat + song.getTimeSignatureAt(barNumber).getBeats();
-
+		endBeat = startBeat + song.getTimeSignatureAt(barNumber).getQuarterBeats();
+		
 		if (this.getTotalDuration() + 1 < endBeat) {
 			console.warn("NoteManager - getNotesAtBarNumber - notes on bar " + barNumber + " do not fill the total bar duration" + (this.getTotalDuration() + 1) + ' ' + endBeat);
 			//throw "NoteManager - getNotesAtBarNumber - notes on bar " + barNumber + " do not fill the total bar duration" + (this.getTotalDuration() + 1) + ' ' + endBeat;
@@ -275,7 +287,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	 * Similar to previous one (getNextIndexNote()), but if
 	 * exact beat is not found, it returns the closest previous note
 	 * @param  {float} beat global beat (first beat starts at 1, not 0)
-	 * @param  {ifExactExclude}
+	 * @param  {ifExactExclude} if note with index X starts at beat, we will not include it, we'll return index X-1
 	 *
 	 * @return {Integer} index of the note
 	 */
@@ -294,12 +306,17 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	};
 
 	/**
+	 * gets index of note who's start is between startBeat and endBeat, if endBeat exceed total duration, it returns last index end index
 	 * @param  {Integer} startBeat
 	 * @param  {Integer} endBeat
+	 * @param {Boolean} ifExactExlude, default is false. 
+	 *                                 ex: to get all notes of bar 1 we should do getIndexesStartingBetweenBeatInterval(1,5,true) or getIndexesStartingBetweenBeatInterval(1,4.99)
+	 *                                 normally we want to not exclude because function getNotes(start,end) already excludes 'end' index and gets notes until end - 1
 	 * @return {Array}           indexes e.g. [1,2]
 	 */
 
-	NoteManager.prototype.getIndexesStartingBetweenBeatInterval = function(startBeat, endBeat) {
+	NoteManager.prototype.getIndexesStartingBetweenBeatInterval = function(startBeat, endBeat, ifExactExclude) {
+		
 		if (isNaN(startBeat) || startBeat < 0) {
 			startBeat = 1;
 		}
@@ -307,7 +324,12 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 			throw 'NoteManager - getIndexesStartingBetweenBeatInterval - endBeat must be a positive integer ' + endBeat;
 		}
 		var index1 = this.getNextIndexNoteByBeat(startBeat);
-		var index2 = this.getPrevIndexNoteByBeat(endBeat, true);
+		var index2;
+		if (endBeat > this.getTotalDuration()  || endBeat == null){ // important ==, to be true if null or undefined
+			index2 = ifExactExclude ? this.getTotal() - 1 : this.getTotal();
+		}else{
+			index2 = this.getPrevIndexNoteByBeat(endBeat, ifExactExclude); //ifExactExclude is true, that means that we wont return note starting exactly at endBeat
+		}
 		return [index1, index2];
 	};
 
@@ -339,7 +361,65 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 			}
 		});
 	};
+	NoteManager.prototype.onlyRests = function() {
+		
+		for (var i = 0; i < this.notes.length; i++) {
+			if (!this.notes[i].isRest){
+				return false;
+			}
+		}
+		return true;
+	};
+	
+	/**
+	 * @param  {TimeSignatureModel} timeSig 
+	 * @param  {integer} numBars number of bars to change, used when there are only rests, when there are notes, numBars can be undefined
+	 * @return {Array}         of NoteModel
+	 */
+	NoteManager.prototype.getNotesAdaptedToTimeSig = function(timeSig,numBars) {
+		var newNoteMng = new NoteManager();
+		var numBeatsBar = timeSig.getQuarterBeats();
+		var initBeat = 0;
+		var i;
+		if (this.onlyRests()){
+			for (i = 0; i < numBars; i++) {
+				newNoteMng.fillGapWithRests(numBeatsBar, initBeat);
+				initBeat += numBeatsBar;
+			}
+		}
+		else{
+			var accDuration = 0; //accumulated Duration
+			var note, newNote;
+			for (i = 0; i < this.notes.length; i++) {
+				note = this.notes[i];
+				accDuration += note.getDuration();
+				if (roundBeat(accDuration) == numBeatsBar && i < this.notes.length - 1){
+					accDuration = 0;
+					newNoteMng.addNote(note);
+				}else if(roundBeat(accDuration) > numBeatsBar){
+					var diff = roundBeat(accDuration) - numBeatsBar;
+					note.setDurationByBeats(note.getDuration() - diff);
+					note.setTie('start');
+					newNoteMng.addNote(note);
+					newNote = note.clone();
+					newNote.setDurationByBeats(diff);
+					
+					newNote.removeTie();
+					newNote.setTie('stop');
+					newNoteMng.addNote(newNote);
 
+					accDuration = diff;
+
+				}else{
+					newNoteMng.addNote(note);	
+				}
+			}
+			var startingBeat = newNoteMng.getTotalDuration() + 1; //beat is 1 based
+			var gapDuration = numBeatsBar - accDuration;
+			newNoteMng.fillGapWithRests(gapDuration, startingBeat);
+		}
+		return newNoteMng.getNotes();
+	};
 	/**
 	 * if there are ties that with different pitches, we remove the tie
 	 */
@@ -469,17 +549,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		return Math.round(beat * 1000000) / 1000000;
 	}
 
-	// NoteManager.prototype.incrOffset = function(offset, dur) {
-	// 	offset += dur;
-	// 	var roundOffset = Math.round(offset);
-	// 	if (Math.abs(roundOffset - offset) < 0.01) offset = roundOffset; //0.01 to round only for 0.99999
-	// 	return offset;
-	// };
-	//NoteManager.prototype.toString = function() {
-	//	this.getNotes().forEach(function(note) {
-	//		console.log(note.toString());
-	//	});
-	//};
+	
 
 	return NoteManager;
 });

@@ -397,7 +397,7 @@ define([
 
 				for (var i = 0; i < 3; i++) {
 					tmpNote = firstNote.clone();
-					tmpNote.setDuration(newDuration);
+					tmpNote.setDurationByBeats(newDuration);
 
 					if (i === 0) tmpNote.setTuplet("start", timeModif);
 					else if (i === 1) tmpNote.setTuplet("middle", timeModif);
@@ -492,6 +492,9 @@ define([
 				tmpNm.deleteNote(noteToDelete[k]);
 			}
 		});
+
+		self.cursor.setIndexPos(1, self.cursor.getEnd() - noteToDelete.length);
+
 		if (this._lastCursorIndexHistory !== this.cursor.getPos()) {
 			$.publish('ToHistory-add', 'Change note');
 			this._lastCursorIndexHistory = this.cursor.getPos();

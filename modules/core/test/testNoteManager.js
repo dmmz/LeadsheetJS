@@ -1,9 +1,10 @@
 define(['modules/core/src/NoteManager',
 	'modules/core/src/NoteModel',
 	'modules/core/src/SongModel',
+	'modules/core/src/TimeSignatureModel',
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
 	'tests/test-songs'
-], function(NoteManager, NoteModel, SongModel, SongModel_CSLJson, testSongs) {
+], function(NoteManager, NoteModel, SongModel, TimeSignature, SongModel_CSLJson, testSongs) {
 	return {
 		run: function() {
 			test("NoteManager", function(assert) {
@@ -200,6 +201,10 @@ define(['modules/core/src/NoteManager',
 					assert.deepEqual(noteManager.getBeatIntervalByIndexes(1, 5), [2, 5]);
 
 					assert.deepEqual(noteManager.getIndexesStartingBetweenBeatInterval(1, 3.1), [0, 3]);
+					assert.deepEqual(noteManager.getIndexesStartingBetweenBeatInterval(1,10000000),[0,7], 'if endBeat exceeds total duration, we get lastIndex + 1...');	
+					assert.deepEqual(noteManager.getIndexesStartingBetweenBeatInterval(1,10000000,true),[0,6], '...or lastIndex (6) ifExactExclude==true');	
+
+
 					var newNote = new NoteModel({
 						pitchList: ["A/5"],
 						duration: "q",
@@ -231,7 +236,7 @@ define(['modules/core/src/NoteManager',
 					assert.equal(notes[2].getPitch(), "G/4");
 					assert.equal(notes[3].getPitch(), "E/4");
 
-					assert.equal(noteMng.getNoteBarNumber(0, song), 0);
+					assert.equal(noteMng.getNoteBarNumber(0, song), 0, 'getNoteBarNumber');
 					assert.equal(noteMng.getNoteBarNumber(1, song), 0);
 					assert.equal(noteMng.getNoteBarNumber(2, song), 0);
 					assert.equal(noteMng.getNoteBarNumber(3, song), 0);
@@ -242,13 +247,70 @@ define(['modules/core/src/NoteManager',
 					assert.equal(noteMng.getNoteBarNumber(8, song), 1);
 					assert.equal(noteMng.getNoteBarNumber(9, song), 2);
 					assert.equal(noteMng.getNoteBarNumber(10, song), 2);
+					assert.equal(noteMng.getNotesBetweenBarNumbers(0,1, song),'A/4-q,G/4-8,E/4-8,F/4-q,C/4-q,A/4-q,F/4-q,G/4-q,E/4-q','notes on two first bars'); 
+					assert.equal(noteMng.getNotesBetweenBarNumbers(6,7, song),'A/4-q,F/4-q,G/4-q,E/4-q,A/4-q,F/4-q,G/4-q,E/4-q','notes on two last bars');
+				}
+				function timeSignatureChanges () {
+					// rhythm  q,8,16,16, triplet(q,q,q)
+					function createSilencesMelody() {
+						var silencesMelody = [];
+						silencesMelody.push(new NoteModel('wr'));
+						silencesMelody.push(new NoteModel('wr'));
+						return silencesMelody;
+					}
+					/**
+					 * creates a melody with ony only figure
+					 * @param  {String} figure ex: 'h','q','8','16'...etc.
+					 * @param  {Number} number how many figures
+					 * @return {Array}        of NoteModels
+					 */
+					function createSimpleRhythm (figure, number) {
+						var simpleRhythm = [];
+						for (var i = 0; i < number; i++) {
+							simpleRhythm.push(new NoteModel('A/4-'+figure));	
+						}
+						return simpleRhythm;
+
+					}
+					noteManager.setNotes(createSilencesMelody());
+					var notes;
+					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('6/8'),2);
+					assert.equal(notes,'qr,qr,qr,qr,qr,qr','getNotesAdaptedToTimeSig for only silences'); //it seems not to be necessary toString, (useful to put if test fails)
+
+					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('3/8'),3);
+					assert.equal(notes,'qr,8r,qr,8r,8r,qr'); 
+
+					noteManager.setNotes(createSimpleRhythm('q',4));
+					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('3/4'));
+					assert.equal(notes,'A/4-q,A/4-q,A/4-q,A/4-q,qr,qr','getNotesAdaptedToTimeSig for notes'); 
+
+					noteManager.setNotes(createSimpleRhythm('q',4));
+					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('3/4'));
+					assert.equal(notes,'A/4-q,A/4-q,A/4-q,A/4-q,qr,qr','getNotesAdaptedToTimeSig for notes'); 
+
+					noteManager.setNotes(createSimpleRhythm('8',5));
+					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('3/8'));
+					assert.equal(notes,'A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,8r'); 
+
+					noteManager.setNotes(createSimpleRhythm('8',9));
+					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('2/2'));
+					assert.equal(notes.toString(),'A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,8r,qr,qr,qr'); 
+					
+					//breaking notes notes
+					noteManager.setNotes(createSimpleRhythm('q',4));
+					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('3/8'));
+					
+					//tuplets
+
+					//assert.equal(notes,'qr,qr,qr,qr,qr,qr');
+					
 				}
 				var noteManager = new NoteManager();
 
 				managingMelodies(noteManager);
 				durationFunctions(noteManager);
 				otherFunctions(noteManager,testSongs);
-				// TODO: add tests for time signature changes
+				timeSignatureChanges(noteManager);
 
 			});
 

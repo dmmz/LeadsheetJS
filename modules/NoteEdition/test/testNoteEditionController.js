@@ -87,7 +87,7 @@ define(['modules/core/src/NoteModel',
 
 				necDelete.cursor.setPos([1, 2]);
 				necDelete.setSilence();
-				assert.equal(necDelete._getSelectedNotes().toString(), '8r,16r', 'delete note');
+				assert.equal(necDelete._getSelectedNotes().toString(), '8.r,16r', 'delete note');
 
 				necDelete.cursor.setPos([3, 3]);
 				necDelete.setSilence();

@@ -9,7 +9,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		this.pitchClass = []; // Note c, b
 		this.octave = []; // octave from 0 to 8
 		this.accidental = []; // b or #
-		this.duration = (param && param.duration) ? param.duration : undefined;
+		this.duration = (param && param.duration) ? param.duration : undefined; // string duration "h", "q", "8", "16" ...etc
 		this.isRest = (param && param.isRest) ? param.isRest : false;
 		this.dot = (param && param.dot) ? param.dot : 0; // 0,1,2
 		this.tie = (param && param.tie) ? param.tie : undefined; // contain "start", "stop", "stop_start"
@@ -32,42 +32,41 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		}
 	}
 
-
-	NoteModel.prototype.toString = function(string, index) {
-		if (this.isRest){
-			return this.duration + "r";
-		}else{
-			var str = this.pitchClass[0] + this.accidental[0] + "/" + this.octave[0] + "-" + this.duration;
-			for (var i = 0; i < this.dot; i++){
-				str += ".";
-			}
-			return str;
+	/**
+	 *		
+	 * @return {String} examples: "A#/4-q", "E/4-q.", "qr", "w.r"
+	 */
+	NoteModel.prototype.toString = function() {
+		var str, dur = this.duration;
+		for (var i = 0; i < this.dot; i++) {
+			dur += ".";
 		}
-		
+		if (this.isRest) {
+			str = dur + "r";
+		} else {
+			str = this.pitchClass[0] + this.accidental[0] + "/" + this.octave[0] + "-" + dur;
+		}
+		return str;
 	};
-
+	/**
+	 * String examples: C#/4-8. 
+	 * @param {[type]} string [description]
+	 * @param {[type]} index  [description]
+	 */
 	NoteModel.prototype.setNoteFromString = function(string, index) {
 		index = index || 0;
 		var re = /[a-g|A-G](#{1,2}|b{1,2}|n)?(-[w|h|q|8|16|32|64])?\.{0,2}\/\d/;
+		var partDuration;
 		if (string.match(re)) {
 			var parts = string.split("-");
-			var partsPitch = parts[0].split("/");
-			this.pitchClass[index] = partsPitch[0].substr(0, 1).toUpperCase();
-			this.accidental[index] = partsPitch[0].substr(1, partsPitch[0].length);
-			this.octave[index] = partsPitch[1];
+			var partPitch = parts[0].split("/");
+			this.pitchClass[index] = partPitch[0].substr(0, 1).toUpperCase();
+			this.accidental[index] = partPitch[0].substr(1, partPitch[0].length);
+			this.octave[index] = partPitch[1];
+
 			if (parts.length == 2) {
-				var partsDuration = parts[1].split("/");
-
-				// look if there is a dot
-				var dotPosition = partsDuration[0].indexOf(".");
-				if (dotPosition == -1) {
-					this.duration = partsDuration[0];
-				} else {
-					this.duration = partsDuration[0].split('.')[0];
-					this.dot = partsDuration[0].length - dotPosition;
-				}
+				partDuration = parts[1];
 			}
-
 		} else {
 			re = /[w|h|q|8|16|32|64](r)?/;
 			if (!string.match(re)) {
@@ -78,11 +77,21 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 			this.accidental[0] = '';
 			var restPosition = string.indexOf("r");
 			if (restPosition === -1) {
-				this.duration = string;
+				partDuration = string;
 			} else {
-				this.duration = string.substr(0, restPosition);
+				partDuration = string.substr(0, restPosition);
 			}
 			this.isRest = true;
+		}
+		if (partDuration) {
+			// check if there is a dot
+			var dotPosition = partDuration.indexOf(".");
+			if (dotPosition == -1) {
+				this.duration = partDuration;
+			} else {
+				this.duration = partDuration.split('.')[0];
+				this.dot = partDuration.length - dotPosition;
+			}
 		}
 	};
 
@@ -280,9 +289,54 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		return dur;
 	};
 
+	NoteModel.prototype.setDurationByBeats = function(dur) {
+		if (typeof dur !== 'number') {
+			throw "NoteModel - setDurationByBeats -  dur is not a number ";
+		}
+
+		if (!Number.isInteger(dur * 64)) {
+			throw "NoteModel - setDuration - dur should be fraction of 2, dur =" + dur;
+		}
+		var finalStringDur,
+			durObj,
+			newNumDur,
+			residualDur;
+		
+		this.setDot(0);			
+		for (var i in NoteUtils.ARR_DUR) {
+			durObj = NoteUtils.ARR_DUR[i];
+			if (durObj.numDur == dur) {
+				finalStringDur = durObj.strDur;
+				break;
+			} else if (durObj.numDur < dur) {
+				finalStringDur = durObj.strDur;
+				//if not equal, must have dots, check
+				newNumDur = dur - durObj.numDur;
+				residualDur = dur - newNumDur;
+
+				if (newNumDur == residualDur / 2) {
+					this.setDot(1);
+				} else if (newNumDur > residualDur / 2) {
+					newNumDur = newNumDur - residualDur / 2;
+					if (newNumDur == residualDur / 4) {
+						this.setDot(2);
+					} else {
+						throw "NoteModel - setDuration - could not find mapping duration for " + dur;
+					}
+				}
+				break;
+			}
+		}
+		this.duration = finalStringDur;
+	};
+
+	/**
+	 
+	 * @param {string|number} dur can be a string "h" , "q" , "8" ...etc. or a number 
+	 */
 	NoteModel.prototype.setDuration = function(dur) {
-		if (typeof dur === "number") {
-			dur = NoteUtils.getStringFromBeatDuration(dur);
+		if (!NoteUtils.getBeatFromStringDuration(dur)) {
+			throw "NoteModel - setDuration - did not found string duration: " + dur;
 		}
 		this.duration = dur;
 	};

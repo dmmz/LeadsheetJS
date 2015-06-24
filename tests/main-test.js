@@ -42,6 +42,8 @@ define(function(require) {
   var testNoteManager = require('modules/core/test/testNoteManager');
   var testNoteModel = require('modules/core/test/testNoteModel');
   var testBarModel = require('modules/core/test/testBarModel');
+  var testBarManager = require('modules/core/test/testBarManager');
+
   var testTimeSignatureModel = require('modules/core/test/testTimeSignatureModel');
 
   var testSongModel_CSLJson = require('modules/converters/MusicCSLJson/test/testSongModel_CSLJson');
@@ -90,6 +92,7 @@ define(function(require) {
   testSongModel.run();
   testSectionModel.run();
   testBarModel.run();
+  testBarManager.run();
   testChordManager.run();
   testTimeSignatureModel.run();
 

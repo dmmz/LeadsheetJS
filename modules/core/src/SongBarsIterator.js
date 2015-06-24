@@ -1,14 +1,16 @@
 define(function() {
 	function SongBarsIterator (song) {
 		this.song = song;
-		this.index = 0;
 		this.bm = this.song.getComponent('bars');
-
-		this.prevTimeSig = null;
-		this.prevKeySig = null;
-		this.endingState = null;
+		this.reset();
 	}
 	SongBarsIterator.prototype = {
+		reset: function(){
+			this.index = 0;
+			this.prevTimeSig = null;
+			this.prevKeySig = null;
+			this.endingState = null;	
+		},
 		hasNext: function(){
 			return this.index < this.bm.getTotal();
 		},
@@ -17,6 +19,14 @@ define(function() {
 			this.prevKeySig = this.getBarKeySignature();
 			this.prevTimeSig = this.getBarTimeSignature();
 			this.index++;
+		},
+		setBarIndex: function(index){
+			if (index < this.index){
+				throw "index is " + this.index + ", cannot go backwards to " + index;
+			}
+			while (this.index != index){
+				this.next();
+			}
 		},
 		getBarIndex: function(){
 			return this.index;
@@ -36,8 +46,12 @@ define(function() {
 				return (this.index === 0) ? this.song.getTonality() : this.prevKeySig;
 			}
 		},
+		doesTimeSignatureChange: function(){
+			var timeSig = this.getBar().getTimeSignatureChange();
+			return (timeSig && timeSig != this.prevTimeSig);
+		},
 		getBarTimeSignature: function(){
-			var timeSig = this.getBar().getTimeSignature();
+			var timeSig = this.getBar().getTimeSignatureChange();
 			if (timeSig) {
 				return timeSig;
 			}

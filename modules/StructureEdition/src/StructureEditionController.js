@@ -6,9 +6,11 @@ define([
 	'modules/core/src/SectionModel',
 	'modules/core/src/NoteManager',
 	'modules/core/src/NoteModel',
+	'modules/core/src/SongBarsIterator',
+	'modules/core/src/TimeSignatureModel',
 	'utils/UserLog',
 	'pubsub',
-], function($, Mustache, CursorModel, SongModel, SectionModel, NoteManager, NoteModel, UserLog, pubsub) {
+], function($, Mustache, CursorModel, SongModel, SectionModel, NoteManager, NoteModel, SongBarsIterator, TimeSignatureModel, UserLog, pubsub) {
 
 	function StructureEditionController(songModel, cursor, view, structEditionModel) {
 		this.songModel = songModel || new SongModel();
@@ -30,9 +32,7 @@ define([
 			$.publish('ToViewer-draw', self.songModel);
 			//}
 		});
-
 	};
-
 
 	StructureEditionController.prototype.addSection = function() {
 		/*var selBars = this._getSelectedBars();
@@ -64,7 +64,6 @@ define([
 		});
 		this.songModel.addSection(section);
 		UserLog.logAutoFade('info', "Section have been added successfully");
-		$.publish('ToViewer-draw', this.songModel);
 		$.publish('ToHistory-add', 'Add Section');
 	};
 
@@ -100,11 +99,12 @@ define([
 		if (this.cursor.getEnd() > indexLastNote) {
 			this.cursor.setPos(indexLastNote);
 		}
+
 		// Remove section in songmodel is not needed because it's done when we remove last sections bar
 		//this.songModel.removeSection(sectionNumber);
 		UserLog.logAutoFade('info', "Section have been removed successfully");
-		$.publish('ToViewer-draw', this.songModel);
 		$.publish('ToHistory-add', 'Remove Section');
+
 	};
 
 	StructureEditionController.prototype.setSectionName = function(name) {
@@ -132,8 +132,9 @@ define([
 		}
 		var sectionNumber = this.songModel.getSectionNumberFromBarNumber(selBars[0]);
 		this.songModel.getSection(sectionNumber).setRepeatTimes(repeatTimes);
-		$.publish('ToViewer-draw', this.songModel);
+
 		$.publish('ToHistory-add', 'Change Section repeat' + repeatTimes);
+
 	};
 
 	StructureEditionController.prototype.addBar = function() {
@@ -183,19 +184,12 @@ define([
 
 		//add bar to barManager
 		var barManager = this.songModel.getComponent('bars');
-		var newBar = barManager.getBar(numBar).clone();
-		barManager.addBar(newBar);
-
-		//increment the number of bars of current section
-		var section = this.songModel.getSection(this.songModel.getSectionNumberFromBarNumber(numBar));
-		section.setNumberOfBars(section.getNumberOfBars() + 1);
+		barManager.insertBar(numBar, this.songModel);
 
 		// decal chords
 		this.songModel.getComponent('chords').incrementChordsBarNumberFromBarNumber(1, numBar);
-
-
-		$.publish('ToViewer-draw', this.songModel);
 		$.publish('ToHistory-add', 'Add Bar');
+
 	};
 
 	/**
@@ -209,7 +203,6 @@ define([
 		for (var i = selBars.length - 1; i >= 0; i--) {
 			this._removeBar(selBars[i]);
 		}
-		$.publish('ToViewer-draw', this.songModel);
 		$.publish('ToHistory-add', 'Remove Bar');
 	};
 
@@ -256,21 +249,110 @@ define([
 	};
 
 
+
 	StructureEditionController.prototype.setTimeSignature = function(timeSignature) {
+		/**
+		 * modifies selBars end index, if there is a time signature change, selection is reduced until the bar before the time change,
+		 * this behaviour is copied from Sibelius
+		 * @return {Boolean} tells if we actually reduced selection or not, later we set Time Signature change to the previous only if we did not reduce. 
+		 */
+		function reduceSelectionIfChanges() {
+			//if there are timeSig changes in selection we just take until change
+			var barsIt = new SongBarsIterator(song);
+			var timeSigChangesInSelection = false,
+				iBar,
+				prevTimeSignature;
+			barsIt.setBarIndex(selBars[0] + 1); //we check if there is a timeSig change in the middle (not in first bar) 
+			while (barsIt.getBarIndex() <= selBars[1]) {
+				iBar = barsIt.getBarIndex();
+
+				if (barsIt.doesTimeSignatureChange()) {
+					timeSigChangesInSelection = true;
+					selBars[1] = barsIt.getBarIndex() - 1;
+					break;
+				}
+				barsIt.next();
+			}
+			return timeSigChangesInSelection;
+		}
+		/**
+		 * @param  {Array} selBars       indexes of bars selected
+		 * @param  {Array} selectedNotes notes selected
+		 * @param  {Integer} numSelectedBars notes selected
+		 * @param  {TimeSignaureModel} newTimeSig    new time signature
+		 * @return {Array}               notes adapted to new time signature
+		 */
+		function calcAdaptedNotes(selBars, selectedNotes, numSelectedBars, newTimeSig) {
+			var tmpNm = new NoteManager();
+			tmpNm.setNotes(selectedNotes);
+			var notes = tmpNm.getNotesAdaptedToTimeSig(newTimeSig, numSelectedBars);
+			tmpNm.setNotes(notes);
+			var numBars = tmpNm.getTotalDuration() / newTimeSig.getQuarterBeats();
+			return {
+				notes: notes,
+				numBars: numBars
+			};
+		}
+
+		//actually starts here
+		//
 		var selBars = this._getSelectedBars();
 		if (selBars.length === 0) {
 			return;
 		}
-		var durationBefore = this.songModel.getSongTotalBeats();
-		for (var i = 0, c = selBars.length; i < c; i++) {
-			if (timeSignature === "none") {
-				timeSignature = undefined;
+
+		var song = this.songModel,
+			barMng = song.getComponent("bars"),
+			noteMng = song.getComponent("notes"),
+			newTimeSig = new TimeSignatureModel(timeSignature);
+
+		//we check if there are time signature changes within the selection in that case selection is reduced until first change, selBars[1] is modified 
+		var timeSigChangesInSelection = reduceSelectionIfChanges();
+
+		//we get start and en beats of selection
+		var startBeat = song.getStartBeatFromBarNumber(selBars[0]);
+		var endBeat = (barMng.getTotal() - 1 === selBars[1]) ? null : song.getStartBeatFromBarNumber(selBars[1] + 1);
+
+		//we get selected notes and adapt them to new time signature
+		var indexes = noteMng.getIndexesStartingBetweenBeatInterval(startBeat, endBeat);
+		var selectedNotes = noteMng.cloneElems(indexes[0], indexes[1]);
+		var numSelectedBars = selBars[1] + 1 - selBars[0];
+		var calc;
+		try{
+			calc = calcAdaptedNotes(selBars, selectedNotes, numSelectedBars, newTimeSig);
+			var adaptedNotes = calc.notes;
+			var numBarsAdaptedNotes = calc.numBars;
+
+			//HERE change time signature
+			prevTimeSignature = song.getTimeSignatureAt(selBars[0]);
+			barMng.getBar(selBars[0]).setTimeSignatureChange(timeSignature);
+
+			//check if we have to create bars to fit melody (normally if new time sign. has less beats than old one)
+			var diffBars = numBarsAdaptedNotes - numSelectedBars;
+			if (diffBars) {
+				barMng.insertBar(selBars[1], song, diffBars);
 			}
-			this.songModel.getComponent("bars").getBar(selBars[i]).setTimeSignature(timeSignature);
+
+
+			//we set previous time signature in the bar just after the selection, only if there are not changes and if we are not at end of song
+			var indexFollowingBar = selBars[1] + diffBars + 1; 
+			if (barMng.getTotal() > indexFollowingBar  && // if following bar exists
+				!timeSigChangesInSelection && 
+				!barMng.getBar(indexFollowingBar).getTimeSignatureChange())  //if there is no time signature change in following bar
+			{
+				barMng.getBar(indexFollowingBar).setTimeSignatureChange(prevTimeSignature.toString());
+			}
+
+			//we set end index to -1 because notesSplice indexes are inclusive (so if we want to paste notes over indexes [0,5] we don't have to send 0,6 like in cloneElems). These differences among the code are confusing. TODO: refactor 
+			indexes[1]--;
+			//we overwrite adapted notes in general note manager
+			noteMng.notesSplice(indexes, adaptedNotes);
+		}catch(e){
+			//console.log(e);
+			UserLog.logAutoFade('error', "Tuplets can't be broken");
+			return;
 		}
-		var durationAfter = this.songModel.getSongTotalBeats();
-		this._checkDuration(durationBefore, durationAfter);
-		$.publish('ToViewer-draw', this.songModel);
+
 		$.publish('ToHistory-add', 'Time signature set to ' + timeSignature);
 	};
 
@@ -318,7 +400,6 @@ define([
 		for (var i = 0, c = selBars.length; i < c; i++) {
 			this.songModel.getComponent("bars").getBar(selBars[i]).setTonality(tonality);
 		}
-		$.publish('ToViewer-draw', this.songModel);
 		$.publish('ToHistory-add', 'Tonality set to ' + tonality);
 	};
 
@@ -333,7 +414,6 @@ define([
 			}
 			this.songModel.getComponent("bars").getBar(selBars[i]).setEnding(ending);
 		}
-		$.publish('ToViewer-draw', this.songModel);
 		$.publish('ToHistory-add', 'Ending set to ' + ending);
 	};
 
@@ -348,7 +428,6 @@ define([
 			}
 			this.songModel.getComponent("bars").getBar(selBars[i]).setStyle(style);
 		}
-		$.publish('ToViewer-draw', this.songModel);
 		$.publish('ToHistory-add', 'Style set to ' + style);
 	};
 
@@ -363,7 +442,6 @@ define([
 			}
 			this.songModel.getComponent("bars").getBar(selBars[i]).setLabel(label);
 		}
-		$.publish('ToViewer-draw', this.songModel);
 		$.publish('ToHistory-add', 'Label set to ' + label);
 	};
 
@@ -378,7 +456,6 @@ define([
 			}
 			this.songModel.getComponent("bars").getBar(selBars[i]).setSublabel(sublabel);
 		}
-		$.publish('ToViewer-draw', this.songModel);
 		$.publish('ToHistory-add', 'Sublabel set to ' + sublabel);
 	};
 

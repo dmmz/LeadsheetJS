@@ -16,7 +16,7 @@ define(['modules/core/src/BarModel'], function(BarModel) {
 		//so far now we allow only one label per bar in the DB, but this code is prepared to allow more than one, as an array
 		if (JSONBar.hasOwnProperty('ending')) bar.setEnding(JSONBar.ending);
 		if (JSONBar.hasOwnProperty('sublabel')) bar.setSublabel(JSONBar.sublabel);
-		if (JSONBar.hasOwnProperty('timeSignature')) bar.setTimeSignature(JSONBar.timeSignature);
+		if (JSONBar.hasOwnProperty('timeSignature')) bar.setTimeSignatureChange(JSONBar.timeSignature);
 		return bar;
 	};
 
@@ -32,8 +32,8 @@ define(['modules/core/src/BarModel'], function(BarModel) {
 		if (barModel.getSublabel())
 			bar.sublabel = barModel.getSublabel();
 
-		if (barModel.getTimeSignature())
-			bar.timeSignature = barModel.getTimeSignature();
+		if (barModel.getTimeSignatureChange())
+			bar.timeSignature = barModel.getTimeSignatureChange();
 
 		return bar;
 	};
