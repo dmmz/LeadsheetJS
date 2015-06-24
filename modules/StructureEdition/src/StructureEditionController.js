@@ -324,7 +324,7 @@ define([
 			var numBarsAdaptedNotes = calc.numBars;
 
 			//HERE change time signature
-			prevTimeSignature = song.getTimeSignatureAt(selBars[0]);
+			var prevTimeSignature = song.getTimeSignatureAt(selBars[0]);
 			barMng.getBar(selBars[0]).setTimeSignatureChange(timeSignature);
 
 			//check if we have to create bars to fit melody (normally if new time sign. has less beats than old one)

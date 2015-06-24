@@ -129,10 +129,10 @@ define(['modules/StructureEdition/src/StructureEditionController',
 
 				//SONG WITH NOTES
 				var simpleSong = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
-				cursor = new CursorModel(simpleSong.getComponent('notes'));
-				structEdition = new StructureEditionController(simpleSong, cursor);
+				var cursor = new CursorModel(simpleSong.getComponent('notes'));
+				var structEdition = new StructureEditionController(simpleSong, cursor);
+				var barMng = simpleSong.getComponent('bars');
 				noteMng = simpleSong.getComponent('notes');
-				barMng = simpleSong.getComponent('bars');
 
 
 				cursor.setPos(5); //set cursor in first note of 2nd bar

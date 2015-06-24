@@ -57,7 +57,7 @@ define([
 					);
 				}
 
-				song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
+				var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
 
 				//Get Tonality
 				song.getComponent('bars').getBar(5).setTonality("Eb");
