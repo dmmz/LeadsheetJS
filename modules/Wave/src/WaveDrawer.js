@@ -210,6 +210,7 @@ define([
     WaveDrawer.prototype.newCursor = function(audio) {
         this.cursor = new CursorModel(audio.getDuration());
     };
+    
     WaveDrawer.prototype.drawAudio = function(barTimesMng, tempo, duration) {
 
         if (!tempo || !duration) {

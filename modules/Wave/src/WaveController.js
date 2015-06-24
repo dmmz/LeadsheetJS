@@ -151,7 +151,7 @@ define(['modules/Wave/src/WaveModel',
 
     WaveController.prototype.getPlayedTime = function() {
         //var dur = this.buffer.duration;
-        return this.model.audio.currentTime - this.startTime;
+        return this.model.audio.currentTime;
     };
 
     WaveController.prototype.toggleMute = function(volume) {
