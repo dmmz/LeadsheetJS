@@ -6,8 +6,8 @@ define(['modules/Wave/src/WaveModel',
     'pubsub'
 ], function(WaveModel, WaveDrawer, BarTimesManager, SongBarsIterator, $, pubsub) {
     /**
-     * @param {SongModel} song
-     * @param {cursorNotes} cModel     // notes cursor, it is updated when playing
+     * @param {SongModel} songModel
+     * @param {cursorNotes} cursor     // notes cursor, it is updated when playing
      * @param {LSViewer} viewer
      * @param {Object} params :
      *   - showHalfWave: show only the half of the waveform like in soundcloud
@@ -15,12 +15,12 @@ define(['modules/Wave/src/WaveModel',
      *   - topAudio: y distance to the actual bar from which audio is drawn, if 0 it will overwrite the current bar
      *   - heightAudio: height of the audio area, if 150 it will completely overwrite the current bar in the score
      */
-    function WaveController(song, cModel, viewer, params) {
-        if (!song) {
-            throw "WaveController - song not defined";
+    function WaveController(songModel, cursor, viewer, params) {
+        if (!songModel) {
+            throw "WaveController - songModel not defined";
         }
-        // if (!cModel) {
-        //     throw "WaveController - cModel not defined";
+        // if (!cursor) {
+        //     throw "WaveController - cursor not defined";
         // }
         if (!viewer) {
             throw "WaveController - viewer not defined";
@@ -29,11 +29,11 @@ define(['modules/Wave/src/WaveModel',
         params = params || {};
 
         this.barTimesMng = new BarTimesManager();
-        this.song = song;
-        this.cursorNotes = cModel;
+        this.songModel = songModel;
+        this.cursorNotes = cursor;
         this.isLoaded = false;
         this.viewer = viewer;
-        this.audio = new WaveModel();
+        this.model = new WaveModel();
         this.file = params.file;
         this.tempo = params.tempo;
         this.isEnabled = true; //this is initialized on load
@@ -48,6 +48,7 @@ define(['modules/Wave/src/WaveModel',
         this.drawer = new WaveDrawer(viewer, paramsDrawer, this);
         this._initSubscribe();
     }
+
     WaveController.prototype._initSubscribe = function() {
         var self = this;
         //when window is resized, leadsheet is drawn, and audio needs to be redrawn too
@@ -56,7 +57,7 @@ define(['modules/Wave/src/WaveModel',
                 return;
             }
             if (self.isLoaded) {
-                self.drawer.drawAudio(self.barTimesMng, self.audio.tempo, self.audio.getDuration());
+                self.drawer.drawAudio(self.barTimesMng, self.model.tempo, self.model.getDuration());
             } else if (self.file && self.tempo) {
                 self.load(self.file, self.tempo);
             }
@@ -64,15 +65,101 @@ define(['modules/Wave/src/WaveModel',
         $.subscribe("ToPlayer-play", function() {
             self.play();
         });
+        $.subscribe('ToPlayer-playFromPercent', function(el, obj) {
+            self.playFromPercent(obj.percent);
+        });
         $.subscribe("ToPlayer-pause", function() {
             self.pause();
         });
         $.subscribe('ToPlayer-stop', function() {
-            self.pause();
+            self.stop();
+        });
+
+        $.subscribe('ToPlayer-playPause', function(el, tempo) {
+            self.playPause();
+        });
+
+        $.subscribe('ToPlayer-onToggleMute', function(el, volume) {
+            self.toggleMute(volume);
+        });
+        $.subscribe('ToPlayer-onVolume', function(el, volume) {
+            self.onVolumeChange(volume);
+        });
+
+        $.subscribe('ToPlayer-toggleLoop', function(el) {
+            self.toggleLoop();
         });
         $.subscribe("ToLayers-removeLayer", function() {
             self.disable();
         });
+/*
+        $.subscribe('PlayerView-render', function(el) {
+            self.initView();
+        });
+*/
+    };
+
+
+    /**
+     * Function playpause call play if player is in pause, and call pause if player is in play state
+     * @param  {int} tempo in BPM
+     */
+    WaveController.prototype.playPause = function() {
+        if (!this.model.audio.paused) {
+            this.pause();
+        } else {
+            this.play();
+        }
+    };
+
+    WaveController.prototype.play = function() {
+        if (this.isLoaded) {
+            this.isPause = false;
+            this.restartAnimationLoop();
+            this.model.play();
+        }
+    };
+
+    WaveController.prototype.playFromPercent = function(percent) {
+        var timeSec = this.model.getDuration() * percent;
+        this.model.play(timeSec);
+    };
+
+    WaveController.prototype.pause = function() {
+        if (this.isLoaded) {
+            this.isPause = true;
+            this.model.pause();
+        }
+    };
+
+    WaveController.prototype.stop = function() {
+        this.model.stop();
+    };
+    WaveController.prototype.onVolumeChange = function(volume) {
+        this.model.setVolume(volume);
+        /* if (volume === 0) {
+             this.model.mute();
+         } else {
+             this.model.setVolume(volume);
+         }*/
+    };
+
+    WaveController.prototype.toggleLoop = function() {
+        this.model.toggleLoop();
+    };
+
+
+    WaveController.prototype.getPlayedTime = function() {
+        //var dur = this.buffer.duration;
+        return this.model.audio.currentTime - this.startTime;
+    };
+
+    WaveController.prototype.toggleMute = function(volume) {
+        if (volume === 0) {
+            this.model.mute();
+        } else {
+            this.model.unmute();
+        }
     };
 
     WaveController.prototype.load = function(url, tempo, redraw, callback) {
@@ -89,16 +176,16 @@ define(['modules/Wave/src/WaveModel',
 
         xhr.onload = function() {
             var audioData = xhr.response;
-            self.audio.load(audioData, self, tempo, function() {
+            self.model.load(url, audioData, self, tempo, function() {
                 self.isLoaded = true;
                 self.enable();
-                self.barTimesMng.setBarTimes(self.song, self.audio);
-                self.drawer.newCursor(self.audio);
+                self.barTimesMng.setBarTimes(self.songModel, self.model);
+                self.drawer.newCursor(self.model);
                 if (redraw) {
                     self.viewer.setShortenLastBar(true);
-                    self.viewer.draw(self.song); // no need to drawAudio(), as it is called on 'drawEnd'
+                    self.viewer.draw(self.songModel); // no need to drawAudio(), as it is called on 'drawEnd'
                 } else {
-                    self.drawer.drawAudio(self.barTimesMng, self.audio.tempo, self.audio.getDuration());
+                    self.drawer.drawAudio(self.barTimesMng, self.model.tempo, self.model.getDuration());
                 }
                 $.publish('Audio-loaded');
                 if (typeof callback !== "undefined") {
@@ -108,38 +195,40 @@ define(['modules/Wave/src/WaveModel',
         };
         xhr.send();
     };
+
     WaveController.prototype.enable = function() {
         this.isEnabled = true;
     };
     WaveController.prototype.disable = function() {
         this.isEnabled = false;
     };
+
     WaveController.prototype.restartAnimationLoop = function() {
         var self = this;
-        var noteMng = this.song.getComponent('notes');
+        var noteMng = this.songModel.getComponent('notes');
         var iNote = 0,
             prevINote = 0,
             time;
-        var minBeatStep = this.audio.beatDuration / 32; //we don't want to update notes cursor as often as we update audio cursor, to optimize we only update note cursor every 1/32 beats
+        var minBeatStep = this.model.beatDuration / 32; //we don't want to update notes cursor as often as we update audio cursor, to optimize we only update note cursor every 1/32 beats
         var requestFrame = window.requestAnimationFrame ||
             window.webkitRequestAnimationFrame;
-        this.startTime = this.audio.audioCtx.currentTime;
+        this.startTime = this.model.audio.currentTime;
         this.barTimesMng.reset(); //every time we start playing we reset barTimesMng (= we set currBar to 0) because, for the moment, we play always from the beginning
-        var timeStep = 0,
-            currBar = 0;
+        var timeStep = 0;
+        var currBar = 0;
         var frame = function() {
             if (!self.isPause) {
-                if (self.getPlayedTime() >= timeStep + minBeatStep) {
-                    iNote = noteMng.getPrevIndexNoteByBeat(self.getPlayedTime() / self.audio.beatDuration + 1);
+                if (self.getPlayedTime() >= self.timeStep + minBeatStep) {
+                    iNote = noteMng.getPrevIndexNoteByBeat(self.getPlayedTime() / self.model.beatDuration + 1);
                     if (iNote != prevINote) {
                         self.cursorNotes.setPos(iNote);
                         prevINote = iNote;
                     }
-                    timeStep += minBeatStep;
+                    self.timeStep += minBeatStep;
                 }
                 time = self.getPlayedTime();
                 currBar = self.barTimesMng.updateCurrBarByTime(time);
-                //to avoid problems when finishing audio, we play while currBar is in barTimesMng, if not, we pause
+                // To avoid problems when finishing audio, we play while currBar is in barTimesMng, if not, we pause
                 if (currBar < self.barTimesMng.getLength()) {
                     self.drawer.updateCursorPlaying(time);
                     self.drawer.viewer.canvasLayer.refresh();
@@ -152,27 +241,16 @@ define(['modules/Wave/src/WaveModel',
         frame();
     };
 
-    WaveController.prototype.play = function() {
-        if (this.isLoaded) {
-            this.isPause = false;
-            this.restartAnimationLoop();
-            this.audio.play();
 
-        }
-    };
 
-    WaveController.prototype.pause = function() {
-        if (this.isLoaded) {
-            this.isPause = true;
-            this.audio.pause();
+    /**
+     * Function is call to load the state of the player
+     */
+    /*WaveController.prototype.initView = function() {
+        $.publish('PlayerModel-onvolumechange', this.model.volume);
+    };*/
 
-        }
-    };
 
-    WaveController.prototype.getPlayedTime = function() {
-        //var dur = this.buffer.duration;
-        return this.audio.audioCtx.currentTime - this.startTime;
-    };
 
     return WaveController;
 });

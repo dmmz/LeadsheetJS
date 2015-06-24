@@ -197,21 +197,21 @@ define([
 	 */
 	PlayerView.prototype.initSubscribe = function() {
 		var self = this;
-		$.subscribe('PlayerModel_MidiCSL-onplay', function(el) {
+		$.subscribe('PlayerModel-onplay', function(el) {
 			self.play();
 		});
-		$.subscribe('PlayerModel_MidiCSL-onpause', function(el) {
+		$.subscribe('PlayerModel-onpause', function(el) {
 			self.pause();
 		});
-		$.subscribe('PlayerModel_MidiCSL-onstop', function(el) {
+		$.subscribe('PlayerModel-onstop', function(el) {
 			self.pause();
 		});
-		$.subscribe('PlayerModel_MidiCSL-onfinish', function(el) {
+		$.subscribe('PlayerModel-onfinish', function(el) {
 			self.pause();
 		});
-		$.subscribe('PlayerModel_MidiCSL-onloopstart', function(el) {});
+		$.subscribe('PlayerModel-onloopstart', function(el) {});
 
-		$.subscribe('PlayerModel_MidiCSL-toggleLoop', function(el, isLoop) {
+		$.subscribe('PlayerModel-toggleLoop', function(el, isLoop) {
 			if (isLoop) {
 				self.activeLoop();
 			} else {
@@ -219,25 +219,25 @@ define([
 			}
 		});
 
-		$.subscribe('PlayerModel_MidiCSL-onvolumechange', function(el, volume) {
+		$.subscribe('PlayerModel-onvolumechange', function(el, volume) {
 			self.setVolume(volume);
 		});
 
-		$.subscribe('PlayerModel_MidiCSL-onload', function(el) {
+		$.subscribe('PlayerModel-onload', function(el) {
 			self.playerIsReady();
 		});
 
-		$.subscribe('PlayerModel_MidiCSL-onChordsInstrument', function(el, instrument) {});
-		$.subscribe('PlayerModel_MidiCSL-onMelodyInstrument', function(el, instrument) {});
+		$.subscribe('PlayerModel-onChordsInstrument', function(el, instrument) {});
+		$.subscribe('PlayerModel-onMelodyInstrument', function(el, instrument) {});
 
-		$.subscribe('PlayerModel_MidiCSL-toggleMetronome', function(el, isMetronome) {
+		$.subscribe('PlayerModel-toggleMetronome', function(el, isMetronome) {
 			if (isMetronome) {
 				self.muteMetronome();
 			} else {
 				self.unmuteMetronome();
 			}
 		});
-		$.subscribe('PlayerModel_MidiCSL-onPosition', function(el, obj) {
+		$.subscribe('PlayerModel-onPosition', function(el, obj) {
 			self.updateProgressbar(obj.positionInPercent * 100, obj.songDuration);
 		});
 	};
@@ -347,7 +347,6 @@ define([
 
 		var currentTime = value / 100 * duration / 1000;
 		var durationTime = duration / 1000;
-
 		var ct = this._convertSecondToPrintableTime(currentTime);
 		var dt = this._convertSecondToPrintableTime(durationTime);
 		$span.text(ct + ' / ' + dt);

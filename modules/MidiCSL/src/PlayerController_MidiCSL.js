@@ -98,7 +98,7 @@ define([
 		this.model.stop();
 	};
 
-	PlayerController.prototype.toggleLoop = function(volume) {
+	PlayerController.prototype.toggleLoop = function() {
 		this.model.toggleLoop();
 	};
 

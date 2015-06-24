@@ -5,7 +5,7 @@ define([
 	return {
 		run: function() {
 			test("HistoryController", function(assert) {
-				
+
 				var hm = new HistoryModel();
 
 				var hc = new HistoryController(hm);

@@ -1,37 +1,96 @@
-define(function() {
-	function WaveModel() {
+define([
+	'jquery',
+	'pubsub',
+], function($, pubsub) {
+	function WaveModel(option) {
+		/* option contain
+			volume				// Float Main volume for all instruments it vary between 0 and 1
+		*/
+		this.audio = new Audio();
+		document.body.appendChild(this.audio);
 		this.audioCtx = new(window.AudioContext || window.webkitAudioContext)();
 		this.source = this.audioCtx.createBufferSource();
 		this.tempo = null;
+		this.initModelEvents();
+
+		var initVolume;
+		if ((typeof option !== "undefined" && typeof(option.volume) !== "undefined")) {
+			// case that developper explicitly declared volume
+			initVolume = option.volume;
+		} else {
+			// natural case (it use storage item to get last user volume)
+			initVolume = this.initVolume(0.7);
+		}
+		this.setVolume(initVolume);
 	}
 
-	WaveModel.prototype._createSource = function() {
-
-		this._disconnectSource();
-		this.source = this.audioCtx.createBufferSource();
-		this.source.buffer = this.buffer;
-		this.source.connect(this.audioCtx.destination);
-
-	};
-	WaveModel.prototype._disconnectSource = function() {
-		if (this.source) {
-			this.source.buffer.length = 0; // remove previous buffer (usefull for memory)
-			this.source.disconnect();
+	WaveModel.prototype.play = function(playFrom) {
+		if (typeof playFrom !== "undefined") {
+			this.audio.currentTime = playFrom;
 		}
-	};
-
-	WaveModel.prototype.play = function() {
-		this._createSource();
-		this.source.start(0);
+		this.audio.play();
+		$.publish('PlayerModel-onplay');
 	};
 
 	WaveModel.prototype.pause = function() {
-		this._disconnectSource();
-		this.source.stop(0);
+		this.audio.pause();
+		$.publish('PlayerModel-onpause');
 	};
 
-	WaveModel.prototype.load = function(audioData, waveMng, tempo, callback) {
+	WaveModel.prototype.stop = function() {
+		this.audio.pause();
+		this.audio.currentTime = 0;
+		$.publish('PlayerModel-onstop');
+	};
+
+	WaveModel.prototype.initVolume = function(volume, force) {
+		var oldVolume = localStorage.getItem("player-volume");
+		if (oldVolume === null) {
+			return volume;
+		}
+		return oldVolume;
+	};
+
+	WaveModel.prototype.setVolume = function(volume) {
+		if (typeof volume === "undefined" || isNaN(volume)) {
+			throw 'WaveModel - setVolume - volume must be a number ' + volume;
+		}
+		this.audio.volume = volume;
+		localStorage.setItem("player-volume", volume);
+		$.publish('PlayerModel-onvolumechange', volume);
+	};
+
+	WaveModel.prototype.mute = function() {
+		this.tmpVolume = this.audio.volume;
+		this.setVolume(0);
+	};
+
+	WaveModel.prototype.unmute = function() {
+		this.setVolume(this.tmpVolume);
+	};
+
+	WaveModel.prototype.setLoop = function(loop) {
+		if (typeof loop !== "undefined") {
+			this.audio.loop = !!loop;
+			$.publish('PlayerModel-toggleLoop', loop);
+			return true;
+		} else {
+			return false;
+		}
+	};
+
+	WaveModel.prototype.toggleLoop = function(loop) {
+		if (this.loop === true) {
+			this.setLoop(false);
+		} else {
+			this.setLoop(true);
+		}
+		return this.audio.loop;
+	};
+
+	WaveModel.prototype.load = function(url, audioData, waveMng, tempo, callback) {
 		var self = this;
+		this.audio.src = url;
 		this.audioCtx.decodeAudioData(audioData, function(buffer) {
 				self.buffer = []; // remove previous buffer (usefull for memory)
 				self.buffer = buffer;
@@ -40,7 +99,7 @@ define(function() {
 				self.source.buffer = self.buffer;
 				//source.playbackRate.value = playbackControl.value;
 				self.source.connect(self.audioCtx.destination);
-
+				$.publish('PlayerModel-onload');
 				if (typeof callback !== "undefined") {
 					callback();
 				}
@@ -51,11 +110,28 @@ define(function() {
 			}
 		);
 	};
+
+	WaveModel.prototype.initModelEvents = function() {
+		var self = this;
+		$(this.audio).on('ended', function() {
+			$.publish('PlayerModel-onfinish');
+		});
+		$(this.audio).on('timeupdate', function() {
+			var songDuration = self.getDuration();
+			var positionInPercent = self.audio.currentTime / songDuration;
+			$.publish('PlayerModel-onPosition', {
+				'positionInPercent': positionInPercent,
+				'songDuration': songDuration * 1000
+			});
+		});
+	};
+
+
 	WaveModel.prototype.getDuration = function() {
 		return this.buffer.duration;
 	};
-	WaveModel.prototype.getPeaks = function(length, startPoint, endPoint) {
 
+	WaveModel.prototype.getPeaks = function(length, startPoint, endPoint) {
 		startPoint = startPoint || 0;
 		endPoint = endPoint || 1;
 
@@ -96,7 +172,7 @@ define(function() {
 			//console.log(absMax);
 		}
 		return mergedPeaks;
-
 	};
+
 	return WaveModel;
 });

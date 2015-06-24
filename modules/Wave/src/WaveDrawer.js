@@ -241,7 +241,7 @@ define([
 
             this.waveBarDimensions.push(waveBarView);
             area = waveBarView.getArea();
-            peaks = this.waveMng.audio.getPeaks(area.w, start, start + sliceSong);
+            peaks = this.waveMng.model.getPeaks(area.w, start, start + sliceSong);
             this.drawPeaks(peaks, area, this.color[toggleColor], this.viewer);
             toggleColor = (toggleColor + 1) % 2;
             start += sliceSong;

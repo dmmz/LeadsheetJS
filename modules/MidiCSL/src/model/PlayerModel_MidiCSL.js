@@ -112,7 +112,7 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 		PlayerModel_MidiCSL.prototype.setLoop = function(loop) {
 			if (typeof loop !== "undefined") {
 				this.loop = !!loop;
-				$.publish('PlayerModel_MidiCSL-toggleLoop', loop);
+				$.publish('PlayerModel-toggleLoop', loop);
 				return true;
 			} else {
 				return false;
@@ -144,15 +144,13 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 
 		PlayerModel_MidiCSL.prototype.muteMetronome = function() {
 			this.activeMetronome = false;
-			$.publish('PlayerModel_MidiCSL-toggleMetronome', false);
+			$.publish('PlayerModel-toggleMetronome', false);
 		};
 
 		PlayerModel_MidiCSL.prototype.unmuteMetronome = function() {
 			this.activeMetronome = true;
-			$.publish('PlayerModel_MidiCSL-toggleMetronome', true);
+			$.publish('PlayerModel-toggleMetronome', true);
 		};
-
-
 
 		PlayerModel_MidiCSL.prototype.initVolume = function(volume, force) {
 			var oldVolume = localStorage.getItem("player-volume");
@@ -166,7 +164,7 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 			if (typeof volume === "undefined" || isNaN(volume)) {
 				throw 'PlayerModel_MidiCSL - setVolume - volume must be a number ' + volume;
 			}
-			$.publish('PlayerModel_MidiCSL-onvolumechange', volume);
+			$.publish('PlayerModel-onvolumechange', volume);
 			this.setMelodyVolume(volume);
 			this.setChordsVolume(volume);
 			localStorage.setItem("player-volume", volume);
@@ -203,7 +201,7 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 		PlayerModel_MidiCSL.prototype.setChordsInstrument = function(instrument) {
 			if (typeof instrument !== "undefined") {
 				this.chords.instrument = instrument;
-				$.publish('PlayerModel_MidiCSL-onChordsInstrument', instrument);
+				$.publish('PlayerModel-onChordsInstrument', instrument);
 				return true;
 			} else {
 				return false;
@@ -217,7 +215,7 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 		PlayerModel_MidiCSL.prototype.setMelodyInstrument = function(instrument) {
 			if (typeof instrument !== "undefined") {
 				this.melody.instrument = instrument;
-				$.publish('PlayerModel_MidiCSL-onMelodyInstrument', instrument);
+				$.publish('PlayerModel-onMelodyInstrument', instrument);
 				return true;
 			} else {
 				return false;
@@ -244,7 +242,7 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 				throw 'PlayerModel_MidiCSL - setPositionInPercent - positionInPercent must be a float ' + positionInPercent;
 			}
 			this.positionInPercent = positionInPercent;
-			$.publish('PlayerModel_MidiCSL-onPosition', {
+			$.publish('PlayerModel-onPosition', {
 				'positionInPercent': positionInPercent,
 				'songDuration': this.songDuration
 			});
@@ -305,7 +303,7 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 				this.songDuration = beatOfLastNoteOff * beatDuration;
 
 				this.playState = true;
-				$.publish('PlayerModel_MidiCSL-onplay');
+				$.publish('PlayerModel-onplay');
 				if (typeof playFrom === "undefined" || isNaN(playFrom)) {
 					playFrom = song[this.indexPosition].getCurrentTime() * beatDuration;
 				}
@@ -369,10 +367,10 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 											self.setPositionIndex(0, beatOfLastNoteOff);
 											self.setPositionInPercent(0);
 											if (self.doLoop() === false) {
-												$.publish('PlayerModel_MidiCSL-onfinish');
+												$.publish('PlayerModel-onfinish');
 												self.stop();
 											} else {
-												$.publish('PlayerModel_MidiCSL-onloopstart');
+												$.publish('PlayerModel-onloopstart');
 												self.play(tempo);
 											}
 										}), duration * 1000);
@@ -406,7 +404,7 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 			for (var i in this.noteTimeOut) {
 				window.clearTimeout(this.noteTimeOut[i]);
 			}
-			$.publish('PlayerModel_MidiCSL-onpause');
+			$.publish('PlayerModel-onpause');
 		};
 
 		PlayerModel_MidiCSL.prototype.stop = function() {
@@ -419,7 +417,7 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 			}
 			this.setPositionIndex(0);
 			this.setPositionInPercent(0);
-			$.publish('PlayerModel_MidiCSL-onstop');
+			$.publish('PlayerModel-onstop');
 		};
 
 
@@ -504,7 +502,7 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 
 		PlayerModel_MidiCSL.prototype.MidiPluginIsReady = function() {
 			this.setReady(true);
-			$.publish('PlayerModel_MidiCSL-onload');
+			$.publish('PlayerModel-onload');
 		};
 
 		return PlayerModel_MidiCSL;

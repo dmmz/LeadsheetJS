@@ -51,10 +51,10 @@ define(function(require) {
 
 	new LJS.LSViewer.OnWindowResizer(songModel);
 
-	// initPlayerModule(songModel);
+	initPlayerModule(songModel);
 
 
-	new LJS.HistoryC(songModel);
+	new LJS.HistoryC(songModel, $('#rightPanel'), 20, true, false);
 
 	$.publish('ToHistory-add', 'Open song - ' + songModel.getTitle());
 
