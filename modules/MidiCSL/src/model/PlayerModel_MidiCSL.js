@@ -22,13 +22,14 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 			activeMetronome		// Boolean that indicates whether the metronome is active or not
 			volume				// Float Main volume for all instruments it vary between 0 and 1
 		*/
-		function PlayerModel_MidiCSL(songModel, soundfontPath, option) {
+		function PlayerModel_MidiCSL(songModel, cursorModel, soundfontPath, option) {
 			this.isReady = false; // boolean that indicates if player is ready to be played
 			this.indexPosition = 0; // represent which notes have been lastly played
 			this.playState = false; // playState indicate if the player is currently playing or not, (paused player will return false)
 			this.songModel = songModel;
 			this.isEnabled = true; //this is initialized on load
 			this.tempo = songModel.getTempo();
+			this.cursorModel = cursorModel;
 			this.soundfontPath = soundfontPath;
 
 			var initVolume;
@@ -232,6 +233,8 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 				throw 'PlayerModel_MidiCSL - setPositionIndex - indexPosition must be a number ' + indexPosition;
 			}
 			this.indexPosition = indexPosition;
+			//this.cursorModel.setPos(indexPosition);
+			//$.publish('ToViewer-draw', this.songModel);
 		};
 
 		/**

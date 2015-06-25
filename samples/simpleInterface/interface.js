@@ -51,7 +51,6 @@ define(function(require) {
 
 	new LJS.LSViewer.OnWindowResizer(songModel);
 
-	initPlayerModule(songModel);
 
 
 	new LJS.HistoryC(songModel, $('#rightPanel'), 20, true, false);
@@ -110,6 +109,8 @@ define(function(require) {
 			suggestions:['Adam Smith','Kim Jong-il','Iñigo Errejón','Mia Khalifa','Jose Monge']
 		}
 	});
+
+	initPlayerModule(songModel, edition.cursorNote.controller.model);
 
 	//ALTERNATIVE WAY TO CREATE EDITION if not using edition constructor
 	// var KeyboardManager = require('modules/Edition/src/KeyboardManager');
@@ -191,8 +192,8 @@ define(function(require) {
 	}
 
 
-	function initPlayerModule(songModel) {
-		// var player = new LJS.MidiCSL.PlayerModel_MidiCSL(songModel, "../../external-libs/Midijs/soundfont/");
+	function initPlayerModule(songModel, cursorModel) {
+		var player = new LJS.MidiCSL.PlayerModel_MidiCSL(songModel, cursorModel, "../../external-libs/Midijs/soundfont/");
 		var pV = new LJS.MidiCSL.PlayerView($('#player_test')[0], '/modules/MidiCSL/img', {
 			displayMetronome: true,
 			displayLoop: true,
@@ -201,7 +202,7 @@ define(function(require) {
 			autoload: false,
 			progressBar: true
 		});
-		// var pC = new LJS.MidiCSL.PlayerController(player, pV);
+		var pC = new LJS.MidiCSL.PlayerController(player, pV);
 	}
 	
 	var audioComments = new LJS.AudioComments(waveMng, myApp.viewer, songModel);
