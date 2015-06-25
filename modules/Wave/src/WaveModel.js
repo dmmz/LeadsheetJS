@@ -11,6 +11,7 @@ define([
 		this.audioCtx = new(window.AudioContext || window.webkitAudioContext)();
 		this.source = this.audioCtx.createBufferSource();
 		this.tempo = null;
+		this.isEnabled = true; //this is initialized on load
 		this.initModelEvents();
 
 		var initVolume;
@@ -25,6 +26,9 @@ define([
 	}
 
 	WaveModel.prototype.play = function(playFrom) {
+		if (this.isEnabled === false) {
+			return;
+		}
 		if (typeof playFrom !== "undefined") {
 			this.audio.currentTime = playFrom;
 		}
@@ -33,13 +37,19 @@ define([
 	};
 
 	WaveModel.prototype.pause = function() {
+		if (this.isEnabled === false) {
+			return;
+		}
 		this.audio.pause();
 		$.publish('PlayerModel-onpause');
 	};
 
 	WaveModel.prototype.stop = function() {
+		if (this.isEnabled === false || this.audio.readyState === 0) {
+			return;
+		}
 		this.audio.pause();
-		this.audio.currentTime = 0;
+		this.audio.currentTime = 0.0;
 		$.publish('PlayerModel-onstop');
 	};
 
@@ -52,6 +62,9 @@ define([
 	};
 
 	WaveModel.prototype.setVolume = function(volume) {
+		if (this.isEnabled === false) {
+			return;
+		}
 		if (typeof volume === "undefined" || isNaN(volume)) {
 			throw 'WaveModel - setVolume - volume must be a number ' + volume;
 		}
@@ -61,15 +74,24 @@ define([
 	};
 
 	WaveModel.prototype.mute = function() {
+		if (this.isEnabled === false) {
+			return;
+		}
 		this.tmpVolume = this.audio.volume;
 		this.setVolume(0);
 	};
 
 	WaveModel.prototype.unmute = function() {
+		if (this.isEnabled === false) {
+			return;
+		}
 		this.setVolume(this.tmpVolume);
 	};
 
 	WaveModel.prototype.setLoop = function(loop) {
+		if (this.isEnabled === false) {
+			return;
+		}
 		if (typeof loop !== "undefined") {
 			this.audio.loop = !!loop;
 			$.publish('PlayerModel-toggleLoop', loop);
@@ -80,6 +102,9 @@ define([
 	};
 
 	WaveModel.prototype.toggleLoop = function(loop) {
+		if (this.isEnabled === false) {
+			return;
+		}
 		if (this.loop === true) {
 			this.setLoop(false);
 		} else {
@@ -114,9 +139,15 @@ define([
 	WaveModel.prototype.initModelEvents = function() {
 		var self = this;
 		$(this.audio).on('ended', function() {
+			if (self.isEnabled === false) {
+				return;
+			}
 			$.publish('PlayerModel-onfinish');
 		});
 		$(this.audio).on('timeupdate', function() {
+			if (self.isEnabled === false) {
+				return;
+			}
 			var songDuration = self.getDuration();
 			var positionInPercent = self.audio.currentTime / songDuration;
 			$.publish('PlayerModel-onPosition', {
@@ -128,7 +159,15 @@ define([
 
 
 	WaveModel.prototype.getDuration = function() {
-		return this.buffer.duration;
+		return this.audio.duration;
+	};
+
+	WaveModel.prototype.enable = function() {
+		this.isEnabled = true;
+	};
+	WaveModel.prototype.disable = function() {
+		this.stop();
+		this.isEnabled = false;
 	};
 
 	WaveModel.prototype.getPeaks = function(length, startPoint, endPoint) {

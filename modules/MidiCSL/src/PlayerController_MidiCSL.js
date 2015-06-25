@@ -25,16 +25,16 @@ define([
 			self.playFromPercent(obj.tempo, obj.percent);
 		});
 
+		$.subscribe('ToPlayer-playPause', function(el, tempo) {
+			self.playPause(tempo);
+		});
+
 		$.subscribe('ToPlayer-stop', function(el) {
 			self.stop();
 		});
 
 		$.subscribe('ToPlayer-pause', function(el) {
 			self.pause();
-		});
-
-		$.subscribe('ToPlayer-playPause', function(el, tempo) {
-			self.playPause(tempo);
 		});
 
 		$.subscribe('ToPlayer-onToggleMute', function(el, volume) {
@@ -59,8 +59,19 @@ define([
 			self.toggleLoop();
 		});
 
+		$.subscribe('ToPlayer-enable', function(el) {
+			self.enable();
+		});
+		$.subscribe('ToPlayer-disableAll', function(el) {
+			self.disable();
+		});
 		$.subscribe('PlayerView-render', function(el) {
 			self.initView();
+		});
+
+		// Enable midi player when we remove all layers, it means that song have changed
+		$.subscribe("ToLayers-removeLayer", function() {
+			self.enable();
 		});
 	};
 
@@ -138,11 +149,19 @@ define([
 		this.model.setMelodyInstrument(instrument);
 	};
 
+	PlayerController.prototype.enable = function() {
+		this.model.enable();
+	};
+
+	PlayerController.prototype.disable = function() {
+		this.model.disable();
+	};
+
 	/**
 	 * Function is call to load the state of the player
 	 */
 	PlayerController.prototype.initView = function() {
-		$.publish('PlayerModel_MidiCSL-onvolumechange', this.model.getMelodyVolume());
+		$.publish('PlayerModel-onvolumechange', this.model.getMelodyVolume());
 	};
 
 	return PlayerController;

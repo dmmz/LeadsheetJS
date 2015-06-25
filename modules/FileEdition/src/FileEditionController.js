@@ -219,9 +219,9 @@ define([
 		this.saveFn(JSONSong, songId, function(data) {
 			UserLog.removeLog(idLog);
 			if (data.error){
-				UserLog.logAutoFade('error', data.msg);	
+				UserLog.logAutoFade('error', data.msg);
 			}else{
-				UserLog.logAutoFade('success', 'Leadsheet saved with success');	
+				UserLog.logAutoFade('success', 'Leadsheet saved with success');
 			}
 			self.songModel._id = data.id;
 		});

@@ -27,6 +27,7 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 			this.indexPosition = 0; // represent which notes have been lastly played
 			this.playState = false; // playState indicate if the player is currently playing or not, (paused player will return false)
 			this.songModel = songModel;
+			this.isEnabled = true; //this is initialized on load
 			this.tempo = songModel.getTempo();
 			this.soundfontPath = soundfontPath;
 
@@ -244,7 +245,7 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 			this.positionInPercent = positionInPercent;
 			$.publish('PlayerModel-onPosition', {
 				'positionInPercent': positionInPercent,
-				'songDuration': this.songDuration
+				'songDuration': this.getSongDuration()
 			});
 		};
 
@@ -281,6 +282,9 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 		 * @param  {float} playTo is an optionnal attributes, if it's filled then player will play until playTo in sec, otherwise it play til the end
 		 */
 		PlayerModel_MidiCSL.prototype.play = function(tempo, playFrom, playTo) {
+			if (this.isEnabled === false) {
+				return;
+			}
 			if (typeof tempo === "undefined" || isNaN(tempo)) {
 				throw 'PlayerModel_MidiCSL - play - tempo must be a number ' + tempo;
 			}
@@ -418,6 +422,14 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 			this.setPositionIndex(0);
 			this.setPositionInPercent(0);
 			$.publish('PlayerModel-onstop');
+		};
+
+		PlayerModel_MidiCSL.prototype.enable = function() {
+			this.isEnabled = true;
+		};
+		PlayerModel_MidiCSL.prototype.disable = function() {
+			this.stop();
+			this.isEnabled = false;
 		};
 
 

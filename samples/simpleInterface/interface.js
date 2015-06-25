@@ -146,7 +146,8 @@ define(function(require) {
 		tempo: 170
 	};
 	var waveMng = new LJS.Wave(songModel, edition.cursorNote.controller.model, myApp.viewer, params);
-
+	$.publish('ToPlayer-disableAll');
+	waveMng.enable();
 	//ALTERNATIVE WAY TO ADD MENU if not done with edition constructor
 	/*menu.model.addMenu({
 		title: 'Notes',
@@ -191,7 +192,7 @@ define(function(require) {
 
 
 	function initPlayerModule(songModel) {
-		var player = new LJS.MidiCSL.PlayerModel_MidiCSL(songModel, "../../external-libs/Midijs/soundfont/");
+		// var player = new LJS.MidiCSL.PlayerModel_MidiCSL(songModel, "../../external-libs/Midijs/soundfont/");
 		var pV = new LJS.MidiCSL.PlayerView($('#player_test')[0], '/modules/MidiCSL/img', {
 			displayMetronome: true,
 			displayLoop: true,
@@ -200,7 +201,7 @@ define(function(require) {
 			autoload: false,
 			progressBar: true
 		});
-		var pC = new LJS.MidiCSL.PlayerController(player, pV);
+		// var pC = new LJS.MidiCSL.PlayerController(player, pV);
 	}
 	
 	var audioComments = new LJS.AudioComments(waveMng, myApp.viewer, songModel);
