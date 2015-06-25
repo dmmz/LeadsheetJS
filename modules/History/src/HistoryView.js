@@ -59,7 +59,7 @@ define([
 		$.subscribe('ctrl-z', function(el) {
 			$.publish('HistoryView-moveSelectHistory', -1);
 		});
-		$.subscribe('ctrl-z', function(el) {
+		$.subscribe('ctrl-y', function(el) {
 			$.publish('HistoryView-moveSelectHistory', 1);
 		});
 	};

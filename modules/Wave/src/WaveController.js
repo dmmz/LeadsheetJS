@@ -145,6 +145,7 @@ define(['modules/Wave/src/WaveModel',
 	};
 
 	WaveController.prototype.stop = function() {
+		this.isPause = true;
 		this.model.stop();
 	};
 	WaveController.prototype.onVolumeChange = function(volume) {
@@ -175,7 +176,6 @@ define(['modules/Wave/src/WaveModel',
 	};
 
 	WaveController.prototype.load = function(url, tempo, redraw, callback) {
-
 		if (isNaN(tempo) || tempo <= 0) {
 			throw "WaveController - No tempo speficied";
 		}
@@ -231,13 +231,13 @@ define(['modules/Wave/src/WaveModel',
 		var currBar = 0;
 		var frame = function() {
 			if (!self.isPause) {
-				if (self.getPlayedTime() >= self.timeStep + minBeatStep) {
+				if (self.getPlayedTime() >= timeStep + minBeatStep) {
 					iNote = noteMng.getPrevIndexNoteByBeat(self.getPlayedTime() / self.model.beatDuration + 1);
 					if (iNote != prevINote) {
 						self.cursorNotes.setPos(iNote);
 						prevINote = iNote;
 					}
-					self.timeStep += minBeatStep;
+					timeStep += minBeatStep;
 				}
 				time = self.getPlayedTime();
 				currBar = self.barTimesMng.updateCurrBarByTime(time);
