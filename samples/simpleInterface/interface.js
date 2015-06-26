@@ -50,7 +50,6 @@ define(function(require) {
 	allowEdition = true;
 	if (allowEdition === false) {
 		// Reading only
-		
 		var viewer = loadViewer(songModel, viewerHTML);
 		var cursorNote = new LJS.Cursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow');
 

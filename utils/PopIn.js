@@ -12,6 +12,7 @@ define([
 		this.title = title;
 		this.content = content;
 
+		options = (typeof options !== "undefined") ? options : {};
 		this.classTitle = (typeof options.classTitle !== "undefined") ? options.classTitle : '';
 		this.footerButtonTitle = (typeof options.footerButtonTitle !== "undefined") ? options.footerButtonTitle : 'Ok';
 		if (typeof options.isTemplate !== "undefined" && options.isTemplate === true) {
