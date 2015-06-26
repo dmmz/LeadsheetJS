@@ -31,6 +31,9 @@ define([
 	ChordSpaceManager.prototype.initSubscribe = function() {
 		var self = this;
 		$.subscribe('LSViewer-drawEnd', function(el, viewer) {
+			if (typeof viewer.canvasLayer === "undefined") {
+				return;
+			}
 			viewer.canvasLayer.addElement(self);
 			self.chordSpace = self.createChordSpace(viewer);
 			self.cursor.setListElements(self.chordSpace.length);
