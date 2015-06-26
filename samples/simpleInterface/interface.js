@@ -30,34 +30,91 @@ require.config({
 });
 
 define(function(require) {
-
+	var $ = require('jquery');
 	var LJS = require('LJS');
-	var myApp = {};
-	window.myApp = myApp;
+	console.log(LJS);
 
-
-
-	/*var popIn = new PopIn('Hello', 'Test<br />ok');
-	popIn.render();*/
-	//myApp.historyV.activeView();
-	/*myApp.historyM.addToHistory({},'Edit notes');
-	myApp.historyM.addToHistory({});
-	myApp.historyM.setCurrentPosition(1);*/
 	var testSongs = require('tests/test-songs');
-
 	// tried for unfolding
 	// var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
 	var songModel = LJS.converters.MusicCSLJson.SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
 
-	new LJS.LSViewer.OnWindowResizer(songModel);
+	//var popIn = new LJS.PopIn.PopIn('Hello', 'Test<br />ok');
+	//popIn.render();
+
+	var menuHTML = document.getElementById('menu-container');
+	var viewerHTML = $("#canvas_container")[0];
+	var playerHTML = $('#player_test')[0];
 
 
+	allowEdition = true;
+	if (allowEdition === false) {
+		// Reading only
+		
+		var viewer = loadViewer(songModel, viewerHTML);
+		var cursorNote = new LJS.Cursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow');
 
-	new LJS.HistoryC(songModel, $('#rightPanel'), 20, true, false);
+		// Load players (midi and audio)
+		loadMidiPlayer(songModel, cursorNote.model, playerHTML);
+		var wave = loadAudioPlayer(songModel, cursorNote.model, viewer);
 
-	$.publish('ToHistory-add', 'Open song - ' + songModel.getTitle());
+		// Load menus
+		var menu = loadMenu(menuHTML);
+		var fileEdition = new LJS.FileEdition(songModel, viewer.canvas);
+		menu.model.addMenu({
+			title: 'File',
+			view: fileEdition.view,
+			order: 1
+		});
+		loadActiveMenuOrDefault(menu, 'File');
+		var audioComments = loadComments(wave, viewer, songModel);
+		addComment(audioComments);
+		viewer.draw(songModel);
+	} else {
+		// Read and write
+		var viewer = loadViewer(songModel, viewerHTML);
+		var menu = loadMenu(menuHTML);
+		loadHistory(songModel);
+		var edition = loadEditionModules(viewer, songModel, menu);
+		// Load players (midi and audio)
+		loadMidiPlayer(songModel, edition.cursorNote.model, playerHTML);
+		var wave = loadAudioPlayer(songModel, edition.cursorNote.model, viewer);
 
-	/*
+		// Harmonize menu
+		var harm = new LJS.Harmonizer(songModel, menu.model);
+		// Harmonic Analysis menu
+		var harmAn = new LJS.HarmonicAnalysis(songModel, edition.noteEdition.noteSpaceMng);
+		// Edit files menu
+		var fileEdition = new LJS.FileEdition(songModel, viewer.canvas);
+		menu.model.addMenu({
+			title: 'Harmonizer',
+			view: harm.view,
+			order: 5
+		});
+
+		menu.model.addMenu({
+			title: 'Harmonic Analysis',
+			view: harmAn.view,
+			order: 6
+		});
+
+		menu.model.addMenu({
+			title: 'File',
+			view: fileEdition.view,
+			order: 1
+		});
+		loadActiveMenuOrDefault(menu, 'File');
+		var audioComments = loadComments(wave, viewer, songModel);
+		addComment(audioComments);
+		viewer.draw(songModel);
+	}
+
+	function loadHistory(songModel) {
+		new LJS.HistoryC(songModel, $('#rightPanel'), 20, true, false);
+		$.publish('ToHistory-add', 'Open song - ' + songModel.getTitle());
+	}
+
+	function loadChordSequence() {
 		var optionChediak = {
 			displayTitle: true,
 			displayComposer: true,
@@ -69,132 +126,76 @@ define(function(require) {
 			fillEmptyBar: false,
 			fillEmptyBarCharacter: "%",
 		};
-		initChordSequenceModule($('#chordSequence2')[0], songModel, optionChediak);*/
-
-
-	myApp.viewer = new LJS.LSViewer.LSViewer($("#canvas_container")[0], {
-		layer: true
-			/*,
-					typeResize: "scale"*/
-	});
-	var menu = new LJS.MainMenu(document.getElementById('menu-container'));
-
-	var edition = new LJS.Edition.Edition(myApp.viewer, songModel, menu.model, {
-		notes: {
-			active: true,
-			menu: {
-				title: 'Notes',
-				order: 2
-			},
-			imgPath: '/modules/NoteEdition/img'
-		},
-		chords: {
-			active: true,
-			menu: {
-				title: 'Chords',
-				order: 3
-			},
-			imgPath: '/modules/NoteEdition/img'
-				// menu: false /* if we don't want menu*/
-		},
-		structure: {
-			active: true,
-			menu: {
-				title: 'Structure',
-				order: 4
-			},
-			imgPath: '/modules/StructureEdition/img'
-		},
-		composer:{
-			suggestions:['Adam Smith','Kim Jong-il','Iñigo Errejón','Mia Khalifa','Jose Monge']
-		}
-	});
-
-	initPlayerModule(songModel, edition.cursorNote.controller.model);
-
-	//ALTERNATIVE WAY TO CREATE EDITION if not using edition constructor
-	// var KeyboardManager = require('modules/Edition/src/KeyboardManager');
-	// new KeyboardManager(true);
-
-	// // Edit notes on view
-	// var cursorNote = new LJS.Cursor(songModel.getComponent('notes'), 'notes', 'arrow');
-	// var noteEdition = new LJS.NoteEdition(songModel, cursorNote.controller.model, myApp.viewer, '/modules/NoteEdition/img');
-
-	// // // Edit chords on view
-	// var cursorChord = new LJS.Cursor(songModel.getSongTotalBeats(), 'chords', 'tab');
-	// cursorChord.controller.model.setEditable(false);
-
-	// var chordEdition = new LJS.ChordEdition(songModel, cursorChord.controller.model, myApp.viewer, '/modules/NoteEdition/img');
-	//bars edition 
-	//var structEdition = new LJS.StructureEdition(songModel, edition.cursorNote.controller.model, '/modules/StructureEdition/img');
-
-	// Harmonize menu
-	var harm = new LJS.Harmonizer(songModel, menu.model);
-
-	// Harmonic Analysis menu
-
-	var harmAn = new LJS.HarmonicAnalysis(songModel, edition.noteEdition.noteSpaceMng);
-
-	// Edit files menu
-	var fileEdition = new LJS.FileEdition(songModel, myApp.viewer.canvas);
-
-	var params = {
-		showHalfWave: true,
-		//drawMargins: true,
-		topAudio: -120,
-		heightAudio: 75,
-		file: '/tests/audio/solar.wav',
-		tempo: 170
-	};
-	var waveMng = new LJS.Wave(songModel, edition.cursorNote.controller.model, myApp.viewer, params);
-	$.publish('ToPlayer-disableAll');
-	waveMng.enable();
-	//ALTERNATIVE WAY TO ADD MENU if not done with edition constructor
-	/*menu.model.addMenu({
-		title: 'Notes',
-		view: noteEdition.view,
-		order: 2
-	});
-
-	menu.model.addMenu({
-		title: 'Chords',
-		view: chordEdition.view,
-		order: 3
-	});
-	menu.model.addMenu({
-		title: 'Structure',
-		view: structEdition.view,
-		order: 4
-	});*/
-
-
-	menu.model.addMenu({
-		title: 'Harmonizer',
-		view: harm.view,
-		order: 5
-	});
-
-	menu.model.addMenu({
-		title: 'Harmonic Analysis',
-		view: harmAn.view,
-		order: 6
-	});
-
-
-	menu.model.addMenu({
-		title: 'File',
-		view: fileEdition.view,
-		order: 1
-	});
-	menu.controller.loadStateTab();
-	if (typeof menu.model.getCurrentMenu() === "undefined") {
-		menu.controller.activeMenu('File');
+		new LJS.chordSequence($('#chordSequence1')[0], songModel, optionChediak);
 	}
 
+	function loadViewer(songModel, HTMLElement) {
+		var viewer = new LJS.LSViewer.LSViewer(HTMLElement, {
+			/*displayTitle: false,
+			displayComposer: false,*/
+			layer: true
+		});
+		LJS.LSViewer.OnWindowResizer(songModel);
+		return viewer;
+	}
 
-	function initPlayerModule(songModel, cursorModel) {
-		var player = new LJS.MidiCSL.PlayerModel_MidiCSL(songModel, cursorModel, "../../external-libs/Midijs/soundfont/");
-		var pV = new LJS.MidiCSL.PlayerView($('#player_test')[0], '/modules/MidiCSL/img', {
+	function loadMenu(HTMLElement) {
+		var menu = new LJS.MainMenu(HTMLElement);
+		return menu;
+	}
+
+	function loadEditionModules(viewer, songModel, menu) {
+		//ALTERNATIVE WAY TO CREATE EDITION if not using edition constructor
+		// var KeyboardManager = require('modules/Edition/src/KeyboardManager');
+		// new KeyboardManager(true);
+
+		// // Edit notes on view
+		// var cursorNote = new LJS.Cursor(songModel.getComponent('notes'), 'notes', 'arrow');
+		// var noteEdition = new LJS.NoteEdition(songModel, cursorNote.model, viewer, '/modules/NoteEdition/img');
+
+		// // // Edit chords on view
+		// var cursorChord = new LJS.Cursor(songModel.getSongTotalBeats(), 'chords', 'tab');
+		// cursorChord.model.setEditable(false);
+
+		// var chordEdition = new LJS.ChordEdition(songModel, cursorChord.model, viewer, '/modules/NoteEdition/img');
+		//bars edition 
+		//var structEdition = new LJS.StructureEdition(songModel, edition.cursorNote.model, '/modules/StructureEdition/img');
+
+		var edition = new LJS.Edition.Edition(viewer, songModel, menu.model, {
+			notes: {
+				active: true,
+				menu: {
+					title: 'Notes',
+					order: 2
+				},
+				imgPath: '/modules/NoteEdition/img'
+			},
+			chords: {
+				active: true,
+				menu: {
+					title: 'Chords',
+					order: 3
+				},
+				imgPath: '/modules/NoteEdition/img'
+					// menu: false /* if we don't want menu*/
+			},
+			structure: {
+				active: true,
+				menu: {
+					title: 'Structure',
+					order: 4
+				},
+				imgPath: '/modules/StructureEdition/img'
+			},
+			composer: {
+				suggestions: ['Adam Smith', 'Kim Jong-il', 'Iñigo Errejón', 'Mia Khalifa', 'Jose Monge']
+			}
+		});
+		return edition;
+	}
+
+	function loadMidiPlayer(songModel, cursorModel, HTMLPlayer) {
+		var pV = new LJS.MidiCSL.PlayerView(HTMLPlayer, '/modules/MidiCSL/img', {
 			displayMetronome: true,
 			displayLoop: true,
 			displayTempo: true,
@@ -202,26 +203,54 @@ define(function(require) {
 			autoload: false,
 			progressBar: true
 		});
-		var pC = new LJS.MidiCSL.PlayerController(player, pV);
+		// var player = new LJS.MidiCSL.PlayerModel_MidiCSL(songModel, cursorModel, "../../external-libs/Midijs/soundfont/");
+		// var pC = new LJS.MidiCSL.PlayerController(player, pV);
 	}
-	
-	var audioComments = new LJS.AudioComments(waveMng, myApp.viewer, songModel);
-	audioComments.addComment({
-		user: 'Dani',
-		img: '/tests/img/dani-profile.jpg',
-		text: 'This is an audio comment',
-		timeInterval: [1.5891220809932014, 2.668046112917529],
-		color: '#F00'
-	});
 
-	audioComments.addComment({
-		user: 'Dani',
-		img: '/tests/img/dani-profile.jpg',
-		text: 'lorem ipsum cumulum largo texto asolo en caso de que tal cual pascual ande vas con la moto que thas comprado, vaya tela',
-		timeInterval: [3.3, 10.1],
-		color: '#0F0'
-	});
+	function loadAudioPlayer(songModel, cursorModel, viewer) {
+		var params = {
+			showHalfWave: true,
+			//drawMargins: true,
+			topAudio: -120,
+			heightAudio: 75,
+			file: '/tests/audio/solar.wav',
+			tempo: 170
+		};
+		var waveMng = new LJS.Wave(songModel, cursorModel, viewer, params);
+		$.publish('ToPlayer-disableAll');
+		waveMng.enable();
+		return waveMng;
+	}
 
 
-	myApp.viewer.draw(songModel);
+	function loadActiveMenuOrDefault(menu, defaultMenu) {
+		menu.controller.loadStateTab();
+		if (typeof menu.model.getCurrentMenu() === "undefined") {
+			menu.controller.activeMenu(defaultMenu);
+		}
+	}
+
+	function loadComments(waveMng, viewer, songModel) {
+		var audioComments = new LJS.AudioComments(waveMng, viewer, songModel);
+		return audioComments;
+	}
+
+	function addComment(audioComments) {
+		audioComments.addComment({
+			user: 'Dani',
+			img: '/tests/img/dani-profile.jpg',
+			text: 'This is an audio comment',
+			timeInterval: [1.5891220809932014, 2.668046112917529],
+			color: '#F00'
+		});
+
+		audioComments.addComment({
+			user: 'Dani',
+			img: '/tests/img/dani-profile.jpg',
+			text: 'lorem ipsum cumulum largo texto asolo en caso de que tal cual pascual ande vas con la moto que thas comprado, vaya tela',
+			timeInterval: [3.3, 10.1],
+			color: '#0F0'
+		});
+	}
+
 });

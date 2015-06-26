@@ -233,8 +233,10 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 				throw 'PlayerModel_MidiCSL - setPositionIndex - indexPosition must be a number ' + indexPosition;
 			}
 			this.indexPosition = indexPosition;
-			//this.cursorModel.setPos(indexPosition);
-			//$.publish('ToViewer-draw', this.songModel);
+			// TODO, Index is not correct yet
+			// this.cursorModel.setPos(indexPosition);
+			// $.subscribe('CanvasLayer-refresh');
+			// $.publish('ToViewer-draw', this.songModel);
 		};
 
 		/**
