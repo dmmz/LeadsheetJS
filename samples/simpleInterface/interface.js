@@ -47,6 +47,7 @@ define(function(require) {
 	var playerHTML = $('#player_test')[0];
 
 
+	doLoadMidiPlayer = false; // only for debug false true
 	allowEdition = true;
 	if (allowEdition === false) {
 		// Reading only
@@ -54,7 +55,7 @@ define(function(require) {
 		var cursorNote = new LJS.Cursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow');
 
 		// Load players (midi and audio)
-		loadMidiPlayer(songModel, cursorNote.model, playerHTML);
+		loadMidiPlayer(songModel, edition.cursorNote.model, playerHTML, doLoadMidiPlayer);
 		var wave = loadAudioPlayer(songModel, cursorNote.model, viewer);
 
 		// Load menus
@@ -76,7 +77,7 @@ define(function(require) {
 		loadHistory(songModel);
 		var edition = loadEditionModules(viewer, songModel, menu);
 		// Load players (midi and audio)
-		loadMidiPlayer(songModel, edition.cursorNote.model, playerHTML);
+		loadMidiPlayer(songModel, edition.cursorNote.model, playerHTML, doLoadMidiPlayer);
 		var wave = loadAudioPlayer(songModel, edition.cursorNote.model, viewer);
 
 		// Harmonize menu
@@ -193,7 +194,8 @@ define(function(require) {
 		return edition;
 	}
 
-	function loadMidiPlayer(songModel, cursorModel, HTMLPlayer) {
+	function loadMidiPlayer(songModel, cursorModel, HTMLPlayer, loadMidi) {
+		// Create a song from testSong
 		var pV = new LJS.MidiCSL.PlayerView(HTMLPlayer, '/modules/MidiCSL/img', {
 			displayMetronome: true,
 			displayLoop: true,
@@ -202,8 +204,10 @@ define(function(require) {
 			autoload: false,
 			progressBar: true
 		});
-		// var player = new LJS.MidiCSL.PlayerModel_MidiCSL(songModel, cursorModel, "../../external-libs/Midijs/soundfont/");
-		// var pC = new LJS.MidiCSL.PlayerController(player, pV);
+		if (typeof loadMidi === "undefined" || loadMidi === true) {
+			var player = new LJS.MidiCSL.PlayerModel_MidiCSL(songModel, cursorModel, "../../external-libs/Midijs/soundfont/");
+			var pC = new LJS.MidiCSL.PlayerController(player, pV);
+		}
 	}
 
 	function loadAudioPlayer(songModel, cursorModel, viewer) {

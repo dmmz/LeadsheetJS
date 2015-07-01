@@ -55,7 +55,7 @@ define(['modules/Wave/src/WaveModel',
 			if (!self.model.isEnabled) {
 				return;
 			}
-			if (self.isLoaded) {
+			if (self.isLoaded && typeof self.model.audio.duration !== "undefined") {
 				self.drawer.drawAudio(self.barTimesMng, self.model.tempo, self.model.getDuration());
 			} else if (self.file && self.tempo) {
 				self.load(self.file, self.tempo);

@@ -7,29 +7,30 @@ define([
 	'pubsub'
 ], function($, SongBarsIterator, CursorModel, ElementManager, WaveBarView, pubsub) {
 	function WaveDrawer(viewer, params, waveMng) {
-			params = params || {};
-			if (!params.pixelRatio) {
-				throw "WaveDrawer - pixelRatio not defined";
-			}
-			this.CL_TYPE = 'CURSOR';
-			this.CL_NAME = 'audioCursor';
-			this.pixelRatio = params.pixelRatio;
-			this.showHalfWave = params.showHalfWave;
-			this.marginCursor = params.marginCursor || 0;
-			this.drawMargins = params.drawMargins; //for debugging
-			this.topAudio = params.topAudio || 80;
-			this.heightAudio = params.heightAudio || 100;
-			this.color = ["#55F", "#99F"];
-			this.waveBarDimensions = [];
-			this.enabled = true;
-			this.viewer = viewer;
-			this.waveMng = waveMng;
-			this.elemMng = new ElementManager();
-			this._adaptViewer();
+		params = params || {};
+		if (!params.pixelRatio) {
+			throw "WaveDrawer - pixelRatio not defined";
 		}
-		/**
-		 * update viewer dimensions if needed (space between lines and margin top)
-		 */
+		this.CL_TYPE = 'CURSOR';
+		this.CL_NAME = 'audioCursor';
+		this.pixelRatio = params.pixelRatio;
+		this.showHalfWave = params.showHalfWave;
+		this.marginCursor = params.marginCursor || 0;
+		this.drawMargins = params.drawMargins; //for debugging
+		this.topAudio = params.topAudio || 80;
+		this.heightAudio = params.heightAudio || 100;
+		this.color = ["#55F", "#99F"];
+		this.waveBarDimensions = [];
+		this.enabled = true;
+		this.viewer = viewer;
+		this.waveMng = waveMng;
+		this.elemMng = new ElementManager();
+		this._adaptViewer();
+	}
+
+	/**
+	 * update viewer dimensions if needed (space between lines and margin top)
+	 */
 	WaveDrawer.prototype._adaptViewer = function() {
 
 		if (this.topAudio > 0) { // if audio is greater than 0 it means audio will be on top of score line
@@ -101,9 +102,9 @@ define([
 			var pos2 = this._getAudioTimeFromPos(coords.xe, cursorBars[1]);
 			this.cursor.setPos([pos1, pos2]);
 		}
-		if (mouseUp){
+		if (mouseUp) {
 			var posCursor = this.cursor.getPos();
-			if (posCursor[0] != posCursor[1]){  //if there is something selected
+			if (posCursor[0] != posCursor[1]) { //if there is something selected
 				$.publish('WaveDrawer-selectedAudio', posCursor);
 			}
 		}
@@ -210,7 +211,7 @@ define([
 	WaveDrawer.prototype.newCursor = function(audio) {
 		this.cursor = new CursorModel(audio.getDuration());
 	};
-	
+
 	WaveDrawer.prototype.drawAudio = function(barTimesMng, tempo, duration) {
 
 		if (!tempo || !duration) {
