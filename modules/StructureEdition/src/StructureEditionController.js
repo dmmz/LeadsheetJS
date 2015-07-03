@@ -519,9 +519,7 @@ define([
 					accidentalMeasure[notes[i].getPitchClass()] = notes[i].getPitchClass() + notes[i].getAccidental();
 				}
 				// Use accidental measure to decide if we need a natural or not
-				if (accidentalMeasure[notes[i].getPitchClass()] === notes[i].getPitchClass() + notes[i].getAccidental()) {
-					notes[i].setAccidental(notes[i].getAccidental());
-				} else {
+				if (accidentalMeasure[notes[i].getPitchClass()] !== notes[i].getPitchClass() + notes[i].getAccidental()) {
 					notes[i].setAccidental('n');
 				}
 
@@ -530,10 +528,11 @@ define([
 					for (var j = 1, v = midiNotes[i].tieNotesNumber; j < v; j++) {
 						notes[i - j].setPitchClass(notes[i].getPitchClass());
 						notes[i - j].setOctave(notes[i].getOctave());
-						if (accidentalMeasure[notes[i].getPitchClass()] === notes[i].getPitchClass() + notes[i].getAccidental()) {
-							notes[i - j].setAccidental(notes[i].getAccidental());
-						} else {
+						if (accidentalMeasure[notes[i].getPitchClass()] !== notes[i].getPitchClass() + notes[i].getAccidental()) {
 							notes[i - j].setAccidental('n');
+						}
+						else{
+							notes[i - j].setAccidental(notes[i].getAccidental());
 						}
 					}
 				}

@@ -99,6 +99,11 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		return this.pitchClass.length;
 	};
 
+	NoteModel.prototype.setPitchClass = function(value, i) {
+		i = i || 0;
+		this.pitchClass[i] = value;
+	};
+
 	NoteModel.prototype.getPitchClass = function(i) {
 		i = i || 0;
 		return this.pitchClass[i];
@@ -108,6 +113,13 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		i = i || 0;
 		return this.accidental[i];
 	};
+
+	NoteModel.prototype.setOctave = function(octave, i) {
+		i = i || 0;
+		this.octave[i] = octave;
+		return this.octave[i];
+	};
+	
 	NoteModel.prototype.getOctave = function(i) {
 		i = i || 0;
 		return this.octave[i];
@@ -301,8 +313,8 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 			durObj,
 			newNumDur,
 			residualDur;
-		
-		this.setDot(0);			
+
+		this.setDot(0);
 		for (var i in NoteUtils.ARR_DUR) {
 			durObj = NoteUtils.ARR_DUR[i];
 			if (durObj.numDur == dur) {

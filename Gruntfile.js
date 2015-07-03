@@ -76,7 +76,7 @@ module.exports = function(grunt) {
 		},
 		watch: {
 			scripts: {
-				files: ['modules/**/*.js', '!modules/core/src/SongModel.old.js', 'utils/**/*.js', '*.js'],
+				files: ['modules/**/*.js', 'modules/**/*.html', '!modules/core/src/SongModel.old.js', 'utils/**/*.js', '*.js'],
 				tasks: 'default',
 				options: {
 					spawn: false,
