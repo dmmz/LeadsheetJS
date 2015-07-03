@@ -1,28 +1,28 @@
 define(function() {
 	function BarWidthManager(lineHeight, lineWidth, noteWidth, barsPerLine, marginTop, lastBarWidthRatio) {
-			if (!lineHeight) throw "BarWidthManager - lineHeight not defined";
-			if (!lineWidth) throw "BarWidthManager - lineWidth not defined";
-			if (!noteWidth) throw "BarWidthManager - noteWidth not defined";
-			if (!barsPerLine) throw "BarWidthManager - barsPerLine not defined";
-			if (!marginTop) throw "BarWidthManager - marginTop not defined";
-			
-			this.lastBarWidthRatio = lastBarWidthRatio || 1;
+		if (!lineHeight) throw "BarWidthManager - lineHeight not defined";
+		if (!lineWidth) throw "BarWidthManager - lineWidth not defined";
+		if (!noteWidth) throw "BarWidthManager - noteWidth not defined";
+		if (!barsPerLine) throw "BarWidthManager - barsPerLine not defined";
+		if (!marginTop) throw "BarWidthManager - marginTop not defined";
 
-			this.WIDTH_FACTOR = 1.6; // factor by witch we multiply the minimum width so that notes are not so crammed (always > 1)
-			this.barsStruct = [];
+		this.lastBarWidthRatio = lastBarWidthRatio || 1;
 
-			this.lineHeight = Number(lineHeight);
-			this.lineWidth = Number(lineWidth);
-			this.noteWidth = Number(noteWidth);
-			this.barsPerLine = Number(barsPerLine);
-			this.marginTop = Number(marginTop);
-		}
-		/**
-		 * calculates the minimum width for each bar depending on the number of notes it has
-		 * @param  {SongModel} song
-		 * @param  {NoteManagerModel} noteMng
-		 * @return {Array} of minimum widths    e.g.: [200,200,100,100,100,200,]
-		 */
+		this.WIDTH_FACTOR = 1.6; // factor by witch we multiply the minimum width so that notes are not so crammed (always > 1)
+		this.barsStruct = [];
+
+		this.lineHeight = Number(lineHeight);
+		this.lineWidth = Number(lineWidth);
+		this.noteWidth = Number(noteWidth);
+		this.barsPerLine = Number(barsPerLine);
+		this.marginTop = Number(marginTop);
+	}
+	/**
+	 * calculates the minimum width for each bar depending on the number of notes it has
+	 * @param  {SongModel} song
+	 * @param  {NoteManagerModel} noteMng
+	 * @return {Array} of minimum widths    e.g.: [200,200,100,100,100,200,]
+	 */
 	BarWidthManager.prototype.getMinWidthList = function(song, noteMng) {
 		var self = this,
 			width,
@@ -76,7 +76,7 @@ define(function() {
 		while (numBarsProcessed < minWidthList.length || numCarriedBars !== 0) {
 			lineWidthList = [];
 			barsToGet = this.barsPerLine + numCarriedBars;
-			if (pickupAtStart && numBarsProcessed == 0) {
+			if (pickupAtStart && numBarsProcessed === 0) {
 				barsToGet++;
 			}
 
@@ -129,16 +129,16 @@ define(function() {
 		 * @return {Array}               indexes of widths that exceede the meanWidth
 		 */
 		function getIndexOfWidthsExceedingMean(lineWidthList, meanWidth) {
-				var indexes = [];
-				for (var i = 0; i < lineWidthList.length; i++) {
-					if (lineWidthList[i] > meanWidth) indexes.push(i);
-				}
-				return indexes;
+			var indexes = [];
+			for (var i = 0; i < lineWidthList.length; i++) {
+				if (lineWidthList[i] > meanWidth) indexes.push(i);
 			}
-			/**
-			 * @param  {Integer} lengthArray
-			 * @return {Array}
-			 */
+			return indexes;
+		}
+		/**
+		 * @param  {Integer} lengthArray
+		 * @return {Array}
+		 */
 		function createZeroArray(lengthArray) {
 			var zeroArray = [];
 			for (var i = 0; i < lengthArray; i++) {
@@ -190,9 +190,9 @@ define(function() {
 
 		//we shorten last bar by lastBarWidthRatio	
 		var lastRow = finalWidths.length - 1,
-		lastColumn = finalWidths[lastRow].length - 1;
-		finalWidths[lastRow][lastColumn] *= this.lastBarWidthRatio;
-				
+			lastColumn = finalWidths[lastRow].length - 1;
+		finalWidths[lastRow][lastColumn] *= this.lastBarWidthRatio; // TODO it seems to have an error here when song is not fully loaded or maybe empty
+
 		return finalWidths;
 	};
 	BarWidthManager.prototype.setBarsStruct = function(barsStruct) {
@@ -205,9 +205,11 @@ define(function() {
 	 */
 
 	BarWidthManager.prototype.calculateBarsStructure = function(song, noteMng) {
-
 		var minWidthList = this.getMinWidthList(song, noteMng);
-		var pickupAtStart = song.getSection(0).getNumberOfBars() == 1;
+		var pickupAtStart;
+		if (typeof song.getSection(0) !== "undefined") {
+			pickupAtStart = song.getSection(0).getNumberOfBars() == 1;
+		}
 		var minWidthPerLineList = this.assignBarsToLines(minWidthList, pickupAtStart);
 		this.setBarsStruct(this.getWidths(minWidthPerLineList));
 

@@ -47,8 +47,8 @@ define([
 		if (typeof this.songModel !== "undefined") {
 			if (typeof this.model.getCurrentState().leadsheet !== "undefined") {
 				SongModel_CSLJson.importFromMusicCSLJSON(this.model.getCurrentState().leadsheet, this.songModel);
+				$.publish('ToViewer-draw', this.songModel);
 			}
-			$.publish('ToViewer-draw', this.songModel);
 			// $.publish('toSongModel-load', this.model.getCurrentState().leadsheet); // TODO must work! this or this.songModel
 		}
 	};

@@ -65,7 +65,7 @@ define([
 			this.resizable = !params.width; //if there is a width specified, we assume that it wont be resized on window resize
 
 			this.canvasId = "ls" + ($("canvas").length + 1);
-			var	width = (params.width) ? params.width : this._getWidthFromContainer(divContainer);
+			var width = (params.width) ? params.width : this._getWidthFromContainer(divContainer);
 			this.canvas = this._createCanvas(this.canvasId, width, this.DEFAULT_HEIGHT);
 			var renderer = new Vex.Flow.Renderer(this.canvas, Vex.Flow.Renderer.Backends.CANVAS);
 			this.ctx = renderer.getContext("2d");
@@ -99,13 +99,13 @@ define([
 		LSViewer.prototype._initSubscribe = function() {
 			var self = this;
 			$.subscribe('ToViewer-draw', function(el, songModel) {
-				if (!songModel){
+				if (!songModel) {
 					throw "Need songModel to draw";
 				}
 				self.draw(songModel);
 			});
 			$.subscribe('ToViewer-resize', function(el, songModel) {
-				if (!songModel){
+				if (!songModel) {
 					throw "Need songModel to draw";
 				}
 				var width = self._getWidthFromContainer(this.divContainer);
@@ -153,7 +153,7 @@ define([
 		 * @param  {Integer} height  
 		 * @return {Object}   with properties x,y,w,h
 		 */
-		LSViewer.prototype._getTextBoundingBox = function(ctx,  value, x, y) {
+		LSViewer.prototype._getTextBoundingBox = function(ctx, value, x, y) {
 			var metrics = ctx.measureText(value);
 			var calcHalfX = (ctx.textAlign === 'center'); //textAlign is 
 			var boundingBox;
@@ -167,7 +167,7 @@ define([
 				};
 			} else {
 				//if not supported, it's a worse solution, as height is arbitrary, passed as parameter
-				var height = Number(ctx.font.substr(0,ctx.font.indexOf("px")));
+				var height = Number(ctx.font.substr(0, ctx.font.indexOf("px")));
 				boundingBox = {
 					x: calcHalfX ? x - metrics.width / 2 : x - metrics.width,
 					y: y - height,
@@ -177,7 +177,7 @@ define([
 			}
 			return boundingBox;
 		};
-		
+
 		LSViewer.prototype._displayTitle = function(title) {
 			var oldTextAlign = this.ctx.textAlign;
 			this.ctx.textAlign = 'center';
@@ -279,7 +279,6 @@ define([
 			this.barWidthMng = new BarWidthManager(this.LINE_HEIGHT, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE, this.MARGIN_TOP, lastBarWidthRatio);
 			this.barWidthMng.calculateBarsStructure(song, nm);
 			this.setHeight(song, this.barWidthMng);
-
 			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 			this.scale();
 

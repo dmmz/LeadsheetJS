@@ -27,7 +27,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/model/SongModel_midiC
 			if (typeof songModel !== "undefined") {
 				key = songModel.getTonality();
 			}
-			var tonalityNote = convertTonality2AlteredNote(key);
+			var tonalityNote = SongConverterMidi_MidiCSL.convertTonality2AlteredNote(key);
 			var currentTime = 0;
 			var note, duration, noteKey;
 			var midiNote = [];
@@ -55,7 +55,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/model/SongModel_midiC
 				notesInBar = songModel.getComponentsAtBarNumber(numMeasure, 'notes');
 				if (inTie === false) {
 					refreshTonalityNote = true;
-					tonalityNote = convertTonality2AlteredNote(songModel.getTonalityAt(numMeasure));
+					tonalityNote = SongConverterMidi_MidiCSL.convertTonality2AlteredNote(songModel.getTonalityAt(numMeasure));
 					accidentalMeasure = (JSON.parse(JSON.stringify(tonalityNote))); // empty accidentalMeasure on each new measure
 				} else { // case the last note is in tie, we don't refresh tonality
 					refreshTonalityNote = false;
@@ -116,7 +116,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/model/SongModel_midiC
 							if (note.getTie() === "stop") {
 								if (refreshTonalityNote === false) {
 									refreshTonalityNote = true;
-									tonalityNote = convertTonality2AlteredNote(songModel.getTonalityAt(numMeasure));
+									tonalityNote = SongConverterMidi_MidiCSL.convertTonality2AlteredNote(songModel.getTonalityAt(numMeasure));
 									accidentalMeasure = (JSON.parse(JSON.stringify(tonalityNote))); // empty accidentalMeasure on new measure
 								}
 								inTie = false;
@@ -190,139 +190,138 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/model/SongModel_midiC
 			}
 
 
-			function convertTonality2AlteredNote(key) {
-				if (typeof key === "undefined") {
-					return;
-				}
-				var alteredNote = {
-					'A': 'A',
-					'B': 'B',
-					'C': 'C',
-					'D': 'D',
-					'E': 'E',
-					'F': 'F',
-					'G': 'G'
-				};
-				switch (key) {
-					case "Cb":
-						jQuery.extend(alteredNote, {
-							'B': 'Bb',
-							'E': 'Eb',
-							'A': 'Ab',
-							'D': 'Db',
-							'G': 'Gb',
-							'C': 'Cb',
-							'F': 'Fb'
-						});
-						break;
-					case "Gb":
-						jQuery.extend(alteredNote, {
-							'B': 'Bb',
-							'E': 'Eb',
-							'A': 'Ab',
-							'D': 'Db',
-							'G': 'Gb',
-							'C': 'Cb'
-						});
-						break;
-					case "Db":
-						jQuery.extend(alteredNote, {
-							'B': 'Bb',
-							'E': 'Eb',
-							'A': 'Ab',
-							'D': 'Db',
-							'G': 'Gb'
-						});
-						break;
-					case "Ab":
-						jQuery.extend(alteredNote, {
-							'B': 'Bb',
-							'E': 'Eb',
-							'A': 'Ab',
-							'D': 'Db'
-						});
-						break;
-					case "Eb":
-						jQuery.extend(alteredNote, {
-							'B': 'Bb',
-							'E': 'Eb',
-							'A': 'Ab'
-						});
-						break;
-					case "Bb":
-						jQuery.extend(alteredNote, {
-							'B': 'Bb',
-							'E': 'Eb'
-						});
-						break;
-					case "F":
-						jQuery.extend(alteredNote, {
-							'B': 'Bb'
-						});
-						break;
-					case "C":
-						// No alteration on C
-						break;
-					case "G":
-						jQuery.extend(alteredNote, {
-							'F': 'F#'
-						});
-						break;
-					case "D":
-						jQuery.extend(alteredNote, {
-							'F': 'F#',
-							'C': 'C#'
-						});
-						break;
-					case "A":
-						jQuery.extend(alteredNote, {
-							'F': 'F#',
-							'C': 'C#',
-							'G': 'G#'
-						});
-						break;
-					case "E":
-						jQuery.extend(alteredNote, {
-							'F': 'F#',
-							'C': 'C#',
-							'G': 'G#',
-							'D': 'D#'
-						});
-						break;
-					case "B":
-						jQuery.extend(alteredNote, {
-							'F': 'F#',
-							'C': 'C#',
-							'G': 'G#',
-							'D': 'D#',
-							'A': 'A#'
-						});
-						break;
-					case "F#":
-						jQuery.extend(alteredNote, {
-							'F': 'F#',
-							'C': 'C#',
-							'G': 'G#',
-							'D': 'D#',
-							'A': 'A#',
-							'E': 'E#'
-						});
-						break;
-					case "C#":
-						jQuery.extend(alteredNote, {
-							'F': 'F#',
-							'C': 'C#',
-							'G': 'G#',
-							'D': 'D#',
-							'A': 'A#',
-							'E': 'E#',
-							'B': 'B#'
-						});
-						break;
-				}
-				return alteredNote;
-			}
 		};
-
+		SongConverterMidi_MidiCSL.convertTonality2AlteredNote = function(key) {
+			if (typeof key === "undefined") {
+				return;
+			}
+			var alteredNote = {
+				'A': 'A',
+				'B': 'B',
+				'C': 'C',
+				'D': 'D',
+				'E': 'E',
+				'F': 'F',
+				'G': 'G'
+			};
+			switch (key) {
+				case "Cb":
+					jQuery.extend(alteredNote, {
+						'B': 'Bb',
+						'E': 'Eb',
+						'A': 'Ab',
+						'D': 'Db',
+						'G': 'Gb',
+						'C': 'Cb',
+						'F': 'Fb'
+					});
+					break;
+				case "Gb":
+					jQuery.extend(alteredNote, {
+						'B': 'Bb',
+						'E': 'Eb',
+						'A': 'Ab',
+						'D': 'Db',
+						'G': 'Gb',
+						'C': 'Cb'
+					});
+					break;
+				case "Db":
+					jQuery.extend(alteredNote, {
+						'B': 'Bb',
+						'E': 'Eb',
+						'A': 'Ab',
+						'D': 'Db',
+						'G': 'Gb'
+					});
+					break;
+				case "Ab":
+					jQuery.extend(alteredNote, {
+						'B': 'Bb',
+						'E': 'Eb',
+						'A': 'Ab',
+						'D': 'Db'
+					});
+					break;
+				case "Eb":
+					jQuery.extend(alteredNote, {
+						'B': 'Bb',
+						'E': 'Eb',
+						'A': 'Ab'
+					});
+					break;
+				case "Bb":
+					jQuery.extend(alteredNote, {
+						'B': 'Bb',
+						'E': 'Eb'
+					});
+					break;
+				case "F":
+					jQuery.extend(alteredNote, {
+						'B': 'Bb'
+					});
+					break;
+				case "C":
+					// No alteration on C
+					break;
+				case "G":
+					jQuery.extend(alteredNote, {
+						'F': 'F#'
+					});
+					break;
+				case "D":
+					jQuery.extend(alteredNote, {
+						'F': 'F#',
+						'C': 'C#'
+					});
+					break;
+				case "A":
+					jQuery.extend(alteredNote, {
+						'F': 'F#',
+						'C': 'C#',
+						'G': 'G#'
+					});
+					break;
+				case "E":
+					jQuery.extend(alteredNote, {
+						'F': 'F#',
+						'C': 'C#',
+						'G': 'G#',
+						'D': 'D#'
+					});
+					break;
+				case "B":
+					jQuery.extend(alteredNote, {
+						'F': 'F#',
+						'C': 'C#',
+						'G': 'G#',
+						'D': 'D#',
+						'A': 'A#'
+					});
+					break;
+				case "F#":
+					jQuery.extend(alteredNote, {
+						'F': 'F#',
+						'C': 'C#',
+						'G': 'G#',
+						'D': 'D#',
+						'A': 'A#',
+						'E': 'E#'
+					});
+					break;
+				case "C#":
+					jQuery.extend(alteredNote, {
+						'F': 'F#',
+						'C': 'C#',
+						'G': 'G#',
+						'D': 'D#',
+						'A': 'A#',
+						'E': 'E#',
+						'B': 'B#'
+					});
+					break;
+			}
+			return alteredNote;
+		}
 		return SongConverterMidi_MidiCSL;
 	});

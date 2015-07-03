@@ -60,7 +60,7 @@ define([
 		$('#edit_each_time_signature_container select').change(function() {
 			fn = 'setTimeSignature';
 			var timeSignature = $(this).val();
-			if (timeSignature === 'select'){
+			if (timeSignature === 'select') {
 				return;
 			}
 			$.publish('StructureEditionView', [fn, timeSignature]);
@@ -103,6 +103,13 @@ define([
 		$('#unfold').click(function() {
 			$.publish('StructureEditionView', 'unfold');
 		});
+
+		$('#leadsheet_transpose').change(function() {
+			var semiTons = Number($(this).val());
+			fn = 'transposeSong';
+			$.publish('StructureEditionView', [fn, semiTons]);
+		});
+
 	};
 
 	StructureEditionView.prototype.initKeyboard = function(evt) {};

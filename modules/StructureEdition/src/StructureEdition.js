@@ -7,7 +7,7 @@ define([
 	function StructureEdition(songModel, cursorModel, imgPath ){
 		this.view = new StructureEditionView(imgPath);
 		var seM = new StructureEditionModel();
-		var seC = new StructureEditionController(songModel, cursorModel, this.view, seM);
+		var seC = new StructureEditionController(songModel, cursorModel, seM, this.view);
 	}
 	return StructureEdition;
 });

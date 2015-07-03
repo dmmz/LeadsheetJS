@@ -8,11 +8,13 @@ define([
 	'modules/core/src/NoteModel',
 	'modules/core/src/SongBarsIterator',
 	'modules/core/src/TimeSignatureModel',
+	'modules/MidiCSL/src/converters/SongConverterMidi_MidiCSL',
+	'utils/NoteUtils',
 	'utils/UserLog',
 	'pubsub',
-], function($, Mustache, CursorModel, SongModel, SectionModel, NoteManager, NoteModel, SongBarsIterator, TimeSignatureModel, UserLog, pubsub) {
+], function($, Mustache, CursorModel, SongModel, SectionModel, NoteManager, NoteModel, SongBarsIterator, TimeSignatureModel, SongConverterMidi_MidiCSL, NoteUtils, UserLog, pubsub) {
 
-	function StructureEditionController(songModel, cursor, view, structEditionModel) {
+	function StructureEditionController(songModel, cursor, structEditionModel, view) {
 		this.songModel = songModel || new SongModel();
 		this.cursor = cursor || new CursorModel();
 		this.initSubscribe();
@@ -318,7 +320,7 @@ define([
 		var selectedNotes = noteMng.cloneElems(indexes[0], indexes[1]);
 		var numSelectedBars = selBars[1] + 1 - selBars[0];
 		var calc;
-		try{
+		try {
 			calc = calcAdaptedNotes(selBars, selectedNotes, numSelectedBars, newTimeSig);
 			var adaptedNotes = calc.notes;
 			var numBarsAdaptedNotes = calc.numBars;
@@ -335,10 +337,10 @@ define([
 
 
 			//we set previous time signature in the bar just after the selection, only if there are not changes and if we are not at end of song
-			var indexFollowingBar = selBars[1] + diffBars + 1; 
-			if (barMng.getTotal() > indexFollowingBar  && // if following bar exists
-				!timeSigChangesInSelection && 
-				!barMng.getBar(indexFollowingBar).getTimeSignatureChange())  //if there is no time signature change in following bar
+			var indexFollowingBar = selBars[1] + diffBars + 1;
+			if (barMng.getTotal() > indexFollowingBar && // if following bar exists
+				!timeSigChangesInSelection &&
+				!barMng.getBar(indexFollowingBar).getTimeSignatureChange()) //if there is no time signature change in following bar
 			{
 				barMng.getBar(indexFollowingBar).setTimeSignatureChange(prevTimeSignature.toString());
 			}
@@ -347,7 +349,7 @@ define([
 			indexes[1]--;
 			//we overwrite adapted notes in general note manager
 			noteMng.notesSplice(indexes, adaptedNotes);
-		}catch(e){
+		} catch (e) {
 			//console.log(e);
 			UserLog.logAutoFade('error', "Tuplets can't be broken");
 			return;
@@ -481,6 +483,80 @@ define([
 		}
 		this.structEditionModel.toggleUnfolded();
 
+	};
+
+	StructureEditionController.prototype.transposeSong = function(semiTons) {
+		if (isNaN(semiTons) || semiTons === 0) {
+			return;
+		}
+
+		// notes
+		// First we get all notes and all midi notes
+		var nm = this.songModel.getComponent('notes');
+		var notes = nm.getNotes();
+		var midiNotes = SongConverterMidi_MidiCSL.exportNoteToMidiCSL(this.songModel);
+
+		var midiNote, currentNote, pitchFormat;
+		var tonalityNote = SongConverterMidi_MidiCSL.convertTonality2AlteredNote(this.songModel.getTonality());
+		var accidentalMeasure = (JSON.parse(JSON.stringify(tonalityNote))); // clone object
+		var numMeasure = 0;
+		for (var i = 0, c = midiNotes.length; i < c; i++) {
+			if (typeof midiNotes[i].midiNote !== "undefined" && midiNotes[i].midiNote[0] !== false && midiNotes[i].midiNote !== false) { // exclude silence but not tie notes
+				// Build current tonality and accidental measure
+				if (nm.getNoteBarNumber(i, this.songModel) !== numMeasure) {
+					numMeasure = nm.getNoteBarNumber(i, this.songModel);
+					tonalityNote = SongConverterMidi_MidiCSL.convertTonality2AlteredNote(this.songModel.getTonalityAt(numMeasure));
+					accidentalMeasure = (JSON.parse(JSON.stringify(tonalityNote))); // empty accidentalMeasure on each new measure
+				}
+				midiNote = midiNotes[i].midiNote[0] + parseInt(semiTons, 10);
+				currentNote = MIDI.noteToKey[midiNote];
+				pitchFormat = currentNote.substr(0, currentNote.length - 1) + '/' + currentNote.substr(-1); // Convert C#4 to C#/4
+
+				notes[i].setNoteFromString(pitchFormat);
+
+				// Change accidental measure
+				if (notes[i].getAccidental() !== "") {
+					accidentalMeasure[notes[i].getPitchClass()] = notes[i].getPitchClass() + notes[i].getAccidental();
+				}
+				// Use accidental measure to decide if we need a natural or not
+				if (accidentalMeasure[notes[i].getPitchClass()] === notes[i].getPitchClass() + notes[i].getAccidental()) {
+					notes[i].setAccidental(notes[i].getAccidental());
+				} else {
+					notes[i].setAccidental('n');
+				}
+
+				// case tied notes
+				if (typeof midiNotes[i].tieNotesNumber !== "undefined" && midiNotes[i].tieNotesNumber) {
+					for (var j = 1, v = midiNotes[i].tieNotesNumber; j < v; j++) {
+						notes[i - j].setPitchClass(notes[i].getPitchClass());
+						notes[i - j].setOctave(notes[i].getOctave());
+						if (accidentalMeasure[notes[i].getPitchClass()] === notes[i].getPitchClass() + notes[i].getAccidental()) {
+							notes[i - j].setAccidental(notes[i].getAccidental());
+						} else {
+							notes[i - j].setAccidental('n');
+						}
+					}
+				}
+			}
+		}
+
+		// chords
+		var chords = this.songModel.getComponent('chords').getChords();
+		var pitch2Midi;
+		var newPitch;
+		for (var i = 0, c = chords.length; i < c; i++) {
+			pitch2Midi = NoteUtils.pitch2Number(chords[i].getNote());
+			newPitch = NoteUtils.number2Pitch(pitch2Midi + semiTons);
+			chords[i].setNote(newPitch);
+			if (chords[i].isEmptyBase() === false) {
+				pitch2Midi = NoteUtils.pitch2Number(chords[i].getBase().getNote());
+				newPitch = NoteUtils.number2Pitch(pitch2Midi + semiTons);
+				chords[i].base.setNote(newPitch);
+			}
+		}
+
+		this.structEditionModel.setDecalFromOriginalTonality(semiTons);
+		$.publish('ToHistory-add', 'Transpose Song ' + semiTons + ' half ton(s)');
 	};
 
 	return StructureEditionController;

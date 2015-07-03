@@ -140,7 +140,7 @@ define(function() {
 	};
 
 	NoteUtils.number2Pitch = function(number) {
-		number2PitchArray = {
+		var number2PitchArray = {
 			0: "C",
 			1: "C#",
 			2: "D",
