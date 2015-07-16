@@ -246,11 +246,11 @@ define([
 		//console.log(currentBeats, numBar, this.getComponent("bars").getTotal());
 		var barTimeSig = this.getComponent("bars").getBar(numBar).getTimeSignatureChange();
 
-		if (numBar === 0 && !barTimeSig){
+		if (numBar === 0 && !barTimeSig) {
 			barTimeSig = this.getTimeSignature();
 		}
-		if (!barTimeSig && !currentBeats){
-			throw "bad use: either song is not well formatted, either currentBeats is not sent";	
+		if (!barTimeSig && !currentBeats) {
+			throw "bad use: either song is not well formatted, either currentBeats is not sent";
 		}
 
 		return (barTimeSig) ? barTimeSig.getQuarterBeats() : currentBeats;
@@ -555,8 +555,6 @@ define([
 
 		return this;
 	};
-
-
 
 	return SongModel;
 });

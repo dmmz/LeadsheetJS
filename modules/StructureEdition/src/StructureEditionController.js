@@ -66,6 +66,7 @@ define([
 		});
 		this.songModel.addSection(section);
 		UserLog.logAutoFade('info', "Section have been added successfully");
+		$.publish('ToLayers-removeLayer');
 		$.publish('ToHistory-add', 'Add Section');
 	};
 
@@ -105,6 +106,7 @@ define([
 		// Remove section in songmodel is not needed because it's done when we remove last sections bar
 		//this.songModel.removeSection(sectionNumber);
 		UserLog.logAutoFade('info', "Section have been removed successfully");
+		$.publish('ToLayers-removeLayer');
 		$.publish('ToHistory-add', 'Remove Section');
 
 	};
@@ -190,8 +192,8 @@ define([
 
 		// decal chords
 		this.songModel.getComponent('chords').incrementChordsBarNumberFromBarNumber(1, numBar);
+		$.publish('ToLayers-removeLayer');
 		$.publish('ToHistory-add', 'Add Bar');
-
 	};
 
 	/**
@@ -205,6 +207,7 @@ define([
 		for (var i = selBars.length - 1; i >= 0; i--) {
 			this._removeBar(selBars[i]);
 		}
+		$.publish('ToLayers-removeLayer');
 		$.publish('ToHistory-add', 'Remove Bar');
 	};
 
@@ -482,7 +485,7 @@ define([
 			$.publish('ToViewer-draw', this.oldSong);
 		}
 		this.structEditionModel.toggleUnfolded();
-
+		$.publish('ToLayers-removeLayer');
 	};
 
 	StructureEditionController.prototype.transposeSong = function(semiTons) {
