@@ -7,12 +7,14 @@ define([
 	'text!modules/MidiCSL/src/PlayerTemplate_MidiCSL.html',
 ], function($, Mustache, UserLog, pubsub, bootstrap, PlayerTemplate_MidiCSL) {
 
-	function PlayerView(parentHTML, imgPath, option) {
-		this.displayMetronome = (typeof(option) !== "undefined" && typeof(option.displayMetronome) !== "undefined") ? option.displayMetronome : false;
-		this.displayLoop = (typeof(option) !== "undefined" && typeof(option.displayLoop) !== "undefined") ? option.displayLoop : false;
-		this.displayTempo = (typeof(option) !== "undefined" && typeof(option.displayTempo) !== "undefined") ? option.displayTempo : false;
-		this.changeInstrument = (typeof(option) !== "undefined" && typeof(option.changeInstrument) !== "undefined") ? option.changeInstrument : false;
-		this.progressBar = (typeof(option) !== "undefined" && typeof(option.progressBar) !== "undefined") ? option.progressBar : false;
+	function PlayerView(parentHTML, imgPath, options) {
+		options = options || {};
+		this.displayMetronome = (typeof(options.displayMetronome) !== "undefined") ? options.displayMetronome : false;
+		this.displayLoop = (typeof(options.displayLoop) !== "undefined") ? options.displayLoop : false;
+		this.displayTempo = (typeof(options.displayTempo) !== "undefined") ? options.displayTempo : false;
+		this.changeInstrument = (typeof(options.changeInstrument) !== "undefined") ? options.changeInstrument : false;
+		this.progressBar = (typeof(options.progressBar) !== "undefined") ? options.progressBar : false;
+		this.tempo = options.tempo ? options.tempo : 120;
 		this.el = undefined;
 		this.imgPath = imgPath;
 		this.initSubscribe();
@@ -26,7 +28,6 @@ define([
 		var self = this;
 		if (typeof this.el === "undefined" || (typeof this.el !== "undefined" && force === true)) {
 			this.initView(parentHTML, function() {
-				self.initTemplate();
 				self.initController();
 				self.initKeyboard();
 				$.publish('PlayerView-render');
@@ -53,6 +54,7 @@ define([
 			displayTempo: self.displayTempo,
 			changeInstrument: self.changeInstrument,
 			progressBar: self.progressBar,
+			tempo: self.tempo
 		});
 		if (typeof parentHTML !== "undefined") {
 			parentHTML.innerHTML = rendered;
@@ -62,19 +64,6 @@ define([
 			callback();
 		}
 		//});
-	};
-
-	PlayerView.prototype.initTemplate = function() {
-		// init tempo
-		var tempo = this.getTempo();
-
-		/*if (typeof globalVariables !== "undefined" && globalVariables.tempo !== "undefined" && globalVariables.tempo !== null) {
-			var minTempo = parseInt(globalVariables.tempo['minTempo'], 10);
-			var maxTempo = parseInt(globalVariables.tempo['maxTempo'], 10);
-			var range = maxTempo - minTempo;
-			tempo = Math.round((Math.random() * range) + minTempo);
-			$('#tempo_container #tempo').val(tempo);
-		}*/
 	};
 
 	/**

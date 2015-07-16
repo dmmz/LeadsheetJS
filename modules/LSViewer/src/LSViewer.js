@@ -57,6 +57,7 @@ define([
 			this.DISPLAY_COMPOSER = (params.displayComposer != undefined) ? params.displayComposer : true;
 			this.LINE_MARGIN_TOP = 0;
 			this.LAST_BAR_WIDTH_RATIO = 0.75; //in case of this.shortenLastBar = true (rendering audio), we make the last bar more compressed so that we left space for recordings longer than piece
+			this.FONT_CHORDS = "18px Verdana";
 
 			this.shortenLastBar = false;
 
@@ -277,7 +278,7 @@ define([
 
 			var lastBarWidthRatio = this.shortenLastBar ? this.LAST_BAR_WIDTH_RATIO : 1;
 			this.barWidthMng = new BarWidthManager(this.LINE_HEIGHT, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE, this.MARGIN_TOP, lastBarWidthRatio);
-			this.barWidthMng.calculateBarsStructure(song, nm);
+			this.barWidthMng.calculateBarsStructure(song, nm, cm, this.ctx, this.FONT_CHORDS);
 			this.setHeight(song, this.barWidthMng);
 			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 			this.scale();
@@ -337,7 +338,8 @@ define([
 							self.ctx,
 							barDimensions,
 							songIt.getBarTimeSignature(),
-							self.CHORDS_DISTANCE_STAVE
+							self.CHORDS_DISTANCE_STAVE,
+							self.FONT_CHORDS
 						);
 					}
 					//console.timeEnd('getChords');

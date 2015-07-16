@@ -90,6 +90,11 @@ define(function(){
        "beat": 1
       },
       {
+       "p": "G",
+       "ch": "sus4add9",
+       "beat": 2
+      },
+      {
        "p": "A",
        "ch": "7b9",
        "beat": 3

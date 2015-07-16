@@ -130,7 +130,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 	};
 
 	/**
-	 * Return an array of chords that are in a bar define by barNumber argument
+	 * Return an array of chords that are in a bar defined by barNumber argument
 	 * @param  {int} barNumber
 	 */
 	ChordManager.prototype.getChordsByBarNumber = function(barNumber) {
