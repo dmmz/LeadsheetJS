@@ -1,11 +1,61 @@
-define(['modules/core/src/SongModel', 'modules/MidiCSL/src/model/SongModel_midiCSL', 'modules/MidiCSL/src/model/NoteModel_midiCSL', 'modules/MidiCSL/src/converters/ChordManagerConverterMidi_MidiCSL', 'modules/MidiCSL/utils/MidiHelper'],
-	function(SongModel, SongModel_midiCSL, NoteModel_midiCSL, ChordManagerConverterMidi_MidiCSL, MidiHelper) {
+define([
+		'modules/core/src/SongModel',
+		'modules/MidiCSL/src/model/SongModel_midiCSL',
+		'modules/MidiCSL/src/model/NoteModel_midiCSL',
+		'modules/MidiCSL/src/converters/ChordManagerConverterMidi_MidiCSL',
+		'modules/MidiCSL/utils/MidiHelper',
+		'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
+		'utils/AjaxUtils'
+	],
+	function(
+		SongModel,
+		SongModel_midiCSL,
+		NoteModel_midiCSL,
+		ChordManagerConverterMidi_MidiCSL,
+		MidiHelper,
+		SongModel_CSLJson,
+		AjaxUtils
+	) {
 		var SongConverterMidi_MidiCSL = {};
 
-		SongConverterMidi_MidiCSL.exportToMidiCSL = function(songModel) {
+		SongConverterMidi_MidiCSL.exportToMidiCSL = function(songModel, callback) {
 			if (!songModel instanceof SongModel) {
 				throw 'SongConverterMidi_MidiCSL - exportToMusicCSLJSON - songModel parameters must be an instanceof SongModel';
 			}
+			var song = [];
+			var useServlet = true;
+			if (useServlet === true) {
+				SongConverterMidi_MidiCSL.unfoldUsingServlet(songModel, function(newSongModel) {
+					song = SongConverterMidi_MidiCSL.exportElementsToMidiCSL(newSongModel);
+					if (typeof callback !== "undefined") {
+						callback(song);
+					}
+					return song;
+				});
+			} else {
+				song = SongConverterMidi_MidiCSL.exportElementsToMidiCSL(songModel);
+				if (typeof callback !== "undefined") {
+					callback(song);
+				}
+				return song;
+			}
+		};
+
+		SongConverterMidi_MidiCSL.unfoldUsingServlet = function(songModel, callback) {
+			var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(songModel);
+			var request = {
+				'leadsheet': JSON.stringify(JSONSong),
+			};
+			AjaxUtils.servletRequest('jsonsong', 'unfold', request, function(data) {
+				var unfoldedSongModel = new SongModel();
+				SongModel_CSLJson.importFromMusicCSLJSON(data.unfolded, unfoldedSongModel);
+				if (typeof callback !== "undefined") {
+					callback(unfoldedSongModel);
+				}
+			});
+		};
+
+		SongConverterMidi_MidiCSL.exportElementsToMidiCSL = function(songModel) {
 			var song = [];
 			song = ChordManagerConverterMidi_MidiCSL.exportToMidiCSL(songModel);
 			var nm = songModel.getComponent('notes');
