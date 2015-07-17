@@ -1,6 +1,7 @@
 define(['modules/Edition/src/ElementManager',
-	'modules/AudioComments/src/CommentSpaceView'
-], function(ElementManager, CommentSpaceView) {
+	'modules/AudioComments/src/CommentSpaceView',
+	'jquery'
+], function(ElementManager, CommentSpaceView, $) {
 	function CommentSpaceManager(viewer) {
 		this.commentSpaces = [];
 		this.viewer = viewer;

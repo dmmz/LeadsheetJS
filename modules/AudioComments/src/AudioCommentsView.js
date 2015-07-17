@@ -77,7 +77,7 @@ define([
 			self = this;
 
 		//draw only if doesn't exists, to avoid duplicates 
-		//(html elements are different form canvas elements, html elements are not reset in every LSViewer draw where canvas elements are)
+		//(html elements are different from canvas elements, html elements are not reset in every LSViewer draw whereas canvas elements are)
 		if (!this._htmlIdExists(this.newCommentId)) {
 			this.drawNewComment();
 		}

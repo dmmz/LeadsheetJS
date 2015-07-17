@@ -4,12 +4,16 @@ define([
 	'modules/AudioComments/src/AudioCommentsModel',
 	'modules/AudioComments/src/AudioCommentsView'
 ], function(pubsub, $, AudioCommentsModel, AudioCommentsView) {
-	function AudioCommentsController(waveMng, viewer, songModel) {
+	function AudioCommentsController(waveMng, viewer, songModel, dbCommentsMng) {
 		this.waveMng = waveMng;
+		if (dbCommentsMng){
+			this.dbCommentsMng = dbCommentsMng;
+		}
 		this.model = new AudioCommentsModel();
 		this.view = new AudioCommentsView(viewer);
 		this.songModel = songModel;
 		this.initSubscribe();
+		this.commentsShowingBubble = [];
 	}
 
 	AudioCommentsController.prototype.initSubscribe = function() {
@@ -28,7 +32,15 @@ define([
 		$.subscribe('CommentSpaceManager-clickedComment', function(el, orderedIndex) {
 			var keys = Object.keys(self.model.comments);
 			var commentId = keys[orderedIndex];
-			self.view.showBubble(commentId, orderedIndex);
+			if (self.commentsShowingBubble.indexOf(commentId) === -1){
+				self.commentsShowingBubble.push(commentId);
+				self.view.showBubble(commentId, orderedIndex);	
+			}else{
+				self.view.hideBubble("bubble"+commentId);
+				//remove element from array
+				var index = self.commentsShowingBubble.indexOf(commentId);
+				self.commentsShowingBubble.splice(index,1);
+			}
 		});
 
 		/**TODO: integrate with user based data	 */
