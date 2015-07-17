@@ -65,13 +65,12 @@ define([
 			comment.color = self.COLOR;
 			var commentId = self.addComment(comment);
 			$.publish('ToViewer-draw', self.songModel);
-			//show comment
-			var orderedIndex = self.model.getKeyByCommentId(commentId);
-			self.showComment(commentId, orderedIndex);
+			self.showComment(commentId);
 
 		});
 		$.subscribe('AudioCommentsView-updateComment', function(el, commentId, text) {
-			updateComment(commentId, text);
+
+			self.updateComment(commentId, text);
 		});
 		$.subscribe('AudioCommentsView-editingComment', function(el, bubbleEl, commentId) {
 			var comment = self.model.getComment(commentId);
@@ -87,9 +86,11 @@ define([
 	/**
 	 * calls view showBubble, and saves info to remember that comment is being shown
 	 * @param  {String} commentId    
+	 * @param  {String} orderedIndex    
 	 * @param  {Integer or String} orderedIndex 
 	 */
 	AudioCommentsController.prototype.showComment = function(commentId, orderedIndex) {
+		orderedIndex = orderedIndex || this.model.getKeyByCommentId(commentId);
 		this.commentsShowingBubble.push(commentId);
 		this.view.showBubble(commentId, orderedIndex);
 	};
@@ -97,9 +98,10 @@ define([
 		return this.model.addComment(comment);
 	};
 
-	AudioCommentsController.prototype.updateComment = function(comment) {
+	AudioCommentsController.prototype.updateComment = function(commentId,text) {
 		this.model.updateComment(commentId, text);
 		this.view.updateComment(commentId, text);
+		this.showComment(commentId);
 	};
 
 	return AudioCommentsController;
