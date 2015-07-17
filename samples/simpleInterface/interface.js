@@ -45,8 +45,8 @@ define(function(require) {
 	var menuHTML = document.getElementById('menu-container');
 	var viewerHTML = $("#canvas_container")[0];
 	var playerHTML = $('#player_test')[0];
-
-
+	var userSession = {name:'Dani', id:'323324422',img:'/tests/img/dani-profile.jpg'};
+	var audioComments;
 	doLoadMidiPlayer = false; // only for debug false true
 	allowEdition = true;
 	if (allowEdition === false) {
@@ -67,7 +67,7 @@ define(function(require) {
 			order: 1
 		});
 		loadActiveMenuOrDefault(menu, 'File');
-		var audioComments = loadComments(wave, viewer, songModel);
+		audioComments = loadComments(wave, viewer, songModel, userSession);
 		addComment(audioComments);
 		viewer.draw(songModel);
 	} else {
@@ -104,7 +104,7 @@ define(function(require) {
 			order: 1
 		});
 		loadActiveMenuOrDefault(menu, 'File');
-		var audioComments = loadComments(wave, viewer, songModel);
+		audioComments = loadComments(wave, viewer, songModel, userSession);
 		addComment(audioComments);
 		viewer.draw(songModel);
 	}
@@ -233,14 +233,15 @@ define(function(require) {
 		}
 	}
 
-	function loadComments(waveMng, viewer, songModel) {
-		var audioComments = new LJS.AudioComments(waveMng, viewer, songModel);
+	function loadComments(waveMng, viewer, songModel, userSession) {
+		var audioComments = new LJS.AudioComments(waveMng, viewer, songModel, userSession);
 		return audioComments;
 	}
 
 	function addComment(audioComments) {
 		audioComments.addComment({
-			user: 'Dani',
+			userName: 'Dani',
+			id: '1234',
 			img: '/tests/img/dani-profile.jpg',
 			text: 'This is an audio comment',
 			timeInterval: [1.5891220809932014, 2.668046112917529],
@@ -248,7 +249,8 @@ define(function(require) {
 		});
 
 		audioComments.addComment({
-			user: 'Dani',
+			userName: 'Dani',
+			id: '1234',
 			img: '/tests/img/dani-profile.jpg',
 			text: 'lorem ipsum cumulum largo texto asolo en caso de que tal cual pascual ande vas con la moto que thas comprado, vaya tela',
 			timeInterval: [3.3, 10.1],

@@ -143,7 +143,7 @@ define([
 		img.src = comment.img;
 		ctx.textBaseline = 'bottom';
 		ctx.font = "15px lato Verdana";
-		ctx.fillText(comment.user, areas[0].x + 40, areas[0].y - 10);
+		ctx.fillText(comment.userName, areas[0].x + 40, areas[0].y - 10);
 		ctx.fillStyle = saveFillColor;
 		//add clickable area to commentSpaceMgn
 		this.commentSpaceMng.addCommentSpace(clickableArea);

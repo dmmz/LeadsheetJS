@@ -4,15 +4,30 @@ define([
 	'modules/AudioComments/src/AudioCommentsModel',
 	'modules/AudioComments/src/AudioCommentsView'
 ], function(pubsub, $, AudioCommentsModel, AudioCommentsView) {
-	function AudioCommentsController(waveMng, viewer, songModel, dbCommentsMng) {
+	/**
+	 * [AudioCommentsController description]
+	 * @param {WaveController} waveMng        
+	 * @param {LSViewer} viewer         
+	 * @param {SongModel} songModel      
+	 * @param {Object} userSession    with fields {'name': "Jon", pathImg: 'path/to/img'}
+	 * 
+	 * @param {[type]} srvCommentsMng [description]
+	 */
+	function AudioCommentsController(waveMng, viewer, songModel, userSession, srvCommentsMng) {
+
+		if (!userSession || !userSession.name || !userSession.id) {
+			throw "AudioCommentsController - wrong params";
+		}
+		this.COLOR = "#F00";
 		this.waveMng = waveMng;
-		if (dbCommentsMng) {
-			this.dbCommentsMng = dbCommentsMng;
+		if (srvCommentsMng) {
+			this.srvCommentsMng = srvCommentsMng;
 		}
 		this.model = new AudioCommentsModel();
 		this.view = new AudioCommentsView(viewer);
 		this.songModel = songModel;
 		this.initSubscribe();
+		this.user = userSession;
 		this.commentsShowingBubble = [];
 	}
 
@@ -44,10 +59,10 @@ define([
 
 		/**TODO: integrate with user based data	 */
 		$.subscribe('AudioCommentsView-saveComment', function(el, comment) {
-			comment.user = 'Dani';
-			comment.img = '/tests/img/dani-profile.jpg';
-			comment.color = '#F00';
-
+			comment.userId = self.user.id;
+			comment.userName = self.user.name;
+			comment.img = self.user.img;
+			comment.color = self.COLOR;
 			var commentId = self.addComment(comment);
 			$.publish('ToViewer-draw', self.songModel);
 			//show comment
