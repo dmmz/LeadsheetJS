@@ -6,7 +6,7 @@ define([
 ], function(pubsub, $, AudioCommentsModel, AudioCommentsView) {
 	function AudioCommentsController(waveMng, viewer, songModel, dbCommentsMng) {
 		this.waveMng = waveMng;
-		if (dbCommentsMng){
+		if (dbCommentsMng) {
 			this.dbCommentsMng = dbCommentsMng;
 		}
 		this.model = new AudioCommentsModel();
@@ -32,14 +32,13 @@ define([
 		$.subscribe('CommentSpaceManager-clickedComment', function(el, orderedIndex) {
 			var keys = Object.keys(self.model.comments);
 			var commentId = keys[orderedIndex];
-			if (self.commentsShowingBubble.indexOf(commentId) === -1){
-				self.commentsShowingBubble.push(commentId);
-				self.view.showBubble(commentId, orderedIndex);	
-			}else{
-				self.view.hideBubble("bubble"+commentId);
+			if (self.commentsShowingBubble.indexOf(commentId) === -1) {
+				self.showComment(commentId, orderedIndex);
+			} else {
+				self.view.hideBubble("bubble" + commentId);
 				//remove element from array
 				var index = self.commentsShowingBubble.indexOf(commentId);
-				self.commentsShowingBubble.splice(index,1);
+				self.commentsShowingBubble.splice(index, 1);
 			}
 		});
 
@@ -48,8 +47,13 @@ define([
 			comment.user = 'Dani';
 			comment.img = '/tests/img/dani-profile.jpg';
 			comment.color = '#F00';
-			self.addComment(comment);
+
+			var commentId = self.addComment(comment);
 			$.publish('ToViewer-draw', self.songModel);
+			//show comment
+			var orderedIndex = self.model.getKeyByCommentId(commentId);
+			self.showComment(commentId, orderedIndex);
+
 		});
 		$.subscribe('AudioCommentsView-updateComment', function(el, commentId, text) {
 			updateComment(commentId, text);
@@ -65,9 +69,17 @@ define([
 		});
 
 	};
-
+	/**
+	 * calls view showBubble, and saves info to remember that comment is being shown
+	 * @param  {String} commentId    
+	 * @param  {Integer or String} orderedIndex 
+	 */
+	AudioCommentsController.prototype.showComment = function(commentId, orderedIndex) {
+		this.commentsShowingBubble.push(commentId);
+		this.view.showBubble(commentId, orderedIndex);
+	};
 	AudioCommentsController.prototype.addComment = function(comment) {
-		this.model.addComment(comment);
+		return this.model.addComment(comment);
 	};
 
 	AudioCommentsController.prototype.updateComment = function(comment) {

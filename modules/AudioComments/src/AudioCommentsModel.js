@@ -24,5 +24,13 @@ define(function() {
 		delete this.comments[id];
 	};
 
+	AudioCommentsModel.prototype.getKeyByCommentId = function(commentId) {
+		for (var i in this.comments){
+			if (this.comments[i].id == commentId){
+				return i;
+			}
+		}
+	};
+
 	return AudioCommentsModel;
 });
