@@ -11,19 +11,17 @@ define([
 	 * @param {SongModel} songModel      
 	 * @param {Object} userSession    with fields {'name': "Jon", pathImg: 'path/to/img'}
 	 * 
-	 * @param {[type]} srvCommentsMng [description]
+	 * @param {[type]} serverAudioComments [description]
 	 */
-	function AudioCommentsController(waveMng, viewer, songModel, userSession, srvCommentsMng) {
+	function AudioCommentsController(waveMng, viewer, songModel, userSession, serverAudioComments) {
 
 		if (!userSession || !userSession.name || !userSession.id) {
 			throw "AudioCommentsController - wrong params";
 		}
 		this.COLOR = "#F00";
 		this.waveMng = waveMng;
-		if (srvCommentsMng) {
-			this.srvCommentsMng = srvCommentsMng;
-		}
-		this.model = new AudioCommentsModel();
+
+		this.model = new AudioCommentsModel(serverAudioComments);
 		this.view = new AudioCommentsView(viewer);
 		this.songModel = songModel;
 		this.initSubscribe();
@@ -45,8 +43,10 @@ define([
 		});
 
 		$.subscribe('CommentSpaceManager-clickedComment', function(el, orderedIndex) {
+
 			var keys = Object.keys(self.model.comments);
 			var commentId = keys[orderedIndex];
+			//If shown, hide. If hidden, show
 			if (self.commentsShowingBubble.indexOf(commentId) === -1) {
 				self.showComment(commentId, orderedIndex);
 			} else {
@@ -57,19 +57,19 @@ define([
 			}
 		});
 
-		/**TODO: integrate with user based data	 */
 		$.subscribe('AudioCommentsView-saveComment', function(el, comment) {
 			comment.userId = self.user.id;
 			comment.userName = self.user.name;
 			comment.img = self.user.img;
 			comment.color = self.COLOR;
-			var commentId = self.addComment(comment);
-			$.publish('ToViewer-draw', self.songModel);
-			self.showComment(commentId);
+			self.addComment(comment, function(commentId){
+				$.publish('ToViewer-draw', self.songModel);
+				self.showComment(commentId);
+			});
+			
 
 		});
 		$.subscribe('AudioCommentsView-updateComment', function(el, commentId, text) {
-
 			self.updateComment(commentId, text);
 		});
 		$.subscribe('AudioCommentsView-editingComment', function(el, bubbleEl, commentId) {
@@ -78,8 +78,9 @@ define([
 		});
 		$.subscribe('AudioCommentsView-removingComment', function(el, bubbleEl, commentId) {
 			bubbleEl.remove();
-			self.model.removeComment(commentId);
-			$.publish('ToViewer-draw', self.songModel);
+			self.model.removeComment(commentId, function(){
+				$.publish('ToViewer-draw', self.songModel);
+			});
 		});
 
 	};
@@ -90,18 +91,23 @@ define([
 	 * @param  {Integer or String} orderedIndex 
 	 */
 	AudioCommentsController.prototype.showComment = function(commentId, orderedIndex) {
-		orderedIndex = orderedIndex || this.model.getKeyByCommentId(commentId);
+
+		orderedIndex = orderedIndex || this.model.getOrderedIndexCommentId(commentId);
 		this.commentsShowingBubble.push(commentId);
 		this.view.showBubble(commentId, orderedIndex);
 	};
-	AudioCommentsController.prototype.addComment = function(comment) {
-		return this.model.addComment(comment);
+	AudioCommentsController.prototype.addComment = function(comment, callback) {
+		var self = this;
+		this.model.addComment(comment, callback);
 	};
 
 	AudioCommentsController.prototype.updateComment = function(commentId,text) {
-		this.model.updateComment(commentId, text);
-		this.view.updateComment(commentId, text);
-		this.showComment(commentId);
+		var self = this;
+		this.model.updateComment(commentId, text, function(){
+			self.view.updateComment(commentId, text);
+			self.showComment(commentId);	
+		});
+		
 	};
 
 	return AudioCommentsController;
