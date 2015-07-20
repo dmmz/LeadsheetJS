@@ -11,18 +11,20 @@ define(function() {
 	}
 
 	AudioCommentsModel.prototype.addComment = function(comment, callback) {
-		var id = this.nextId,
+		var id,
 		self = this;
 
-		comment.id = id;
-		this.nextId++;
-
 		if (this.serverAudioComments){
-			this.serverAudioComments.saveComment(comment,function(){
+			this.serverAudioComments.saveComment(comment,function(data){
+				comment = data;
+				id = comment.id;
 				self.comments[id] = comment;
 				if (callback)	callback(id);		
 			});
 		}else{
+			id = this.nextId;
+			comment.id = id;
+			this.nextId++;
 			this.comments[id] = comment;
 			if (callback)	callback(id);
 		}
@@ -34,21 +36,23 @@ define(function() {
 	};
 
 	AudioCommentsModel.prototype.updateComment = function(id, text, callback) {
+		var self = this;
+		this.comments[id].text = text;
+		var comment = this.comments[id];
 		if (this.serverAudioComments){
-			this.serverAudioComments.saveComment(function(){
-				self.comments[id].text = text;
+			this.serverAudioComments.saveComment(comment, function(){
 				callback();
 			});
 		}else{
-			this.comments[id].text = text;
 			callback();
 		}
 		
 	};
 
 	AudioCommentsModel.prototype.removeComment = function(id, callback) {
+		var self = this;
 		if (this.serverAudioComments){
-			this.serverAudioComments.saveComment(function(){
+			this.serverAudioComments.removeComment(id,function(){
 				delete self.comments[id];
 				callback();
 			});

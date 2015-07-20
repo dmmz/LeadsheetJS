@@ -65,6 +65,7 @@ define([
 		return $("#" + id).length !== 0;
 	};
 	/**
+	 * called by AudioCommentsController
 	 * draws comment marker (with the picture and the name)
 	 * @param  {AudioCommentsModel} audioCommentsModel
 	 * @param  {WaveDrawer} waveDrawer
