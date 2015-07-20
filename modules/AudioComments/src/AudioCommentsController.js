@@ -50,13 +50,12 @@ define([
 			if (self.commentsShowingBubble.indexOf(commentId) === -1) {
 				self.showComment(commentId, orderedIndex);
 			} else {
-				self.view.hideBubble("bubble" + commentId);
-				//remove element from array
-				var index = self.commentsShowingBubble.indexOf(commentId);
-				self.commentsShowingBubble.splice(index, 1);
+				self.hideComment(commentId);
 			}
 		});
-
+		$.subscribe('AudioCommentsView-closeBubble',function(el,commentId){
+			self.hideComment(commentId);
+		});
 		$.subscribe('AudioCommentsView-saveComment', function(el, comment) {
 			comment.userId = self.user.id;
 			comment.userName = self.user.name;
@@ -84,6 +83,12 @@ define([
 		});
 
 	};
+	AudioCommentsController.prototype.hideComment = function(commentId) {
+		this.view.hideBubble("bubble" + commentId);
+		//remove element from array
+		var index = this.commentsShowingBubble.indexOf(commentId);
+		this.commentsShowingBubble.splice(index, 1);
+	};
 	/**
 	 * calls view showBubble, and saves info to remember that comment is being shown
 	 * @param  {String} commentId    
@@ -91,8 +96,7 @@ define([
 	 * @param  {Integer or String} orderedIndex 
 	 */
 	AudioCommentsController.prototype.showComment = function(commentId, orderedIndex) {
-
-		orderedIndex = orderedIndex || this.model.getOrderedIndexCommentId(commentId);
+		orderedIndex = orderedIndex || this.model.getOrderedIndexByCommentId(commentId);
 		this.commentsShowingBubble.push(commentId);
 		this.view.showBubble(commentId, orderedIndex);
 	};

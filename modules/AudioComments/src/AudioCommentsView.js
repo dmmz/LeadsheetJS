@@ -27,7 +27,8 @@ define([
 			if (id == self.newCommentId) {
 				self.hideNewComment();
 			} else {
-				self.hideBubble(id);
+				id = id.substr(self.bubblePreId.length,id.length); //extracting prefix "bubble", to get id X on "bubbleX"
+				$.publish('AudioCommentsView-closeBubble',id);
 			}
 		});
 		//new comment
@@ -180,7 +181,7 @@ define([
 	 *                           e.g. if we have removed comment with id 2, keys of comments is ["0","1","3","4"] whereas corresponding indexes will be [0,1,2,3], so when *                           commentId is 2, index will be 3 (works well as every time a comment is added or deleted, everything is recalculated)
 	 */
 	AudioCommentsView.prototype.showBubble = function(commentId, index) {
-		var height = $("#bubble" + commentId).height();
+		var height = $("#" + this.bubblePreId + commentId).height();
 
 		var area = this.commentSpaceMng.commentSpaces[index].getArea();
 		var offset = this.offset; //to avoid 'this' closure problem
