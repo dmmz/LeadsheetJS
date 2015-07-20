@@ -68,7 +68,7 @@ define(function(require) {
 		});
 		loadActiveMenuOrDefault(menu, 'File');
 		audioComments = loadComments(wave, viewer, songModel, userSession);
-		addComment(audioComments);
+		addComments(audioComments);
 		viewer.draw(songModel);
 	} else {
 		// Read and write
@@ -105,7 +105,7 @@ define(function(require) {
 		});
 		loadActiveMenuOrDefault(menu, 'File');
 		audioComments = loadComments(wave, viewer, songModel, userSession);
-		addComment(audioComments);
+		addComments(audioComments);
 		viewer.draw(songModel);
 	}
 
@@ -234,11 +234,12 @@ define(function(require) {
 	}
 
 	function loadComments(waveMng, viewer, songModel, userSession) {
+		//var serverAudioComments = new ServerAudioComments('idLeadsheet','idFile',userSession);
 		var audioComments = new LJS.AudioComments(waveMng, viewer, songModel, userSession);
 		return audioComments;
 	}
 
-	function addComment(audioComments) {
+	function addComments(audioComments) {
 		audioComments.addComment({
 			userName: 'Dani',
 			id: '1234',

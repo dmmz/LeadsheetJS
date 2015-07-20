@@ -1,9 +1,9 @@
-define(['jquery'],function($) {
+define(function() {
 	/**
 	 * [AudioCommentsModel description]
 	 * @param {ServerAudioComments} serverAudioComments [description]
 	 */
-	function AudioCommentsModel(serverAudioComments) {
+	function AudioCommentsModel(serverAudioComments, userSession) {
 		this.serverAudioComments = serverAudioComments;
 		this.comments = {};
 		this.nextId = 0;
@@ -11,13 +11,15 @@ define(['jquery'],function($) {
 	}
 
 	AudioCommentsModel.prototype.addComment = function(comment, callback) {
-		var id = this.nextId;
+		var id = this.nextId,
+		self = this;
+
 		comment.id = id;
 		this.nextId++;
 
 		if (this.serverAudioComments){
-			this.serverAudioComments.saveComment(function(){
-				this.comments[id] = comment;
+			this.serverAudioComments.saveComment(comment,function(){
+				self.comments[id] = comment;
 				if (callback)	callback(id);		
 			});
 		}else{
@@ -34,7 +36,7 @@ define(['jquery'],function($) {
 	AudioCommentsModel.prototype.updateComment = function(id, text, callback) {
 		if (this.serverAudioComments){
 			this.serverAudioComments.saveComment(function(){
-				this.comments[id].text = text;
+				self.comments[id].text = text;
 				callback();
 			});
 		}else{
@@ -47,7 +49,7 @@ define(['jquery'],function($) {
 	AudioCommentsModel.prototype.removeComment = function(id, callback) {
 		if (this.serverAudioComments){
 			this.serverAudioComments.saveComment(function(){
-				delete this.comments[id];
+				delete self.comments[id];
 				callback();
 			});
 		}else{

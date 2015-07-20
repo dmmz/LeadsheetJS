@@ -9,12 +9,12 @@ define([
 	 * @param {WaveController} waveMng        
 	 * @param {LSViewer} viewer         
 	 * @param {SongModel} songModel      
-	 * @param {Object} userSession    with fields {'name': "Jon", pathImg: 'path/to/img'}
+	 * @param {Object} userSession    with fields {'name': "Jon", id:'4abcgf4435', pathImg: 'path/to/img'}
 	 * 
 	 * @param {[type]} serverAudioComments [description]
 	 */
 	function AudioCommentsController(waveMng, viewer, songModel, userSession, serverAudioComments) {
-
+		
 		if (!userSession || !userSession.name || !userSession.id) {
 			throw "AudioCommentsController - wrong params";
 		}
