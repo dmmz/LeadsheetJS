@@ -99,17 +99,15 @@ define(function(require) {
 			img: '/tests/img/dani-profile.jpg',
 			text: 'This is an audio comment',
 			timeInterval: [1.5891220809932014, 2.668046112917529],
-			color: '#FFBF00',
 			date: '1 min ago'
 		});
 
 		audioComments.addComment({
 			userName: 'Dani',
 			id: '1234',
-			img: '/tests/img/dani-profile.jpg',
+			img: '/tests/img/avatar.png',
 			text: 'lorem ipsum cumulum largo texto asolo en caso de que tal cual pascual ande vas con la moto que thas comprado, vaya tela',
 			timeInterval: [3.3, 10.1],
-			color: '#0F0'
 		});
 	}
 

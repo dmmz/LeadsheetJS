@@ -8,6 +8,7 @@ define([
 
 	function AudioCommentsView(viewer) {
 		this.viewer = viewer;
+		this.COLOR = "#FFBF00";
 		this.commentSpaceMng = null;
 		this.initController();
 		this.newComment = {};
@@ -100,8 +101,8 @@ define([
 	AudioCommentsView.prototype.drawComment = function(comment, ctx, waveDrawer) {
 		var saveFillColor = ctx.fillStyle;
 		var clickableArea;
-		ctx.fillStyle = comment.color;
-		ctx.strokeStyle = comment.color;
+		ctx.fillStyle = this.COLOR;
+		ctx.strokeStyle = this.COLOR;
 		var areas = waveDrawer.getAreasFromTimeInterval(comment.timeInterval[0], comment.timeInterval[1]);
 
 		ctx.beginPath();
