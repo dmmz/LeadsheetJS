@@ -134,7 +134,7 @@ define([
 		};
 
 		ctx.strokeRect(clickableArea.x, clickableArea.y, clickableArea.w, clickableArea.h);
-		ctx.globalAlpha = 0.2;
+		ctx.globalAlpha = 0.7;
 		ctx.fillRect(clickableArea.x, clickableArea.y, clickableArea.w, clickableArea.h);
 		ctx.globalAlpha = 1;
 		var img = new Image();
@@ -144,8 +144,15 @@ define([
 		ctx.fillStyle = "#000";
 		img.src = comment.img;
 		ctx.textBaseline = 'bottom';
-		ctx.font = "15px lato Verdana";
-		ctx.fillText(comment.userName, areas[0].x + 40, areas[0].y - 10);
+		ctx.font = "12px Arial";
+			
+		ctx.fillText( comment.userName , areas[0].x + 38, areas[0].y - 15);
+
+		if (comment.date !== undefined){
+			ctx.font = "10px Arial";
+			ctx.fillText( "(" + comment.date + ")" , areas[0].x + 35, areas[0].y - 2);
+		} 
+
 		ctx.fillStyle = saveFillColor;
 		//add clickable area to commentSpaceMgn
 		this.commentSpaceMng.addCommentSpace(clickableArea);

@@ -18,7 +18,7 @@ define([
 		if (!userSession || !userSession.name || !userSession.id) {
 			throw "AudioCommentsController - wrong params";
 		}
-		this.COLOR = "#F00";
+		this.COLOR = "#FFBF00";
 		this.waveMng = waveMng;
 
 		this.model = new AudioCommentsModel(serverAudioComments);

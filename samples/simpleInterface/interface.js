@@ -246,7 +246,8 @@ define(function(require) {
 			img: '/tests/img/dani-profile.jpg',
 			text: 'This is an audio comment',
 			timeInterval: [1.5891220809932014, 2.668046112917529],
-			color: '#F00'
+			color: '#FFBF00',
+			date: '1 min ago'
 		});
 
 		audioComments.addComment({
