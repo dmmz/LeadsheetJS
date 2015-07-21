@@ -1,34 +1,47 @@
 define(function() {
 	/**
-	 * [AudioCommentsModel description]
-	 * @param {ServerAudioComments} serverAudioComments [description]
+	 * AudioCommentsModel 
+	 * @param {ServerAudioComments} serverAudioComments communicates with the server. Does not make really part of LeadsheetJS, it is provided by the server part, and it is hosted in it. In our case, in LSDB server. All methods work also without this Object, this way it works as an example without saving comment to a server part.
 	 */
 	function AudioCommentsModel(serverAudioComments, userSession) {
 		this.serverAudioComments = serverAudioComments;
 		this.comments = {};
-		this.nextId = 0;
+		this.nextId = 0; //auto increment id used if there is no server
 
 	}
 
+	/**
+	 * gets the comments from the server. If there is no server, just runs the callback function
+	 * @param  {Function} callback [description]
+	 */
 	AudioCommentsModel.prototype.getComments = function(callback) {
 		var self = this;
-		this.serverAudioComments.getComments(function(comments){
-			for (var i = 0; i < comments.length; i++) {
-				self.addComment(comments[i]);
-			}
+		if (this.serverAudioComments) {
+			this.serverAudioComments.getComments(function(comments) {
+				for (var i = 0; i < comments.length; i++) {
+					self.addComment(comments[i]);
+				}
+				callback();
+			});
+		} else {
 			callback();
-		});
+		}
 	};
 
 	AudioCommentsModel.prototype.getComment = function(id) {
 		return this.comments[id];
 	};
-
-	AudioCommentsModel.prototype.addComment = function(comment, id) {
-		if (comment.id !== undefined){
+	/**
+	 * if comment.id is defined, it means there exists a server part, so id is provided by the server (in our case it is a MongoDB id). 
+	 * But if comment.id is not defined we just use our own auto_increment nextId
+	 * @param {Object} comment 
+	 * @param {String} id      
+	 */
+	AudioCommentsModel.prototype.addComment = function(comment) {
+		if (comment.id !== undefined) {
 			id = comment.id;
 			this.comments[id] = comment;
-		}else{
+		} else {
 			id = this.nextId;
 			comment.id = id;
 			this.nextId++;
@@ -39,17 +52,17 @@ define(function() {
 
 	AudioCommentsModel.prototype.saveComment = function(comment, callback) {
 		var id,
-		self = this;
+			self = this;
 
-		if (this.serverAudioComments){
-			this.serverAudioComments.saveComment(comment,function(data){
+		if (this.serverAudioComments) {
+			this.serverAudioComments.saveComment(comment, function(data) {
 				comment = data;
 				id = self.addComment(comment);
-				if (callback)	callback(id);		
+				if (callback) callback(id);
 			});
-		}else{
+		} else {
 			id = self.addComment(comment);
-			if (callback)	callback(id);
+			if (callback) callback(id);
 		}
 		return id;
 	};
@@ -59,24 +72,24 @@ define(function() {
 		var self = this;
 		this.comments[id].text = text;
 		var comment = this.comments[id];
-		if (this.serverAudioComments){
-			this.serverAudioComments.saveComment(comment, function(){
+		if (this.serverAudioComments) {
+			this.serverAudioComments.saveComment(comment, function() {
 				callback();
 			});
-		}else{
+		} else {
 			callback();
 		}
-		
+
 	};
 
 	AudioCommentsModel.prototype.removeComment = function(id, callback) {
 		var self = this;
-		if (this.serverAudioComments){
-			this.serverAudioComments.removeComment(id,function(){
+		if (this.serverAudioComments) {
+			this.serverAudioComments.removeComment(id, function() {
 				delete self.comments[id];
 				callback();
 			});
-		}else{
+		} else {
 			delete this.comments[id];
 			callback();
 		}
@@ -91,8 +104,8 @@ define(function() {
 	 */
 	AudioCommentsModel.prototype.getOrderedIndexByCommentId = function(commentId) {
 		var count = 0;
-		for (var id in this.comments){
-			if (id == commentId){
+		for (var id in this.comments) {
+			if (id == commentId) {
 				return count;
 			}
 			count++;

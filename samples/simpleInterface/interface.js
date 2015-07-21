@@ -67,8 +67,8 @@ define(function(require) {
 			order: 1
 		});
 		loadActiveMenuOrDefault(menu, 'File');
-		audioComments = loadComments(wave, viewer, songModel, userSession);
-		addComments(audioComments);
+		audioComments = loadAudioCommentsModule(wave, viewer, songModel, userSession);
+		//addComments(audioComments);
 		viewer.draw(songModel);
 	} else {
 		// Read and write
@@ -104,8 +104,8 @@ define(function(require) {
 			order: 1
 		});
 		loadActiveMenuOrDefault(menu, 'File');
-		audioComments = loadComments(wave, viewer, songModel, userSession);
-		addComments(audioComments);
+		audioComments = loadAudioCommentsModule(wave, viewer, songModel, userSession);
+		//addComments(audioComments);
 		viewer.draw(songModel);
 	}
 
@@ -233,13 +233,13 @@ define(function(require) {
 		}
 	}
 
-	function loadComments(waveMng, viewer, songModel, userSession) {
+	function loadAudioCommentsModule(waveMng, viewer, songModel, userSession) {
 		//var serverAudioComments = new ServerAudioComments('idLeadsheet','idFile',userSession);
 		var audioComments = new LJS.AudioComments(waveMng, viewer, songModel, userSession);
 		return audioComments;
 	}
 
-	function addComments(audioComments) {
+	/*function addComments(audioComments) {
 		audioComments.addComment({
 			userName: 'Dani',
 			id: '1234',
@@ -258,6 +258,6 @@ define(function(require) {
 			timeInterval: [3.3, 10.1],
 			color: '#0F0'
 		});
-	}
+	}*/
 
 });

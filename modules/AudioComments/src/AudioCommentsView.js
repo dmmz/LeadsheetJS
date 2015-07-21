@@ -27,8 +27,8 @@ define([
 			if (id == self.newCommentId) {
 				self.hideNewComment();
 			} else {
-				id = id.substr(self.bubblePreId.length,id.length); //extracting prefix "bubble", to get id X on "bubbleX"
-				$.publish('AudioCommentsView-closeBubble',id);
+				id = id.substr(self.bubblePreId.length, id.length); //extracting prefix "bubble", to get id X on "bubbleX"
+				$.publish('AudioCommentsView-closeBubble', id);
 			}
 		});
 		//new comment
@@ -145,13 +145,13 @@ define([
 		img.src = comment.img;
 		ctx.textBaseline = 'bottom';
 		ctx.font = "12px Arial";
-			
-		ctx.fillText( comment.userName , areas[0].x + 38, areas[0].y - 15);
 
-		if (comment.date !== undefined){
+		ctx.fillText(comment.userName, areas[0].x + 38, areas[0].y - 15);
+
+		if (comment.date !== undefined) {
 			ctx.font = "10px Arial";
-			ctx.fillText( "(" + comment.date + ")" , areas[0].x + 35, areas[0].y - 2);
-		} 
+			ctx.fillText("(" + comment.date + ")", areas[0].x + 35, areas[0].y - 2);
+		}
 
 		ctx.fillStyle = saveFillColor;
 		//add clickable area to commentSpaceMgn
@@ -266,7 +266,7 @@ define([
 	 * @param  {bubbleId} id html id of bubble
 	 */
 	AudioCommentsView.prototype.hideBubble = function(id) {
-		$("#" + id).hide();
+		$("#" + this.bubblePreId + id).hide();
 	};
 	/**
 	 * hides the 'new comment' bubble
