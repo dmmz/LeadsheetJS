@@ -52,7 +52,7 @@ define(function(require) {
           heightAudio: 75/*,
           marginCursor: 20*/
         };
-        var waveMng = new WaveManager(song, cM, viewer, params);
+        var waveMng = new WaveManager(song, viewer, cM, params);
 
         
         //noteSpaceManager.refresh();

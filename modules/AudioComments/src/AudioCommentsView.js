@@ -264,9 +264,14 @@ define([
 		$("#" + this.bubblePreId + id + " .textComment").html(text);
 	};
 	/**
-	 * @param  {String} bubbleId html id of bubble
+	 * @param  {String} bubbleId html id of bubble. 
+	 * Normally a bubble id "bubbleX" starts always with prefix "bubble", but we can call this function with the prefix (ex. "bubble0abc") or the id directly (ex. "0abc")
+	 * If there is no prefix, we add it
 	 */
 	AudioCommentsView.prototype.hideBubble = function(bubbleId) {
+		if (bubbleId.indexOf(this.bubblePreId)==-1){
+			bubbleId = this.bubblePreId + bubbleId;
+		}
 		$("#" + bubbleId).hide();
 	};
 	/**
