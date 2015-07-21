@@ -264,10 +264,10 @@ define([
 		$("#" + this.bubblePreId + id + " .textComment").html(text);
 	};
 	/**
-	 * @param  {bubbleId} id html id of bubble
+	 * @param  {String} bubbleId html id of bubble
 	 */
-	AudioCommentsView.prototype.hideBubble = function(id) {
-		$("#" + this.bubblePreId + id).hide();
+	AudioCommentsView.prototype.hideBubble = function(bubbleId) {
+		$("#" + bubbleId).hide();
 	};
 	/**
 	 * hides the 'new comment' bubble
