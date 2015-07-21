@@ -70,7 +70,7 @@ define([
 	 * @param  {AudioCommentsModel} audioCommentsModel
 	 * @param  {WaveDrawer} waveDrawer
 	 */
-	AudioCommentsView.prototype.draw = function(audioCommentsModel, waveDrawer) {
+	AudioCommentsView.prototype.draw = function(audioCommentsModel, waveDrawer, userId) {
 		//we construct it here because it adds himself to canvasLayer which exists only after the score is drawn
 		this.commentSpaceMng = new CommentSpaceManager(this.viewer);
 
@@ -91,7 +91,7 @@ define([
 				self.drawComment(comments[i], ctx, waveDrawer);
 				bubbleId = self.bubblePreId + comments[i].id;
 				if (!self._htmlIdExists(bubbleId)) {
-					self.drawBubble(comments[i], bubbleId);
+					self.drawBubble(comments[i], bubbleId, userId);
 				}
 			}
 		});
@@ -162,11 +162,14 @@ define([
 	 * Bubble is a HTML div, it is drawn as a hidden element after every LSViewer draw
 	 * @param  {Object} comment
 	 * @param  {String} bubbleId
+	 * @param  {String} userId
 	 */
-	AudioCommentsView.prototype.drawBubble = function(comment, bubbleId) {
+	AudioCommentsView.prototype.drawBubble = function(comment, bubbleId, userId) {
 		var el = Mustache.render(SpeechBubbleTpl, {
-			textComment: comment.text
+			textComment: comment.text,
+			ownComment: comment.userId == userId
 		});
+
 		$("body").append(
 			$(el).attr('id', bubbleId)
 			.attr('data-commentId', comment.id)

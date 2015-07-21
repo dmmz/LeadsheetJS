@@ -10,30 +10,50 @@ define(function() {
 
 	}
 
-	AudioCommentsModel.prototype.addComment = function(comment, callback) {
+	AudioCommentsModel.prototype.getComments = function(callback) {
+		var self = this;
+		this.serverAudioComments.getComments(function(comments){
+			for (var i = 0; i < comments.length; i++) {
+				self.addComment(comments[i]);
+			}
+			callback();
+		});
+	};
+
+	AudioCommentsModel.prototype.getComment = function(id) {
+		return this.comments[id];
+	};
+
+	AudioCommentsModel.prototype.addComment = function(comment, id) {
+		if (comment.id !== undefined){
+			id = comment.id;
+			this.comments[id] = comment;
+		}else{
+			id = this.nextId;
+			comment.id = id;
+			this.nextId++;
+			this.comments[id] = comment;
+		}
+		return id;
+	};
+
+	AudioCommentsModel.prototype.saveComment = function(comment, callback) {
 		var id,
 		self = this;
 
 		if (this.serverAudioComments){
 			this.serverAudioComments.saveComment(comment,function(data){
 				comment = data;
-				id = comment.id;
-				self.comments[id] = comment;
+				id = self.addComment(comment);
 				if (callback)	callback(id);		
 			});
 		}else{
-			id = this.nextId;
-			comment.id = id;
-			this.nextId++;
-			this.comments[id] = comment;
+			id = self.addComment(comment);
 			if (callback)	callback(id);
 		}
 		return id;
 	};
 
-	AudioCommentsModel.prototype.getComment = function(id) {
-		return this.comments[id];
-	};
 
 	AudioCommentsModel.prototype.updateComment = function(id, text, callback) {
 		var self = this;

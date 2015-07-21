@@ -14,7 +14,7 @@ define([
 	 * @param {[type]} serverAudioComments [description]
 	 */
 	function AudioCommentsController(waveMng, viewer, songModel, userSession, serverAudioComments) {
-		
+
 		if (!userSession || !userSession.name || !userSession.id) {
 			throw "AudioCommentsController - wrong params";
 		}
@@ -35,7 +35,10 @@ define([
 		 * draw comments when audio has been drawn
 		 */
 		$.subscribe('WaveDrawer-audioDrawn', function() {
-			self.view.draw(self.model, self.waveMng.drawer);
+			self.model.getComments(function(data){
+				self.view.draw(self.model, self.waveMng.drawer, self.user.id);	
+			});
+			
 		});
 
 		$.subscribe('WaveDrawer-selectedAudio', function(el, startCursor, endCursor) {
@@ -61,9 +64,13 @@ define([
 			comment.userName = self.user.name;
 			comment.img = self.user.img;
 			comment.color = self.COLOR;
-			self.addComment(comment, function(commentId){
+			self.saveComment(comment, function(commentId){
 				$.publish('ToViewer-draw', self.songModel);
-				self.showComment(commentId);
+				//we show comment bubble after waiting 200 ms, time enough to let 'toViewer-draw' finish drawing all comments, otherwise it would give an error
+				setTimeout(function(){
+					self.showComment(commentId);
+				},200);
+				
 			});
 			
 
@@ -100,9 +107,12 @@ define([
 		this.commentsShowingBubble.push(commentId);
 		this.view.showBubble(commentId, orderedIndex);
 	};
-	AudioCommentsController.prototype.addComment = function(comment, callback) {
+	AudioCommentsController.prototype.saveComment = function(comment, callback) {
 		var self = this;
-		this.model.addComment(comment, callback);
+		this.model.saveComment(comment, callback);
+	};
+	AudioCommentsController.prototype.addComment = function(comment) {
+		this.model.addComment(comment);
 	};
 
 	AudioCommentsController.prototype.updateComment = function(commentId,text) {
