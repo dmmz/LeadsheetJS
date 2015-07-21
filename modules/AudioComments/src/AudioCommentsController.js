@@ -18,7 +18,6 @@ define([
 		if (!userSession || !userSession.name || !userSession.id) {
 			throw "AudioCommentsController - wrong params";
 		}
-		this.COLOR = "#FFBF00";
 		this.waveMng = waveMng;
 
 		this.model = new AudioCommentsModel(serverAudioComments);
@@ -59,9 +58,6 @@ define([
 		});
 		$.subscribe('AudioCommentsView-saveComment', function(el, comment) {
 			comment.userId = self.user.id;
-			comment.userName = self.user.name;
-			comment.img = self.user.img;
-			comment.color = self.COLOR;
 			self.saveComment(comment, function(commentId) {
 				$.publish('ToViewer-draw', self.songModel);
 				//we show comment bubble after waiting 200 ms, time enough to let 'toViewer-draw' finish drawing all comments, otherwise it would give an error

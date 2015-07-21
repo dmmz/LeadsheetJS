@@ -48,7 +48,7 @@ define(['tests/DisplayTester',
 				var song = SongModel_CSLJson.importFromMusicCSLJSON(Solar);
 				var cM = new CursorModel(song.getComponent('notes'));
 			
-				var waveMng = new WaveManager(song, cM, viewer); //last parameter is called params and is not used here, so it's the default config
+				var waveMng = new WaveManager(song, viewer, cM); //last parameter is called params and is not used here, so it's the default config
 				var noteSpaceManager = new NoteSpaceManager(cM, viewer);
 				var userSession = {name:'Dani', id:'323324422',img:'/tests/img/dani-profile.jpg'};
 				var audioComments = new AudioComments(waveMng,viewer,song,userSession);

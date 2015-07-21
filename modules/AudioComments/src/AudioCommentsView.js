@@ -8,6 +8,7 @@ define([
 
 	function AudioCommentsView(viewer) {
 		this.viewer = viewer;
+		this.COLOR = "#FFBF00";
 		this.commentSpaceMng = null;
 		this.initController();
 		this.newComment = {};
@@ -100,8 +101,8 @@ define([
 	AudioCommentsView.prototype.drawComment = function(comment, ctx, waveDrawer) {
 		var saveFillColor = ctx.fillStyle;
 		var clickableArea;
-		ctx.fillStyle = comment.color;
-		ctx.strokeStyle = comment.color;
+		ctx.fillStyle = this.COLOR;
+		ctx.strokeStyle = this.COLOR;
 		var areas = waveDrawer.getAreasFromTimeInterval(comment.timeInterval[0], comment.timeInterval[1]);
 
 		ctx.beginPath();
@@ -269,10 +270,15 @@ define([
 		$("#" + this.bubblePreId + id + " .textComment").html(text);
 	};
 	/**
-	 * @param  {bubbleId} id html id of bubble
+	 * @param  {String} bubbleId html id of bubble. 
+	 * Normally a bubble id "bubbleX" starts always with prefix "bubble", but we can call this function with the prefix (ex. "bubble0abc") or the id directly (ex. "0abc")
+	 * If there is no prefix, we add it
 	 */
-	AudioCommentsView.prototype.hideBubble = function(id) {
-		$("#" + this.bubblePreId + id).hide();
+	AudioCommentsView.prototype.hideBubble = function(bubbleId) {
+		if (bubbleId.indexOf(this.bubblePreId)==-1){
+			bubbleId = this.bubblePreId + bubbleId;
+		}
+		$("#" + bubbleId).hide();
 	};
 	/**
 	 * hides the 'new comment' bubble
