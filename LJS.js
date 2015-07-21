@@ -1,5 +1,6 @@
 define([
 		"modules/AudioComments/src/AudioCommentsController",
+		"modules/Builder/src/Builder",
 		"modules/ChordEdition/src/ChordEdition",
 		"modules/chordSequence/src/SongView_chordSequence",
 		"modules/Constraint/src/Constraint",
@@ -23,6 +24,7 @@ define([
 	],
 	function(
 		AudioComments,
+		Builder,
 		ChordEdition,
 		chordSequence,
 		Constraint,
@@ -46,6 +48,7 @@ define([
 	) {
 		return {
 			"AudioComments": AudioComments,
+			"init": Builder.init, // init function of the whole LJS, it make it simple to use
 			"ChordEdition": ChordEdition,
 			"chordSequence": chordSequence,
 			"Constraint": Constraint,
