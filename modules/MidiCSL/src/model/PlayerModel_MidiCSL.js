@@ -236,9 +236,9 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 			}
 			this.indexPosition = indexPosition;
 			// TODO, Index is not correct yet
-			// this.cursorModel.setPos(indexPosition);
-			// $.subscribe('CanvasLayer-refresh');
-			// $.publish('ToViewer-draw', this.songModel);
+			this.cursorModel.setPos(indexPosition);
+			$.subscribe('CanvasLayer-refresh');
+			$.publish('ToViewer-draw', this.songModel);
 		};
 
 		/**

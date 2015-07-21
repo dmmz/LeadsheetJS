@@ -97,7 +97,7 @@ define(function(require) {
 
 	function addComments(audioComments) {
 		audioComments.addComment({
-			userName: 'Dani',
+			userName: 'Dani Martin Martinez',
 			id: '1234e',
 			img: '/tests/img/dani-profile.jpg',
 			text: 'This is an audio comment',

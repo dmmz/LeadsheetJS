@@ -125,11 +125,18 @@ define([
 		ctx.closePath();
 		ctx.stroke();
 
+		ctx.font = "12px Arial";
+		var text = ctx.measureText(comment.userName);
+		var widthBox = 100;
+		if (text.width > widthBox) {
+			widthBox = text.width + 50; // 50 stand for 30px image width + padding/margin
+		}
+
 		//draw little box with picture and name, which will be clickable
 		clickableArea = {
 			x: areas[0].x,
 			y: areas[0].y - 30,
-			w: 100,
+			w: widthBox,
 			h: 30
 		};
 
@@ -142,9 +149,8 @@ define([
 			ctx.drawImage(img, areas[0].x, areas[0].y - 30, 30, 30);
 		};
 		ctx.fillStyle = "#000";
-		img.src = comment.img;
 		ctx.textBaseline = 'bottom';
-		ctx.font = "12px Arial";
+		img.src = comment.img;
 
 		ctx.fillText(comment.userName, areas[0].x + 38, areas[0].y - 15);
 
