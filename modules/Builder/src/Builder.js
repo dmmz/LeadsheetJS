@@ -98,8 +98,6 @@ define([
 			}
 		}
 
-
-
 		/**
 		 * On second Part we use options to initialize modules
 		 */
@@ -167,7 +165,7 @@ define([
 			// Load players (midi and audio)
 			Builder._loadMidiPlayer(songModel, playerHTML, doLoadMidiPlayer, soundfontUrl, cursorNoteModel, playerOptions);
 			if (useViewer) {
-				var wave = Builder._loadAudioPlayer(songModel, cursorNoteModel, viewer); // audio player is use to get audio wave, it's why it needs viewer
+				var wave = Builder._loadAudioPlayer(songModel, viewer, cursorNoteModel); // audio player is use to get audio wave, it's why it needs viewer
 				loadedModules.audioPlayer = wave;
 
 				var audioComments = Builder._loadComments(wave, viewer, songModel);
@@ -186,7 +184,7 @@ define([
 
 			// Load players (midi and audio)
 			Builder._loadMidiPlayer(songModel, playerHTML, doLoadMidiPlayer, soundfontUrl, edition.cursorNote.model);
-			var wave = Builder._loadAudioPlayer(songModel, cursorNote.model, viewer);
+			var wave = Builder._loadAudioPlayer(songModel, viewer, cursorNote.model);
 
 			// Load menus
 			var menu = Builder._loadMenu(menuHTML);
@@ -343,7 +341,7 @@ define([
 		}
 	};
 
-	Builder._loadAudioPlayer = function(songModel, cursorModel, viewer) {
+	Builder._loadAudioPlayer = function(songModel, viewer, cursorModel) {
 		var params = {
 			showHalfWave: true,
 			//drawMargins: true,
@@ -352,7 +350,7 @@ define([
 			file: '/tests/audio/solar.wav',
 			tempo: 170
 		};
-		var waveMng = new Wave(songModel, cursorModel, viewer, params);
+		var waveMng = new Wave(songModel, viewer, cursorModel, params);
 		$.publish('ToPlayer-disableAll');
 		waveMng.enable();
 		return waveMng;

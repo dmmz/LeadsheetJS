@@ -15,7 +15,7 @@ define(['modules/Wave/src/WaveModel',
 	 *   - topAudio: y distance to the actual bar from which audio is drawn, if 0 it will overwrite the current bar
 	 *   - heightAudio: height of the audio area, if 150 it will completely overwrite the current bar in the score
 	 */
-	function WaveController(songModel, cursor, viewer, params) {
+	function WaveController(songModel, viewer, cursor, params) {
 		if (!songModel) {
 			throw "WaveController - songModel not defined";
 		}
