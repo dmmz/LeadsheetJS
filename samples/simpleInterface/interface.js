@@ -47,24 +47,27 @@ define(function(require) {
 
 	var viewerOptions = {
 		'HTMLElement': viewerHTML,
-		'displayTitle': true,
-		'displayComposer': true,
-		'layer': false,
-		'typeResize': "scale", // "scale" | "fluid"
-		'heightOverflow': "auto", // "scroll" | "auto"
-		'width': "auto", // in pixels
+		'viewOptions': {
+			'displayTitle': true,
+			'displayComposer': true,
+			'layer': true,
+			'typeResize': "fluid", // "scale" | "fluid"
+			'heightOverflow': "auto", // "scroll" | "auto"
+		}
 	};
 
 	var playerOptions = {
 		'soundfontUrl': soundfontUrl,
 		'HTMLElement': playerHTML,
 		'pictureUrl': '/modules/MidiCSL/img',
-		'displayMetronome': true,
-		'displayLoop': true,
-		'displayTempo': true,
-		'changeInstrument': true,
-		'autoload': false,
-		'progressBar': true
+		'viewOptions': {
+			'displayMetronome': true,
+			'displayLoop': true,
+			'displayTempo': true,
+			'changeInstrument': true,
+			'autoload': false,
+			'progressBar': true
+		}
 	};
 
 	var params = {
@@ -75,7 +78,7 @@ define(function(require) {
 			'chords': true,
 			'structure': true,
 			'history': {
-				'enable': false,
+				'enable': true,
 				'HTMLElement': historyHTML, // if not precised, then it doesn't display history but keyboard ctrl+z and y are working
 
 			}
