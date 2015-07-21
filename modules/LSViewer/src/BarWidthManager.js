@@ -1,4 +1,4 @@
-define(function() {
+define(['modules/core/src/SongBarsIterator', 'modules/core/src/SectionBarsIterator'], function(SongBarsIterator, SectionBarsIterator) {
 	function BarWidthManager(lineHeight, lineWidth, noteWidth, barsPerLine, marginTop, lastBarWidthRatio) {
 		if (!lineHeight) throw "BarWidthManager - lineHeight not defined";
 		if (!lineWidth) throw "BarWidthManager - lineWidth not defined";
@@ -8,7 +8,7 @@ define(function() {
 
 		this.lastBarWidthRatio = lastBarWidthRatio || 1;
 
-		this.WIDTH_FACTOR = 1.6; // factor by witch we multiply the minimum width so that notes are not so crammed (always > 1)
+		this.WIDTH_FACTOR = 1.6; // factor by whitch we multiply the minimum width so that notes are not so crammed (always > 1)
 		this.barsStruct = [];
 
 		this.lineHeight = Number(lineHeight);
@@ -21,21 +21,62 @@ define(function() {
 	 * calculates the minimum width for each bar depending on the number of notes it has
 	 * @param  {SongModel} song
 	 * @param  {NoteManagerModel} noteMng
+	 * @param  {CanvasContext} ctx
+	 * @param  {String} font chords. ex: "18px verdana"
+	 *
+	 * last two params are needed if we are drawing chord symbols
 	 * @return {Array} of minimum widths    e.g.: [200,200,100,100,100,200,]
 	 */
-	BarWidthManager.prototype.getMinWidthList = function(song, noteMng) {
+	BarWidthManager.prototype.getMinWidthList = function(song, noteMng, chordsMng, ctx, fontChord) {
 		var self = this,
 			width,
 			minWidthList = [],
-			barNotes;
+			barNotes,
+			chordWidth,
+			diff,
+			maxDiff,
+			chord,
+			marginChordFactor = 1.15; //always should be greater than 1
+		oldCtxFont = ctx.font;
+
+		ctx.font = fontChord;
+		var songIt = new SongBarsIterator(song);
 
 		song.getSections().forEach(function(section) {
-			for (var iBar = 0; iBar < section.numberOfBars; iBar++) {
-				barNotes = noteMng.getNotesAtBarNumber(iBar, song);
+			sectionIt = new SectionBarsIterator(section);
+			while (sectionIt.hasNext()) {
+				//get minimum notes width
+				barNotes = noteMng.getNotesAtBarNumber(songIt.getBarIndex(), song);
 				width = (barNotes.length * self.noteWidth) * self.WIDTH_FACTOR;
+
+				//get minimum chords width. strategy: we check if any chords of bar are longer than the space assigned for them, 
+				//if there are one or more, we get the longest difference and we widen ALL beats (this way we keep consistency between chord duration and chord space)
+				chordWidth = width / songIt.getBarTimeSignature().getBeats();
+
+				barChords = chordsMng.getChordsByBarNumber(songIt.getBarIndex());
+				maxDiff = 0;
+				for (var i = 0; i < barChords.length; i++) {
+					chord = barChords[i];
+					//if chord is in last beat of measure or there is only one beat difference between next 
+					if (chord.getBeat() == barChords.length - 1 || (i < barChords.length - 1 && chord.getBeat() == barChords[i + 1].getBeat() - 1)) {
+						//we check if should be longer
+						diff = ctx.measureText(chord.toString()).width - chordWidth;
+						if (diff > 0 && diff > maxDiff) {
+							maxDiff = diff;
+						}
+					}
+				}
+				if (maxDiff !== 0) {
+					//here we widen ALL beats a maxDiff
+					width += maxDiff * marginChordFactor * songIt.getBarTimeSignature().getBeats();
+				}
 				minWidthList.push(width);
+				songIt.next();
+				sectionIt.next();
 			}
+
 		});
+		ctx.fond = oldCtxFont;
 
 		return minWidthList;
 	};
@@ -204,8 +245,8 @@ define(function() {
 	 * @param {NoteManagerModel} noteMng [description]
 	 */
 
-	BarWidthManager.prototype.calculateBarsStructure = function(song, noteMng) {
-		var minWidthList = this.getMinWidthList(song, noteMng);
+	BarWidthManager.prototype.calculateBarsStructure = function(song, noteMng, chordsMng, ctx, fontChords) {
+		var minWidthList = this.getMinWidthList(song, noteMng, chordsMng, ctx, fontChords);
 		var pickupAtStart;
 		if (typeof song.getSection(0) !== "undefined") {
 			pickupAtStart = song.getSection(0).getNumberOfBars() == 1;
@@ -259,7 +300,7 @@ define(function() {
 				if (numBar == iBar2) line2 = line;
 				if (line1 != -1 && line2 != -1) break labelMainFor;
 				numBar++;
-			};
+			}
 		}
 		return line1 == line2;
 

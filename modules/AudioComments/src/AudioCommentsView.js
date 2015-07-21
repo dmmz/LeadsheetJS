@@ -27,7 +27,8 @@ define([
 			if (id == self.newCommentId) {
 				self.hideNewComment();
 			} else {
-				self.hideBubble(id);
+				id = id.substr(self.bubblePreId.length, id.length); //extracting prefix "bubble", to get id X on "bubbleX"
+				$.publish('AudioCommentsView-closeBubble', id);
 			}
 		});
 		//new comment
@@ -64,11 +65,12 @@ define([
 		return $("#" + id).length !== 0;
 	};
 	/**
+	 * called by AudioCommentsController
 	 * draws comment marker (with the picture and the name)
 	 * @param  {AudioCommentsModel} audioCommentsModel
 	 * @param  {WaveDrawer} waveDrawer
 	 */
-	AudioCommentsView.prototype.draw = function(audioCommentsModel, waveDrawer) {
+	AudioCommentsView.prototype.draw = function(audioCommentsModel, waveDrawer, userId) {
 		//we construct it here because it adds himself to canvasLayer which exists only after the score is drawn
 		this.commentSpaceMng = new CommentSpaceManager(this.viewer);
 
@@ -77,7 +79,7 @@ define([
 			self = this;
 
 		//draw only if doesn't exists, to avoid duplicates 
-		//(html elements are different form canvas elements, html elements are not reset in every LSViewer draw where canvas elements are)
+		//(html elements are different from canvas elements, html elements are not reset in every LSViewer draw whereas canvas elements are)
 		if (!this._htmlIdExists(this.newCommentId)) {
 			this.drawNewComment();
 		}
@@ -89,7 +91,7 @@ define([
 				self.drawComment(comments[i], ctx, waveDrawer);
 				bubbleId = self.bubblePreId + comments[i].id;
 				if (!self._htmlIdExists(bubbleId)) {
-					self.drawBubble(comments[i], bubbleId);
+					self.drawBubble(comments[i], bubbleId, userId);
 				}
 			}
 		});
@@ -132,7 +134,7 @@ define([
 		};
 
 		ctx.strokeRect(clickableArea.x, clickableArea.y, clickableArea.w, clickableArea.h);
-		ctx.globalAlpha = 0.2;
+		ctx.globalAlpha = 0.7;
 		ctx.fillRect(clickableArea.x, clickableArea.y, clickableArea.w, clickableArea.h);
 		ctx.globalAlpha = 1;
 		var img = new Image();
@@ -142,8 +144,15 @@ define([
 		ctx.fillStyle = "#000";
 		img.src = comment.img;
 		ctx.textBaseline = 'bottom';
-		ctx.font = "15px lato Verdana";
-		ctx.fillText(comment.user, areas[0].x + 40, areas[0].y - 10);
+		ctx.font = "12px Arial";
+
+		ctx.fillText(comment.userName, areas[0].x + 38, areas[0].y - 15);
+
+		if (comment.date !== undefined) {
+			ctx.font = "10px Arial";
+			ctx.fillText("(" + comment.date + ")", areas[0].x + 35, areas[0].y - 2);
+		}
+
 		ctx.fillStyle = saveFillColor;
 		//add clickable area to commentSpaceMgn
 		this.commentSpaceMng.addCommentSpace(clickableArea);
@@ -153,11 +162,14 @@ define([
 	 * Bubble is a HTML div, it is drawn as a hidden element after every LSViewer draw
 	 * @param  {Object} comment
 	 * @param  {String} bubbleId
+	 * @param  {String} userId
 	 */
-	AudioCommentsView.prototype.drawBubble = function(comment, bubbleId) {
+	AudioCommentsView.prototype.drawBubble = function(comment, bubbleId, userId) {
 		var el = Mustache.render(SpeechBubbleTpl, {
-			textComment: comment.text
+			textComment: comment.text,
+			ownComment: comment.userId == userId
 		});
+
 		$("body").append(
 			$(el).attr('id', bubbleId)
 			.attr('data-commentId', comment.id)
@@ -180,7 +192,7 @@ define([
 	 *                           e.g. if we have removed comment with id 2, keys of comments is ["0","1","3","4"] whereas corresponding indexes will be [0,1,2,3], so when *                           commentId is 2, index will be 3 (works well as every time a comment is added or deleted, everything is recalculated)
 	 */
 	AudioCommentsView.prototype.showBubble = function(commentId, index) {
-		var height = $("#bubble" + commentId).height();
+		var height = $("#" + this.bubblePreId + commentId).height();
 
 		var area = this.commentSpaceMng.commentSpaces[index].getArea();
 		var offset = this.offset; //to avoid 'this' closure problem
@@ -254,7 +266,7 @@ define([
 	 * @param  {bubbleId} id html id of bubble
 	 */
 	AudioCommentsView.prototype.hideBubble = function(id) {
-		$("#" + id).hide();
+		$("#" + this.bubblePreId + id).hide();
 	};
 	/**
 	 * hides the 'new comment' bubble

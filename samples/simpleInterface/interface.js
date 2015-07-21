@@ -41,6 +41,7 @@ define(function(require) {
 	var menuHTML = document.getElementById('menu-container');
 	var viewerHTML = $("#canvas_container")[0];
 	var playerHTML = $('#player_test')[0];
+
 	var historyHTML = $('#rightPanel');
 	var soundfontUrl = "../../external-libs/Midijs/soundfont/";
 
@@ -79,6 +80,7 @@ define(function(require) {
 			'history': {
 				'enable': true,
 				'HTMLElement': historyHTML, // if not precised, then it doesn't display history but keyboard ctrl+z and y are working
+
 			}
 		},
 		'menu': {
@@ -90,21 +92,23 @@ define(function(require) {
 	var myLeadsheet = LJS.init(testSongs.simpleLeadSheet, params);
 	console.log(myLeadsheet);
 	if (typeof myLeadsheet.audioComments !== "undefined") {
-		addComment(myLeadsheet.audioComments);
+		addComments(myLeadsheet.audioComments);
 	}
 
-
-	function addComment(audioComments) {
+	function addComments(audioComments) {
 		audioComments.addComment({
-			user: 'Dani',
+			userName: 'Dani',
+			id: '1234e',
 			img: '/tests/img/dani-profile.jpg',
 			text: 'This is an audio comment',
 			timeInterval: [1.5891220809932014, 2.668046112917529],
-			color: '#F00'
+			color: '#FFBF00',
+			date: '1 min ago'
 		});
 
 		audioComments.addComment({
-			user: 'Dani',
+			userName: 'Dani',
+			id: '1234',
 			img: '/tests/img/dani-profile.jpg',
 			text: 'lorem ipsum cumulum largo texto asolo en caso de que tal cual pascual ande vas con la moto que thas comprado, vaya tela',
 			timeInterval: [3.3, 10.1],

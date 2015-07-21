@@ -365,7 +365,8 @@ define([
 	};
 
 	Builder._loadComments = function(waveMng, viewer, songModel) {
-		var audioComments = new AudioComments(waveMng, viewer, songModel);
+		var userSession = {name:'Dani', id:'323324422',img:'/tests/img/dani-profile.jpg'};
+		var audioComments = new AudioComments(waveMng, viewer, songModel, userSession);
 		return audioComments;
 	};
 

@@ -63,14 +63,14 @@ define([
 			return;
 		}
 		var xi, yi, xe, ye;
-		var beatInBar;
+		var beatsInBar;
 		var decalX;
 		var widthBeat;
 		var area;
 		for (var i = 0, c = viewer.vxfBars.length; i < c; i++) {
-			beatInBar = viewer.vxfBars[i].timeSignature.getBeats();
-			widthBeat = viewer.vxfBars[i].barDimensions.width / beatInBar;
-			for (var j = 0; j < beatInBar; j++) {
+			beatsInBar = viewer.vxfBars[i].timeSignature.getBeats();
+			widthBeat = viewer.vxfBars[i].barDimensions.width / beatsInBar;
+			for (var j = 0; j < beatsInBar; j++) {
 				area = {
 					x: (viewer.vxfBars[i].barDimensions.left + widthBeat * j),
 					y: (viewer.vxfBars[i].barDimensions.top - 17),

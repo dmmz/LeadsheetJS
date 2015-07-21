@@ -50,9 +50,10 @@ define(['tests/DisplayTester',
 			
 				var waveMng = new WaveManager(song, cM, viewer); //last parameter is called params and is not used here, so it's the default config
 				var noteSpaceManager = new NoteSpaceManager(cM, viewer);
-				var audioComments = new AudioComments(waveMng,viewer);
+				var userSession = {name:'Dani', id:'323324422',img:'/tests/img/dani-profile.jpg'};
+				var audioComments = new AudioComments(waveMng,viewer,song,userSession);
 				audioComments.addComment({
-					user: 'Dani',
+					userName: 'Dani',
 					img: '/tests/img/dani-profile.jpg',
 					text: 'I am hungry',
 					timeInterval: [1.5891220809932014, 2.668046112917529],
@@ -60,7 +61,7 @@ define(['tests/DisplayTester',
 				});
 
 				audioComments.addComment({
-					user: 'Dani',
+					userName: 'Dani',
 					img: '/tests/img/dani-profile.jpg',
 					text: 'I am hungry',
 					timeInterval: [3.3, 10.1],

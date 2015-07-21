@@ -81,8 +81,7 @@ define([
 				},
 				onSelect: function(suggestion) {
 					self.songModel[self.songSetNameFn].call(self.songModel, suggestion.value);
-				},
-
+				}
 			});
 		}
 	};
