@@ -57,12 +57,7 @@ define([
 			if (typeof params.viewer.HTMLElement !== "undefined") {
 				useViewer = true;
 				var viewerHTML = params.viewer.HTMLElement;
-				var displayTitle = (typeof params.viewer.displayTitle !== "undefined") ? params.viewer.displayTitle : true;
-				var displayComposer = (typeof params.viewer.displayComposer !== "undefined") ? params.viewer.displayComposer : true;
-				var layer = (typeof params.viewer.layer !== "undefined") ? params.viewer.layer : false;
-				var typeResize = (typeof params.viewer.typeResize !== "undefined") ? params.viewer.typeResize : "scale";
-				var heightOverflow = (typeof params.viewer.heightOverflow !== "undefined") ? params.viewer.heightOverflow : "auto";
-				var width = (typeof params.viewer.width !== "undefined") ? params.viewer.width : "auto";
+				var viewerOptions = (typeof params.viewer.viewOptions !== "undefined") ? params.viewer.viewOptions : {};
 			}
 		}
 
@@ -73,12 +68,7 @@ define([
 				usePlayer = true;
 				var playerHTML = params.player.HTMLElement;
 				var soundfontUrl = (typeof params.player.soundfontUrl !== "undefined") ? soundfontUrl : undefined;
-				var displayMetronome = (typeof params.player.displayMetronome !== "undefined") ? displayMetronome : true;
-				var displayLoop = (typeof params.player.displayLoop !== "undefined") ? displayLoop : true;
-				var displayTempo = (typeof params.player.displayTempo !== "undefined") ? displayTempo : true;
-				var changeInstrument = (typeof params.player.changeInstrument !== "undefined") ? changeInstrument : true;
-				var autoload = (typeof params.player.autoload !== "undefined") ? autoload : false;
-				var progressBar = (typeof params.player.progressBar !== "undefined") ? progressBar : true;
+				var playerOptions = (typeof params.player.viewOptions !== "undefined") ? params.viewer.viewOptions : {};
 			}
 		}
 
@@ -121,7 +111,7 @@ define([
 		var viewer;
 		if (useViewer) {
 			// Reading only
-			viewer = Builder._loadViewer(songModel, viewerHTML);
+			viewer = Builder._loadViewer(songModel, viewerHTML, viewerOptions);
 			loadedModules.viewer = viewer;
 			if (useMenu) {
 				// Load menus
@@ -133,24 +123,26 @@ define([
 					Builder._loadHistory(songModel, historyHTML);
 				}
 				if (useMenu) {
-					var edition = Builder._loadEditionModules(viewer, songModel, menu); // TODO menu shouldn't be required here
-					// Harmonize menu
-					var harm = new Harmonizer(songModel, menu.model);
-					// Harmonic Analysis menu
-					var harmAn = new HarmonicAnalysis(songModel, edition.noteEdition.noteSpaceMng);
 					// Edit files menu
 					var fileEdition = new FileEdition(songModel, viewer.canvas);
+					var edition = Builder._loadEditionModules(viewer, songModel, editNotes, editChords, editStructure, menu); // TODO menu shouldn't be required here
+					// Harmonize menu
+					var harm = new Harmonizer(songModel, menu.model);
 					menu.model.addMenu({
 						title: 'Harmonizer',
 						view: harm.view,
 						order: 5
 					});
+					if (editNotes) {
+						// Harmonic Analysis menu
+						var harmAn = new HarmonicAnalysis(songModel, edition.noteEdition.noteSpaceMng);
+						menu.model.addMenu({
+							title: 'Harmonic Analysis',
+							view: harmAn.view,
+							order: 6
+						});
+					}
 
-					menu.model.addMenu({
-						title: 'Harmonic Analysis',
-						view: harmAn.view,
-						order: 6
-					});
 				}
 			}
 			if (useMenu) {
@@ -167,13 +159,13 @@ define([
 		}
 		if (usePlayer) {
 			var cursorNoteModel;
-			if (typeof edition !== "undefined" && typeof edition.cursorNote.model !== "undefined") {
+			if (typeof edition !== "undefined" && typeof edition.cursorNote !== "undefined") {
 				cursorNoteModel = edition.cursorNote.model;
 			} else {
 				cursorNoteModel = (new Cursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow')).model;
 			}
 			// Load players (midi and audio)
-			Builder._loadMidiPlayer(songModel, playerHTML, doLoadMidiPlayer, soundfontUrl, cursorNoteModel);
+			Builder._loadMidiPlayer(songModel, playerHTML, doLoadMidiPlayer, soundfontUrl, cursorNoteModel, playerOptions);
 			if (useViewer) {
 				var wave = Builder._loadAudioPlayer(songModel, cursorNoteModel, viewer); // audio player is use to get audio wave, it's why it needs viewer
 				loadedModules.audioPlayer = wave;
@@ -272,12 +264,8 @@ define([
 		new chordSequence($('#chordSequence1')[0], songModel, optionChediak);
 	};
 
-	Builder._loadViewer = function(songModel, HTMLElement) {
-		var viewer = new LSViewer.LSViewer(HTMLElement, {
-			/*displayTitle: false,
-			displayComposer: false,*/
-			layer: true
-		});
+	Builder._loadViewer = function(songModel, HTMLElement, viewerOptions) {
+		var viewer = new LSViewer.LSViewer(HTMLElement, viewerOptions);
 		LSViewer.OnWindowResizer(songModel);
 		return viewer;
 	};
@@ -287,7 +275,7 @@ define([
 		return menu;
 	};
 
-	Builder._loadEditionModules = function(viewer, songModel, menu) {
+	Builder._loadEditionModules = function(viewer, songModel, editNotes, editChords, editStructure, menu) {
 		//ALTERNATIVE WAY TO CREATE EDITION if not using edition constructor
 		// var KeyboardManager = require('modules/Edition/src/KeyboardManager');
 		// new KeyboardManager(true);
@@ -304,16 +292,20 @@ define([
 		//bars edition 
 		//var structEdition = new StructureEdition(songModel, edition.cursorNote.model, '/modules/StructureEdition/img');
 
-		var edition = new Edition(viewer, songModel, menu.model, {
-			notes: {
+		var modules = {};
+
+		if (editNotes) {
+			modules.notes = {
 				active: true,
 				menu: {
 					title: 'Notes',
 					order: 2
 				},
 				imgPath: '/modules/NoteEdition/img'
-			},
-			chords: {
+			};
+		}
+		if (editChords) {
+			modules.chords = {
 				active: true,
 				menu: {
 					title: 'Chords',
@@ -321,32 +313,28 @@ define([
 				},
 				imgPath: '/modules/NoteEdition/img'
 					// menu: false /* if we don't want menu*/
-			},
-			structure: {
+			};
+		}
+		if (editStructure) {
+			modules.structure = {
 				active: true,
 				menu: {
 					title: 'Structure',
 					order: 4
 				},
 				imgPath: '/modules/StructureEdition/img'
-			},
-			composer: {
-				suggestions: ['Adam Smith', 'Kim Jong-il', 'Iñigo Errejón', 'Mia Khalifa', 'Jose Monge']
-			}
-		});
+			};
+		}
+		modules.composer = {
+			suggestions: ['Adam Smith', 'Kim Jong-il', 'Iñigo Errejón', 'Mia Khalifa', 'Jose Monge']
+		};
+		var edition = new Edition(viewer, songModel, menu.model, modules);
 		return edition;
 	};
 
-	Builder._loadMidiPlayer = function(songModel, HTMLPlayer, loadMidi, soundfontUrl, cursorModel) {
+	Builder._loadMidiPlayer = function(songModel, HTMLPlayer, loadMidi, soundfontUrl, cursorModel, playerOptions) {
 		// Create a song from testSong
-		var pV = new MidiCSL.PlayerView(HTMLPlayer, '/modules/MidiCSL/img', {
-			displayMetronome: true,
-			displayLoop: true,
-			displayTempo: true,
-			changeInstrument: true,
-			autoload: false,
-			progressBar: true
-		});
+		var pV = new MidiCSL.PlayerView(HTMLPlayer, '/modules/MidiCSL/img', playerOptions);
 		if (typeof loadMidi === "undefined" || loadMidi === true) {
 			var player = new MidiCSL.PlayerModel_MidiCSL(songModel, soundfontUrl, {
 				'cursorModel': cursorModel
