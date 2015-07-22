@@ -32,12 +32,14 @@ define(['modules/core/src/SongBarsIterator', 'modules/core/src/SectionBarsIterat
 			width,
 			minWidthList = [],
 			barNotes,
+			barChords,
+			sectionIt,
 			chordWidth,
 			diff,
 			maxDiff,
 			chord,
 			marginChordFactor = 1.15; //always should be greater than 1
-		oldCtxFont = ctx.font;
+		var oldCtxFont = ctx.font;
 
 		ctx.font = fontChord;
 		var songIt = new SongBarsIterator(song);
