@@ -12,8 +12,22 @@
 //var NoteModel_MidiCSL = require('modules/MidiCSL/src/model/NoteModel_MidiCSL');
 
 
-define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConverterMidi_MidiCSL', 'modules/MidiCSL/src/model/SongModel_MidiCSL', 'Midijs', 'pubsub'],
-	function($, SongModel, SongConverterMidi_MidiCSL, SongModel_MidiCSL, MIDI, pubsub) {
+define([
+		'jquery',
+		'modules/core/src/SongModel',
+		'modules/core/src/NoteModel',
+		'modules/MidiCSL/src/converters/SongConverterMidi_MidiCSL',
+		'modules/MidiCSL/src/model/SongModel_MidiCSL',
+		'Midijs',
+		'pubsub'
+	],
+	function($,
+		SongModel,
+		NoteModel,
+		SongConverterMidi_MidiCSL,
+		SongModel_MidiCSL,
+		MIDI,
+		pubsub) {
 		/* option contain
 			editor				// Score Editor Object, it is use mainly for viewer to display cursor
 			chordsInstrument
@@ -40,7 +54,7 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 				initVolume = this.initVolume(0.7);
 			}
 			if ((typeof option !== "undefined" && typeof(option.cursorModel) !== "undefined")) {
-				this.cursorModel = cursorModel;
+				this.cursorModel = option.cursorModel;
 			}
 
 
@@ -231,15 +245,16 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 		};
 
 		PlayerModel_MidiCSL.prototype.setPositionIndex = function(indexPosition, lastNote) {
-			if (typeof indexPosition === "undefined" || isNaN(indexPosition)) {
-				throw 'PlayerModel_MidiCSL - setPositionIndex - indexPosition must be a number ' + indexPosition;
+			if (typeof indexPosition === "undefined") {
+				throw 'PlayerModel_MidiCSL - setPositionIndex - indexPosition must be defined ' + indexPosition;
 			}
 			this.indexPosition = indexPosition;
-			// TODO, Index is not correct yet
 			this.cursorModel.setPos(indexPosition);
 			$.subscribe('CanvasLayer-refresh');
 			$.publish('ToViewer-draw', this.songModel);
 		};
+
+
 
 		/**
 		 * Function set position between 0 and 1
@@ -367,18 +382,21 @@ define(['jquery', 'modules/core/src/SongModel', 'modules/MidiCSL/src/converters/
 											MIDI.noteOff(channel, currentMidiNote, duration);
 										}
 										if (currentNote.getType() == "melody") {
-											self.setPositionIndex(i);
+											if (typeof currentNote.tieNotesNumber !== "undefined" && currentNote.tieNotesNumber) {
+												self.setPositionIndex([currentNote.getNoteIndex(), currentNote.getNoteIndex() + currentNote.tieNotesNumber - 1]);
+											} else {
+												self.setPositionIndex(currentNote.getNoteIndex());
+											}
 											self.setPositionInPercent((Date.now() - self._startTime) / self.songDuration);
 										}
 										/*}*/
 										if (currentNote == lastNote || (currentNote.getCurrentTime() * self.getBeatDuration(tempo) >= playTo)) {
-											self.setPositionIndex(i);
+											self.setPositionIndex(currentNote.getNoteIndex());
 											self.setPositionInPercent(1);
 											setTimeout((function() {
 												self.setPositionIndex(0, beatOfLastNoteOff);
 												self.setPositionInPercent(0);
 												if (self.doLoop() === false) {
-													console.log('ok');
 													$.publish('PlayerModel-onfinish');
 													self.stop();
 												} else {

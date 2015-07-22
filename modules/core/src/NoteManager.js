@@ -167,6 +167,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		}
 		return undefined;
 	};
+	
 	NoteManager.prototype.getIndexesBetweenBarNumbers = function(barNum1, barNum2, song) {
 		if (!song){
 			throw "NoteManager - getNotesBetweenBarNumbers - missing parameter song";

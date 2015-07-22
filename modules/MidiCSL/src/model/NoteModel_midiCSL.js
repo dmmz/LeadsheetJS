@@ -5,7 +5,8 @@ define([], function() {
 		this.duration = (typeof option !== "undefined" && typeof(option.duration) !== "undefined") ? option.duration : 0.0; // duration in beat
 		this.type = (typeof option !== "undefined" && typeof(option.type) !== "undefined") ? option.type : undefined; // type is melody or chord
 		this.midiNote = (typeof option !== "undefined" && typeof(option.midiNote) !== "undefined") ? option.midiNote : [];
-	};
+		this.noteIndex = (typeof option !== "undefined" && typeof(option.noteIndex) !== "undefined") ? option.noteIndex : undefined;
+	}
 
 	NoteModel_MidiCSL.prototype.getCurrentTime = function() {
 		return this.currentTime;
@@ -51,10 +52,14 @@ define([], function() {
 		this.midiNote = midiNote;
 	};
 
+	NoteModel_MidiCSL.prototype.getNoteIndex = function() {
+		return this.noteIndex;
+	};
+
 	NoteModel_MidiCSL.prototype.getTransposeMidiNote = function(semi_tons) {
 		var midiNote = [];
 		var computedMidiNote;
-		if(this.midiNote !== "undefined"){
+		if (this.midiNote !== "undefined") {
 			for (var i = 0, c = this.midiNote.length; i < c; i++) {
 				computedMidiNote = this.midiNote[i] + semi_tons;
 				if (computedMidiNote >= 21 && computedMidiNote <= 108) {

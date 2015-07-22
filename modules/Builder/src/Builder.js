@@ -67,7 +67,7 @@ define([
 			if (typeof params.player.HTMLElement !== "undefined") {
 				usePlayer = true;
 				var playerHTML = params.player.HTMLElement;
-				var soundfontUrl = (typeof params.player.soundfontUrl !== "undefined") ? soundfontUrl : undefined;
+				var soundfontUrl = (typeof params.player.soundfontUrl !== "undefined") ? params.player.soundfontUrl : undefined;
 				var playerOptions = (typeof params.player.viewOptions !== "undefined") ? params.viewer.viewOptions : {};
 			}
 		}
@@ -347,8 +347,8 @@ define([
 			//drawMargins: true,
 			topAudio: -120,
 			heightAudio: 75,
-			file: '/tests/audio/solar.wav',
-			tempo: 170
+			//file: '/tests/audio/solar.wav',
+			//tempo: 170
 		};
 		var waveMng = new Wave(songModel, viewer, cursorModel, params);
 		$.publish('ToPlayer-disableAll');
@@ -365,7 +365,11 @@ define([
 	};
 
 	Builder._loadComments = function(waveMng, viewer, songModel) {
-		var userSession = {name:'Dani', id:'323324422',img:'/tests/img/dani-profile.jpg'};
+		var userSession = {
+			name: 'Dani',
+			id: '323324422',
+			img: '/tests/img/dani-profile.jpg'
+		};
 		var audioComments = new AudioComments(waveMng, viewer, songModel, userSession);
 		return audioComments;
 	};

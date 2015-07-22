@@ -99,6 +99,7 @@ define([
 			if (barsIndex.length === 0) {
 				barsIndex[0] = 0; // in case there is no bars, use bar 0;
 			}
+			var globalIndex = 0;
 			for (var i = 0, c = barsIndex.length; i < c; i++) {
 				numMeasure = barsIndex[i];
 				numBeats = songModel.getTimeSignatureAt(numMeasure).getBeats();
@@ -119,7 +120,7 @@ define([
 							'type': 'melody',
 							'currentTime': currentTime,
 							'duration': duration,
-							'noteModel': note
+							'noteIndex': globalIndex
 						});
 						song.push(midiSoundModel);
 					} else {
@@ -130,24 +131,23 @@ define([
 						for (var k = 0; k < noteKey.length; k++) {
 							midiNote[k] = MidiHelper.keyToNote[noteKey[k]];
 						}
-
 						if (note.isTie() && c !== 1) { // don't use tie when there is one note (it happen when we click on one note)
 							if (note.getTie() === "start") {
 								inTie = true;
-								tieNotesNumber = 1;
+								tieNotesNumber = 2;
 								tieNotesObject = new NoteModel_midiCSL({
 									'midiNote': midiNote,
 									'type': 'melody',
 									'currentTime': currentTime,
 									'duration': duration,
-									'noteModel': note
+									'noteIndex': globalIndex
 								});
 								midiSoundModel = new NoteModel_midiCSL({
 									'midiNote': false,
 									'type': 'melody',
 									'currentTime': currentTime,
 									'duration': duration,
-									'noteModel': note
+									'noteIndex': globalIndex
 								});
 								song.push(midiSoundModel);
 							}
@@ -159,7 +159,7 @@ define([
 									'type': 'melody',
 									'currentTime': currentTime,
 									'duration': duration,
-									'noteModel': note
+									'noteIndex': globalIndex
 								});
 								song.push(midiSoundModel);
 							}
@@ -170,7 +170,6 @@ define([
 									accidentalMeasure = (JSON.parse(JSON.stringify(tonalityNote))); // empty accidentalMeasure on new measure
 								}
 								inTie = false;
-								tieNotesNumber++;
 								if (typeof tieNotesObject.getDuration === "undefined") {
 									// case the tieNotes have not been yet created (it's a particular case where tie note is tie with nothing)
 									// It happens when we take a chunk of a melody
@@ -179,7 +178,7 @@ define([
 										'type': 'melody',
 										'currentTime': currentTime,
 										'duration': duration,
-										'noteModel': note
+										'noteIndex': globalIndex
 									});
 								} else {
 									// usual case
@@ -196,12 +195,13 @@ define([
 								'type': 'melody',
 								'currentTime': currentTime,
 								'duration': duration,
-								'noteModel': note
+								'noteIndex': globalIndex
 							});
 							song.push(midiSoundModel);
 						}
 					}
 					currentTime += duration;
+					globalIndex++;
 				}
 			}
 			return song;

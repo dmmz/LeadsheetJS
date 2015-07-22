@@ -94,6 +94,9 @@ define(function(require) {
 	if (typeof myLeadsheet.audioComments !== "undefined") {
 		addComments(myLeadsheet.audioComments);
 	}
+	if (typeof myLeadsheet.audioPlayer !== "undefined") {
+		myLeadsheet.audioPlayer.load('/tests/audio/solar.wav', 170, true);
+	}
 
 	function addComments(audioComments) {
 		audioComments.addComment({
