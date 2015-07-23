@@ -244,7 +244,7 @@ define([
 			return this.indexPosition;
 		};
 
-		PlayerModel_MidiCSL.prototype.setPositionIndex = function(indexPosition, lastNote) {
+		PlayerModel_MidiCSL.prototype.setPositionIndex = function(indexPosition) {
 			if (typeof indexPosition === "undefined") {
 				throw 'PlayerModel_MidiCSL - setPositionIndex - indexPosition must be defined ' + indexPosition;
 			}
@@ -391,10 +391,9 @@ define([
 										}
 										/*}*/
 										if (currentNote == lastNote || (currentNote.getCurrentTime() * self.getBeatDuration(tempo) >= playTo)) {
-											self.setPositionIndex(currentNote.getNoteIndex());
 											self.setPositionInPercent(1);
 											setTimeout((function() {
-												self.setPositionIndex(0, beatOfLastNoteOff);
+												self.setPositionIndex(0);
 												self.setPositionInPercent(0);
 												if (self.doLoop() === false) {
 													$.publish('PlayerModel-onfinish');
