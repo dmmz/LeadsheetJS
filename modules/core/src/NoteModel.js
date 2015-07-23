@@ -14,7 +14,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		this.dot = (param && param.dot) ? param.dot : 0; // 0,1,2
 		this.tie = (param && param.tie) ? param.tie : undefined; // contain "start", "stop", "stop_start"
 		this.tuplet = (param && param.tuplet) ? param.tuplet : undefined;
-		this.timeModification = (param && param.timeModification) ? param.timeModification : undefined;
+		this.timeModification = (param && param.timeModification) ? param.timeModification : undefined; // it's an attribute that exist only with tuplet
 
 		if (typeof this.tuplet !== "undefined") {
 			this.setTuplet(this.tuplet, this.timeModification);

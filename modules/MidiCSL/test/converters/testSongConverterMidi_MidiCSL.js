@@ -27,10 +27,10 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 					fakeSong.push(new NoteModel_midiCSL({currentTime:28, duration:4, midiNote:[65,69,72,75], type:'chord'}));
 					assert.deepEqual(midiSongModel.getFromType('chord'), fakeSong);
 
-					var fakeNote = new NoteModel_midiCSL({currentTime:0, duration:1, midiNote:[69], type:'melody'});
+					var fakeNote = new NoteModel_midiCSL({currentTime:0, duration:1, midiNote:[69], type:'melody', 'noteIndex':0});
 					assert.deepEqual(midiSongModel.getFromType('melody')[0], fakeNote);
 
-					fakeNote = new NoteModel_midiCSL({currentTime:7, duration:1, midiNote:[64], type:'melody'});
+					fakeNote = new NoteModel_midiCSL({currentTime:7, duration:1, midiNote:[64], type:'melody', 'noteIndex':8});
 					assert.deepEqual(midiSongModel.getFromType('melody')[8], fakeNote);
 					done();
 				});
