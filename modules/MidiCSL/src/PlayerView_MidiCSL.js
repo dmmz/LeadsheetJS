@@ -3,9 +3,8 @@ define([
 	'mustache',
 	'utils/UserLog',
 	'pubsub',
-	'bootstrap',
 	'text!modules/MidiCSL/src/PlayerTemplate_MidiCSL.html',
-], function($, Mustache, UserLog, pubsub, bootstrap, PlayerTemplate_MidiCSL) {
+], function($, Mustache, UserLog, pubsub, PlayerTemplate_MidiCSL) {
 
 	function PlayerView(parentHTML, imgPath, options) {
 		options = options || {};

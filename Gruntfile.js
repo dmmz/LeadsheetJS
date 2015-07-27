@@ -13,7 +13,17 @@ module.exports = function(grunt) {
 				options: {
 					baseUrl: ".",
 					paths: {
-						jquery: "external-libs/jquery-2.1.0.min",
+						jquery: 'empty:',
+						jquery_autocomplete: 'empty:',
+						qunit: 'empty:',
+						vexflow: 'empty:',
+						Midijs: 'empty:',
+						text: 'external-libs/require-text',
+						pubsub: 'empty:',
+						jsPDF: 'empty:',
+						mustache: 'empty:'
+						
+						/*jquery: 'external-libs/jquery-2.1.0.min',
 						jquery_autocomplete: 'external-libs/jquery.autocomplete.min',
 						qunit: 'external-libs/qunit/qunit',
 						vexflow: 'external-libs/vexflow-min',
@@ -21,16 +31,8 @@ module.exports = function(grunt) {
 						text: 'external-libs/require-text',
 						pubsub: 'external-libs/tiny-pubsub.min',
 						jsPDF: 'external-libs/jspdf/jspdf.min',
-						mustache: 'external-libs/mustache',
-						bootstrap: 'external-libs/bootstrap/bootstrap.min'
-					},
-					shim: {
-						'vexflow': {
-							exports: 'Vex'
-						},
-						'Midijs': {
-							exports: 'MIDI'
-						}
+						mustache: 'external-libs/mustache'*/
+						
 					},
 					//cjsTranslate: true,
 					//findNestedDependencies: true,
