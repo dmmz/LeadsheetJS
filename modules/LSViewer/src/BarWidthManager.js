@@ -232,9 +232,10 @@ define(['modules/core/src/SongBarsIterator', 'modules/core/src/SectionBarsIterat
 		}
 
 		//we shorten last bar by lastBarWidthRatio	
+
 		var lastRow = finalWidths.length - 1,
 			lastColumn = finalWidths[lastRow].length - 1;
-		finalWidths[lastRow][lastColumn] *= this.lastBarWidthRatio; // TODO it seems to have an error here when song is not fully loaded or maybe empty
+		finalWidths[lastRow][lastColumn] *= this.lastBarWidthRatio;
 
 		return finalWidths;
 	};
