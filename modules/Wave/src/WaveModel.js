@@ -25,12 +25,18 @@ define([
 		this.setVolume(initVolume);
 	}
 
-	WaveModel.prototype.play = function(playFrom) {
+	WaveModel.prototype.play = function(playFrom, playTo) {
 		if (this.isEnabled === false) {
 			return;
 		}
 		if (typeof playFrom !== "undefined") {
 			this.audio.currentTime = playFrom;
+		}
+		if (typeof playTo !== "undefined") {
+			this.playTo = playTo;
+			this.playFrom = playFrom;
+		} else {
+			this.playTo = undefined;
 		}
 		this.audio.play();
 		$.publish('PlayerModel-onplay');
@@ -147,6 +153,15 @@ define([
 		$(this.audio).on('timeupdate', function() {
 			if (self.isEnabled === false) {
 				return;
+			}
+			if (typeof self.playTo !== "undefined") {
+				if (self.audio.currentTime > self.playTo) {
+					if (self.audio.loop === true) {
+						self.play(self.playFrom, self.playTo);
+					} else {
+						self.stop();
+					}
+				}
 			}
 			var songDuration = self.getDuration();
 			var positionInPercent = self.audio.currentTime / songDuration;

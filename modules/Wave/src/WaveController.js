@@ -124,7 +124,13 @@ define(['modules/Wave/src/WaveModel',
 		if (this.isLoaded) {
 			this.isPause = false;
 			this.restartAnimationLoop();
-			this.model.play();
+			var playTo;
+			var playFrom;
+			if (this.drawer.cursor.getPos()[0] !== this.drawer.cursor.getPos()[1]) {
+				playTo = this.drawer.cursor.getPos()[0];
+				playFrom = this.drawer.cursor.getPos()[1];
+			}
+			this.model.play(playTo, playFrom);
 		}
 	};
 

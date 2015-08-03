@@ -68,7 +68,7 @@ define([
 				usePlayer = true;
 				var playerHTML = params.player.HTMLElement;
 				var soundfontUrl = (typeof params.player.soundfontUrl !== "undefined") ? params.player.soundfontUrl : undefined;
-				var playerOptions = (typeof params.player.viewOptions !== "undefined") ? params.viewer.viewOptions : {};
+				var playerOptions = (typeof params.player.viewOptions !== "undefined") ? params.player.viewOptions : {};
 			}
 		}
 
