@@ -18,7 +18,7 @@ define(['modules/StructureEdition/src/StructureEditionController',
 				var numberOfSections = songModel.getSections().length;
 				sec.addSection();
 				assert.equal(songModel.getSections().length, numberOfSections + 1, "add section");
-
+				cM.setPos(0);
 
 				sec.removeSection();
 				assert.equal(songModel.getSections().length, numberOfSections, "remove section");
@@ -31,6 +31,7 @@ define(['modules/StructureEdition/src/StructureEditionController',
 
 				assert.equal(nm.getNotesAtBarNumber(2, songModel).toString(), "", "test bar have been created with only silence");
 				sec.addSection();
+				cM.setPos(0);
 				assert.equal(nm.getNotesAtBarNumber(2, songModel).toString(), "qr,qr,qr,qr", "test bar have been created with only silence");
 				sec.removeSection();
 

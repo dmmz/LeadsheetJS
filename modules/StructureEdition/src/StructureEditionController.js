@@ -48,7 +48,6 @@ define([
 
 		// clone last bar
 		var indexLastBar = barManager.getTotal() - 1;
-		var newBar = barManager.getBar(indexLastBar).clone();
 
 		// now we add bar to this section and fill them with silence
 		var noteManager = this.songModel.getComponent('notes');
@@ -57,7 +56,7 @@ define([
 		var beatDuration = this.songModel.getTimeSignatureAt(indexLastBar).getQuarterBeats();
 
 		for (var i = 0; i < numberOfBarsToCreate; i++) {
-			barManager.addBar(newBar);
+			barManager.addBar(barManager.getBar(indexLastBar).clone());
 			noteManager.fillGapWithRests(beatDuration, initBeat);
 			initBeat += beatDuration;
 		}
@@ -65,9 +64,11 @@ define([
 			'numberOfBars': numberOfBarsToCreate
 		});
 		this.songModel.addSection(section);
+
 		UserLog.logAutoFade('info', "Section have been added successfully");
 		$.publish('ToLayers-removeLayer');
 		$.publish('ToHistory-add', 'Add Section');
+		this.cursor.setPos(indexLastNote + 1);
 	};
 
 	StructureEditionController.prototype.removeSection = function() {
@@ -533,8 +534,7 @@ define([
 						notes[i - j].setOctave(notes[i].getOctave());
 						if (accidentalMeasure[notes[i].getPitchClass()] !== notes[i].getPitchClass() + notes[i].getAccidental()) {
 							notes[i - j].setAccidental('n');
-						}
-						else{
+						} else {
 							notes[i - j].setAccidental(notes[i].getAccidental());
 						}
 					}
