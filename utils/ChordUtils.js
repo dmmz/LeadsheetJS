@@ -29,7 +29,7 @@ define(['jquery', 'utils/NoteUtils', 'utils/ChordTypesCollection'], function($, 
 
 	ChordUtils.getAllChordTypes = function() {
 		// case we already now allchords
-		if (typeof ChordUtils.allChords !== "undefined") {
+		if (typeof ChordUtils.allChords !== "undefined" && typeof ChordUtils.chordTypeToNote !== "undefined") {
 			return ChordUtils.chordTypeToNote;
 		}
 		// case a cache is available

@@ -28,6 +28,7 @@ define([
 	ChordSpaceView.prototype.getArea = function() {
 		return this.position;
 	};
+
 	/**
 	 * @interface
 	 *
@@ -36,7 +37,6 @@ define([
 	 * @param  {Number} marginRight [description]
 	 */
 	ChordSpaceView.prototype.draw = function(ctx, marginTop, marginRight) {
-
 		var style = ctx.fillStyle;
 		ctx.fillStyle = "#0099FF";
 		ctx.globalAlpha = 0.2;
@@ -65,9 +65,9 @@ define([
 		var self = this;
 
 		function getChordAtThisPosition(songModel) {
-				return songModel.getComponent('chords').searchChordByBarAndBeat(self.barNumber, self.beatNumber);
-			}
-			// Get chord value
+			return songModel.getComponent('chords').searchChordByBarAndBeat(self.barNumber, self.beatNumber);
+		}
+		// Get chord value
 		var inputVal = '';
 		if (typeof songModel !== "undefined") {
 			var chord = getChordAtThisPosition(songModel);
@@ -147,7 +147,69 @@ define([
 		});
 		var chordList = this._getChordList(songModel);
 		//console.log(JSON.stringify(chordList));
+		this.getPredictionChords(chordList, function(chordsPrediction) {
+			self.chordsPrediction = chordsPrediction;
+			//console.log(chordsPrediction);
+			// looking for chords prediction between index 1 and 2;
+			self.createAutocompleteFromPosition(input, 1);
+		});
 		return htmlInput;
+	};
+
+	ChordSpaceView.prototype.createAutocompleteFromPosition = function(input, indexChordsBefore) {
+		/*input.devbridgeAutocomplete({
+			'lookup': this.chordsPrediction[indexChordsBefore]
+		});*/
+	};
+
+	ChordSpaceView.prototype.getPredictionChords = function(chordList, callback) {
+		/*$.ajax({
+			url: 'http://apijava.flow-machines.com:8080/',
+			dataType: 'json',
+			type: 'POST',
+			data: chordList,
+			xhrFields: {
+				withCredentials: true
+			},
+			success: function(data) {
+				if (typeof data !== "undefined") {
+					if (typeof callback !== "undefined") {
+						callback(data);
+					}
+				}
+			}
+		});*/
+		// Example of request returned
+		var data = [
+			// Tous les accords qui vont s’afficher si la personne clic dans une case entre l’accord 1 et 2
+			[{
+				"note": "F",
+				"chordType": "m"
+			}, {
+				"note": "G",
+				"chordType": "m"
+			}, {
+				"note": "C",
+				"chordType": "7"
+			}],
+			// Tous les accords qui vont s’afficher si la personne clic dans une case entre l’accord 2 et 3
+			[{
+				"note": "F",
+				"chordType": "m"
+			}, {
+				"note": "D",
+				"chordType": "7"
+			}, {
+				"note": "C",
+				"chordType": "7"
+			}, ],
+		];
+
+		if (typeof data !== "undefined") {
+			if (typeof callback !== "undefined") {
+				callback(data);
+			}
+		}
 	};
 
 	ChordSpaceView.prototype._getChordList = function(songModel) {
