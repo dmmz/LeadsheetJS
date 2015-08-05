@@ -23,6 +23,7 @@ define([
 			this.content = content;
 		}
 		this.onSubmitFunction = (typeof options.onSubmit !== "undefined") ? options.onSubmit : undefined;
+		this.onCloseFunction = (typeof options.onClose !== "undefined") ? options.onClose : undefined; // close function is launched on hiding popin AND on submit
 		this.backgroundOpacity = 0.5;
 	}
 
@@ -92,10 +93,16 @@ define([
 		var self = this;
 		$('.backgroundPopin, .popin_close').click(function() {
 			self.hide();
+			if (typeof self.onCloseFunction !== "undefined") {
+				self.onCloseFunction();
+			}
 		});
 		$('.modal_submit').click(function() {
-			if(typeof self.onSubmitFunction !== "undefined"){
+			if (typeof self.onSubmitFunction !== "undefined") {
 				self.onSubmitFunction();
+			}
+			if (typeof self.onCloseFunction !== "undefined") {
+				self.onCloseFunction();
 			}
 		});
 	};
