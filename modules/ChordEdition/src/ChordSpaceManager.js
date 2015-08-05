@@ -219,15 +219,15 @@ define([
 		}
 	};
 	/**
-	 * draws the pulldown or the inpus in chords
+	 * draws the pulldown or the inputs in chords
 	 */
 	ChordSpaceManager.prototype.drawEditableChord = function() {
-		var position = this.cursor.getPos(),
-			selected;
+		var position = this.cursor.getPos();
 
 		this.undrawEditableChord();
 		// position[0] === position[1] always
 		position = position[0];
+
 		this.htmlInput = this.chordSpace[position].drawEditableChord(this.songModel, this.MARGIN_TOP, this.MARGIN_RIGHT);
 	};
 

@@ -51,26 +51,17 @@ define([
 	};
 
 
-	ChordSpaceView.prototype.onChange = function(chord, value) {
-		var chordInfos = {
-			'chordString': value,
-			'chordModel': chord,
-			'chordSpace': this,
-		};
-		$.publish('ChordSpaceView-updateChord', chordInfos);
+	ChordSpaceView.prototype._getChordAtThisPosition = function(songModel) {
+		return songModel.getComponent('chords').searchChordByBarAndBeat(this.barNumber, this.beatNumber);
 	};
-
 
 	ChordSpaceView.prototype.drawEditableChord = function(songModel, marginTop, marginRight) {
 		var self = this;
 
-		function getChordAtThisPosition(songModel) {
-			return songModel.getComponent('chords').searchChordByBarAndBeat(self.barNumber, self.beatNumber);
-		}
 		// Get chord value
 		var inputVal = '';
 		if (typeof songModel !== "undefined") {
-			var chord = getChordAtThisPosition(songModel);
+			var chord = this._getChordAtThisPosition(songModel);
 			if (typeof chord !== "undefined") {
 				inputVal = chord.toString('', false);
 			}
@@ -85,81 +76,29 @@ define([
 		} else {
 			chordTypeList = ChordUtils.getAllChords();
 		}
-		// input.select();
-		input.devbridgeAutocomplete({
-			'lookup': chordTypeList,
-			'maxHeight': 200,
-			'lookupLimit': 40,
-			'width': 140,
-			'triggerSelectOnValidInput': false,
-			'showNoSuggestionNotice': true,
-			'autoSelectFirst': true,
-			// You may need to modify that if at first it appears incorrectly, it's probably because ur element is not absolute position
-			// 'appendTo': myAbsolutedPositionElement, // dom or jquery (see devbridgeAutocomplete doc)
-			'noSuggestionNotice': 'No Chord match',
-			lookupFilter: function(suggestion, originalQuery, queryLowerCase) {
-				return suggestion.value.indexOf(originalQuery) !== -1;
-			},
-			onSelect: function(suggestion) {
-				//console.log('select');
-				//$(input).val(suggestion.value);
-				chord = getChordAtThisPosition(songModel);
-				self.onChange(chord, suggestion.value);
-				//input.devbridgeAutocomplete('dispose');
-			}
-		});
-		input.focus(); // this focus allow setting cursor on end carac
-		input.val(inputVal);
-		input.focus(); // this focus launch autocomplete directly when value is not empty
-		// on blur event we change the value, blur is launched when we enter and click somewhere else
-		// We don't use blur because it prevent onclick element to be launched
+		this.createAutocomplete(input, songModel, chordTypeList, inputVal);
 
-		$('#autocomplete-suggestion').on('click', function() {
-			//console.log('click');
-			chord = getChordAtThisPosition(songModel);
-			self.onChange(chord, $(input).val());
-			//input.devbridgeAutocomplete('dispose');
-		});
-		input.on('blur', function() {
-			//console.log('blur');
-			chord = getChordAtThisPosition(songModel);
-			self.onChange(chord, $(this).val());
-			// input.devbridgeAutocomplete('dispose');
-		});
-		// on tab call (tab doesn't trigger blur event)
-		input.keydown(function(e) {
-			var code = e.keyCode || e.which;
-			if (code == '9') {
-				//console.log('tab');
-				chord = getChordAtThisPosition(songModel);
-				self.onChange(chord, $(this).val());
-				input.devbridgeAutocomplete('dispose');
-			}
-			if (code == '13') {
-				// console.log('enter');
-				//self.onChange(chord, $(this).val());
-				//input.devbridgeAutocomplete('dispose');
-			}
-		});
-		// We use a filter function to make it easier for user to enter chords
-		input.on('input propertychange paste', function() {
-			$(this).val(self.filterFunction($(this).val()));
-		});
-		var chordList = this._getChordList(songModel);
+
+		// TRAINING CODE FOR ALEX SERVLET
+		/*var chordList = this._getChordList(songModel);
 		//console.log(JSON.stringify(chordList));
 		this.getPredictionChords(chordList, function(chordsPrediction) {
 			self.chordsPrediction = chordsPrediction;
-			//console.log(chordsPrediction);
+			// TODO Index should be computed by creating a function that return index of previous chord
 			// looking for chords prediction between index 1 and 2;
-			self.createAutocompleteFromPosition(input, 1);
-		});
+			var predictionList = self.getPredictionListFromPosition(input, 1, chordTypeList);
+			self.createAutocomplete(input, songModel, predictionList, inputVal);
+		});*/
 		return htmlInput;
 	};
 
-	ChordSpaceView.prototype.createAutocompleteFromPosition = function(input, indexChordsBefore) {
-		/*input.devbridgeAutocomplete({
-			'lookup': this.chordsPrediction[indexChordsBefore]
-		});*/
+	ChordSpaceView.prototype.getPredictionListFromPosition = function(input, indexChordsBefore, chordTypeList) {
+		var predictionList = [];
+		for (var i = 0, c = this.chordsPrediction[indexChordsBefore].length; i < c; i++) {
+			predictionList.push(this.chordsPrediction[indexChordsBefore][i]["note"] + '' + this.chordsPrediction[indexChordsBefore][i]["chordType"]);
+		}
+		predictionList = predictionList.concat(chordTypeList);
+		return predictionList;
 	};
 
 	ChordSpaceView.prototype.getPredictionChords = function(chordList, callback) {
@@ -210,6 +149,80 @@ define([
 				callback(data);
 			}
 		}
+	};
+
+	ChordSpaceView.prototype.onChange = function(chord, value) {
+		var chordInfos = {
+			'chordString': value,
+			'chordModel': chord,
+			'chordSpace': this,
+		};
+		$.publish('ChordSpaceView-updateChord', chordInfos);
+	};
+
+
+	ChordSpaceView.prototype.createAutocomplete = function(input, songModel, list, inputVal) {
+		var self = this;
+		// input.select();
+		input.devbridgeAutocomplete({
+			'lookup': list,
+			'maxHeight': 200,
+			'lookupLimit': 40,
+			'width': 140,
+			'triggerSelectOnValidInput': false,
+			'showNoSuggestionNotice': true,
+			'autoSelectFirst': true,
+			// You may need to modify that if at first it appears incorrectly, it's probably because ur element is not absolute position
+			// 'appendTo': myAbsolutedPositionElement, // dom or jquery (see devbridgeAutocomplete doc)
+			'noSuggestionNotice': 'No Chord match',
+			lookupFilter: function(suggestion, originalQuery, queryLowerCase) {
+				return suggestion.value.indexOf(originalQuery) !== -1;
+			},
+			onSelect: function(suggestion) {
+				//console.log('select');
+				//$(input).val(suggestion.value);
+				chord = self._getChordAtThisPosition(songModel);
+				self.onChange(chord, suggestion.value);
+				//input.devbridgeAutocomplete('dispose');
+			}
+		});
+		input.focus(); // this focus allow setting cursor on end carac
+		input.val(inputVal);
+		input.focus(); // this focus launch autocomplete directly when value is not empty
+		// on blur event we change the value, blur is launched when we enter and click somewhere else
+		// We don't use blur because it prevent onclick element to be launched
+
+		$('#autocomplete-suggestion').on('click', function() {
+			//console.log('click');
+			chord = self._getChordAtThisPosition(songModel);
+			self.onChange(chord, $(input).val());
+			//input.devbridgeAutocomplete('dispose');
+		});
+		input.on('blur', function() {
+			//console.log('blur');
+			chord = self._getChordAtThisPosition(songModel);
+			self.onChange(chord, $(this).val());
+			// input.devbridgeAutocomplete('dispose');
+		});
+		// on tab call (tab doesn't trigger blur event)
+		input.keydown(function(e) {
+			var code = e.keyCode || e.which;
+			if (code == '9') {
+				//console.log('tab');
+				chord = self._getChordAtThisPosition(songModel);
+				self.onChange(chord, $(this).val());
+				input.devbridgeAutocomplete('dispose');
+			}
+			if (code == '13') {
+				// console.log('enter');
+				//self.onChange(chord, $(this).val());
+				//input.devbridgeAutocomplete('dispose');
+			}
+		});
+		// We use a filter function to make it easier for user to enter chords
+		input.on('input propertychange paste', function() {
+			$(this).val(self.filterFunction($(this).val()));
+		});
 	};
 
 	ChordSpaceView.prototype._getChordList = function(songModel) {
