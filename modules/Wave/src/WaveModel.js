@@ -150,6 +150,12 @@ define([
 			}
 			$.publish('PlayerModel-onfinish');
 		});
+		$(this.audio).on('playing', function() {
+			if (self.isEnabled === false) {
+				return;
+			}
+			$.publish('PlayerModel-playing');
+		});
 		$(this.audio).on('timeupdate', function() {
 			if (self.isEnabled === false) {
 				return;
@@ -158,9 +164,12 @@ define([
 				if (self.audio.currentTime > self.playTo) {
 					if (self.audio.loop === true) {
 						self.play(self.playFrom, self.playTo);
-					} else {
+					}
+					/* User probably want the player to continue in this case, it's why it's commented
+					else { 
 						self.stop();
 					}
+					*/
 				}
 			}
 			var songDuration = self.getDuration();

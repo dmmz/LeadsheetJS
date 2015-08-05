@@ -100,6 +100,10 @@ define(['modules/Wave/src/WaveModel',
 			self.disable();
 		});
 
+		$.subscribe('PlayerModel-playing', function(el) {
+			self.restartAnimationLoop();
+		});
+
 		/*
 				$.subscribe('PlayerView-render', function(el) {
 					self.initView();
@@ -123,7 +127,7 @@ define(['modules/Wave/src/WaveModel',
 	WaveController.prototype.play = function() {
 		if (this.isLoaded) {
 			this.isPause = false;
-			this.restartAnimationLoop();
+			// this.restartAnimationLoop(); // now we use playing event
 			var playTo;
 			var playFrom;
 			if (this.drawer.cursor.getPos()[0] !== this.drawer.cursor.getPos()[1]) {
@@ -138,7 +142,7 @@ define(['modules/Wave/src/WaveModel',
 		if (this.isLoaded) {
 			var timeSec = this.model.getDuration() * percent;
 			this.isPause = false;
-			this.restartAnimationLoop();
+			// this.restartAnimationLoop(); // now we use playing event
 			this.model.play(timeSec);
 		}
 	};
