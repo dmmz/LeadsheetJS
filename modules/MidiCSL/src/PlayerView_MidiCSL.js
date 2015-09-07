@@ -82,7 +82,11 @@ define([
 		});
 
 		$('#loop_button_container').click(function() {
-			$.publish('ToPlayer-toggleLoop');
+			if ($('#loop_button_container .loop_on').is(":visible")) {
+				$.publish('ToPlayer-toggleLoop', true);
+			} else {
+				$.publish('ToPlayer-toggleLoop', false);
+			}
 		});
 
 		// .on('input') Event is fired every time the input changes (work with paste, delete, type things)
@@ -260,11 +264,13 @@ define([
 
 	// loop
 	PlayerView.prototype.activeLoop = function() {
-		$('#loop_button img').attr('src', this.imgPath + '/loop.png').attr('title', 'Loop is on');
+		$('#loop_button_container .loop_off').hide();
+		$('#loop_button_container .loop_on').show();
 	};
 
 	PlayerView.prototype.unactiveLoop = function() {
-		$('#loop_button img').attr('src', this.imgPath + '/loop_grey.png').attr('title', 'Loop is off');
+		$('#loop_button_container .loop_on').hide();
+		$('#loop_button_container .loop_off').show();
 	};
 
 

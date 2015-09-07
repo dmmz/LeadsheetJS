@@ -137,7 +137,7 @@ define([
 			}
 		};
 
-		PlayerModel_MidiCSL.prototype.toggleLoop = function(loop) {
+		PlayerModel_MidiCSL.prototype.toggleLoop = function() {
 			if (this.loop === true) {
 				this.setLoop(false);
 			} else {

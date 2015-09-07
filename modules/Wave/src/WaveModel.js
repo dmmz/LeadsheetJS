@@ -100,18 +100,18 @@ define([
 		}
 		if (typeof loop !== "undefined") {
 			this.audio.loop = !!loop;
-			$.publish('PlayerModel-toggleLoop', loop);
+			$.publish('PlayerModel-toggleLoop', this.audio.loop);
 			return true;
 		} else {
 			return false;
 		}
 	};
 
-	WaveModel.prototype.toggleLoop = function(loop) {
+	WaveModel.prototype.toggleLoop = function() {
 		if (this.isEnabled === false) {
 			return;
 		}
-		if (this.loop === true) {
+		if (this.audio.loop === true) {
 			this.setLoop(false);
 		} else {
 			this.setLoop(true);

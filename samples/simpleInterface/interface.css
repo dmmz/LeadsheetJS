@@ -248,6 +248,9 @@ body {
 #all-metronome .metronome_on{
 	display: none;
 }
+#loop_button .loop_on{
+	display: none;
+}
 
 #all-sound .sound_off, #all-sound .sound_1, #all-sound .sound_2{
 	display: none;
