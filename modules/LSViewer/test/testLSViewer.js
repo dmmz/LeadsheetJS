@@ -13,6 +13,7 @@ define(['tests/DisplayTester',
 	'tests/songs/allRhythmicFigures',
 	'tests/songs/AloneTogether',
 	'tests/songs/Solar',
+	'tests/songs/BandaUm',
 ], function(
 	DisplayTester,
 	LSViewer,
@@ -28,7 +29,8 @@ define(['tests/DisplayTester',
 	AudioComments,
 	allRhythmicFigures,
 	AloneTogether,
-	Solar) 
+	Solar,
+	BandaUm) 
 	{
 	return {
 		run: function() {
@@ -101,7 +103,7 @@ define(['tests/DisplayTester',
 			"Real song: AloneTogether scroll. div height is 1000 and canvas is larger, so it scrolls. ");
 
 			dispTest.runTest(function(divContainer) {
-				viewer = new LSViewer(divContainer,{heightOverflow:'resizeDiv',layer:true});
+				viewer = new LSViewer(divContainer,{heightOverflow: 'scroll',layer:true});
 				
 				var cM = new CursorModel(song.getComponent('notes'));
 				var noteSpaceManager = new NoteSpaceManager(cM, viewer);
@@ -122,8 +124,17 @@ define(['tests/DisplayTester',
 				tagMng.drawTags(viewer);
 
 			},
-			{width:1200,height:1000},
+			{width:1200,height:500},
 			"Real song: AloneTogether resideDiv. Same canvas as previous test,  same div height (1000), but now div height is adapted. Also, creating a new layer. Also testing tags");
+			
+			var songBandaUm = SongModel_CSLJson.importFromMusicCSLJSON(BandaUm);
+
+			dispTest.runTest(function(divContainer){
+				var buViewer = new LSViewer(divContainer,{heightOverflow: 'scroll',layer:true});
+				buViewer.draw(songBandaUm);
+			},
+			{width:1200,height:500},
+			"Testing whole silences in 2/4 time signatures");
 			
 		}
 	};

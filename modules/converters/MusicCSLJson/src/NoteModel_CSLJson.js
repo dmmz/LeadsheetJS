@@ -7,11 +7,13 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		if ((duration.indexOf("r") != -1)) {
 			noteModel.duration = duration.substring(0, duration.length - 1);
 			noteModel.isRest = true;
+			noteModel.barDuration = false; // when there is only a whole note in the bar, its duration will depend on bar's duration. Initially is false, in SongModel_CSLJson it can be modified
 		} else {
 			noteModel.duration = duration;
 			noteModel.isRest = false;
 		}
 
+		
 		if (noteStruct.keys.length > 1) {
 			noteStruct.keys = NoteUtils.sortPitches(noteStruct.keys);
 		}

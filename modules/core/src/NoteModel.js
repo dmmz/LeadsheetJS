@@ -15,6 +15,10 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		this.tie = (param && param.tie) ? param.tie : undefined; // contain "start", "stop", "stop_start"
 		this.tuplet = (param && param.tuplet) ? param.tuplet : undefined;
 		this.timeModification = (param && param.timeModification) ? param.timeModification : undefined; // it's an attribute that exist only with tuplet
+		
+		//for whole silences that cover an entire measure, duration will depend on bar's time signature:
+		this.durationDependsOnBar = false;
+		this.barDuration = null;
 
 		if (typeof this.tuplet !== "undefined") {
 			this.setTuplet(this.tuplet, this.timeModification);
@@ -277,16 +281,15 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 	};
 	/**
 	 * returns duration in number of beats. where 1.0 is a quarter note, regardless of the time signature (6/8, 4/4...)
-	 * @param  {Number} numBeats optional: useful for whole rests, their duration depends on number of beats of the bar,
 	 * in that case it's sent as parameter
 	 * @return {Float}
 	 */
-	NoteModel.prototype.getDuration = function(numBeats) {
+	NoteModel.prototype.getDuration = function() {
 		var dur = 0.0;
 		dur = NoteUtils.getBeatFromStringDuration(this.duration);
 		if (dur === 4) {
-			if (this.isRest) {
-				dur = (typeof numBeats === "undefined" || numBeats > 4) ? 4 : numBeats;
+			if (this.isRest && this.durationDependsOnBar && this.barDuration) {
+				dur = this.barDuration;
 			}
 		}
 		if (this.timeModification != null) {

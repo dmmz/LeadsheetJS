@@ -14,6 +14,7 @@ define(function(require) {
 	var ChordModel_CSLJson = require('modules/converters/MusicCSLJson/src/ChordModel_CSLJson');
 	var NoteManager_CSLJson = require('modules/converters/MusicCSLJson/src/NoteManager_CSLJson');
 	var NoteModel_CSLJson = require('modules/converters/MusicCSLJson/src/NoteModel_CSLJson');
+	var SongBarsIterator = require('modules/core/src/SongBarsIterator');
 
 	var SongModel_CSLJson = {};
 
@@ -54,8 +55,9 @@ define(function(require) {
 			songModel.setTempo(MusicCSLJSON.tempo);
 
 			var section, chord, note, bar;
-			var existsMelody = false;
-			var barNumber = 0;
+			var barNumber = 0,
+				onlyOneNote,
+				wholeRestFound = false;
 			if (MusicCSLJSON.changes != null) {
 				MusicCSLJSON.changes.forEach(function(JSONSection) {
 					section = new SectionModel();
@@ -75,12 +77,16 @@ define(function(require) {
 								});
 							}
 							if (JSONBar.melody != null) {
-								existsMelody = true;
+								onlyOneNote = (JSONBar.melody.length === 1);
 								JSONBar.melody.forEach(function(JSONNote) {
 									note = new NoteModel();
 									NoteModel_CSLJson.importFromMusicCSLJSON(JSONNote, note);
 									noteManager.addNote(note);
 								});
+								if (onlyOneNote && note.isRest && note.duration === "w") {
+									note.durationDependsOnBar = true; // if it's a whole rest, it will take bar's duration
+									wholeRestFound = true;
+								}
 							}
 							barNumber++;
 						});
@@ -93,11 +99,43 @@ define(function(require) {
 				songModel.addComponent('chords', chordManager);
 				songModel.addComponent('notes', noteManager);
 			}
+			//songModel.getUnfoldedSongStructure();
+			if (wholeRestFound) { //if found bars with only one whole rest
+				SongModel_CSLJson._updateBarDurations(songModel);
+
+			}
 		}
-		//songModel.getUnfoldedSongStructure();
 		return songModel;
 	};
+	/**
+	 * If there are bars with only one whole rest (very few cases), we set the real duration of them
+	 * @param  {[type]} song [description]
+	 * @return {[type]}      [description]
+	 */
+	SongModel_CSLJson._updateBarDurations = function(song) {
+		var songIt = new SongBarsIterator(song),
+			notes = song.getComponent('notes').getNotes(),
+			currentBarNumBeats = songIt.getBarTimeSignature().getQuarterBeats(),
+			notesBarDur = 0;
+		
+		for (var i = 0; i < notes.length; i++) {
+			if (notesBarDur === 0 && notes[i].durationDependsOnBar){
+				notes[i].barDuration = currentBarNumBeats;
 
+			}
+			notesBarDur += notes[i].getDuration();
+			if (notesBarDur > currentBarNumBeats){
+				throw "note exceeds bar duration";
+			}
+			else if (notesBarDur == currentBarNumBeats ){
+				notesBarDur = 0;
+				songIt.next();
+				if (songIt.hasNext())
+					currentBarNumBeats = songIt.getBarTimeSignature().getQuarterBeats();
+			}
+		}
+
+	};
 	SongModel_CSLJson.exportToMusicCSLJSON = function(songModel) {
 		if (!songModel instanceof SongModel) {
 			throw 'SongModel_CSLJson - exportToMusicCSLJSON - songModel parameters must be an instanceof SongModel';
