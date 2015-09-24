@@ -18,7 +18,7 @@ define(['vexflow'], function(Vex) {
 		ctx.fillStyle = this.color;
 		var chordX = getChordX(this.chord.getBeat(),barDimensions,beatWidth);
 
-		ctx.fillText(this.chord.toString(), chordX, barDimensions.top - chordsY, beatWidth);
+		ctx.fillText(this.chord.toString(), chordX, barDimensions.top - chordsY);
 		ctx.fillStyle = "black";
 		ctx.textBaseline = "alphabetic"; // font for chords
 	};

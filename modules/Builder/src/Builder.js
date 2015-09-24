@@ -68,7 +68,8 @@ define([
 				usePlayer = true;
 				var playerHTML = params.player.HTMLElement;
 				var soundfontUrl = (typeof params.player.soundfontUrl !== "undefined") ? params.player.soundfontUrl : undefined;
-				var playerOptions = (typeof params.player.viewOptions !== "undefined") ? params.player.viewOptions : {};
+				var imgUrl = (typeof params.player.imgUrl !== "undefined") ? params.player.imgUrl : undefined;
+				var playerViewOptions = (typeof params.player.viewOptions !== "undefined") ? params.player.viewOptions : {};
 			}
 		}
 
@@ -79,6 +80,7 @@ define([
 			var editNotes = (typeof params.edition.notes !== "undefined") ? params.edition.notes : true;
 			var editChords = (typeof params.edition.chords !== "undefined") ? params.edition.chords : true;
 			var editStructure = (typeof params.edition.structure !== "undefined") ? params.edition.structure : true;
+			var imgUrlEdition = params.edition.imgUrl || {};
 			var allowHistory = false;
 			if (typeof params.history !== "undefined") {
 				if (params.history.enable) {
@@ -97,13 +99,14 @@ define([
 				var menuHTML = params.menu.HTMLElement;
 			}
 		}
+		var useAudio = false;
 
 		/**
 		 * On second Part we use options to initialize modules
 		 */
 		var songModel = SongModel_CSLJson.importFromMusicCSLJSON(MusicCSLJSON);
 
-		doLoadMidiPlayer = false; // only for debug false true
+		doLoadMidiPlayer = true; // only for debug false true
 
 		var loadedModules = {}; // we store loaded modules in this object, this object is return for developer
 		var viewer;
@@ -123,15 +126,18 @@ define([
 				if (useMenu) {
 					// Edit files menu
 					var fileEdition = new FileEdition(songModel, viewer.canvas);
-					var edition = Builder._loadEditionModules(viewer, songModel, editNotes, editChords, editStructure, menu); // TODO menu shouldn't be required here
+					var edition = Builder._loadEditionModules(viewer, songModel, editNotes, editChords, editStructure, menu, imgUrlEdition); // TODO menu shouldn't be required here
 					// Harmonize menu
-					var harm = new Harmonizer(songModel, menu.model);
-					menu.model.addMenu({
-						title: 'Harmonizer',
-						view: harm.view,
-						order: 5
-					});
-					if (editNotes) {
+					if (params.harmonizer){
+						var harm = new Harmonizer(songModel, menu.model);
+						menu.model.addMenu({
+							title: 'Harmonizer',
+							view: harm.view,
+							order: 5
+						});	
+					}
+					
+					if (editNotes && params.harmonicAnalysis) {
 						// Harmonic Analysis menu
 						var harmAn = new HarmonicAnalysis(songModel, edition.noteEdition.noteSpaceMng);
 						menu.model.addMenu({
@@ -163,8 +169,8 @@ define([
 				cursorNoteModel = (new Cursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow')).model;
 			}
 			// Load players (midi and audio)
-			Builder._loadMidiPlayer(songModel, playerHTML, doLoadMidiPlayer, soundfontUrl, cursorNoteModel, playerOptions);
-			if (useViewer) {
+			Builder._loadMidiPlayer(songModel, playerHTML, doLoadMidiPlayer, soundfontUrl, imgUrl, cursorNoteModel, playerViewOptions);
+			if (useViewer && useAudio) { 
 				var wave = Builder._loadAudioPlayer(songModel, viewer, cursorNoteModel); // audio player is use to get audio wave, it's why it needs viewer
 				loadedModules.audioPlayer = wave;
 
@@ -176,67 +182,6 @@ define([
 			viewer.draw(songModel);
 		}
 
-		/*
-		if (allowEdition === false) {
-			// Reading only
-			var viewer = Builder._loadViewer(songModel, viewerHTML);
-			var cursorNote = new Cursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow');
-
-			// Load players (midi and audio)
-			Builder._loadMidiPlayer(songModel, playerHTML, doLoadMidiPlayer, soundfontUrl, edition.cursorNote.model);
-			var wave = Builder._loadAudioPlayer(songModel, viewer, cursorNote.model);
-
-			// Load menus
-			var menu = Builder._loadMenu(menuHTML);
-			var fileEdition = new FileEdition(songModel, viewer.canvas);
-			menu.model.addMenu({
-				title: 'File',
-				view: fileEdition.view,
-				order: 1
-			});
-			Builder._loadActiveMenuOrDefault(menu, 'File');
-			var audioComments = Builder._loadComments(wave, viewer, songModel);
-			Builder._addComment(audioComments);
-			viewer.draw(songModel);
-		} else {
-			// Read and write
-			var viewer = Builder._loadViewer(songModel, viewerHTML);
-			var menu = Builder._loadMenu(menuHTML);
-			Builder._loadHistory(songModel, historyHTML);
-			var edition = Builder._loadEditionModules(viewer, songModel, menu);
-			// Load players (midi and audio)
-			Builder._loadMidiPlayer(songModel, playerHTML, doLoadMidiPlayer, soundfontUrl, edition.cursorNote.model);
-			var wave = Builder._loadAudioPlayer(songModel, edition.cursorNote.model, viewer);
-
-			// Harmonize menu
-			var harm = new Harmonizer(songModel, menu.model);
-			// Harmonic Analysis menu
-			var harmAn = new HarmonicAnalysis(songModel, edition.noteEdition.noteSpaceMng);
-			// Edit files menu
-			var fileEdition = new FileEdition(songModel, viewer.canvas);
-			menu.model.addMenu({
-				title: 'Harmonizer',
-				view: harm.view,
-				order: 5
-			});
-
-			menu.model.addMenu({
-				title: 'Harmonic Analysis',
-				view: harmAn.view,
-				order: 6
-			});
-
-			menu.model.addMenu({
-				title: 'File',
-				view: fileEdition.view,
-				order: 1
-			});
-			Builder._loadActiveMenuOrDefault(menu, 'File');
-			var audioComments = Builder._loadComments(wave, viewer, songModel);
-			Builder._addComment(audioComments);
-			viewer.draw(songModel);
-		}
-		*/
 		return loadedModules;
 	};
 
@@ -273,7 +218,7 @@ define([
 		return menu;
 	};
 
-	Builder._loadEditionModules = function(viewer, songModel, editNotes, editChords, editStructure, menu) {
+	Builder._loadEditionModules = function(viewer, songModel, editNotes, editChords, editStructure, menu, imgUrl) {
 		//ALTERNATIVE WAY TO CREATE EDITION if not using edition constructor
 		// var KeyboardManager = require('modules/Edition/src/KeyboardManager');
 		// new KeyboardManager(true);
@@ -299,7 +244,7 @@ define([
 					title: 'Notes',
 					order: 2
 				},
-				imgPath: '/modules/NoteEdition/img'
+				imgPath: imgUrl.notes
 			};
 		}
 		if (editChords) {
@@ -309,7 +254,7 @@ define([
 					title: 'Chords',
 					order: 3
 				},
-				imgPath: '/modules/NoteEdition/img'
+				imgPath: imgUrl.chords
 					// menu: false /* if we don't want menu*/
 			};
 		}
@@ -320,19 +265,19 @@ define([
 					title: 'Structure',
 					order: 4
 				},
-				imgPath: '/modules/StructureEdition/img'
+				imgPath: imgUrl.structure
 			};
 		}
 		modules.composer = {
-			suggestions: ['Adam Smith', 'Kim Jong-il', 'Iñigo Errejón', 'Mia Khalifa', 'Jose Monge']
+			suggestions: ['Miles Davis', 'John Coltrane', 'Bill Evans', 'Charlie Parker', 'Thelonious Monk']
 		};
 		var edition = new Edition(viewer, songModel, menu.model, modules);
 		return edition;
 	};
 
-	Builder._loadMidiPlayer = function(songModel, HTMLPlayer, loadMidi, soundfontUrl, cursorModel, playerOptions) {
+	Builder._loadMidiPlayer = function(songModel, HTMLPlayer, loadMidi, soundfontUrl, imgUrl, cursorModel, playerOptions) {
 		// Create a song from testSong
-		var pV = new MidiCSL.PlayerView(HTMLPlayer, '/modules/MidiCSL/img', playerOptions);
+		var pV = new MidiCSL.PlayerView(HTMLPlayer, imgUrl, playerOptions);
 		if (typeof loadMidi === "undefined" || loadMidi === true) {
 			var player = new MidiCSL.PlayerModel_MidiCSL(songModel, soundfontUrl, {
 				'cursorModel': cursorModel
