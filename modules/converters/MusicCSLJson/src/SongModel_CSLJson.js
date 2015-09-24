@@ -108,9 +108,8 @@ define(function(require) {
 		return songModel;
 	};
 	/**
-	 * If there are bars with only one whole rest (very few cases), we set the real duration of them
-	 * @param  {[type]} song [description]
-	 * @return {[type]}      [description]
+	 * If there are bars with only one whole rest (very few cases), we set their real duration, which depends on the time signature bar
+	 * @param  {SongModel} song 
 	 */
 	SongModel_CSLJson._updateBarDurations = function(song) {
 		var songIt = new SongBarsIterator(song),
