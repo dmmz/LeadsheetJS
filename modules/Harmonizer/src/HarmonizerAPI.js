@@ -4,7 +4,7 @@ define([
 
 	function HarmonizerAPI() {}
 
-	HarmonizerAPI.prototype.harmonizeFromIdSongAPI = function(idSong, style, callback) {
+	HarmonizerAPI.prototype.markovHarmonizeFromIdSongAPI = function(idSong, style, callback) {
 		var request = {
 			'id': idSong,
 			'setName': style,
@@ -12,10 +12,17 @@ define([
 		AjaxUtils.servletRequest('flow', 'harmonize', request, callback);
 	};
 
-	HarmonizerAPI.prototype.harmonizeFromLeadsheetAPI = function(leadsheet, style, callback) {
+	HarmonizerAPI.prototype.markovHarmonizeFromLeadsheetAPI = function(leadsheet, style, callback) {
 		var request = {
 			'leadsheet': leadsheet,
 			'setName': style,
+		};
+		AjaxUtils.servletRequest('flow', 'harmonize', request, callback);
+	};
+
+	HarmonizerAPI.prototype.maxEntropyHarmonizeFromLeadsheetAPI = function(leadsheet, callback) {
+		var request = {
+			'leadsheet': leadsheet,
 		};
 		AjaxUtils.servletRequest('flow', 'harmonize', request, callback);
 	};

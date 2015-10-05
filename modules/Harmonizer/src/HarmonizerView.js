@@ -19,9 +19,13 @@ define([
 	// called by 'mainMenuView'
 	HarmonizerView.prototype.initController = function() {
 		var self = this;
-		$('#harmonize').click(function() {
+		$('#markov_harmonizer').click(function() {
 			var style = $('#harmonization_style_select').val();
-			$.publish('HarmonizerView-compute', style);
+			$.publish('HarmonizerView-compute-markov', style);
+			return false;
+		});
+		$('#max_entropy_harmonizer').click(function() {
+			$.publish('HarmonizerView-compute-maxEntropy');
 			return false;
 		});
 	};

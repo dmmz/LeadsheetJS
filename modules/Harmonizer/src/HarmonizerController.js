@@ -12,12 +12,15 @@ define([
 		this.songModel = songModel;
 		this.view = view;
 		var self = this;
-		$.subscribe('HarmonizerView-compute', function(el, style) {
-			self.computeHarmonize(style);
+		$.subscribe('HarmonizerView-compute-markov', function(el, style) {
+			self.computeMarkovHarmonizer(style);
+		});
+		$.subscribe('HarmonizerView-compute-maxEntropy', function(el) {
+			self.maxEntropyHarmonizer();
 		});
 	}
 
-	HarmonizerController.prototype.computeHarmonize = function(style) {
+	HarmonizerController.prototype.computeMarkovHarmonizer = function(style) {
 		var self = this;
 		if (!style) {
 			style = "Take6";
@@ -25,7 +28,7 @@ define([
 		var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel);
 		var harm = new HarmonizerAPI();
 		var logId = UserLog.log('info', 'Computing ...');
-		harm.harmonizeFromLeadsheetAPI(JSON.stringify(JSONSong), style, function(data) {
+		harm.markovHarmonizeFromLeadsheetAPI(JSON.stringify(JSONSong), style, function(data) {
 			UserLog.removeLog(logId);
 			if (data.success === true) {
 				UserLog.logAutoFade('success', 'Harmonization is finished');
@@ -36,6 +39,25 @@ define([
 				UserLog.logAutoFade('error', data.error);
 			}
 		});
+	};
+
+	HarmonizerController.prototype.maxEntropyHarmonizer = function() {
+		var self = this;
+		var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel);
+		var harm = new HarmonizerAPI();
+		UserLog.logAutoFade('warn', 'This harmonization will soon be available !');
+		/*var logId = UserLog.log('info', 'Computing ...');
+		harm.maxEntropyHarmonizeFromLeadsheetAPI(JSON.stringify(JSONSong), function(data) {
+			UserLog.removeLog(logId);
+			if (data.success === true) {
+				UserLog.logAutoFade('success', 'Harmonization is finished');
+				SongModel_CSLJson.importFromMusicCSLJSON(data.sequence, self.songModel);
+				$.publish('ToHistory-add', 'Harmonization - ' + style);
+				$.publish('ToViewer-draw', self.songModel);
+			} else {
+				UserLog.logAutoFade('error', data.error);
+			}
+		});*/
 	};
 
 	return HarmonizerController;
