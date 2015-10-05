@@ -59,7 +59,7 @@ define(function(require) {
 	var playerOptions = {
 		'soundfontUrl': soundfontUrl,
 		'HTMLElement': playerHTML,
-		'pictureUrl': '/modules/MidiCSL/img',
+		'imgUrl': '/modules/MidiCSL/img',
 		'viewOptions': {
 			'displayMetronome': true,
 			'displayLoop': true,
@@ -75,6 +75,11 @@ define(function(require) {
 		'player': playerOptions,
 		'edition': {
 			'notes': true,
+			'imgUrl': {
+				'notes': '/modules/NoteEdition/img',
+				'chords': '/modules/NoteEdition/img',
+				'structure': '/modules/NoteEdition/img',
+			},
 			'chords': true,
 			'structure': true,
 			'history': {
@@ -87,7 +92,7 @@ define(function(require) {
 			'HTMLElement': menuHTML
 		}
 	};
-	
+
 	// var myLeadsheet1 = LJS.easyBuild('viewer', testSongs.simpleLeadSheet, viewerHTML, viewerOptions);
 	// var myLeadsheet2 = LJS.easyBuild('player', testSongs.simpleLeadSheet, playerHTML, playerOptions);
 	var myLeadsheet = LJS.init(testSongs.simpleLeadSheet, params);

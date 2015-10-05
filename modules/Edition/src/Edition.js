@@ -30,7 +30,7 @@ define([
 		if (params.notes) {
 			// Edit notes on view
 			cursorNote = new Cursor(songModel.getComponent('notes'), 'notes', 'arrow');
-			this.noteEdition = new NoteEdition(songModel, cursorNote.controller.model, viewer, params.notes.imgPath); 
+			this.noteEdition = new NoteEdition(songModel, cursorNote.controller.model, viewer, params.notes.imgPath);
 			this.cursorNote = cursorNote;
 			
 			if (menuModel && params.notes.menu){

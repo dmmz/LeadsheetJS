@@ -101,14 +101,14 @@ define([
 		}
 		var useAudio = false;
 
+		var loadedModules = {}; // we store loaded modules in this object, this object is return for developer
 		/**
 		 * On second Part we use options to initialize modules
 		 */
 		var songModel = SongModel_CSLJson.importFromMusicCSLJSON(MusicCSLJSON);
-
+		loadedModules.songModel = songModel;
 		doLoadMidiPlayer = true; // only for debug false true
 
-		var loadedModules = {}; // we store loaded modules in this object, this object is return for developer
 		var viewer;
 		if (useViewer) {
 			// Reading only
@@ -128,15 +128,15 @@ define([
 					var fileEdition = new FileEdition(songModel, viewer.canvas);
 					var edition = Builder._loadEditionModules(viewer, songModel, editNotes, editChords, editStructure, menu, imgUrlEdition); // TODO menu shouldn't be required here
 					// Harmonize menu
-					if (params.harmonizer){
+					if (params.harmonizer) {
 						var harm = new Harmonizer(songModel, menu.model);
 						menu.model.addMenu({
 							title: 'Harmonizer',
 							view: harm.view,
 							order: 5
-						});	
+						});
 					}
-					
+
 					if (editNotes && params.harmonicAnalysis) {
 						// Harmonic Analysis menu
 						var harmAn = new HarmonicAnalysis(songModel, edition.noteEdition.noteSpaceMng);
@@ -170,7 +170,7 @@ define([
 			}
 			// Load players (midi and audio)
 			Builder._loadMidiPlayer(songModel, playerHTML, doLoadMidiPlayer, soundfontUrl, imgUrl, cursorNoteModel, playerViewOptions);
-			if (useViewer && useAudio) { 
+			if (useViewer && useAudio) {
 				var wave = Builder._loadAudioPlayer(songModel, viewer, cursorNoteModel); // audio player is use to get audio wave, it's why it needs viewer
 				loadedModules.audioPlayer = wave;
 
@@ -182,6 +182,9 @@ define([
 			viewer.draw(songModel);
 		}
 
+		if (typeof edition !== "undefined") {
+			loadedModules.edition = edition;
+		}
 		return loadedModules;
 	};
 
