@@ -52,8 +52,8 @@ define([
 				similarity.push({
 					'startBeat': firstBeat,
 					'endBeat': lastBeat,
-					'name': 'n°' + res[i].cluster + ' d ' + res[i].distance,
-					'color': 'rgba(' + color[res[i].cluster] + ',' + (res[i].distance / 2 + 0.5) + ')'
+					'name': 'n°' + res[i].cluster + ' d ' + parseFloat(res[i].distance.toFixed(2)),
+					'color': 'rgba(' + color[res[i].cluster] + ',' + (res[i].distance / 3 + 0.66) + ')'
 				});
 			}
 			self.tagManager.setActive(true);
