@@ -71,6 +71,9 @@ define([
 				var imgUrl = (typeof params.player.imgUrl !== "undefined") ? params.player.imgUrl : undefined;
 				var playerViewOptions = (typeof params.player.viewOptions !== "undefined") ? params.player.viewOptions : {};
 			}
+			if (typeof params.player.useAudio !== "undefined") {
+				var useAudio = (typeof params.player.useAudio !== "undefined") ? params.player.useAudio : false;
+			}
 		}
 
 		// Edition
@@ -99,7 +102,6 @@ define([
 				var menuHTML = params.menu.HTMLElement;
 			}
 		}
-		var useAudio = false;
 
 		var loadedModules = {}; // we store loaded modules in this object, this object is return for developer
 		/**

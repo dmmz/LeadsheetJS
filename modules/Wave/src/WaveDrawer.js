@@ -213,7 +213,6 @@ define([
 	};
 
 	WaveDrawer.prototype.drawAudio = function(barTimesMng, tempo, duration) {
-
 		if (!tempo || !duration) {
 			throw "WaveDrawer - missing parameters";
 		}

@@ -20,9 +20,8 @@ define([
 
 		this.songModel = songModel;
 		this.noteSpaceManager = noteSpaceManager;
-
 		this.CL_NAME = 'TagManager';
-		this.CL_TYPE = 'CLICKABLE'
+		this.CL_TYPE = 'CLICKABLE';
 		this.tags = tags || [];
 		this.colors = colors || ["#559", "#995", "#599", "#595"];
 		this.tagSpaces = [];
@@ -78,7 +77,7 @@ define([
 		}
 	};
 
-	
+
 	TagManager.prototype.isEnabled = function() {
 		return true;
 	};
@@ -154,13 +153,20 @@ define([
 		var self = this;
 		var areas;
 
+		var numberOfColors = self.colors.length;
+		var color;
 		for (var i = 0; i < self.tags.length; i++) {
 			areas = self.getTagAreas(i, viewer);
 			if (areas.length === 0) {
 				console.warn("area not found for " + i + "th tag");
 				continue;
 			}
-			this.tagSpaces.push(new TagSpaceView(areas, this.tags[i].name));
+			if (typeof this.tags[i].color !== "undefined") {
+				color = this.tags[i].color;
+			} else {
+				color = this.colors[this.tagSpaces.length % numberOfColors]; // permute colors each time
+			}
+			this.tagSpaces.push(new TagSpaceView(areas, this.tags[i].name, color));
 		}
 
 		viewer.drawElem(function() {
@@ -170,11 +176,11 @@ define([
 			ctx.font = "15px Arial";
 
 			var yDecalToggle = 3;
-			var numberOfColors = self.colors.length;
 			for (var i = 0; i < self.tagSpaces.length; i++) {
 				ctx.globalAlpha = 0.4;
 				tagSpace = self.tagSpaces[i];
-				ctx.fillStyle = self.colors[i % numberOfColors]; // permute colors each time
+				ctx.fillStyle = tagSpace.color;
+
 				var numberOfTagPosition = tagSpace.position.length;
 				for (var j = 0; j < numberOfTagPosition; j++) {
 					//this makes shift a bit tags , useful in case they overlap
@@ -196,7 +202,9 @@ define([
 				//we write the tag name
 				ctx.globalAlpha = 1;
 				ctx.fillStyle = "black";
-				ctx.fillText(tagSpace.name, tagSpace.position[0].x, tagSpace.position[0].y + tagSpace.position[0].h + 15);
+				if (typeof tagSpace.name !== "undefined") {
+					ctx.fillText(tagSpace.name, tagSpace.position[0].x, tagSpace.position[0].y + tagSpace.position[0].h + 15);
+				}
 
 				if (self.isEditable === true) {
 					ctx.fillStyle = "#666";

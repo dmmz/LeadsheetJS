@@ -20,11 +20,19 @@ define([
 		AjaxUtils.servletRequest('flow', 'harmonize', request, callback);
 	};
 
-	HarmonizerAPI.prototype.maxEntropyHarmonizeFromLeadsheetAPI = function(leadsheet, callback) {
+	HarmonizerAPI.prototype.maxEntropyHarmonizeFromLeadsheetAPI = function(leadsheet, setId, tempo, instrument, nSteps, k, shortNoteDuration, longNoteDuration, transposeMelodyOneOctaveDown, callback) {
 		var request = {
 			'leadsheet': leadsheet,
+			'instrument': instrument,
+			'setId': setId,
+			'tempo': tempo,
+			'nSteps': nSteps,
+			'k': k,
+			'shortNoteDuration': shortNoteDuration,
+			'longNoteDuration': longNoteDuration,
+			'transposeMelodyOneOctaveDown': transposeMelodyOneOctaveDown
 		};
-		AjaxUtils.servletRequest('flow', 'harmonize', request, callback);
+		AjaxUtils.servletRequest('flow', 'harmonizekl', request, callback);
 	};
 
 	return HarmonizerAPI;

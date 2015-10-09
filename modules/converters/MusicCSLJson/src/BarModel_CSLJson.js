@@ -33,7 +33,7 @@ define(['modules/core/src/BarModel'], function(BarModel) {
 			bar.sublabel = barModel.getSublabel();
 
 		if (barModel.getTimeSignatureChange())
-			bar.timeSignature = barModel.getTimeSignatureChange();
+			bar.timeSignature = barModel.getTimeSignatureChange().toString();
 
 		return bar;
 	};

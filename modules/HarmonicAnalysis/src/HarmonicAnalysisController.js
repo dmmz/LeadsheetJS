@@ -7,7 +7,8 @@ define([
 	'utils/UserLog',
 	'jquery',
 	'pubsub',
-], function(Mustache, SongModel, SongModel_CSLJson, HarmonicAnalysisAPI, TagManager, UserLog, $, pubsub) {
+	'utils/AjaxUtils'
+], function(Mustache, SongModel, SongModel_CSLJson, HarmonicAnalysisAPI, TagManager, UserLog, $, pubsub, AjaxUtils) {
 
 	function HarmonicAnalysisController(songModel, noteSpaceMng) {
 		this.songModel = songModel;
@@ -33,6 +34,43 @@ define([
 
 	HarmonicAnalysisController.prototype.computeHarmonicAnalysis = function() {
 		var self = this;
+
+		/*var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel);
+		var request = {
+			'leadsheet': JSON.stringify(JSONSong),
+		};
+		var idLog = UserLog.log('info', 'Unfolding...');
+		AjaxUtils.servletRequest('jsonsong', 'unfold', request, function(data) {
+			var unfoldedSongModel = new SongModel();
+			SongModel_CSLJson.importFromMusicCSLJSON(data.unfolded, self.songModel);
+			JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(self.songModel);
+			var harm = new HarmonicAnalysisAPI();
+			UserLog.removeLog(idLog);
+			idLog = UserLog.log('info', 'Computing...');
+			harm.harmonicAnalyseFromLeadsheetAPI(JSON.stringify(JSONSong), function(data) {
+				UserLog.removeLog(idLog);
+				if (data.success === true) {
+					UserLog.logAutoFade('success', 'Harmonic Analysis is finished');
+					if (typeof data.analysis !== "undefined") {
+						self.tagManager.setActive(true);
+						self.tagManager.setTags(data.analysis);
+						$.publish('ToViewer-draw', self.songModel);
+					}
+				} else {
+					UserLog.logAutoFade('error', data.error);
+				}
+			});*/
+			/*			
+			var unfoldedSongModel = new SongModel();
+			SongModel_CSLJson.importFromMusicCSLJSON(data.unfolded, unfoldedSongModel);
+			if (typeof callback !== "undefined") {
+				callback(unfoldedSongModel);
+			}
+			*/
+		/*});*/
+
+
+
 		var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel);
 		var harm = new HarmonicAnalysisAPI();
 		var idLog = UserLog.log('info', 'Computing...');

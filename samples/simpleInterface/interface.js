@@ -85,7 +85,6 @@ define(function(require) {
 			'history': {
 				'enable': true,
 				'HTMLElement': historyHTML, // if not precised, then it doesn't display history but keyboard ctrl+z and y are working
-
 			}
 		},
 		'menu': {
