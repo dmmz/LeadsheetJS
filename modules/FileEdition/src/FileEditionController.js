@@ -18,7 +18,6 @@ define([
 		this.songModel = songModel || new SongModel();
 		this.waveManager = waveManager;
 		this.initSubscribe();
-		console.log(saveFunction);
 		if (saveFunction) {
 			this.saveFn = saveFunction;
 		}
