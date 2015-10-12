@@ -83,6 +83,7 @@ define([
 			var editNotes = (typeof params.edition.notes !== "undefined") ? params.edition.notes : true;
 			var editChords = (typeof params.edition.chords !== "undefined") ? params.edition.chords : true;
 			var editStructure = (typeof params.edition.structure !== "undefined") ? params.edition.structure : true;
+			var saveFunction = (typeof params.edition.saveFunction !== "undefined") ? params.edition.saveFunction : undefined;
 			var imgUrlEdition = params.edition.imgUrl || {};
 			var allowHistory = false;
 			if (typeof params.history !== "undefined") {
@@ -129,7 +130,7 @@ define([
 				}
 				if (useMenu) {
 					// Edit files menu
-					var fileEdition = new FileEdition(songModel, viewer.canvas);
+					var fileEdition = new FileEdition(songModel, viewer.canvas, saveFunction);
 					edition = Builder._loadEditionModules(viewer, songModel, editNotes, editChords, editStructure, menu, imgUrlEdition); // TODO menu shouldn't be required here
 					// Harmonize menu
 					if (params.harmonizer) {
