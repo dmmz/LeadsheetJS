@@ -23,6 +23,7 @@ define([
 		this.CL_NAME = 'TagManager';
 		this.CL_TYPE = 'CLICKABLE';
 		this.tags = tags || [];
+		this.colorMap = [];
 		this.colors = colors || ["#559", "#995", "#599", "#595"];
 		this.tagSpaces = [];
 		this.isActive = (typeof isActive !== "undefined") ? isActive : true;

@@ -26,8 +26,8 @@ define([
 
 	SimilarityAnalysisController.prototype.initSubscribe = function() {
 		var self = this;
-		$.subscribe('SimilarityAnalysisView-compute', function(el, threshold) {
-			self.computeSimilarityAnalysis(threshold);
+		$.subscribe('SimilarityAnalysisView-compute', function(el, threshold, compress) {
+			self.computeSimilarityAnalysis(threshold, compress);
 		});
 		$.subscribe('SimilarityAnalysisView-remove', function(el) {
 			self.removeSimilarityAnalysis();
@@ -40,13 +40,13 @@ define([
 		});
 	};
 
-	SimilarityAnalysisController.prototype.computeSimilarityAnalysis = function(threshold) {
+	SimilarityAnalysisController.prototype.computeSimilarityAnalysis = function(threshold, compress) {
 		var self = this;
 		var simAPI = new SimilarityAnalysisAPI();
 		var idLog = UserLog.log('info', 'Computing...');
 		$.publish('ToLayers-removeLayer');
 		var lastId = self.songModel._id;
-		simAPI.getNotesClustering(self.songModel._id, threshold, 1, function(res) {
+		simAPI.getNotesClustering(self.songModel._id, threshold, 1, compress, function(res) {
 			UserLog.removeLog(idLog);
 			var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(self.songModel);
 			var request = {
@@ -62,21 +62,24 @@ define([
 				var similarity = [];
 				var firstBeat, lastBeat;
 				var color = ['85,85,153', '153,153,85', '85,153,153', '85,153,85', '255,0,0', '255,0,255', '255,255,0', '0,255,0', '0,255,255', '200,164,179', '148,173,25', '65,105,175', '65,105,43', '65,79,43', '132,79,43', '132,79,164'];
+				var numberOfMeasure = 1;
+				var currentMeasure = 0;
 				for (var i = 0; i < res.length; i++) {
-					firstBeat = self.songModel.getStartBeatFromBarNumber(i);
-					if (i !== res.length - 1) {
-						lastBeat = self.songModel.getStartBeatFromBarNumber(i + 1);
-					} else {
+					numberOfMeasure = res[i].size;
+					firstBeat = self.songModel.getStartBeatFromBarNumber(currentMeasure);
+					lastBeat = self.songModel.getStartBeatFromBarNumber(currentMeasure + numberOfMeasure);
+					if(lastBeat === firstBeat){
 						lastBeat = self.songModel.getSongTotalBeats() + 1;
 					}
+
 					similarity.push({
 						'startBeat': firstBeat,
 						'endBeat': lastBeat,
 						'name': 'n°' + res[i].cluster + ' d ' + parseFloat(res[i].distance.toFixed(2)),
 						'color': 'rgba(' + color[res[i].cluster] + ',' + (res[i].distance / 3 + 0.66) + ')'
 					});
+					currentMeasure += numberOfMeasure;
 				}
-
 				self.tagManager.setActive(true);
 				self.tagManager.setTags(similarity);
 				$.publish('ToViewer-draw', self.songModel);
