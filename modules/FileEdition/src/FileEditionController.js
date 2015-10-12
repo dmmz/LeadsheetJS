@@ -13,12 +13,13 @@ define([
 	'jquery'
 ], function(Mustache, SongModel, SongModel_CSLJson, SongModel_MusicXML, WaveManager, LSViewer, pubsub, UserLog, ComposerServlet, AjaxUtils, jsPDF, $) {
 
-	function FileEditionController(songModel, viewerCanvas, saveFunction, waveManager ) {
+	function FileEditionController(songModel, viewerCanvas, saveFunction, waveManager) {
 		this.viewerCanvas = viewerCanvas;
 		this.songModel = songModel || new SongModel();
 		this.waveManager = waveManager;
 		this.initSubscribe();
-		if (saveFunction){
+		console.log(saveFunction);
+		if (saveFunction) {
 			this.saveFn = saveFunction;
 		}
 	}
@@ -206,7 +207,6 @@ define([
 	};
 
 	FileEditionController.prototype.save = function() {
-		var idLog = UserLog.log('info', 'Saving...');
 		var songId;
 		if (typeof this.songModel._id !== "undefined") {
 			songId = this.songModel._id;
@@ -215,16 +215,20 @@ define([
 		this.songModel._id = undefined; // we need to clean songModel id otherwise update doesn't work
 		var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel);
 
-		var self = this;
-		this.saveFn(JSONSong, songId, function(data) {
-			UserLog.removeLog(idLog);
-			if (data.error){
-				UserLog.logAutoFade('error', data.msg);
-			}else{
-				UserLog.logAutoFade('success', 'Leadsheet saved with success');
-			}
-			self.songModel._id = data.id;
-		});
+
+		if (typeof this.saveFn !== "undefined") {
+			var self = this;
+			var idLog = UserLog.log('info', 'Saving...');
+			this.saveFn(JSONSong, songId, function(data) {
+				UserLog.removeLog(idLog);
+				if (data.error) {
+					UserLog.logAutoFade('error', data.msg);
+				} else {
+					UserLog.logAutoFade('success', 'Leadsheet saved with success');
+				}
+				self.songModel._id = data.id;
+			});
+		}
 	};
 
 	return FileEditionController;

@@ -19,7 +19,8 @@ define([
 	HarmonicAnalysisView.prototype.initController = function() {
 		var self = this;
 		$('#harmonic_analysis').click(function() {
-			$.publish('HarmonicAnalysisView-compute');
+			var nbNotes = $('#harmonic_analysis_nb_notes_select').val();
+			$.publish('HarmonicAnalysisView-compute', nbNotes);
 			$('#remove_harmonic_analysis').show();
 			return false;
 		});

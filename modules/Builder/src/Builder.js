@@ -112,13 +112,15 @@ define([
 		doLoadMidiPlayer = true; // only for debug false true
 
 		var viewer;
+		var edition;
+		var menu;
 		if (useViewer) {
 			// Reading only
 			viewer = Builder._loadViewer(songModel, viewerHTML, viewerOptions);
 			loadedModules.viewer = viewer;
 			if (useMenu) {
 				// Load menus
-				var menu = Builder._loadMenu(menuHTML);
+				menu = Builder._loadMenu(menuHTML);
 				loadedModules.menu = menu;
 			}
 			if (allowEdition) {
@@ -128,7 +130,7 @@ define([
 				if (useMenu) {
 					// Edit files menu
 					var fileEdition = new FileEdition(songModel, viewer.canvas);
-					var edition = Builder._loadEditionModules(viewer, songModel, editNotes, editChords, editStructure, menu, imgUrlEdition); // TODO menu shouldn't be required here
+					edition = Builder._loadEditionModules(viewer, songModel, editNotes, editChords, editStructure, menu, imgUrlEdition); // TODO menu shouldn't be required here
 					// Harmonize menu
 					if (params.harmonizer) {
 						var harm = new Harmonizer(songModel, menu.model);

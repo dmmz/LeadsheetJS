@@ -8,7 +8,7 @@ define([
 
 	function SimilarityAnalysis(songModel, noteSpaceMng) {
 		this.view = new SimilarityAnalysisView();
-		new SimilarityAnalysisController(songModel, noteSpaceMng);
+		new SimilarityAnalysisController(songModel, noteSpaceMng, this.view);
 	}
 	return SimilarityAnalysis;
 });
