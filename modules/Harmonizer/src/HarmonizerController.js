@@ -44,21 +44,22 @@ define([
 			JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(self.songModel);
 			var harm = new HarmonizerAPI();
 			var logId = UserLog.log('info', 'Computing ...');
-			console.log(instrument);
 			var tempo = self.songModel.getTempo();
 			harm.markovHarmonizeFromLeadsheetAPI(JSON.stringify(JSONSong), style, instrument, tempo, function(data) {
 				UserLog.removeLog(logId);
 				if (data.success === true) {
 					UserLog.logAutoFade('success', 'Harmonization is finished');
 					if (typeof data.url !== "undefined") {
-						$.subscribe('ToPlayer-disableAll');
+						$.publish('ToPlayer-disableAll');
 						self.waveManager.enable();
 						self.waveManager.load(data.url, tempo, false); //redraw = true
+						$.publish('ToViewer-draw', self.songModel);
+					} else {
+						var harmonizedLeadsheet = new SongModel();
+						SongModel_CSLJson.importFromMusicCSLJSON(data.sequence, harmonizedLeadsheet);
+						$.publish('ToViewer-draw', harmonizedLeadsheet);
 					}
-					var harmonizedLeadsheet = new SongModel();
-					SongModel_CSLJson.importFromMusicCSLJSON(data.sequence, harmonizedLeadsheet);
 					$.publish('ToHistory-add', 'Harmonization - ' + style);
-					$.publish('ToViewer-draw', harmonizedLeadsheet);
 				} else {
 					UserLog.logAutoFade('error', data.error);
 				}
@@ -88,7 +89,7 @@ define([
 				if (data.success === true) {
 					UserLog.logAutoFade('success', 'Harmonization is finished');
 					if (typeof data.url !== "undefined") {
-						$.subscribe('ToPlayer-disableAll');
+						$.publish('ToPlayer-disableAll');
 						self.waveManager.enable();
 						self.waveManager.load(data.url, tempo, false); //redraw = true
 					}

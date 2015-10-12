@@ -174,7 +174,7 @@ define([
 				cursorNoteModel = (new Cursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow')).model;
 			}
 			// Load players (midi and audio)
-			Builder._loadMidiPlayer(songModel, playerHTML, doLoadMidiPlayer, soundfontUrl, imgUrl, cursorNoteModel, playerViewOptions);
+			loadedModules.midiPlayer = Builder._loadMidiPlayer(songModel, playerHTML, doLoadMidiPlayer, soundfontUrl, imgUrl, cursorNoteModel, playerViewOptions);
 			if (useViewer && useAudio) {
 				var wave = Builder._loadAudioPlayer(songModel, viewer, cursorNoteModel); // audio player is use to get audio wave, it's why it needs viewer
 				loadedModules.audioPlayer = wave;
@@ -290,7 +290,7 @@ define([
 			var player = new MidiCSL.PlayerModel_MidiCSL(songModel, soundfontUrl, {
 				'cursorModel': cursorModel
 			});
-			var pC = new MidiCSL.PlayerController(player, pV);
+			return new MidiCSL.PlayerController(player, pV);
 		}
 	};
 
@@ -305,7 +305,6 @@ define([
 		};
 		var waveMng = new Wave(songModel, viewer, cursorModel, params);
 		$.publish('ToPlayer-disableAll');
-		waveMng.enable();
 		return waveMng;
 	};
 
