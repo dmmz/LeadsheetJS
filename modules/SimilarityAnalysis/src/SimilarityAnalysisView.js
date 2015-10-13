@@ -27,8 +27,8 @@ define([
 			return false;
 		});
 		$('#similarity_compress_select').on('input', function() {
-			var compress = $('#similarity_compress_select').val();
-			$('#similarity_compress_viewer').val(compress);
+			var structure = $('#similarity_compress_select').val();
+			$('#similarity_compress_viewer').val(structure);
 		});
 		$('#similarity_compress_select').on('change', function() {
 			self.computeAnalysis();
@@ -53,9 +53,9 @@ define([
 
 	SimilarityAnalysisView.prototype.computeAnalysis = function() {
 		var threshold = $('#similarity_threshold_select').val();
-		var compress = $('#similarity_compress_select').val();
+		var structure = $('#similarity_compress_select').val();
 		$('#similarity_threshold_viewer').val(threshold);
-		$.publish('SimilarityAnalysisView-compute', [threshold, compress]);
+		$.publish('SimilarityAnalysisView-compute', [threshold, structure]);
 		$('#remove_similarity_analysis').show();
 	};
 

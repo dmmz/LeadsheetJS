@@ -4,9 +4,9 @@ define([
 
 	function SimilarityAnalysisAPI() {}
 
-	SimilarityAnalysisAPI.prototype.getNotesClustering = function(id, threshold, numMeasure, compress, callback) {
+	SimilarityAnalysisAPI.prototype.getNotesClustering = function(id, threshold, numMeasure, structure, callback) {
 		$.ajax({
-			url: 'http://palindromes.flow-machines.com/color/id/' + id + '/threshold/' + threshold + '/size/' + numMeasure + '/compress/' + compress,
+			url: 'http://palindromes.flow-machines.com/color/id/' + id + '/threshold/' + threshold + '/size/' + numMeasure + '/structure/' + structure,
 			dataType: 'JSON',
 			type: 'GET',
 			success: function(data) {
