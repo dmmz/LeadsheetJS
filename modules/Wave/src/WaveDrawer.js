@@ -214,7 +214,7 @@ define([
 
 	WaveDrawer.prototype.drawAudio = function(barTimesMng, tempo, duration) {
 		if (!tempo || !duration) {
-			throw "WaveDrawer - missing parameters";
+			throw "WaveDrawer - missing parameters, tempo : " + tempo + ", duration:" + duration;
 		}
 		this.waveBarDimensions = [];
 		var numBars = barTimesMng.getLength();

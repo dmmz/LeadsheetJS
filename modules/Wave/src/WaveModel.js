@@ -121,6 +121,12 @@ define([
 
 	WaveModel.prototype.load = function(url, audioData, waveMng, tempo, callback) {
 		var self = this;
+		$(this.audio).on('durationchange', function() {
+			$.publish('PlayerModel-onload');
+			if (typeof callback !== "undefined") {
+				callback();
+			}
+		});
 		this.audio.src = url;
 		this.audioCtx.decodeAudioData(audioData, function(buffer) {
 				self.buffer = []; // remove previous buffer (usefull for memory)
@@ -130,10 +136,10 @@ define([
 				self.source.buffer = self.buffer;
 				//source.playbackRate.value = playbackControl.value;
 				self.source.connect(self.audioCtx.destination);
-				$.publish('PlayerModel-onload');
+				/*$.publish('PlayerModel-onload');
 				if (typeof callback !== "undefined") {
 					callback();
-				}
+				}*/
 				//source.start(0)
 			},
 			function(e) {
