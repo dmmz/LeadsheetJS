@@ -120,7 +120,7 @@ define(function() {
 	/**
 	 *
 	 * @param  {string}  delimiter  It's the separator between note and chordtype, by default there is no delimiter : C M7
-	 * @param  {Boolean} isFormated If true some chordsd are formatted with symbiols like Δ or ø
+	 * @param  {Boolean} isFormated If true some chords are formatted with symbols like Δ or ø
 	 * @return {string}             [description]
 	 */
 	ChordModel.prototype.toString = function(delimiter, isFormated) {
@@ -132,9 +132,12 @@ define(function() {
 		}
 
 		var chordType = this.getChordType();
-		if (isFormated) {
-			if (typeof chordType !== "undefined") chordType = this.formatChordType(chordType);
-			else chordType = "";
+		if (typeof chordType !== "undefined") {
+			if (isFormated) {
+				chordType = this.formatChordType(chordType);
+			}
+		} else {
+			chordType = "";
 		}
 
 		var string = "";

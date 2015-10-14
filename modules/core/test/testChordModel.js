@@ -39,6 +39,11 @@ define(['modules/core/src/ChordModel'], function(ChordModel) {
 
 				assert.equal(chord.toString(""), "(DbM7)");
 
+				var chordMaj = new ChordModel({'note':'A'});
+				assert.equal(chordMaj.toString(""), "A", 'testing major chord to string');
+				assert.equal(chordMaj.toString("", true), "A", 'testing major chord to string');
+				assert.equal(chordMaj.toString("", false), "A", 'testing major chord to string');
+
 				// setChordFromString
 				chord.setChordFromString('A#m9/E');
 				assert.equal(chord.getNote(), "A#");
