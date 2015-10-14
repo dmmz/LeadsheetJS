@@ -141,6 +141,7 @@ define([
 				self.buffer = buffer;
 				self.tempo = tempo;
 				self.beatDuration = 60 / tempo;
+				self.source = self.audioCtx.createBufferSource();
 				self.source.buffer = self.buffer;
 				//source.playbackRate.value = playbackControl.value;
 				self.source.connect(self.audioCtx.destination);

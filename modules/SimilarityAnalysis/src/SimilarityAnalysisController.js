@@ -135,7 +135,6 @@ define([
 			AjaxUtils.servletRequest('jsonsong', 'unfold', request, function(data) {
 				UserLog.removeLog(idLog);
 				UserLog.logAutoFade('success', 'Similarity Analysis is finished');
-				var unfoldedSongModel = new SongModel();
 				SongModel_CSLJson.importFromMusicCSLJSON(data.unfolded, self.songModel);
 				self.songModel._id = lastId;
 				var similarity = [];
