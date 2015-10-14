@@ -148,9 +148,12 @@ define(function() {
 		var base = this.getBase();
 		if (base instanceof ChordModel && base.getNote() !== "") {
 			var baseChordType = base.getChordType();
-			if (isFormated) {
-				if (typeof baseChordType !== "undefined") baseChordType = this.formatChordType(baseChordType);
-				else baseChordType = "";
+			if (typeof baseChordType !== "undefined") {
+				if (isFormated) {
+					baseChordType = this.formatChordType(baseChordType);
+				}
+			} else {
+				baseChordType = "";
 			}
 			string += "/" + base.getNote() + delimiter + baseChordType;
 		}
