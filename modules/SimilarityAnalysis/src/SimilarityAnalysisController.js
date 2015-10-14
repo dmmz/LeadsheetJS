@@ -19,9 +19,11 @@ define([
 		// init threshold
 		var self = this;
 		var simAPI = new SimilarityAnalysisAPI();
-		simAPI.getThresholdClustering(self.songModel._id, function(data) {
-			self.view.setThreshold(data);
-		});
+		if (typeof self.songModel._id !== "undefined") {
+			simAPI.getThresholdClustering(self.songModel._id, function(data) {
+				self.view.setThreshold(data);
+			});
+		}
 	}
 
 	SimilarityAnalysisController.prototype.initSubscribe = function() {
@@ -144,7 +146,7 @@ define([
 				var h = 0.0;
 				var offset = Math.random();
 				for (var i = 0; i < res.length; i++) {
-					h = ((offset + (golden_ratio_conjugate * i))*360) %360;
+					h = ((offset + (golden_ratio_conjugate * i)) * 360) % 360;
 					//h = Math.round(360 * i / 13)%360;
 					color.push(hsvToRgb(h, 95, 95));
 				}

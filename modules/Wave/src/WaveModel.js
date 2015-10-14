@@ -119,13 +119,21 @@ define([
 		return this.audio.loop;
 	};
 
-	WaveModel.prototype.load = function(url, audioData, waveMng, tempo, callback) {
+	/**
+	 * On this function we load both audioCtx and HTML audio tag.
+	 * @param  {[type]}   url       [description]
+	 * @param  {[type]}   audioData [description]
+	 * @param  {float}   tempo     
+	 * @param  {Function} callback
+	 */
+	WaveModel.prototype.load = function(url, audioData, tempo, callback) {
 		var self = this;
+		var HTMLTagIsLoaded = false;
+		var audioCtxIsLoaded = false;
+		// Check if HTML audio tag is fully loaded
 		$(this.audio).on('durationchange', function() {
-			$.publish('PlayerModel-onload');
-			if (typeof callback !== "undefined") {
-				callback();
-			}
+			HTMLTagIsLoaded = true;
+			checkLoad();
 		});
 		this.audio.src = url;
 		this.audioCtx.decodeAudioData(audioData, function(buffer) {
@@ -136,16 +144,23 @@ define([
 				self.source.buffer = self.buffer;
 				//source.playbackRate.value = playbackControl.value;
 				self.source.connect(self.audioCtx.destination);
-				/*$.publish('PlayerModel-onload');
-				if (typeof callback !== "undefined") {
-					callback();
-				}*/
+				audioCtxIsLoaded = true;
+				checkLoad();
 				//source.start(0)
 			},
 			function(e) {
 				throw "Error with decoding audio data" + e.err;
 			}
 		);
+
+		function checkLoad() {
+			if (HTMLTagIsLoaded && audioCtxIsLoaded) {
+				$.publish('PlayerModel-onload');
+				if (typeof callback !== "undefined") {
+					callback();
+				}
+			}
+		}
 	};
 
 	WaveModel.prototype.initModelEvents = function() {

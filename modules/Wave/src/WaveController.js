@@ -198,7 +198,7 @@ define(['modules/Wave/src/WaveModel',
 
 		xhr.onload = function() {
 			var audioData = xhr.response;
-			self.model.load(url, audioData, self, tempo, function() {
+			self.model.load(url, audioData, tempo, function() {
 				self.isLoaded = true;
 				self.enable();
 				self.barTimesMng.setBarTimes(self.songModel, self.model);
@@ -207,7 +207,7 @@ define(['modules/Wave/src/WaveModel',
 					self.viewer.setShortenLastBar(true);
 					self.viewer.draw(self.songModel); // no need to drawAudio(), as it is called on 'drawEnd'
 				} else {
-					self.drawer.drawAudio(self.barTimesMng, self.model.tempo, self.model.getDuration());
+					self.drawer.drawAudio(self.barTimesMng, tempo, self.model.getDuration());
 				}
 				$.publish('Audio-loaded');
 				if (typeof callback !== "undefined") {

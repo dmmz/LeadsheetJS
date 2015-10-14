@@ -94,7 +94,7 @@ define([
 				g = q;
 				b = v;
 				break;
-
+				
 			case 4:
 				r = t;
 				g = p;
