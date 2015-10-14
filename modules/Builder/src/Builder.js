@@ -138,7 +138,7 @@ define([
 						menu.model.addMenu({
 							title: 'Harmonizer',
 							view: harm.view,
-							order: 5
+							order: 6
 						});
 					}
 
@@ -148,7 +148,7 @@ define([
 						menu.model.addMenu({
 							title: 'Harmonic Analysis',
 							view: harmAn.view,
-							order: 6
+							order: 7
 						});
 					}
 
@@ -250,7 +250,7 @@ define([
 				active: true,
 				menu: {
 					title: 'Notes',
-					order: 2
+					order: 3
 				},
 				imgPath: imgUrl.notes
 			};
@@ -260,7 +260,7 @@ define([
 				active: true,
 				menu: {
 					title: 'Chords',
-					order: 3
+					order: 4
 				},
 				imgPath: imgUrl.chords
 					// menu: false /* if we don't want menu*/
@@ -271,7 +271,7 @@ define([
 				active: true,
 				menu: {
 					title: 'Structure',
-					order: 4
+					order: 5
 				},
 				imgPath: imgUrl.structure
 			};
