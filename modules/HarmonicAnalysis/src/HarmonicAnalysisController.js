@@ -136,11 +136,10 @@ define([
 						var color = [];
 						var golden_ratio_conjugate = 0.618033988749895;
 						var h = 0.0;
-						var offset = Math.random();
 						for (var i = 0; i < data.analysis.length; i++) {
-							h = ((offset + (golden_ratio_conjugate * i)) * 360) % 360;
+							h = ((golden_ratio_conjugate * i) * 360) % 360;
 							//h = Math.round(360 * i / 13)%360;
-							color.push(hsvToRgb(h, 95, 95));
+							color.push(hsvToRgb(h, 100, 100));
 						}
 						var colorPos = 0;
 						var analysis = []; // this array contains tag names
@@ -150,8 +149,8 @@ define([
 							pos = analysis.indexOf(data.analysis[i].name);
 							if (pos === -1) {
 								analysis.push(data.analysis[i].name);
-								colorAnalysis.push('rgba(' + color[colorPos] + ', 0.7)');
-								data.analysis[i].color = 'rgba(' + color[colorPos] + ', 0.7)';
+								colorAnalysis.push('rgba(' + color[colorPos] + ', 0.8)');
+								data.analysis[i].color = 'rgba(' + color[colorPos] + ', 0.8)';
 								colorPos++;
 							} else {
 								data.analysis[i].color = colorAnalysis[pos];

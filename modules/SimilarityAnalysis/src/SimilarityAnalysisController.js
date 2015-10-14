@@ -144,11 +144,10 @@ define([
 				var color = [];
 				var golden_ratio_conjugate = 0.618033988749895;
 				var h = 0.0;
-				var offset = Math.random();
 				for (var i = 0; i < res.length; i++) {
-					h = ((offset + (golden_ratio_conjugate * i)) * 360) % 360;
+					h = ((golden_ratio_conjugate * i) * 360) % 360;
 					//h = Math.round(360 * i / 13)%360;
-					color.push(hsvToRgb(h, 95, 95));
+					color.push(hsvToRgb(h, 100, 100));
 				}
 				var numberOfMeasure = 1;
 				var currentMeasure = 0;
@@ -163,7 +162,7 @@ define([
 						'startBeat': firstBeat,
 						'endBeat': lastBeat,
 						'name': 'n°' + res[i].cluster + ' d ' + parseFloat(res[i].distance.toFixed(2)),
-						'color': 'rgba(' + color[res[i].cluster] + ',' + (res[i].distance / 3 + 0.66) + ')'
+						'color': 'rgba(' + color[res[i].cluster] + ',' + (res[i].distance / 4 + 0.75) + ')'
 					});
 					currentMeasure += numberOfMeasure;
 				}

@@ -205,6 +205,9 @@ define([
 		if (selBars.length === 0) {
 			return;
 		}
+		if (selBars[1] === selBars[0]) {
+			selBars.pop();
+		}
 		for (var i = selBars.length - 1; i >= 0; i--) {
 			this._removeBar(selBars[i]);
 		}
@@ -236,7 +239,7 @@ define([
 		var beatDuration = this.songModel.getTimeSignatureAt(barNumber).getQuarterBeats() - 1; // I am not sure why we remove 1 here
 		var numBeat = this.songModel.getStartBeatFromBarNumber(barNumber);
 		var index = nm.getNextIndexNoteByBeat(numBeat);
-		var index2 = nm.getNextIndexNoteByBeat(numBeat + beatDuration);
+		var index2 = nm.getPrevIndexNoteByBeat(numBeat + beatDuration);
 		nm.notesSplice([index, index2], []);
 
 		// remove chords in bar
@@ -469,6 +472,9 @@ define([
 		var selectedBars = [];
 		selectedBars[0] = this.songModel.getComponent('notes').getNoteBarNumber(this.cursor.getStart(), this.songModel);
 		selectedBars[1] = this.songModel.getComponent('notes').getNoteBarNumber(this.cursor.getEnd(), this.songModel);
+		/*if (selectedBars[1] === selectedBars[0]) {
+			selectedBars.pop();
+		}*/
 		return selectedBars;
 	};
 
