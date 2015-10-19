@@ -86,11 +86,11 @@ define([
 			var saveFunction = (typeof params.edition.saveFunction !== "undefined") ? params.edition.saveFunction : undefined;
 			var imgUrlEdition = params.edition.imgUrl || {};
 			var allowHistory = false;
-			if (typeof params.history !== "undefined") {
-				if (params.history.enable) {
+			if (typeof params.edition.history !== "undefined") {
+				if (params.edition.history.enable) {
 					allowHistory = true;
 					// if not precised, then it doesn't display history but keyboard ctrl+z and y are working
-					historyHTML = (typeof params.history.HTMLElement !== "undefined") ? params.edition.history.HTMLElement : undefined;
+					historyHTML = (typeof params.edition.history.HTMLElement !== "undefined") ? params.edition.edition.history.HTMLElement : undefined;
 				}
 			}
 		}

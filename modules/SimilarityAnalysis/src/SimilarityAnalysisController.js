@@ -141,9 +141,15 @@ define([
 				var firstBeat, lastBeat;
 				// var color = ['85,85,153', '153,153,85', '85,153,153', '85,153,85', '255,0,0', '255,0,255', '255,255,0', '0,255,0', '0,255,255', '200,164,179', '148,173,25', '65,105,175', '65,105,43', '65,79,43', '132,79,43', '132,79,164'];
 				var color = [];
+				var maxNumberOfCluster = 0;
+				for (var i = 0; i < res.length; i++) {
+					if(res[i].cluster > maxNumberOfCluster){
+						maxNumberOfCluster = res[i].cluster;
+					}
+				}
 				var golden_ratio_conjugate = 0.618033988749895;
 				var h = 0.0;
-				for (var i = 0; i < res.length; i++) {
+				for (var i = 0; i <= maxNumberOfCluster; i++) {
 					h = ((golden_ratio_conjugate * i) * 360) % 360;
 					//h = Math.round(360 * i / 13)%360;
 					color.push(hsvToRgb(h, 100, 100));
