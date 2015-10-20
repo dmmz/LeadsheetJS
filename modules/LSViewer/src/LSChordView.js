@@ -11,7 +11,7 @@ define(['vexflow'], function(Vex) {
 			var zeroBasedBeat = beat - 1;
 			return barDimensions.left + zeroBasedBeat * beatWidth;
 		}
-		var beatWidth = barDimensions.width / timeSig.getBeatUnit();
+		var beatWidth = barDimensions.width / timeSig.getBeats();
 
 		ctx.font = fontChords; // font for chords
 		ctx.textBaseline = "top"; // font for chords
