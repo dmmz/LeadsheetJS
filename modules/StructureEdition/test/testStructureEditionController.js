@@ -48,17 +48,19 @@ define(['modules/StructureEdition/src/StructureEditionController',
 
 				cM.setPos(0);
 				var selBar = sec._getSelectedBars();
-				assert.deepEqual(selBar, [0, 0], "Selected bar");
+				assert.deepEqual(selBar, [0], "Selected bar");
 
 
 
 				// tonality
 				sec.tonality('G');
 				assert.equal(bm.getBar(selBar[0]).getTonality(), "G", "Tonality");
+				assert.equal(bm.getBar(selBar[0] + 1).getTonality(), undefined, "Tonality doesn't affect next bar");
 
 				// ending
 				sec.ending('BEGIN');
 				assert.equal(bm.getBar(selBar[0]).getEnding(), "BEGIN", "Ending");
+				assert.equal(bm.getBar(selBar[0] + 1).getEnding(), undefined, "Ending doesn't affect next bar");
 
 				// style
 				sec.style('Jazz');

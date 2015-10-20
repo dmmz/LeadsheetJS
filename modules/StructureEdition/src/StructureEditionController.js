@@ -204,9 +204,6 @@ define([
 		if (selBars.length === 0) {
 			return;
 		}
-		if (selBars[1] === selBars[0]) {
-			selBars.pop();
-		}
 		for (var i = selBars.length - 1; i >= 0; i--) {
 			this._removeBar(selBars[i]);
 		}
@@ -303,8 +300,9 @@ define([
 		}
 
 		//actually starts here
-		//
-		var selBars = this._getSelectedBars();
+		var selBars = [];
+		selBars[0] = this.songModel.getComponent('notes').getNoteBarNumber(this.cursor.getStart(), this.songModel);
+		selBars[1] = this.songModel.getComponent('notes').getNoteBarNumber(this.cursor.getEnd(), this.songModel);
 		if (selBars.length === 0) {
 			return;
 		}
@@ -471,9 +469,9 @@ define([
 		var selectedBars = [];
 		selectedBars[0] = this.songModel.getComponent('notes').getNoteBarNumber(this.cursor.getStart(), this.songModel);
 		selectedBars[1] = this.songModel.getComponent('notes').getNoteBarNumber(this.cursor.getEnd(), this.songModel);
-		/*if (selectedBars[1] === selectedBars[0]) {
+		if (selectedBars[1] === selectedBars[0]) {
 			selectedBars.pop();
-		}*/
+		}
 		return selectedBars;
 	};
 
