@@ -53,39 +53,42 @@ define([
 		 */
 		// Viewer
 		var useViewer = false;
+		var viewerHTML, viewerOptions;
 		if (typeof params.viewer !== "undefined") {
 			if (typeof params.viewer.HTMLElement !== "undefined") {
 				useViewer = true;
-				var viewerHTML = params.viewer.HTMLElement;
-				var viewerOptions = (typeof params.viewer.viewOptions !== "undefined") ? params.viewer.viewOptions : {};
+				viewerHTML = params.viewer.HTMLElement;
+				viewerOptions = (typeof params.viewer.viewOptions !== "undefined") ? params.viewer.viewOptions : {};
 			}
 		}
 
 		// Player
 		var usePlayer = false;
+		var playerHTML, soundfontUrl, imgUrl, playerViewOptions, useAudio;
 		if (typeof params.player !== "undefined") {
 			if (typeof params.player.HTMLElement !== "undefined") {
 				usePlayer = true;
-				var playerHTML = params.player.HTMLElement;
-				var soundfontUrl = (typeof params.player.soundfontUrl !== "undefined") ? params.player.soundfontUrl : undefined;
-				var imgUrl = (typeof params.player.imgUrl !== "undefined") ? params.player.imgUrl : undefined;
-				var playerViewOptions = (typeof params.player.viewOptions !== "undefined") ? params.player.viewOptions : {};
+				playerHTML = params.player.HTMLElement;
+				soundfontUrl = (typeof params.player.soundfontUrl !== "undefined") ? params.player.soundfontUrl : undefined;
+				imgUrl = (typeof params.player.imgUrl !== "undefined") ? params.player.imgUrl : undefined;
+				playerViewOptions = (typeof params.player.viewOptions !== "undefined") ? params.player.viewOptions : {};
 			}
 			if (typeof params.player.useAudio !== "undefined") {
-				var useAudio = (typeof params.player.useAudio !== "undefined") ? params.player.useAudio : false;
+				useAudio = (typeof params.player.useAudio !== "undefined") ? params.player.useAudio : false;
 			}
 		}
 
 		// Edition
 		allowEdition = false;
+		var editNotes, editChords, editStructure, saveFunction, imgUrlEdition, allowHistory;
 		if (typeof params.edition !== "undefined") {
 			allowEdition = true;
-			var editNotes = (typeof params.edition.notes !== "undefined") ? params.edition.notes : true;
-			var editChords = (typeof params.edition.chords !== "undefined") ? params.edition.chords : true;
-			var editStructure = (typeof params.edition.structure !== "undefined") ? params.edition.structure : true;
-			var saveFunction = (typeof params.edition.saveFunction !== "undefined") ? params.edition.saveFunction : undefined;
-			var imgUrlEdition = params.edition.imgUrl || {};
-			var allowHistory = false;
+			editNotes = (typeof params.edition.notes !== "undefined") ? params.edition.notes : true;
+			editChords = (typeof params.edition.chords !== "undefined") ? params.edition.chords : true;
+			editStructure = (typeof params.edition.structure !== "undefined") ? params.edition.structure : true;
+			saveFunction = (typeof params.edition.saveFunction !== "undefined") ? params.edition.saveFunction : undefined;
+			imgUrlEdition = params.edition.imgUrl || {};
+			allowHistory = false;
 			if (typeof params.edition.history !== "undefined") {
 				if (params.edition.history.enable) {
 					allowHistory = true;
@@ -97,10 +100,11 @@ define([
 
 		// Menu
 		var useMenu = false;
+		var menuHTML;
 		if (typeof params.menu !== "undefined") {
 			if (typeof params.menu.HTMLElement !== "undefined") {
 				useMenu = true;
-				var menuHTML = params.menu.HTMLElement;
+				menuHTML = params.menu.HTMLElement;
 			}
 		}
 
@@ -112,9 +116,7 @@ define([
 		loadedModules.songModel = songModel;
 		doLoadMidiPlayer = true; // only for debug false true
 
-		var viewer;
-		var edition;
-		var menu;
+		var viewer, edition, menu;
 		if (useViewer) {
 			// Reading only
 			viewer = Builder._loadViewer(songModel, viewerHTML, viewerOptions);
