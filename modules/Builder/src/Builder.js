@@ -132,6 +132,14 @@ define([
 					// Edit files menu
 					var fileEdition = new FileEdition(songModel, viewer.canvas, saveFunction);
 					edition = Builder._loadEditionModules(viewer, songModel, editNotes, editChords, editStructure, menu, imgUrlEdition); // TODO menu shouldn't be required here
+
+					menu.model.addMenu({
+						title: 'File',
+						view: fileEdition.view,
+						order: 1
+					});
+					Builder._loadActiveMenuOrDefault(menu, 'File');
+
 					// Harmonize menu
 					if (params.harmonizer) {
 						var harm = new Harmonizer(songModel, menu.model);
@@ -151,17 +159,7 @@ define([
 							order: 7
 						});
 					}
-
 				}
-			}
-			if (useMenu) {
-				var fileEdition = new FileEdition(songModel, viewer.canvas);
-				menu.model.addMenu({
-					title: 'File',
-					view: fileEdition.view,
-					order: 1
-				});
-				Builder._loadActiveMenuOrDefault(menu, 'File');
 			}
 		} else {
 			viewer = undefined;
