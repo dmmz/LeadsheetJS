@@ -90,7 +90,7 @@ define([
 				if (params.edition.history.enable) {
 					allowHistory = true;
 					// if not precised, then it doesn't display history but keyboard ctrl+z and y are working
-					historyHTML = (typeof params.edition.history.HTMLElement !== "undefined") ? params.edition.edition.history.HTMLElement : undefined;
+					historyHTML = (typeof params.edition.history.HTMLElement !== "undefined") ? params.edition.history.HTMLElement : undefined;
 				}
 			}
 		}
