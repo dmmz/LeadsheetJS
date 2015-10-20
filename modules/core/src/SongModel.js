@@ -193,7 +193,7 @@ define([
 	 */
 	SongModel.prototype.getSection = function(index) {
 		if (isNaN(index) || index < 0 || index > this.sections.length) {
-			throw "getSection - invalid index :" + index;
+			throw "SongModel - getSection - invalid index :" + index;
 		}
 		return this.sections[index];
 	};

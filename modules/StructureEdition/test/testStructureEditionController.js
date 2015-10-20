@@ -37,14 +37,14 @@ define(['modules/StructureEdition/src/StructureEditionController',
 
 				// Add bar
 				sec.addBar();
-				assert.equal(nm.getNotesAtBarNumber(0, songModel).toString(), "E/4-q,qr,qr,qr", "test bar have been created with E at start because it's first bar");
+				assert.equal(nm.getNotesAtBarNumber(0, songModel).toString(), "qr,qr,qr,qr", "test bar have been created with E at start because it's first bar");
 				cM.setPos(4);
 				sec.addBar();
 				assert.equal(nm.getNotesAtBarNumber(1, songModel).toString(), "qr,qr,qr,qr", "test bar have been created with only silence");
 
 				// Remove bar
 				sec.removeBar();
-				assert.equal(nm.getNotesAtBarNumber(0, songModel).toString(), "E/4-q,qr,qr,qr", "test bar have been created with only silence");
+				assert.equal(nm.getNotesAtBarNumber(0, songModel).toString(), "qr,qr,qr,qr", "test remove bar");
 
 				cM.setPos(0);
 				var selBar = sec._getSelectedBars();

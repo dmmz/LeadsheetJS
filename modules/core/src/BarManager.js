@@ -37,20 +37,22 @@ define(['modules/core/src/BarModel'], function(BarModel) {
 	 * @param  {Integer} index 
 	 */
 	BarManager.prototype.insertBar = function(indexBar, song, numBars) {
-		if (indexBar === undefined || !song){
+		if (indexBar === undefined || !song) {
 			throw "BarManager - insertBar - missing params";
 		}
 		numBars = numBars || 1;
 		var barsToInsert = [];
 		for (var i = 0; i < numBars; i++) {
-			this.bars.splice(indexBar + 1,0, new BarModel());	
+			this.bars.splice(indexBar + 1, 0, new BarModel());
 		}
-		
+		if (indexBar > 0) {
+			indexBar--; // we need to get previous bar, otherwise section doesn't know yet the new number of bars
+		}
 		var section = song.getSection(song.getSectionNumberFromBarNumber(indexBar));
 		section.setNumberOfBars(section.getNumberOfBars() + numBars);
 	};
 
-	
+
 	BarManager.prototype.removeBar = function(index) {
 		if (typeof index === "undefined" || isNaN(index) || index < 0) {
 			throw "BarManager - removeBar - invalid index " + index;

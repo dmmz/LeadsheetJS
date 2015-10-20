@@ -146,7 +146,7 @@ define([
 		var selBars = this._getSelectedBars();
 		var numBar = 0;
 		if (selBars.length !== 0) {
-			numBar = selBars[0];
+			numBar = selBars[0] + 1; // add bar after current one
 		}
 
 		var nm = this.songModel.getComponent('notes');
@@ -169,7 +169,7 @@ define([
 		var index = nm.getNextIndexNoteByBeat(numBeat);
 
 		// remove a possibly tied notes
-		if (nm.getNote(index).isTie('stop')) {
+		if (typeof nm.getNote(index) !== "undefined" && nm.getNote(index).isTie('stop')) {
 			var tieType = nm.getNote(index).getTie();
 			if (tieType === "stop") {
 				nm.getNote(index).removeTie();
@@ -184,7 +184,6 @@ define([
 				nm.getNote(index).setTie("start");
 			}
 		}
-
 		nm.notesSplice([index, index - 1], newBarNm.getNotes());
 
 		//add bar to barManager
