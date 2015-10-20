@@ -173,7 +173,7 @@ define([
 			}
 			var iPrevNote = nm.getNextIndexNoteByBeat(initBeat);
 			var iNextNote = nm.getNextIndexNoteByBeat(endBeat);
-			return isTupletBeat(nm.getNoteBeat(iPrevNote)) || isTupletBeat(nm.getNoteBeat(iNextNote));
+			return isTupletBeat(nm.getNoteBeat(iPrevNote)) || iNextNote < nm.getTotal() && isTupletBeat(nm.getNoteBeat(iNextNote));
 		}
 		var initBeat = noteMng.getNoteBeat(this.cursor.getStart());
 		var endBeat = initBeat + durAfter;
@@ -186,9 +186,11 @@ define([
 				return;
 			}
 			var endIndex = noteMng.getNextIndexNoteByBeat(endBeat);
-			var beatEndNote = noteMng.getNoteBeat(endIndex);
-			if (endBeat < beatEndNote) {
-				tmpNm.fillGapWithRests(beatEndNote - endBeat, initBeat);
+			if (endIndex < noteMng.getTotal()){
+				var beatEndNote = noteMng.getNoteBeat(endIndex);
+				if (endBeat < beatEndNote) {
+					tmpNm.fillGapWithRests(beatEndNote - endBeat, initBeat);
+				}
 			}
 			this.cursor.setPos([this.cursor.getStart(), endIndex - 1]);
 		}
