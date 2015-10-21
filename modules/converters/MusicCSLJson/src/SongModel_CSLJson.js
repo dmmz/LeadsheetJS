@@ -101,7 +101,7 @@ define(function(require) {
 			}
 			//songModel.getUnfoldedSongStructure();
 			if (wholeRestFound) { //if found bars with only one whole rest
-				SongModel_CSLJson._updateBarDurations(songModel);
+				SongModel_CSLJson._updateNotesBarDuration(songModel);
 
 			}
 		}
@@ -111,7 +111,13 @@ define(function(require) {
 	 * If there are bars with only one whole rest (very few cases), we set their real duration, which depends on the time signature bar
 	 * @param  {SongModel} song 
 	 */
-	SongModel_CSLJson._updateBarDurations = function(song) {
+	SongModel_CSLJson._updateNotesBarDuration = function(song) {
+		/**
+			function already defined in noteManager, it should be used in an 'utils' mod
+		*/
+		function roundBeat (beat) {
+			return Math.round(beat * 1000000) / 1000000;
+		}
 		var songIt = new SongBarsIterator(song),
 			notes = song.getComponent('notes').getNotes(),
 			currentBarNumBeats = songIt.getBarTimeSignature().getQuarterBeats(),
@@ -123,10 +129,11 @@ define(function(require) {
 
 			}
 			notesBarDur += notes[i].getDuration();
+
 			if (notesBarDur > currentBarNumBeats){
 				throw "note exceeds bar duration";
 			}
-			else if (notesBarDur == currentBarNumBeats ){
+			else if (roundBeat(notesBarDur) == currentBarNumBeats ){
 				notesBarDur = 0;
 				songIt.next();
 				if (songIt.hasNext())
