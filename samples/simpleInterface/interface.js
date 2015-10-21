@@ -31,6 +31,7 @@ require.config({
 define(function(require) {
 	var $ = require('jquery');
 	var LJS = require('LJS');
+	var bootstrap = require('bootstrap');
 	// console.log(LJS);
 
 	var testSongs = require('tests/test-songs');

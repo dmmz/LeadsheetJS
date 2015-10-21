@@ -1,10 +1,11 @@
 define([
 	'modules/MainMenu/src/MainMenuModel',
 	'jquery',
+	'bootstrap',
 	'pubsub',
 	'mustache',
 	'text!modules/MainMenu/src/MainMenuTemplate.html'
-], function(MainMenuModel, $, pubsub, Mustache, MainMenuTemplate) {
+], function(MainMenuModel, $, bootstrap, pubsub, Mustache, MainMenuTemplate) {
 	/**
 	 * MainMenuView is the model containing a set of menu, each menu contain at least a title
 	 */

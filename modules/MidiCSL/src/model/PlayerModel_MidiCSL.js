@@ -312,7 +312,7 @@ define([
 			}
 			this.emptyPlayNotes();
 			var self = this;
-			self.playState = true;
+			this.playState = true;
 			$.publish('PlayerModel-onplay');
 			// Convert songmodel to a readable model that we can insert in SongModel_MidiCSL
 			SongConverterMidi_MidiCSL.exportToMidiCSL(this.songModel, function(midiSong) {

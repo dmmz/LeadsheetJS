@@ -71,10 +71,10 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 	 * CL_TYPE can be 'CURSOR' or 'CLICKABLE'
 	 * if it's CURSOR, it needs to have also this methods:
 	 *		getYs
-     *		name
-     *		drawCursor
-     *		setCursorEditable
- 	 */
+	 *		name
+	 *		drawCursor
+	 *		setCursorEditable
+	 */
 	CanvasLayer.prototype.addElement = function(elem) {
 		if (!elem || !elem.CL_NAME || !elem.getType()) {
 			throw 'CanvasLayer element needs CL_NAME and CL_TYPE property';
@@ -219,7 +219,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			if (isClick && evt.button == 2){
 				$.publish('right-click');
 			}else{
-				selection(isClick, true);	
+				selection(isClick, true);
 			}
 		});
 
