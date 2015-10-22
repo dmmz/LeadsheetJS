@@ -340,6 +340,8 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	 * @param  {integer} initBeat
 	 */
 	NoteManager.prototype.fillGapWithRests = function(gapDuration, initBeat) {
+		console.log(initBeat);
+		console.log(gapDuration);
 		if (isNaN(gapDuration)) {
 			return;
 		}

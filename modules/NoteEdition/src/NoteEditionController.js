@@ -44,7 +44,7 @@ define([
 	};
 	//Private functions
 	/**
-	 * if a duration function applied to a tuplet note, we expand cursor to include the other tuplet notes (to avoid strange durations
+	 * if a duration function is applied to a tuplet note, we expand cursor to include the other tuplet notes (to avoid strange durations
 	 */
 	NoteEditionController.prototype._ifTupletExpandCursor = function() {
 		var noteManager = this.songModel.getComponent('notes');
@@ -138,7 +138,7 @@ define([
 		var selectedNotes = noteManager.getNotes(this.cursor.getStart(), this.cursor.getEnd() + 1);
 		return selectedNotes;
 	};
-
+	
 	/**
 	 * Function clones selectedNotes and inserts it in a new NoteManager
 	 * @return {NoteManager} return a cloned notemanager that contain as many notes as the cursor selection
@@ -480,7 +480,7 @@ define([
 					}
 					tupletToDelete.push(i);
 					if (deleteNoteTupletCount < deleteNoteTupletToDo) {
-						// delete note we don't need
+						// delete the note we don't need
 						noteToDelete.push(i);
 						deleteNoteTupletCount++;
 					}

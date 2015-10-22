@@ -329,7 +329,7 @@ define([
 			var adaptedNotes = calc.notes;
 			var numBarsAdaptedNotes = calc.numBars;
 
-			//HERE change time signature
+			//HERE we change time signature
 			var prevTimeSignature = song.getTimeSignatureAt(selBars[0]);
 			barMng.getBar(selBars[0]).setTimeSignatureChange(timeSignature);
 
@@ -340,7 +340,7 @@ define([
 			}
 
 
-			//we set previous time signature in the bar just after the selection, only if there are not changes and if we are not at end of song
+			//we set previous time signature in the bar just after the selection, only if there are no time sign. changes and if we are not at end of song
 			var indexFollowingBar = selBars[1] + diffBars + 1;
 			if (barMng.getTotal() > indexFollowingBar && // if following bar exists
 				!timeSigChangesInSelection &&
