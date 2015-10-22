@@ -186,7 +186,7 @@ define([
 				return;
 			}
 			var endIndex = noteMng.getNextIndexNoteByBeat(endBeat);
-			if (endIndex < noteMng.getTotal()){
+			if (endIndex < noteMng.getTotal()) {
 				var beatEndNote = noteMng.getNoteBeat(endIndex);
 				if (endBeat < beatEndNote) {
 					tmpNm.fillGapWithRests(beatEndNote - endBeat, initBeat);
@@ -327,10 +327,32 @@ define([
 			var numberOfDots = 0;
 			for (var i = 0, c = notes.length; i < c; i++) {
 				numberOfDots = notes[i].getDot();
-				if (numberOfDots >= 2) {
+				if (numberOfDots === 1) {
 					numberOfDots = 0;
 				} else {
-					numberOfDots++;
+					numberOfDots = 1;
+				}
+				notes[i].setDot(numberOfDots);
+			}
+			return notes;
+		});
+		if (this._lastCursorIndexHistory !== this.cursor.getPos()) {
+			$.publish('ToHistory-add', 'Change note duration');
+			this._lastCursorIndexHistory = this.cursor.getPos();
+		} else {
+			$.publish('ToHistory-updateLastEntry');
+		}
+	};
+	NoteEditionController.prototype.setDoubleDot = function() {
+		this._runDurationFn(function(tmpNm) {
+			var notes = tmpNm.getNotes();
+			var numberOfDots = 0;
+			for (var i = 0, c = notes.length; i < c; i++) {
+				numberOfDots = notes[i].getDot();
+				if (numberOfDots === 2) {
+					numberOfDots = 0;
+				} else {
+					numberOfDots = 2;
 				}
 				notes[i].setDot(numberOfDots);
 			}
@@ -455,7 +477,7 @@ define([
 			$.publish('ToHistory-updateLastEntry');
 		}
 	};
-	
+
 	NoteEditionController.prototype.setSilence = function() {
 		//this._ifTupletExpandCursor();
 		var self = this;

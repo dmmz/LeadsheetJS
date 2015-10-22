@@ -70,8 +70,11 @@ define(['utils/NoteUtils',
 				}
 			} else if (parseInt(key, null) >= 1 && parseInt(key, null) <= 9) {
 				publish('number-key', evt, key);
-			} else if (keyCode == 190) {
+			} else if (keyCode == 190 || keyCode == 59) {
 				publish('dot-key', evt, evt.shiftKey);
+				stopEvent(evt);
+			} else if (keyCode == 58) {
+				publish('colon-key', evt);
 				stopEvent(evt);
 			} else if (keyCode == 84) { // T be carefull, set key to t will be call on F5 also
 				if (evt.shiftKey) {

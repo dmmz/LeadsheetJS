@@ -49,6 +49,10 @@ define([
 			fn = 'setDot';
 			$.publish('NoteEditionView', fn);
 		});
+		$.subscribe('colon-key', function(el) {
+			fn = 'setDoubleDot';
+			$.publish('NoteEditionView', fn);
+		});
 		$.subscribe('shift-t-key', function(el) {
 			fn = 'setTuplet';
 			$.publish('NoteEditionView', fn);
@@ -150,6 +154,11 @@ define([
 			fn = 'setDot';
 			$.publish('NoteEditionView', fn);
 		});
+		$('#double-dot').click(function() {
+			fn = 'setDoubleDot';
+			$.publish('NoteEditionView', fn);
+		});
+
 
 		// Symbol
 		$('#tie-note').click(function() {
