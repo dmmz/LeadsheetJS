@@ -346,7 +346,6 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 	};
 
 	/**
-	 
 	 * @param {string|number} dur can be a string "h" , "q" , "8" ...etc. or a number 
 	 */
 	NoteModel.prototype.setDuration = function(dur) {

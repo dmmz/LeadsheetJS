@@ -34,6 +34,18 @@ define([
 			$.publish('ToViewer-draw', self.songModel);
 			//}
 		});
+		$.subscribe('CursorModel-setPos', function(el, pos) {
+			self.setCurrentElementFromCursor(pos);
+		});
+	};
+
+	StructureEditionController.prototype.setCurrentElementFromCursor = function() {
+		var currentBarNumber = this.songModel.getComponent('notes').getNoteBarNumber(this.cursor.getStart(), this.songModel);
+		var currentBar = this.songModel.getComponent('bars').getBar(currentBarNumber);
+		this.structEditionModel.setSelectedBar(currentBar);
+		var currentSectionNumber = this.songModel.getSectionNumberFromBarNumber(currentBarNumber);
+		var currentSection = this.songModel.getSection(currentSectionNumber);
+		this.structEditionModel.setSelectedSection(currentSection);
 	};
 
 	StructureEditionController.prototype.addSection = function() {
