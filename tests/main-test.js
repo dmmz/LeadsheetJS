@@ -33,7 +33,7 @@ require.config({
 
 define(function(require) {
   var QUnit = require('qunit');
-  var testUserLog = require('utils/test/testUserlog');
+  var testUserLog = require('utils/test/testUserLog');
   var testAjaxUtils = require('utils/test/testAjaxUtils');
 
   var testSongModel = require('modules/core/test/testSongModel');
