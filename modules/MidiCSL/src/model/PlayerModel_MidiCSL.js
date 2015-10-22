@@ -398,7 +398,7 @@ define([
 											MIDI.setVolume(channel, volume);
 											duration = currentNote.getDuration() * (60 / tempo);
 											MIDI.noteOn(channel, currentMidiNote, velocityNote);
-											MIDI.noteOff(channel, currentMidiNote, duration);
+											MIDI.noteOff(channel, currentMidiNote, currentNote.getDuration() * (60 / tempo));
 										}
 										if (currentNote.getType() == "melody") {
 											if (typeof currentNote.tieNotesNumber !== "undefined" && currentNote.tieNotesNumber) {
