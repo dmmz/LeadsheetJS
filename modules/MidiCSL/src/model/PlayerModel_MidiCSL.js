@@ -329,10 +329,16 @@ define([
 					var beatOfLastNoteOff = lastNote.getCurrentTime() + lastNote.getDuration();
 					var endTime = beatOfLastNoteOff * beatDuration + Date.now();
 					self.songDuration = beatOfLastNoteOff * beatDuration;
-
 					if (typeof playFrom === "undefined" || isNaN(playFrom)) {
-						playFrom = song[self.indexPosition].getCurrentTime() * beatDuration;
+						var cursorPosition = self.cursorModel.getPos();
+						if (cursorPosition[0] !== 0) {
+							playFrom = midiSongModel.getMelodySoundModelFromIndex(cursorPosition[0]).getCurrentTime() * beatDuration;
+							if (cursorPosition.length !== 1 && cursorPosition[1] !== cursorPosition[0]) {
+								playTo = midiSongModel.getMelodySoundModelFromIndex(cursorPosition[1]).getCurrentTime() * beatDuration;
+							}
+						}
 					}
+
 					self._startTime = Date.now() - playFrom;
 
 					var velocityMin = 80;
@@ -391,16 +397,16 @@ define([
 										}
 										/*}*/
 										if (currentNote == lastNote || (currentNote.getCurrentTime() * self.getBeatDuration(tempo) >= playTo)) {
-											self.setPositionInPercent(1);
+											//self.setPositionInPercent(1);
 											setTimeout((function() {
-												self.setPositionIndex(0);
-												self.setPositionInPercent(0);
 												if (self.doLoop() === false) {
+													self.setPositionIndex(0);
+													self.setPositionInPercent(0);
 													$.publish('PlayerModel-onfinish');
 													self.stop();
 												} else {
 													$.publish('PlayerModel-onloopstart');
-													self.play(tempo);
+													self.play(tempo, playFrom, playTo);
 												}
 											}), duration * 1000);
 										}

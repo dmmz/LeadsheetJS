@@ -11,6 +11,7 @@ require.config({
     pubsub: 'external-libs/tiny-pubsub.min',
     jsPDF: 'external-libs/jspdf/jspdf.min',
     mustache: 'external-libs/mustache',
+    bootstrap: 'external-libs/bootstrap/bootstrap.min',
     text: 'external-libs/require-text',
   },
   shim: {

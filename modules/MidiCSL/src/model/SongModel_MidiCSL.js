@@ -81,6 +81,17 @@ define(['modules/MidiCSL/src/model/NoteModel_MidiCSL'], function(NoteModel_MidiC
 		return -1;
 	};
 
+	SongModel_MidiCSL.prototype.getMelodySoundModelFromIndex = function(index) {
+		if (!isNaN(index) && index >= 0) {
+			for (var i = 0, c = this.song.length; i < c; i++) {
+				if (this.song[i].getNoteIndex() === index &&  this.song[i].getType() === 'melody') {
+					return this.song[i];
+				}
+			}
+		}
+		return undefined;
+	};
+
 	SongModel_MidiCSL.prototype.serialize = function() {
 		var songModel_midiCSL = {};
 		songModel_midiCSL.song = this.song;
