@@ -40,6 +40,9 @@ define([
 	};
 
 	StructureEditionController.prototype.setCurrentElementFromCursor = function() {
+		if (typeof this.structEditionModel === "undefined") {
+			return;
+		}
 		var currentBarNumber = this.songModel.getComponent('notes').getNoteBarNumber(this.cursor.getStart(), this.songModel);
 		var currentBar = this.songModel.getComponent('bars').getBar(currentBarNumber);
 		this.structEditionModel.setSelectedBar(currentBar);
