@@ -49,7 +49,7 @@ define([
 		// clone last bar
 		var indexLastBar = barManager.getTotal() - 1;
 
-		// now we add bar to this section and fill them with silence
+		// now we add bars to this section and fill them with silences
 		var noteManager = this.songModel.getComponent('notes');
 		var indexLastNote = noteManager.getTotal() - 1;
 		var initBeat = noteManager.getNoteBeat(indexLastNote);
@@ -65,7 +65,7 @@ define([
 		});
 		this.songModel.addSection(section);
 
-		UserLog.logAutoFade('info', "Section have been added successfully");
+		UserLog.logAutoFade('info', "Section has been added successfully");
 		$.publish('ToLayers-removeLayer');
 		$.publish('ToHistory-add', 'Add Section');
 		this.cursor.setPos(indexLastNote + 1);
@@ -361,43 +361,6 @@ define([
 
 		$.publish('ToHistory-add', 'Time signature set to ' + timeSignature);
 	};
-
-	StructureEditionController.prototype._checkDuration = function(durBefore, durAfter) {
-		function checkIfBreaksTuplet(initBeat, endBeat, nm) {
-			/**
-			 * means that is a 0.33333 or something like that
-			 * @return {Boolean}
-			 */
-			function isTupletBeat(beat) {
-				beat = beat * 16;
-				return Math.round(beat) != beat;
-			}
-			var iPrevNote = nm.getNextIndexNoteByBeat(initBeat);
-			var iNextNote = nm.getNextIndexNoteByBeat(endBeat);
-			return isTupletBeat(nm.getNoteBeat(iPrevNote)) || isTupletBeat(nm.getNoteBeat(iNextNote));
-		}
-		var nm = this.songModel.getComponent('notes');
-		var initBeat = 1;
-		var endBeat = durAfter + 1;
-
-		if (durBefore < durAfter) {
-			nm.fillGapWithRests(durAfter - durBefore, initBeat);
-		} else if (durBefore > durAfter) {
-			if (checkIfBreaksTuplet(initBeat, durAfter, nm)) {
-				UserLog.logAutoFade('error', "Can't break tuplet");
-				return;
-			}
-			var endIndex = nm.getNextIndexNoteByBeat(endBeat);
-			var beatEndNote = nm.getNoteBeat(endIndex);
-
-			if (endBeat < beatEndNote) {
-				nm.fillGapWithRests(beatEndNote - endBeat, initBeat);
-			}
-		}
-		//nm.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
-		nm.reviseNotes();
-	};
-
 	StructureEditionController.prototype.tonality = function(tonality) {
 		var selBars = this._getSelectedBars();
 		if (selBars.length === 0) {

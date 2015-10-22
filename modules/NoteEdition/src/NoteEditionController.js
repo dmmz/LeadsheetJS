@@ -138,7 +138,7 @@ define([
 		var selectedNotes = noteManager.getNotes(this.cursor.getStart(), this.cursor.getEnd() + 1);
 		return selectedNotes;
 	};
-	
+
 	/**
 	 * Function clones selectedNotes and inserts it in a new NoteManager
 	 * @return {NoteManager} return a cloned notemanager that contain as many notes as the cursor selection
@@ -186,6 +186,9 @@ define([
 				return;
 			}
 			var endIndex = noteMng.getNextIndexNoteByBeat(endBeat);
+			// after having copied notes sometimes there can be a gap to old duration, if so, we add silences 
+			// (e.g. last not copied is an 8th note that starts at the same point a half note started, 
+			//	so overwriting it, there are 1.5 beats missing to be filled by silences)
 			if (endIndex < noteMng.getTotal()) {
 				var beatEndNote = noteMng.getNoteBeat(endIndex);
 				if (endBeat < beatEndNote) {
@@ -532,7 +535,7 @@ define([
 	NoteEditionController.prototype.addNote = function() {
 		this._runDurationFn(function(tmpNm) {
 			var cloned = tmpNm.getNotes()[0].clone(false);
-			tmpNm.insertNote(0, cloned);
+			tmpNm.addNote(cloned, 0);
 		});
 
 		if (this._lastCursorIndexHistory !== this.cursor.getPos()) {
