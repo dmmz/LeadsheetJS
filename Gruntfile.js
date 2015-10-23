@@ -37,7 +37,7 @@ module.exports = function(grunt) {
 					},
 					//cjsTranslate: true,
 					//findNestedDependencies: true,
-					optimize: "uglify2", // "uglify2", "none"
+					optimize: "none", // "uglify2", "none"
 					/*wrap: {
 						startFile: 'build/start.frag',
 						endFile: 'build/end.frag'

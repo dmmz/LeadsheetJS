@@ -171,7 +171,6 @@ define([
 		}
 		ctx.fillStyle = saveFillColor;
 		ctx.globalAlpha = 1;
-
 	};
 
 	WaveDrawer.prototype.setCursorEditable = function(bool) {

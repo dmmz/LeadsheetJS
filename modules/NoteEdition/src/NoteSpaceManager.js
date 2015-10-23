@@ -73,10 +73,10 @@ define([
 		return noteSpace;
 	};
 
-	NoteSpaceManager.prototype.getType = function() {	
+	NoteSpaceManager.prototype.getType = function() {
 		return this.CL_TYPE;
 	};
-	
+
 	/**
 	 * @inteface
 	 * @param  {Object} coords
@@ -107,7 +107,7 @@ define([
 	NoteSpaceManager.prototype.inPath = function(coords) {
 		return !!this.elemMng.getElemsInPath(this.noteSpace, coords);
 	};
-	
+
 	/**
 	 * @interface
 	 * @param  {CanvasContext} ctx
@@ -148,6 +148,25 @@ define([
 			}
 			ctx.fillStyle = saveFillColor;
 			ctx.globalAlpha = 1;
+			if (areas.length === 1) {
+				var posLastCursor = areas[areas.length - 1].y + areas[areas.length - 1].h;
+				var canvasOffset = $(ctx.canvas).offset().top;
+				var viewportHeight = $(window).height();
+				var scrollTop = $(window).scrollTop();
+				/*console.log('---');
+				console.log(viewportHeight);
+				console.log(posLastCursor);
+				console.log(canvasOffset);
+				console.log(scrollTop);
+				console.log((canvasOffset + posLastCursor), (viewportHeight - 100));*/
+				if ((canvasOffset + posLastCursor - scrollTop) > (viewportHeight - 90)) {
+					//console.log('down');
+					$(window).scrollTop($(window).scrollTop() + this.viewer.LINE_HEIGHT);
+				} else if ((canvasOffset + posLastCursor) < scrollTop) {
+					//console.log('up');
+					$(window).scrollTop($(window).scrollTop() - this.viewer.LINE_HEIGHT);
+				}
+			}
 		}
 
 	};

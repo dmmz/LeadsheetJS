@@ -14,7 +14,7 @@ define([
 	'pubsub',
 ], function($, Mustache, CursorModel, SongModel, SectionModel, NoteManager, NoteModel, SongBarsIterator, TimeSignatureModel, SongConverterMidi_MidiCSL, NoteUtils, UserLog, pubsub) {
 
-	function StructureEditionController(songModel, cursor, structEditionModel, view) {
+	function StructureEditionController(songModel, cursor, structEditionModel) {
 		this.songModel = songModel || new SongModel();
 		this.cursor = cursor || new CursorModel();
 		this.initSubscribe();
@@ -34,8 +34,8 @@ define([
 			$.publish('ToViewer-draw', self.songModel);
 			//}
 		});
-		$.subscribe('CursorModel-setPos', function(el, pos) {
-			self.setCurrentElementFromCursor(pos);
+		$.subscribe('CursorModel-setPos', function(el) {
+			self.setCurrentElementFromCursor();
 		});
 	};
 
