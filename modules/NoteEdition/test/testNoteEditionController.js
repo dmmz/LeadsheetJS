@@ -82,20 +82,26 @@ define(['modules/core/src/NoteModel',
 
 				// Editor test where delete is like silence
 				var necDelete = createRhythmicMelody();
+				// "F#/5-q,G/5-8.,F#/5-16,F#/5-q(3/2),G/5-q(3/2),A/5-q(3/2),Bb/5-q"  	(after each step we show value of necDelete.songModel.getComponent('notes').getNotes().toString())
 				necDelete.setSilence();
 				assert.equal(necDelete._getSelectedNotes().toString(), 'qr', 'delete note');
+				// "qr,G/5-8.,F#/5-16,F#/5-q(3/2),G/5-q(3/2),A/5-q(3/2),Bb/5-q"
 
 				necDelete.cursor.setPos([1, 2]);
 				necDelete.setSilence();
 				assert.equal(necDelete._getSelectedNotes().toString(), '8.r,16r', 'delete note');
+				// "qr,8.r,16r,F#/5-q(3/2),G/5-q(3/2),A/5-q(3/2),Bb/5-q"
 
 				necDelete.cursor.setPos([3, 3]);
 				necDelete.setSilence();
-				assert.equal(necDelete._getSelectedNotes().toString(), 'qr', 'Delete tuplet note');
+				assert.equal(necDelete._getSelectedNotes().toString(), 'q(3/2)r', 'Delete tuplet note');
 				assert.equal(necDelete._getSelectedNotes()[0].isTuplet(), true, 'tuplet after one note deletion should be a tuplet');
+				// "qr,8.r,16r,q(3/2)r,G/5-q(3/2),A/5-q(3/2),Bb/5-q"
 
 				necDelete.cursor.setPos([3, 4]);
 				nec.setTuplet();
+
+
 				necDelete.cursor.setPos([3, 5]);
 				necDelete.setSilence();
 				assert.equal(necDelete._getSelectedNotes()[0].isTuplet(), false, 'tuplet after whole note deletion should no more be a tuplet');

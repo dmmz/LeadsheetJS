@@ -131,13 +131,14 @@ define(function(require) {
 			notesBarDur += notes[i].getDuration();
 
 			if (notesBarDur > currentBarNumBeats){
-				throw "note exceeds bar duration";
+				console.warn("note exceeds bar duration (index "+ i +")");
 			}
 			else if (roundBeat(notesBarDur) == currentBarNumBeats ){
 				notesBarDur = 0;
-				songIt.next();
-				if (songIt.hasNext())
+				
+				if (songIt.next()){
 					currentBarNumBeats = songIt.getBarTimeSignature().getQuarterBeats();
+				}
 			}
 		}
 

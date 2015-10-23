@@ -45,6 +45,9 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		for (var i = 0; i < this.dot; i++) {
 			dur += ".";
 		}
+		if (this.timeModification){
+			dur += "(" + this.timeModification + ")";
+		}
 		if (this.isRest) {
 			str = dur + "r";
 		} else {

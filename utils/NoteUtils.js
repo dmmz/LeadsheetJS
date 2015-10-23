@@ -230,9 +230,14 @@ define(function() {
 		else return this.PITCH_CLASSES[newPos] + accidentals + "/" + newOctave;
 	};
 
-
+	/**
+	 * @param  {Number}		4.5, 
+	 * @param  {Number}		0.5
+	 * @return {Array}		array of notes
+	 */
 	NoteUtils.durationToNotes = function(duration, initBeat) {
 		var durs = ["q", "8", "16", "32", "64"];
+
 
 		function findDur(arrNotes, duration) {
 			arrNotes = arrNotes || [];
@@ -255,10 +260,10 @@ define(function() {
 
 		var notes = [];
 
-		/* this "if" code assures that in the special case with two condition: 
+		/* the following "if" treats a special case with two conditions: 
 				1. replaced frase starts at a non absolute beat (4.5, 4.25..etc)
 				2. duration is longer than firstSilenceDur, which is difference with following absolute beat 
-				(i.e. if 4.5 -> difference is 0.5, if 4.25, difference is 0.75)
+				(i.e. if 4.5 -> difference to 5.0 (= following beat) is 0.5; if 4.25, difference is 0.75)
 			this is normally the case when we remove several measures starting from, beat 4.5 in a measure
 			We can check it relative to the absolute beat beacause the biggest figure is a quarter note 
 			(if we created half notes or whole notes, we should check it relative to those figures), also, this would give problems

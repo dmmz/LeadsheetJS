@@ -44,7 +44,7 @@ define([
 	};
 	//Private functions
 	/**
-	 * if a duration function applied to a tuplet note, we expand cursor to include the other tuplet notes (to avoid strange durations
+	 * if a duration function is applied to a tuplet note, we expand cursor to include the other tuplet notes (to avoid strange durations
 	 */
 	NoteEditionController.prototype._ifTupletExpandCursor = function() {
 		var noteManager = this.songModel.getComponent('notes');
@@ -186,6 +186,9 @@ define([
 				return;
 			}
 			var endIndex = noteMng.getNextIndexNoteByBeat(endBeat);
+			// after having copied notes sometimes there can be a gap to old duration, if so, we add silences 
+			// (e.g. last not copied is an 8th note that starts at the same point a half note started, 
+			//	so overwriting it, there are 1.5 beats missing to be filled by silences)
 			if (endIndex < noteMng.getTotal()) {
 				var beatEndNote = noteMng.getNoteBeat(endIndex);
 				if (endBeat < beatEndNote) {
@@ -502,7 +505,7 @@ define([
 					}
 					tupletToDelete.push(i);
 					if (deleteNoteTupletCount < deleteNoteTupletToDo) {
-						// delete note we don't need
+						// delete the note we don't need
 						noteToDelete.push(i);
 						deleteNoteTupletCount++;
 					}
@@ -532,7 +535,7 @@ define([
 	NoteEditionController.prototype.addNote = function() {
 		this._runDurationFn(function(tmpNm) {
 			var cloned = tmpNm.getNotes()[0].clone(false);
-			tmpNm.insertNote(0, cloned);
+			tmpNm.addNote(cloned, 0);
 		});
 
 		if (this._lastCursorIndexHistory !== this.cursor.getPos()) {

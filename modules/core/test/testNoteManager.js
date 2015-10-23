@@ -275,22 +275,22 @@ define(['modules/core/src/NoteManager',
 					noteManager.setNotes(createSilencesMelody());
 					var notes;
 					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('6/8'),2);
-					assert.equal(notes,'qr,qr,qr,qr,qr,qr','getNotesAdaptedToTimeSig for only silences'); //it seems not to be necessary toString, (useful to put if test fails)
+					assert.equal(notes.toString(),'qr,qr,qr,qr,qr,qr','getNotesAdaptedToTimeSig for only silences'); //it seems not to be necessary toString, (useful to put if test fails)
 
 					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('3/8'),3);
-					assert.equal(notes,'qr,8r,qr,8r,8r,qr'); 
+					assert.equal(notes.toString(),'qr,8r,8r,qr,qr,8r'); 
+
+					noteManager.setNotes(createSimpleRhythm('q',4)); //A/4-q, A/4-q, A/4-q, A/4-q
+					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('3/4'));
+					assert.equal(notes.toString(),'A/4-q,A/4-q,A/4-q,A/4-q,qr,qr','getNotesAdaptedToTimeSig for notes'); 
 
 					noteManager.setNotes(createSimpleRhythm('q',4));
 					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('3/4'));
-					assert.equal(notes,'A/4-q,A/4-q,A/4-q,A/4-q,qr,qr','getNotesAdaptedToTimeSig for notes'); 
-
-					noteManager.setNotes(createSimpleRhythm('q',4));
-					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('3/4'));
-					assert.equal(notes,'A/4-q,A/4-q,A/4-q,A/4-q,qr,qr','getNotesAdaptedToTimeSig for notes'); 
+					assert.equal(notes.toString(),'A/4-q,A/4-q,A/4-q,A/4-q,qr,qr','getNotesAdaptedToTimeSig for notes'); 
 
 					noteManager.setNotes(createSimpleRhythm('8',5));
 					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('3/8'));
-					assert.equal(notes,'A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,8r'); 
+					assert.equal(notes.toString(),'A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,8r'); 
 
 					noteManager.setNotes(createSimpleRhythm('8',9));
 					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('2/2'));
@@ -305,12 +305,19 @@ define(['modules/core/src/NoteManager',
 					//assert.equal(notes,'qr,qr,qr,qr,qr,qr');
 					
 				}
+				// function testFillGapWithRests () {
+				// 	var nm = new NoteManager();
+				// 	nm.fillGapWithRests(2,)
+
+				// 	console.log(noteMng.getNotesAsString());
+				// }
 				var noteManager = new NoteManager();
 
 				managingMelodies(noteManager);
 				durationFunctions(noteManager);
 				otherFunctions(noteManager,testSongs);
 				timeSignatureChanges(noteManager);
+				//testFillGapWithRests();
 
 			});
 

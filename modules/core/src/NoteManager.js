@@ -68,14 +68,6 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		if (typeof notes !== "undefined") this.notes = notes;
 	};
 
-
-	NoteManager.prototype.insertNote = function(pos, note) {
-		if (isNaN(pos) || !(note instanceof NoteModel)) {
-			throw 'NoteManager - insertNote - attribute incorrect ' + pos + ' ' + note;
-		}
-		this.notes.splice(pos + 1, 0, note);
-	};
-
 	/**
 	 * @interface
 	 *
@@ -351,15 +343,9 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		var silenceDurs = NoteUtils.durationToNotes(gapDuration, initBeat);
 		var self = this;
 		silenceDurs.forEach(function(dur) {
-			if (typeof dur !== "undefined") {
-				newNote = new NoteModel(dur + 'r');
-				var pos = self.getNextIndexNoteByBeat(initBeat);
-				if (typeof pos === "undefined") {
-					self.addNote(newNote);
-				} else {
-					self.insertNote(pos, newNote);
-				}
-			}
+			newNote = new NoteModel(dur + 'r');
+			self.addNote(newNote);
+			
 		});
 	};
 	NoteManager.prototype.onlyRests = function() {
@@ -373,6 +359,8 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	};
 	
 	/**
+	 * This function is called in a temporal NoteManager with selected notes in a time signature change (from StructureEditionController) 
+	 * so notes are adapted to one time signature
 	 * @param  {TimeSignatureModel} timeSig 
 	 * @param  {integer} numBars number of bars to change, used when there are only rests, when there are notes, numBars can be undefined
 	 * @return {Array}         of NoteModel
