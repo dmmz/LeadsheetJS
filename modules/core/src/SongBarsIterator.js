@@ -1,4 +1,7 @@
 define(function() {
+	/**
+	 * @param {SongModel}
+	 */
 	function SongBarsIterator (song) {
 		this.song = song;
 		this.bm = this.song.getComponent('bars');
@@ -19,6 +22,7 @@ define(function() {
 			this.prevKeySig = this.getBarKeySignature();
 			this.prevTimeSig = this.getBarTimeSignature();
 			this.index++;
+			return this.hasNext();
 		},
 		setBarIndex: function(index){
 			if (index < this.index){
