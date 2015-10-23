@@ -13,8 +13,8 @@ define([
 								
 				var exportedCSLJson = SongModel_CSLJson.exportToMusicCSLJSON(song);
 
-				var song = SongModel_CSLJson.importFromMusicCSLJSON(IMeanYou);
-				console.log(song);
+				SongModel_CSLJson.importFromMusicCSLJSON(IMeanYou);
+				
 				//assert.deepEqual(exportedCSLJson, testSongs.simpleLeadSheet);
 				
 				//var songWithKeySigChanges = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.leadSheetTimeSigChanges, new SongModel());

@@ -14,9 +14,38 @@ define(function() {
 			this.prevKeySig = null;
 			this.endingState = null;	
 		},
+		/**
+		 *	if true, it means we are at the last iteration, should be used like this
+		 *	while(songBarsIt.hasNext())
+		 *	{
+		 *		//here goes all the logic to do on current bar
+		 *		songBarsIt.next();
+		 *	}
+		 *
+		 *	(apparently all iterators work the other around, first 'next()', then logic, TODO: change)
+		 * 
+		 * @return {Boolean}
+		 */
 		hasNext: function(){
 			return this.index < this.bm.getTotal();
 		},
+
+		/**
+		 *	steps forward, returns if it hasNext after making the step, this way we can check if we can move one step forward.
+		 *	Useful if we want to get information about next iteration on a loop
+		 *
+		 * while( loop ){
+		 * 		//logic
+		 * 
+		 * 	if (songBarIt.next()){
+		 *		//get info about next bar
+		 *	}
+		 * 
+		 * }
+		 *	
+		 * 
+		 * @return {Boolean}
+		 */
 		next: function(){
 			var bar = this.bm.getBar(this.index);
 			this.prevKeySig = this.getBarKeySignature();
