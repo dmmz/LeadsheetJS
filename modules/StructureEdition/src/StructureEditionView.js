@@ -120,11 +120,86 @@ define([
 	 * Subscribe to model events
 	 */
 	StructureEditionView.prototype.initSubscribe = function() {
+		var self = this;
 		$.subscribe('StructureEditionModel-setUnfolded', function(el, unfolded) {
 			var textButton = unfolded ? "Fold" : "Unfold";
 			$("#unfold").val(textButton);
 		});
+		$.subscribe('StructureEditionModel-setSelectedSection', function(el, currentSection) {
+			self._setSelectedSection(currentSection);
+		});
+		$.subscribe('StructureEditionModel-setSelectedBar', function(el, currentBar) {
+			self._setSelectedBar(currentBar);
+		});
 	};
 
+
+	StructureEditionView.prototype._setSelectedSection = function(currentSection) {
+		this._setSectionName(currentSection.getName());
+		this._setSectionRepeatTimes(currentSection.getRepeatTimes());
+	};
+	StructureEditionView.prototype._setSelectedBar = function(currentBar) {
+		this._setBarTimeSignature(currentBar.getTimeSignatureChange());
+		this._setTonality(currentBar.getTonality());
+		this._setEnding(currentBar.getEnding());
+		this._setLabel(currentBar.getLabel());
+		this._setSublabel(currentBar.getSublabel());
+	};
+
+	StructureEditionView.prototype._setSectionName = function(sectionName) {
+		if ($('#inputSectionName').val() !== sectionName) {
+			$('#inputSectionName').val(sectionName);
+		}
+	};
+	StructureEditionView.prototype._setSectionRepeatTimes = function(repeatTimes) {
+		if (typeof repeatTimes === "undefined") {
+			repeatTimes = 1;
+		} else {
+			repeatTimes++;
+		}
+		if ($('#selectSectionRepeatTimes').val() !== repeatTimes) {
+			$('#selectSectionRepeatTimes').val(repeatTimes);
+		}
+	};
+
+	StructureEditionView.prototype._setBarTimeSignature = function(timeSignature) {
+		if (typeof timeSignature === "undefined") {
+			timeSignature = "select";
+		}
+		if ($('#edit_each_time_signature_container select').val() !== timeSignature) {
+			$('#edit_each_time_signature_container select').val(timeSignature);
+		}
+	};
+	StructureEditionView.prototype._setTonality = function(tonality) {
+		if (typeof tonality !== "undefined") {
+			if ($('#edit_each_tonality_container select').val() !== tonality) {
+				$('#edit_each_tonality_container select').val(tonality);
+			}
+		}
+	};
+	StructureEditionView.prototype._setEnding = function(ending) {
+		if (typeof ending === "undefined") {
+			ending = "none";
+		}
+		if ($('#edit_each_ending_container select').val() !== ending) {
+			$('#edit_each_ending_container select').val(ending);
+		}
+	};
+	StructureEditionView.prototype._setLabel = function(label) {
+		if (typeof label === "undefined") {
+			label = "none";
+		}
+		if ($('#edit_each_label_container select').val() !== label) {
+			$('#edit_each_label_container select').val(label);
+		}
+	};
+	StructureEditionView.prototype._setSublabel = function(sublabel) {
+		if (typeof sublabel === "undefined") {
+			sublabel = "none";
+		}
+		if ($('#edit_each_sublabel_container select').val() !== sublabel) {
+			$('#edit_each_sublabel_container select').val(sublabel);
+		}
+	};
 	return StructureEditionView;
 });

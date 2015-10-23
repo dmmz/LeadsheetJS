@@ -14,7 +14,7 @@ define([
 	'pubsub',
 ], function($, Mustache, CursorModel, SongModel, SectionModel, NoteManager, NoteModel, SongBarsIterator, TimeSignatureModel, SongConverterMidi_MidiCSL, NoteUtils, UserLog, pubsub) {
 
-	function StructureEditionController(songModel, cursor, structEditionModel, view) {
+	function StructureEditionController(songModel, cursor, structEditionModel) {
 		this.songModel = songModel || new SongModel();
 		this.cursor = cursor || new CursorModel();
 		this.initSubscribe();
@@ -34,6 +34,21 @@ define([
 			$.publish('ToViewer-draw', self.songModel);
 			//}
 		});
+		$.subscribe('CursorModel-setPos', function(el) {
+			self.setCurrentElementFromCursor();
+		});
+	};
+
+	StructureEditionController.prototype.setCurrentElementFromCursor = function() {
+		if (typeof this.structEditionModel === "undefined") {
+			return;
+		}
+		var currentBarNumber = this.songModel.getComponent('notes').getNoteBarNumber(this.cursor.getStart(), this.songModel);
+		var currentBar = this.songModel.getComponent('bars').getBar(currentBarNumber);
+		this.structEditionModel.setSelectedBar(currentBar);
+		var currentSectionNumber = this.songModel.getSectionNumberFromBarNumber(currentBarNumber);
+		var currentSection = this.songModel.getSection(currentSectionNumber);
+		this.structEditionModel.setSelectedSection(currentSection);
 	};
 
 	StructureEditionController.prototype.addSection = function() {

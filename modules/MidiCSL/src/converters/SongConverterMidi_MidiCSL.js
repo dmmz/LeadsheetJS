@@ -23,7 +23,7 @@ define([
 				throw 'SongConverterMidi_MidiCSL - exportToMusicCSLJSON - songModel parameters must be an instanceof SongModel';
 			}
 			var song = [];
-			var useServlet = false;
+			var useServlet = true;
 			if (useServlet === true) {
 				SongConverterMidi_MidiCSL.unfoldUsingServlet(songModel, function(newSongModel) {
 					song = SongConverterMidi_MidiCSL.exportElementsToMidiCSL(newSongModel);

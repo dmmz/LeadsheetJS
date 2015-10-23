@@ -68,7 +68,8 @@ define(function(require) {
 			'changeInstrument': true,
 			'autoload': false,
 			'progressBar': true
-		}
+		},
+		'useAudio': true
 	};
 
 	var params = {

@@ -32,7 +32,7 @@ define([
 		if (!(pos instanceof Array)) pos = [pos, pos];
 		pos = this._checkPosition(pos);
 		this.pos = pos;
-		//$.publish('CursorModel-setPos', this.pos); //not used
+		$.publish('CursorModel-setPos', this.pos);
 	};
 
 	CursorModel.prototype.getStart = function() {
@@ -54,6 +54,7 @@ define([
 		}
 		pos = this._checkPosition(pos)[0];
 		this.pos[index] = pos;
+		$.publish('CursorModel-setPos', this.pos);
 	};
 
 	/**
