@@ -327,27 +327,9 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	};
 
 	/**
-	 * adds silences at the end of array of notes so that they fill the gapDuration
-	 * @param  {integer} gapDuration
-	 * @param  {integer} initBeat
+	 *
+	 * @param  {Array or Number} durations array of durations corresponding, to bars divisions
 	 */
-	// NoteManager.prototype.fillGapWithRests = function(gapDuration, initBeat) {
-	// 	if (isNaN(gapDuration)) {
-	// 		return;
-	// 	}
-	// 	if (isNaN(initBeat) || initBeat <= 0) {
-	// 		initBeat = 1;
-	// 	}
-	// 	gapDuration = Math.round(gapDuration * 1000000) / 1000000;
-	// 	var newNote;
-	// 	var silenceDurs = NoteUtils.durationToNotes(gapDuration, initBeat);
-	// 	var self = this;
-	// 	silenceDurs.forEach(function(dur) {
-	// 		newNote = new NoteModel(dur + 'r');
-	// 		self.addNote(newNote);
-			
-	// 	});
-	// };
 	NoteManager.prototype.fillGapWithRests = function(durations) {
 		var rests = [], 
 			silenceDurs = [],
@@ -367,10 +349,6 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 			}
 		})
 
-		// gapDuration = Math.round(gapDuration * 1000000) / 1000000;
-		// var newNote;
-		// var silenceDurs = NoteUtils.durationToNotes(gapDuration, initBeat);
-		// var self = this;
 	};
 	NoteManager.prototype.onlyRests = function() {
 		
