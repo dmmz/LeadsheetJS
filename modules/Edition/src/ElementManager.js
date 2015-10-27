@@ -73,6 +73,10 @@ define(function() {
 			firstElemLine, lastElemLine;
 
 		firstElemLine = elems[cInit];
+
+		// to avoid bug when after making changes in melody new melody is shorter than cursor length
+		if (cEnd >= elems.length) cEnd = elems.length - 1;
+
 		while (cInit <= cEnd) {
 			currElem = elems[cInit];
 			if (typeof currElem.getArea !== 'function') {

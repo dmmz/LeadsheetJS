@@ -10,15 +10,28 @@ define(function() {
 		0.125: "32",
 		0.0625: "64"
 	};
-	NoteUtils.ARR_DUR = [
-	{strDur:'w',numDur:4},
-	{strDur:'h',numDur:2},
-	{strDur:'q',numDur:1},
-	{strDur:'8',numDur:0.5},
-	{strDur:'16',numDur:0.25},
-	{strDur:'32',numDur:0.125},
-	{strDur:'64',numDur:0.0625}
-	];
+	NoteUtils.ARR_DUR = [{
+		strDur: 'w',
+		numDur: 4
+	}, {
+		strDur: 'h',
+		numDur: 2
+	}, {
+		strDur: 'q',
+		numDur: 1
+	}, {
+		strDur: '8',
+		numDur: 0.5
+	}, {
+		strDur: '16',
+		numDur: 0.25
+	}, {
+		strDur: '32',
+		numDur: 0.125
+	}, {
+		strDur: '64',
+		numDur: 0.0625
+	}];
 
 	NoteUtils.getStringFromBeatDuration = function(beat) {
 		return NoteUtils.DURATIONS[beat];
@@ -230,53 +243,81 @@ define(function() {
 		else return this.PITCH_CLASSES[newPos] + accidentals + "/" + newOctave;
 	};
 
-
+	/**
+	 * @param  {Number}		4.5, 
+	 * @param  {Number}		0.5
+	 * @return {Array}		array of notes
+	 */
 	NoteUtils.durationToNotes = function(duration, initBeat) {
-		var durs = ["q", "8", "16", "32", "64"];
 
-		function findDur(arrNotes, duration) {
+		var durs = ["w", "h", "q", "8", "16", "32", "64"];
+
+
+
+		function findDur(arrNotes, indexes, duration) {
 			arrNotes = arrNotes || [];
-			var matchedDur = 1;
+			indexes = indexes || [];
+			var matchedDur = 4;
 			var iDur = 0;
 			while (iDur <= durs.length) {
 				if (duration == matchedDur) {
 					arrNotes.push(durs[iDur]);
+					indexes.push(iDur);
 					break;
 				} else if (duration > matchedDur) {
 					arrNotes.push(durs[iDur]);
-					arrNotes = findDur(arrNotes, duration - matchedDur);
+					indexes.push(iDur);
+					arrNotes = findDur(arrNotes, indexes, duration - matchedDur);
 					break;
 				}
 				iDur++;
 				matchedDur /= 2;
 			}
-			return arrNotes;
-		}
-
-		var notes = [];
-
-		/* this "if" code assures that in the special case with two condition: 
-				1. replaced frase starts at a non absolute beat (4.5, 4.25..etc)
-				2. duration is longer than firstSilenceDur, which is difference with following absolute beat 
-				(i.e. if 4.5 -> difference is 0.5, if 4.25, difference is 0.75)
-			this is normally the case when we remove several measures starting from, beat 4.5 in a measure
-			We can check it relative to the absolute beat beacause the biggest figure is a quarter note 
-			(if we created half notes or whole notes, we should check it relative to those figures), also, this would give problems
-			in measures with no exact number of quarter beats: e.g.: 3/8 (= 1.5 beats) 5/8 (2.5 beats...etc.)
-		*/
-		if (initBeat != null) {
-			initBeat = Number(initBeat);
-			var residuBeat = initBeat - Math.floor(initBeat);
-			if (residuBeat !== 0) {
-				var firstSilenceDur = 1 - residuBeat;
-				if (duration > firstSilenceDur) {
-					notes = findDur(notes, firstSilenceDur);
-					duration -= firstSilenceDur;
-				}
+			return {
+				notes: arrNotes,
+				indexes: indexes
 			}
 		}
 
-		return findDur(notes, duration);
+		function mergeByDot(notes, indexes) {
+			var mergedNotes = [],
+				dot = 0,
+				curIndex, prevIndex,
+				curNote, prevNote;
+
+			for (var i = notes.length - 1; i > 0; i--) {
+				curIndex = indexes[i];
+				prevIndex = indexes[i - 1];
+
+				if (curIndex - 1 === prevIndex) {
+					if (dot === 0) {
+						dot++;
+						notes[i - 1] += ".";
+					} 
+					else if (dot === 1){
+						dot++;
+						notes[i - 1] += "..";
+					}
+					else {
+						dot = 0;
+						mergedNotes.push(notes[i]);
+					}
+				} else {
+					mergedNotes.push(notes[i]);
+				}
+			}
+			mergedNotes.push(notes[i]);
+			return mergedNotes;
+		}
+
+		var notes = [];
+		var indexes = [];
+		findDur(notes, indexes, duration);
+		// console.log(notes);
+		// console.log(indexes);
+		notes = mergeByDot(notes,indexes);
+
+		return notes;
 	};
 
 

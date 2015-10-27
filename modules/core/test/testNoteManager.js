@@ -2,9 +2,10 @@ define(['modules/core/src/NoteManager',
 	'modules/core/src/NoteModel',
 	'modules/core/src/SongModel',
 	'modules/core/src/TimeSignatureModel',
+	'utils/NoteUtils',
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
 	'tests/test-songs'
-], function(NoteManager, NoteModel, SongModel, TimeSignature, SongModel_CSLJson, testSongs) {
+], function(NoteManager, NoteModel, SongModel, TimeSignature, NoteUtils, SongModel_CSLJson, testSongs) {
 	return {
 		run: function() {
 			test("NoteManager", function(assert) {
@@ -275,26 +276,22 @@ define(['modules/core/src/NoteManager',
 					noteManager.setNotes(createSilencesMelody());
 					var notes;
 					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('6/8'),2);
-					assert.equal(notes,'qr,qr,qr,qr,qr,qr','getNotesAdaptedToTimeSig for only silences'); //it seems not to be necessary toString, (useful to put if test fails)
+					assert.equal(notes.toString(),'h.r,h.r','getNotesAdaptedToTimeSig for only silences'); //it seems not to be necessary toString, (useful to put if test fails)
 
 					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('3/8'),3);
-					assert.equal(notes,'qr,8r,qr,8r,8r,qr'); 
+					assert.equal(notes.toString(),'q.r,q.r,q.r'); 
 
-					noteManager.setNotes(createSimpleRhythm('q',4));
+					noteManager.setNotes(createSimpleRhythm('q',4)); //A/4-q, A/4-q, A/4-q, A/4-q
 					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('3/4'));
-					assert.equal(notes,'A/4-q,A/4-q,A/4-q,A/4-q,qr,qr','getNotesAdaptedToTimeSig for notes'); 
-
-					noteManager.setNotes(createSimpleRhythm('q',4));
-					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('3/4'));
-					assert.equal(notes,'A/4-q,A/4-q,A/4-q,A/4-q,qr,qr','getNotesAdaptedToTimeSig for notes'); 
+					assert.equal(notes.toString(),'A/4-q,A/4-q,A/4-q,A/4-q,hr','getNotesAdaptedToTimeSig for notes'); 
 
 					noteManager.setNotes(createSimpleRhythm('8',5));
 					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('3/8'));
-					assert.equal(notes,'A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,8r'); 
+					assert.equal(notes.toString(),'A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,8r'); 
 
 					noteManager.setNotes(createSimpleRhythm('8',9));
 					notes = noteManager.getNotesAdaptedToTimeSig(new TimeSignature('2/2'));
-					assert.equal(notes.toString(),'A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,8r,qr,qr,qr'); 
+					assert.equal(notes.toString(),'A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,A/4-8,h..r'); 
 					
 					//breaking notes notes
 					noteManager.setNotes(createSimpleRhythm('q',4));
@@ -305,12 +302,56 @@ define(['modules/core/src/NoteManager',
 					//assert.equal(notes,'qr,qr,qr,qr,qr,qr');
 					
 				}
+				function testDurationToNotes () {
+					
+					assert.equal(NoteUtils.durationToNotes(2).toString(), 'h','simple notes');
+					assert.equal(NoteUtils.durationToNotes(4).toString(), 'w');
+					assert.equal(NoteUtils.durationToNotes(0.5).toString(), '8');
+					assert.equal(NoteUtils.durationToNotes(1).toString(), 'q');
+					assert.equal(NoteUtils.durationToNotes(0.25).toString(), '16');
+					assert.equal(NoteUtils.durationToNotes(0.125).toString(), '32');
+					assert.equal(NoteUtils.durationToNotes(0.0625).toString(), '64');
+					
+					assert.equal(NoteUtils.durationToNotes(5.25).toString(), '16,q,w', 'cannot merge as it is never a dot of previous');
+					assert.equal(NoteUtils.durationToNotes(8).toString(), 'w,w');
+					assert.equal(NoteUtils.durationToNotes(4.5).toString(), '8,w');
+					assert.equal(NoteUtils.durationToNotes(1.25).toString(), '16,q');
+					assert.equal(NoteUtils.durationToNotes(0.625).toString(), '32,8');
+					assert.equal(NoteUtils.durationToNotes(2.5).toString(), '8,h');
+					assert.equal(NoteUtils.durationToNotes(2.25).toString(), '16,h');
+					assert.equal(NoteUtils.durationToNotes(2.125).toString(), '32,h');
+
+					assert.equal(NoteUtils.durationToNotes(7).toString(), 'w..', 'double merged');
+					assert.equal(NoteUtils.durationToNotes(3.5).toString(), 'h..');
+					assert.equal(NoteUtils.durationToNotes(1.75).toString(), 'q..');
+					assert.equal(NoteUtils.durationToNotes(0.875).toString(), '8..');
+					
+					assert.equal(NoteUtils.durationToNotes(6).toString(), 'w.');
+					assert.equal(NoteUtils.durationToNotes(3).toString(), 'h.');
+					assert.equal(NoteUtils.durationToNotes(1.5).toString(), 'q.');
+					assert.equal(NoteUtils.durationToNotes(0.75).toString(), '8.');
+					assert.equal(NoteUtils.durationToNotes(0.375).toString(), '16.');
+					assert.equal(NoteUtils.durationToNotes(0.1875).toString(), '32.');
+					
+					assert.equal(NoteUtils.durationToNotes(5.5).toString(), 'q.,w', 'merged to q. but cannot merge w');
+					assert.equal(NoteUtils.durationToNotes(7.5).toString(), 'h..,w', 'could merge everything but maximum dot is 2');
+					assert.equal(NoteUtils.durationToNotes(5.75).toString(), 'q..,w','other complex cases');
+					assert.equal(NoteUtils.durationToNotes(3.75).toString(), 'q..,h');
+					assert.equal(NoteUtils.durationToNotes(3.25).toString(), '16,h.');
+					assert.equal(NoteUtils.durationToNotes(2.75).toString(), '8.,h');
+					assert.equal(NoteUtils.durationToNotes(2.375).toString(), '16.,h');
+					assert.equal(NoteUtils.durationToNotes(1.875).toString(), '8..,q');
+					assert.equal(NoteUtils.durationToNotes(1.825).toString(), '64,q..');
+					assert.equal(NoteUtils.durationToNotes(1.625).toString(), '32,q.');
+
+				}
 				var noteManager = new NoteManager();
 
 				managingMelodies(noteManager);
 				durationFunctions(noteManager);
 				otherFunctions(noteManager,testSongs);
 				timeSignatureChanges(noteManager);
+				testDurationToNotes();
 
 			});
 

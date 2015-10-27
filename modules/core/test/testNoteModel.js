@@ -117,6 +117,8 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 				assert.ok(inlineNote2.isRest, 'is a silence');
 				assert.equal(inlineNote2.toString(), '16r');
 
+
+
 				var clonedNote = inlineNote.clone();
 				assert.deepEqual(clonedNote, inlineNote, "clone test");
 
@@ -125,6 +127,9 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 
 				var noteSilenceDot = new NoteModel('q.r');
 				assert.equal(noteSilenceDot.getDot(), 1, 'q.r has dot');
+
+				var noteSilenceDoubleDot = new NoteModel('q..r');
+				assert.equal(noteSilenceDoubleDot.getDot(), 2, 'q..r has 2 dots');
 
 
 				// set duration functions

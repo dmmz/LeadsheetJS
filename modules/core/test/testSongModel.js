@@ -31,7 +31,7 @@ define([
 					);
 
 					assert.equal(song.getNumberOfBars(), 14);
-					
+
 					var unfoldedSong = song.unfold();
 
 					assert.equal(song.getNumberOfBars(), 20);
@@ -89,13 +89,19 @@ define([
 
 				assert.equal(song.getSongTotalBeats(), 29);
 				unfold();
-				// assert.deepEqual(song.clone(), song, 'clone');
 
+				// testing getBarDivisionsBetweenBeats
+				var songTimeSigChanges = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.leadSheetTimeSigChanges);
+				// bars: 			|4/4|3/4|	|2/4|4/4|	|	|	|
+				// start beats 		1	5	8	11	13	17	21	25	29
 				
+				assert.deepEqual(songTimeSigChanges.getBarDivisionsBetweenBeats(0, 29), [4, 3, 3, 2, 4, 4, 4, 4],'total divisions (exceeding beat boundaries)');
+				assert.deepEqual(songTimeSigChanges.getBarDivisionsBetweenBeats(5, 14), [3, 3, 2, 1]);
+				assert.deepEqual(songTimeSigChanges.getBarDivisionsBetweenBeats(1.5, 9), [0.5, 3, 3, 1], 'when does not at exact beat, first adds silences to fill beat (it is more consistent like that)');
+
 				/* MISSING TESTS: 
 					Song with no notes
 					Song with no chords
-					Export to song with 
 
 				*/
 			});

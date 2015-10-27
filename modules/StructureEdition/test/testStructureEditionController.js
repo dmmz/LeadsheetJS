@@ -29,22 +29,22 @@ define(['modules/StructureEdition/src/StructureEditionController',
 				sec.removeSection();
 				assert.equal(songModel.getSections().length, numberOfSections, "remove last section should not change section length");
 
-				assert.equal(nm.getNotesAtBarNumber(2, songModel).toString(), "", "test bar have been created with only silence");
+				//assert.equal(nm.getNotesAtBarNumber(2, songModel).toString(), "", "we check there are no notes on bar 2 (which will cause a warning on NoteManager - getNotesAtBarNumber )");
 				sec.addSection();
 				cM.setPos(0);
-				assert.equal(nm.getNotesAtBarNumber(2, songModel).toString(), "qr,qr,qr,qr", "test bar have been created with only silence");
+				assert.equal(nm.getNotesAtBarNumber(2, songModel).toString(), "wr", "test bar has been created with only silences");
 				sec.removeSection();
 
 				// Add bar
 				sec.addBar();
-				assert.equal(nm.getNotesAtBarNumber(0, songModel).toString(), "qr,qr,qr,qr", "test bar have been created with E at start because it's first bar");
+				assert.equal(nm.getNotesAtBarNumber(0, songModel).toString(), "wr", "test bar has been created with E at start because it's first bar");
 				cM.setPos(4);
 				sec.addBar();
-				assert.equal(nm.getNotesAtBarNumber(1, songModel).toString(), "qr,qr,qr,qr", "test bar have been created with only silence");
+				assert.equal(nm.getNotesAtBarNumber(1, songModel).toString(), "wr", "test bar has been created with only silences");
 
 				// Remove bar
 				sec.removeBar();
-				assert.equal(nm.getNotesAtBarNumber(0, songModel).toString(), "qr,qr,qr,qr", "test remove bar");
+				assert.equal(nm.getNotesAtBarNumber(0, songModel).toString(), "wr", "test remove bar");
 
 				cM.setPos(0);
 				var selBar = sec._getSelectedBars();
@@ -101,7 +101,7 @@ define(['modules/StructureEdition/src/StructureEditionController',
 				//we put cursor in note 5 (= bar 5, as there is one note per bar)				
 				cM.setPos(5);
 				sec.setTimeSignature("6/8");
-				assert.equal(noteMng.getNotes().toString(), 'wr,wr,wr,wr,wr,qr,qr,qr,wr,wr', 'notes after changing time signature to 6/8 in bar 5');
+				assert.equal(noteMng.getNotes().toString(), 'wr,wr,wr,wr,wr,h.r,wr,wr', 'notes after changing time signature to 6/8 in bar 5');
 
 				assert.equal(song.getTimeSignatureAt(5).toString(), '6/8', 'time signature changed');
 				assert.equal(song.getTimeSignatureAt(6).toString(), '4/4', 'time signature in the following bar is not changed');
@@ -110,7 +110,7 @@ define(['modules/StructureEdition/src/StructureEditionController',
 				//because it changes the time signature until first change in selection, and time signature until first time is already 6/8, so no changes
 				cM.setPos([5, 8]);
 				sec.setTimeSignature("6/8");
-				assert.equal(noteMng.getNotes().toString(), 'wr,wr,wr,wr,wr,qr,qr,qr,wr,wr', 'notes after changing time signature to 6/8 from bar 5 to 8');
+				assert.equal(noteMng.getNotes().toString(), 'wr,wr,wr,wr,wr,h.r,wr,wr', 'notes after changing time signature to 6/8 from bar 5 to 8 (remains the same)');
 				assert.equal(song.getTimeSignatureAt(5).toString(), '6/8', 'time signature changed');
 				assert.equal(song.getTimeSignatureAt(6).toString(), '4/4', 'time signature in the following bar is not changed');
 
@@ -120,7 +120,7 @@ define(['modules/StructureEdition/src/StructureEditionController',
 				assert.equal(
 					noteMng.getNotes().toString(),
 					/*bar 0*/
-					'wr,wr,wr,wr,' + /*bar 4:*/ 'qr,qr,qr,qr,' + /*bar 5*/ 'qr,qr,qr,wr,wr',
+					'wr,wr,wr,wr,' + /*bar 4:*/ 'wr,' + /*bar 5*/ 'h.r,wr,wr',
 					'notes after changing time signature to 2/2 in 4');
 				assert.equal(song.getTimeSignatureAt(4).toString(), '2/2', 'time signature changed');
 				assert.equal(song.getTimeSignatureAt(5).toString(), '6/8', 'time signature in the following bar is not changed');
@@ -129,7 +129,7 @@ define(['modules/StructureEdition/src/StructureEditionController',
 				var lastNoteIndex = noteMng.getTotal() - 1;
 				cM.setPos(lastNoteIndex);
 				sec.setTimeSignature("3/8");
-				assert.equal(noteMng.getNotes().toString(), /*bar 0*/ 'wr,wr,wr,wr,' + /*bar 4:*/ 'qr,qr,qr,qr,' + /*bar 5*/ 'qr,qr,qr,wr,qr,8r', 'notes after changing time signature');
+				assert.equal(noteMng.getNotes().toString(), /*bar 0*/ 'wr,wr,wr,wr,' + /*bar 4:*/ 'wr,' + /*bar 5*/ 'h.r,wr,q.r', 'notes after changing time signature');
 				assert.equal(song.getTimeSignatureAt(7), '3/8');
 
 				//SONG WITH NOTES

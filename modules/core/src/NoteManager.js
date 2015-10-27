@@ -68,14 +68,6 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		if (typeof notes !== "undefined") this.notes = notes;
 	};
 
-
-	NoteManager.prototype.insertNote = function(pos, note) {
-		if (isNaN(pos) || !(note instanceof NoteModel)) {
-			throw 'NoteManager - insertNote - attribute incorrect ' + pos + ' ' + note;
-		}
-		this.notes.splice(pos + 1, 0, note);
-	};
-
 	/**
 	 * @interface
 	 *
@@ -339,28 +331,46 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	 * @param  {integer} gapDuration
 	 * @param  {integer} initBeat
 	 */
-	NoteManager.prototype.fillGapWithRests = function(gapDuration, initBeat) {
-		if (isNaN(gapDuration)) {
-			return;
+	// NoteManager.prototype.fillGapWithRests = function(gapDuration, initBeat) {
+	// 	if (isNaN(gapDuration)) {
+	// 		return;
+	// 	}
+	// 	if (isNaN(initBeat) || initBeat <= 0) {
+	// 		initBeat = 1;
+	// 	}
+	// 	gapDuration = Math.round(gapDuration * 1000000) / 1000000;
+	// 	var newNote;
+	// 	var silenceDurs = NoteUtils.durationToNotes(gapDuration, initBeat);
+	// 	var self = this;
+	// 	silenceDurs.forEach(function(dur) {
+	// 		newNote = new NoteModel(dur + 'r');
+	// 		self.addNote(newNote);
+			
+	// 	});
+	// };
+	NoteManager.prototype.fillGapWithRests = function(durations) {
+		var rests = [], 
+			silenceDurs = [],
+			self = this;
+		
+		if (!Array.isArray(durations)){
+			durations = [durations];
 		}
-		if (isNaN(initBeat) || initBeat <= 0) {
-			initBeat = 1;
-		}
-		gapDuration = Math.round(gapDuration * 1000000) / 1000000;
-		var newNote;
-		var silenceDurs = NoteUtils.durationToNotes(gapDuration, initBeat);
-		var self = this;
-		silenceDurs.forEach(function(dur) {
-			if (typeof dur !== "undefined") {
-				newNote = new NoteModel(dur + 'r');
-				var pos = self.getNextIndexNoteByBeat(initBeat);
-				if (typeof pos === "undefined") {
-					self.addNote(newNote);
-				} else {
-					self.insertNote(pos, newNote);
-				}
+		
+		durations.forEach(function(duration){
+			silenceDurs = NoteUtils.durationToNotes(duration);
+			if (silenceDurs[0] !== undefined){
+				silenceDurs.forEach(function(dur) {
+					newNote = new NoteModel(dur + 'r');
+					self.addNote(newNote);	
+				});
 			}
-		});
+		})
+
+		// gapDuration = Math.round(gapDuration * 1000000) / 1000000;
+		// var newNote;
+		// var silenceDurs = NoteUtils.durationToNotes(gapDuration, initBeat);
+		// var self = this;
 	};
 	NoteManager.prototype.onlyRests = function() {
 		
@@ -373,6 +383,8 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	};
 	
 	/**
+	 * This function is called in a temporal NoteManager with selected notes in a time signature change (from StructureEditionController) 
+	 * so notes are adapted to only one time signature (no time signature changes)
 	 * @param  {TimeSignatureModel} timeSig 
 	 * @param  {integer} numBars number of bars to change, used when there are only rests, when there are notes, numBars can be undefined
 	 * @return {Array}         of NoteModel
@@ -380,13 +392,14 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	NoteManager.prototype.getNotesAdaptedToTimeSig = function(timeSig,numBars) {
 		var newNoteMng = new NoteManager();
 		var numBeatsBar = timeSig.getQuarterBeats();
-		var initBeat = 0;
+		
 		var i;
 		if (this.onlyRests()){
+			var divisions = [];
 			for (i = 0; i < numBars; i++) {
-				newNoteMng.fillGapWithRests(numBeatsBar, initBeat);
-				initBeat += numBeatsBar;
+				divisions.push(timeSig.getQuarterBeats());
 			}
+			newNoteMng.fillGapWithRests(divisions);
 		}
 		else{
 			var accDuration = 0; //accumulated Duration
@@ -417,7 +430,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 			}
 			var startingBeat = newNoteMng.getTotalDuration() + 1; //beat is 1 based
 			var gapDuration = numBeatsBar - accDuration;
-			newNoteMng.fillGapWithRests(gapDuration, startingBeat);
+			newNoteMng.fillGapWithRests(gapDuration);
 		}
 		return newNoteMng.getNotes();
 	};
