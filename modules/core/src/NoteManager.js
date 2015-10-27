@@ -326,28 +326,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		return [index1, index2];
 	};
 
-	/**
-	 * adds silences at the end of array of notes so that they fill the gapDuration
-	 * @param  {integer} gapDuration
-	 * @param  {integer} initBeat
-	 */
-	// NoteManager.prototype.fillGapWithRests = function(gapDuration, initBeat) {
-	// 	if (isNaN(gapDuration)) {
-	// 		return;
-	// 	}
-	// 	if (isNaN(initBeat) || initBeat <= 0) {
-	// 		initBeat = 1;
-	// 	}
-	// 	gapDuration = Math.round(gapDuration * 1000000) / 1000000;
-	// 	var newNote;
-	// 	var silenceDurs = NoteUtils.durationToNotes(gapDuration, initBeat);
-	// 	var self = this;
-	// 	silenceDurs.forEach(function(dur) {
-	// 		newNote = new NoteModel(dur + 'r');
-	// 		self.addNote(newNote);
-			
-	// 	});
-	// };
+	
 	NoteManager.prototype.fillGapWithRests = function(durations) {
 		var rests = [], 
 			silenceDurs = [],
@@ -365,12 +344,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 					self.addNote(newNote);	
 				});
 			}
-		})
-
-		// gapDuration = Math.round(gapDuration * 1000000) / 1000000;
-		// var newNote;
-		// var silenceDurs = NoteUtils.durationToNotes(gapDuration, initBeat);
-		// var self = this;
+		});
 	};
 	NoteManager.prototype.onlyRests = function() {
 		
@@ -449,9 +423,54 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 			}
 		}
 	};
+	NoteManager.prototype.findRestAreas = function(pos) {
+		start = pos[0];
+		end = pos[1];
+		var startPos, endPos;
+		var iLeft;
+		var iRight;
+
+		iLeft = start;
+		while (iLeft > 0 && this.notes[iLeft - 1].isRest){
+			iLeft--;
+		}
+		iRight = end;
+		while (iRight < this.getTotal() - 1 && this.notes[iRight + 1].isRest){
+			iRight++;
+		}
+		var outerLeftArea = [iLeft, start];
+		var outerRightArea = [end, iRight];
+
+		iLeft = start;
+		while(iLeft < end  && this.notes[iLeft].isRest){
+			iLeft++;
+		}
+
+		iRight = end;
+		while(iRight > iLeft && this.notes[iRight - 1].isRest){
+			iRight--;
+		}
+
+		var innerLeftArea = [start, iLeft];
+		var innerRightArea = [iRight, end];
+
+		var leftArea = [outerLeftArea[0], innerLeftArea[1]];
+		var rightArea = [innerRightArea[0], outerRightArea[1]];
+
+		if (leftArea[1] == rightArea[0]){
+			return [
+				[leftArea[0], rightArea[1]]
+			];
+		}else{
+			return [
+				[leftArea[0], leftArea[1]],
+				[rightArea[0], rightArea[1]]
+			];
+		}
+	};
 
 	/**
-	 * this function is called after deleting a notes or copy and pasting notes, to check if there is a malformed tuplet or a malformed tie
+	 * this function is called after deleting a note or copy and pasting notes, to check if there is a malformed tuplet or a malformed tie
 	 * if it does, it deletes the tie or the tuplet
 	 * @return {[type]} [description]
 	 */

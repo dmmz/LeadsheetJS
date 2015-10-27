@@ -199,11 +199,30 @@ define([
 					tmpNm.fillGapWithRests(beatEndNote - endBeat);
 				}
 			}
-			//important, to keep consistency in notes
+			//important, to keep consistency in noteSpaceMng
 			this.cursor.setPos([this.cursor.getStart(), endIndex - 1]);
 		}
 
 		return tmpNm;
+	};
+
+	NoteEditionController.prototype.mergeRests = function() {
+		var noteMng = this.songModel.getComponent('notes');
+		var restAreas = noteMng.findRestAreas(this.cursor.getPos());
+		var area , beats, divisions;
+
+		for (var i = 0; i < restAreas.length; i++) {
+			tmpNm = new NoteManager();
+			area = restAreas[i];
+			beats = noteMng.getBeatIntervalByIndexes(area[0], area[1]);
+			divisions = this.songModel.getBarDivisionsBetweenBeats(beats[0], beats[1]);
+			tmpNm.fillGapWithRests(divisions);
+			area[1]-1;
+			noteMng.notesSplice(area, tmpNm.getNotes());
+			
+		}
+		return [area[0], area[0] + tmpNm.getTotal()];
+		
 	};
 
 	/**
@@ -233,8 +252,9 @@ define([
 
 		tmpNm = this._checkDuration(noteMng, tmpNm, durBefore, durAfter, this.songModel);
 		noteMng.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
-		this.cursor.setPos(tmpCursorPos);
 		noteMng.reviseNotes();
+		tmpCursorPos = this.mergeRests();
+		this.cursor.setPos(tmpCursorPos);
 	};
 	//Public functions:
 	//
