@@ -1,4 +1,3 @@
-
 define([
 	"modules/Edition/src/KeyboardManager",
 	"modules/Cursor/src/Cursor",
@@ -16,15 +15,15 @@ define([
 
 
 		new KeyboardManager(false);
-		
+
 		//editing title
-		
+
 		var titleSuggs = params.title ? params.title.suggestions : null;
-		new TextElementManager('titleView', 'Title', viewer, songModel,titleSuggs);
+		new TextElementManager('titleView', 'Title', viewer, songModel, titleSuggs);
 
 		var composerSuggs = params.composer ? params.composer.suggestions : null;
 		new TextElementManager('composerView', 'Composer', viewer, songModel, composerSuggs);
-		
+
 
 		var cursorNote;
 		if (params.notes) {
@@ -32,8 +31,8 @@ define([
 			cursorNote = new Cursor(songModel.getComponent('notes'), 'notes', 'arrow');
 			this.noteEdition = new NoteEdition(songModel, cursorNote.controller.model, viewer, params.notes.imgPath);
 			this.cursorNote = cursorNote;
-			
-			if (menuModel && params.notes.menu){
+
+			if (menuModel && params.notes.menu) {
 				menuModel.addMenu({
 					title: params.notes.menu.title,
 					view: this.noteEdition.view,
@@ -48,10 +47,10 @@ define([
 			cursorChord.controller.model.setEditable(false);
 			var chordEdition = new ChordEdition(songModel, cursorChord.controller.model, viewer, params.chords.imgPath);
 			this.cursorChord = cursorChord;
-			
-			if (params.chords.menu){
+
+			if (params.chords.menu) {
 				menuModel.addMenu({
-					title:  params.chords.menu.title,
+					title: params.chords.menu.title,
 					view: chordEdition.view,
 					order: params.chords.menu.order
 				});
@@ -65,7 +64,7 @@ define([
 			//bars edition 
 			var structEdition = new StructureEdition(songModel, cursorNote.controller.model, params.structure.imgPath);
 
-			if (params.structure.menu){
+			if (params.structure.menu) {
 				menuModel.addMenu({
 					title: params.structure.menu.title,
 					view: structEdition.view,
@@ -73,7 +72,7 @@ define([
 				});
 			}
 		}
-		
+
 
 	}
 	return Edition;

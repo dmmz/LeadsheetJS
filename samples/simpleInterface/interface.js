@@ -4,8 +4,6 @@ require.config({
 	paths: {
 		jquery: 'external-libs/jquery-2.1.0.min',
 		jquery_autocomplete: 'external-libs/jquery.autocomplete.min',
-		qunit: 'external-libs/qunit/qunit',
-		vexflow_helper: 'external-libs/vexflow_test_helpers',
 		vexflow: 'external-libs/vexflow-min',
 		Midijs: 'external-libs/Midijs/midijs.min',
 		pubsub: 'external-libs/tiny-pubsub.min',

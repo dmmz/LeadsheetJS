@@ -5,7 +5,7 @@ define([
 ], function(NoteEditionController, NoteEditionView, NoteSpaceManager) {
 
 	function NoteEdition(songModel, cursorModel, viewer, imgPath) {
-		this.noteSpaceMng = new NoteSpaceManager(cursorModel, viewer);	
+		this.noteSpaceMng = new NoteSpaceManager(cursorModel, viewer);
 		new NoteEditionController(songModel, cursorModel, this.noteSpaceMng);
 		this.view = new NoteEditionView(imgPath);
 	}
