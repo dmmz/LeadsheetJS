@@ -2,8 +2,9 @@ define([
 	'modules/core/src/NoteManager',
 	'modules/core/src/BarManager',
 	'modules/core/src/ChordManager',
-	'modules/core/src/TimeSignatureModel'
-], function(NoteManager, BarManager, ChordManager, TimeSignatureModel) {
+	'modules/core/src/TimeSignatureModel',
+	'modules/core/src/SongBarsIterator'
+], function(NoteManager, BarManager, ChordManager, TimeSignatureModel, SongBarsIterator) {
 	function SongModel(param) {
 		this.init(param);
 	}
@@ -452,6 +453,49 @@ define([
 			}
 		}
 		return components;
+	};
+
+	/**
+	 * gets divisions between beats depending on bars. Useful when filling gaps with silences in noteManager within several bars
+	 * @param  {Number} startBeat 
+	 * @param  {Number} endBeat   
+	 * @return {Array}           returns duration of each division (check usage in testSongModel)
+	 */
+	SongModel.prototype.getBarDivisionsBetweenBeats = function(startBeat, endBeat) {
+		var lastTotalBeat = this.getSongTotalBeats() + 1;
+		if (startBeat < 1) startBeat = 1;
+		if (endBeat > lastTotalBeat) endBeat = lastTotalBeat;
+		var divisions = [];
+		var residualBeat = startBeat - Math.floor(startBeat);
+		var duration = endBeat - startBeat;
+		if (residualBeat !== 0){
+			var firstSilenceDur = 1 - residualBeat;
+			if (duration >= firstSilenceDur) {
+				divisions.push(firstSilenceDur);
+				startBeat += firstSilenceDur;
+			}
+		}
+
+		var songIt = new SongBarsIterator(this);
+		var currentBeat = startBeat,
+			nextBarBeat = 1,
+			currentBarBeat, //bar boundaries (in iteration)
+			endDivisionBeat, startDivisionBeat; //division boundaries
+			
+		while (songIt.hasNext()) {
+			// we set bar boundaries
+			currentBarBeat = nextBarBeat;
+			nextBarBeat = currentBarBeat + songIt.getBarTimeSignature().getQuarterBeats();
+
+			//we check current bar is within start and end beats sent to the function as params
+			if (nextBarBeat > currentBeat && currentBarBeat < endBeat) {
+				endDivisionBeat = (endBeat < nextBarBeat) ? endBeat : nextBarBeat;
+				startDivisionBeat = (currentBeat > currentBarBeat) ? currentBeat : currentBarBeat;
+				divisions.push(endDivisionBeat - startDivisionBeat);
+			}
+			songIt.next();
+		}
+		return divisions;
 	};
 
 	/**

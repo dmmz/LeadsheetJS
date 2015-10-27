@@ -67,13 +67,11 @@ define([
 		// now we add bars to this section and fill them with silences
 		var noteManager = this.songModel.getComponent('notes');
 		var indexLastNote = noteManager.getTotal() - 1;
-		var initBeat = noteManager.getNoteBeat(indexLastNote);
 		var beatDuration = this.songModel.getTimeSignatureAt(indexLastBar).getQuarterBeats();
 
 		for (var i = 0; i < numberOfBarsToCreate; i++) {
 			barManager.addBar(barManager.getBar(indexLastBar).clone());
-			noteManager.fillGapWithRests(beatDuration, initBeat);
-			initBeat += beatDuration;
+			noteManager.fillGapWithRests(beatDuration);
 		}
 		var section = new SectionModel({
 			'numberOfBars': numberOfBarsToCreate
@@ -169,14 +167,12 @@ define([
 		var beatDuration = this.songModel.getTimeSignatureAt(numBar).getQuarterBeats();
 		var newBarNm = new NoteManager(); //Create new Bar NoteManager
 		//if is first bar we add a note, otherwise there are inconsistencies with duration of a bar
-		var startBeat = 0;
 		if (numBar === 0) {
 			newBarNm.addNote(new NoteModel("E/4-q"));
 			beatDuration = beatDuration - 1;
-			startBeat = 1;
 		}
 		//insert those silences
-		newBarNm.fillGapWithRests(beatDuration, startBeat);
+		newBarNm.fillGapWithRests(beatDuration);
 
 		//get numBeat from first note of current bar
 		var numBeat = this.songModel.getStartBeatFromBarNumber(numBar);

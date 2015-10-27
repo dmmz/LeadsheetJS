@@ -175,10 +175,14 @@ define([
 			var iNextNote = nm.getNextIndexNoteByBeat(endBeat);
 			return isTupletBeat(nm.getNoteBeat(iPrevNote)) || iNextNote < nm.getTotal() && isTupletBeat(nm.getNoteBeat(iNextNote));
 		}
+		
 		var initBeat = noteMng.getNoteBeat(this.cursor.getStart());
 		var endBeat = initBeat + durAfter;
+		var divisions;
+		
 		if (durAfter < durBefore) {
-			tmpNm.fillGapWithRests(durBefore - durAfter, initBeat);
+			divisions = this.songModel.getBarDivisionsBetweenBeats(initBeat + durAfter, initBeat + durBefore);
+			tmpNm.fillGapWithRests(divisions);
 		} else if (durAfter > durBefore) {
 			if (checkIfBreaksTuplet(initBeat, endBeat, noteMng)) {
 				//TODO: return object
@@ -192,9 +196,10 @@ define([
 			if (endIndex < noteMng.getTotal()) {
 				var beatEndNote = noteMng.getNoteBeat(endIndex);
 				if (endBeat < beatEndNote) {
-					tmpNm.fillGapWithRests(beatEndNote - endBeat, initBeat);
+					tmpNm.fillGapWithRests(beatEndNote - endBeat);
 				}
 			}
+			//important, to keep consistency in notes
 			this.cursor.setPos([this.cursor.getStart(), endIndex - 1]);
 		}
 
@@ -226,7 +231,7 @@ define([
 			return;
 		}
 
-		tmpNm = this._checkDuration(noteMng, tmpNm, durBefore, durAfter);
+		tmpNm = this._checkDuration(noteMng, tmpNm, durBefore, durAfter, this.songModel);
 		noteMng.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
 		this.cursor.setPos(tmpCursorPos);
 		noteMng.reviseNotes();

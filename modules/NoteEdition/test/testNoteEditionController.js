@@ -157,6 +157,8 @@ define(['modules/core/src/NoteModel',
 				nec.cursor.setPos([5, 7]);
 				assert.equal(nec._getSelectedNotes().toString(), selNotes, 'copy Notes');
 
+				
+
 
 				songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
 				cM = new CursorModel(songModel.getComponent('notes'));
