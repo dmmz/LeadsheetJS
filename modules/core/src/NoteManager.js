@@ -330,6 +330,11 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	};
 
 
+	/**
+	 *
+	 * @param  {Array or Number} durations array of durations corresponding to bars divisions
+	 */
+
 	NoteManager.prototype.fillGapWithRests = function(durations) {
 		var rests = [],
 			silenceDurs = [],
@@ -347,6 +352,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 					self.addNote(newNote);
 				});
 			}
+
 		});
 	};
 	NoteManager.prototype.onlyRests = function() {

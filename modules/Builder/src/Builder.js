@@ -13,6 +13,7 @@ define([
 	"modules/MainMenu/src/MainMenu",
 	"modules/MidiCSL/src/main",
 	"modules/NoteEdition/src/NoteEdition",
+	"modules/NoteEdition/src/NoteSpaceManager",
 	'modules/core/src/SongModel',
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
 	"modules/StructureEdition/src/StructureEdition",
@@ -33,6 +34,7 @@ define([
 	MainMenu,
 	MidiCSL,
 	NoteEdition,
+	NoteSpaceManager,
 	SongModel,
 	SongModel_CSLJson,
 	StructureEdition,
@@ -64,14 +66,17 @@ define([
 
 		// Player
 		var usePlayer = false;
-		var playerHTML, soundfontUrl, imgUrl, playerViewOptions, useAudio;
+		var playerHTML, soundfontUrl, imgUrl, playerViewOptions, useAudio, useMidi;
 		if (typeof params.player !== "undefined") {
 			if (typeof params.player.HTMLElement !== "undefined") {
 				usePlayer = true;
 				playerHTML = params.player.HTMLElement;
-				soundfontUrl = (typeof params.player.soundfontUrl !== "undefined") ? params.player.soundfontUrl : undefined;
 				imgUrl = (typeof params.player.imgUrl !== "undefined") ? params.player.imgUrl : undefined;
 				playerViewOptions = (typeof params.player.viewOptions !== "undefined") ? params.player.viewOptions : {};
+			}
+			if (typeof params.player.soundfontUrl !== "undefined") {
+				soundfontUrl = params.player.soundfontUrl;
+				useMidi = true;
 			}
 			if (typeof params.player.useAudio !== "undefined") {
 				useAudio = (typeof params.player.useAudio !== "undefined") ? params.player.useAudio : false;
@@ -117,6 +122,7 @@ define([
 		doLoadMidiPlayer = true; // only for debug false true
 
 		var viewer, edition, menu;
+		var cursorNoteModel;
 		if (useViewer) {
 			// Reading only
 			viewer = Builder._loadViewer(songModel, viewerHTML, viewerOptions);
@@ -134,6 +140,7 @@ define([
 					// Edit files menu
 					var fileEdition = new FileEdition(songModel, viewer.canvas, saveFunction);
 					edition = Builder._loadEditionModules(viewer, songModel, editNotes, editChords, editStructure, menu, imgUrlEdition); // TODO menu shouldn't be required here
+					cursorNoteModel = edition.cursorNote.model;
 
 					menu.model.addMenu({
 						title: 'File',
@@ -162,19 +169,23 @@ define([
 						});
 					}
 				}
+			} else {
+				cursorNoteModel = (new Cursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow')).model;
+			}
+			if (!allowEdition || !editNotes) {
+				loadedModules.noteSpaceMng = new NoteSpaceManager(cursorNoteModel, viewer);
+			} else {
+				loadedModules.noteSpaceMng = edition.noteEdition.noteSpaceMng;
 			}
 		} else {
 			viewer = undefined;
 		}
 		if (usePlayer) {
-			var cursorNoteModel;
-			if (typeof edition !== "undefined" && typeof edition.cursorNote !== "undefined") {
-				cursorNoteModel = edition.cursorNote.model;
-			} else {
-				cursorNoteModel = (new Cursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow')).model;
-			}
 			// Load players (midi and audio)
-			loadedModules.midiPlayer = Builder._loadMidiPlayer(songModel, playerHTML, doLoadMidiPlayer, soundfontUrl, imgUrl, cursorNoteModel, playerViewOptions);
+			loadedModules.playerView = Builder._loadPlayerView(playerHTML, imgUrl, playerViewOptions);
+			if (useMidi === true) {
+				loadedModules.midiPlayer = Builder._loadMidiPlayer(songModel, soundfontUrl, loadedModules.playerView, cursorNoteModel);
+			}
 			if (useViewer && useAudio) {
 				var wave = Builder._loadAudioPlayer(songModel, viewer, cursorNoteModel); // audio player is use to get audio wave, it's why it needs viewer
 				loadedModules.audioPlayer = wave;
@@ -283,15 +294,17 @@ define([
 		return edition;
 	};
 
-	Builder._loadMidiPlayer = function(songModel, HTMLPlayer, loadMidi, soundfontUrl, imgUrl, cursorModel, playerOptions) {
-		// Create a song from testSong
+	Builder._loadPlayerView = function(HTMLPlayer, imgUrl, playerOptions) {
 		var pV = new MidiCSL.PlayerView(HTMLPlayer, imgUrl, playerOptions);
-		if (typeof loadMidi === "undefined" || loadMidi === true) {
-			var player = new MidiCSL.PlayerModel_MidiCSL(songModel, soundfontUrl, {
-				'cursorModel': cursorModel
-			});
-			return new MidiCSL.PlayerController(player, pV);
-		}
+		return pV;
+	};
+
+	Builder._loadMidiPlayer = function(songModel, soundfontUrl, playerView, cursorModel) {
+		var player = new MidiCSL.PlayerModel_MidiCSL(songModel, soundfontUrl, {
+			'cursorModel': cursorModel
+		});
+		new MidiCSL.PlayerController(player, playerView);
+		return player;
 	};
 
 	Builder._loadAudioPlayer = function(songModel, viewer, cursorModel) {

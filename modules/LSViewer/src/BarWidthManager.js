@@ -231,12 +231,10 @@ define(['modules/core/src/SongBarsIterator', 'modules/core/src/SectionBarsIterat
 			finalWidths.push(lineFinalWidths);
 		}
 
-		//we shorten last bar by lastBarWidthRatio	
-
+		//we shorten last bar by lastBarWidthRatio
 		var lastRow = finalWidths.length - 1,
 			lastColumn = finalWidths[lastRow].length - 1;
 		finalWidths[lastRow][lastColumn] *= this.lastBarWidthRatio;
-
 		return finalWidths;
 	};
 	BarWidthManager.prototype.setBarsStruct = function(barsStruct) {
@@ -256,7 +254,6 @@ define(['modules/core/src/SongBarsIterator', 'modules/core/src/SectionBarsIterat
 		}
 		var minWidthPerLineList = this.assignBarsToLines(minWidthList, pickupAtStart);
 		this.setBarsStruct(this.getWidths(minWidthPerLineList));
-
 	};
 
 

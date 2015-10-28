@@ -42,7 +42,9 @@ define([
 			this.playState = false; // playState indicate if the player is currently playing or not, (paused player will return false)
 			this.songModel = songModel;
 			this.isEnabled = true; //this is initialized on load
-			this.tempo = songModel.getTempo();
+			if (typeof songModel !== "undefined") {
+				this.tempo = songModel.getTempo();
+			}
 			this.soundfontPath = soundfontPath;
 
 			var initVolume;
@@ -397,6 +399,7 @@ define([
 										if (playNote === true) {
 											MIDI.setVolume(channel, volume);
 											duration = currentNote.getDuration() * (60 / tempo);
+											//console.log(channel, currentMidiNote, velocityNote);
 											MIDI.noteOn(channel, currentMidiNote, velocityNote);
 											MIDI.noteOff(channel, currentMidiNote, currentNote.getDuration() * (60 / tempo));
 										}

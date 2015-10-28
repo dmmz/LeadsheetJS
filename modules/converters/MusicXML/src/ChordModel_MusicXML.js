@@ -3,11 +3,11 @@ define(['modules/core/src/ChordModel'], function(ChordModel) {
 
 	ChordModel_MusicXML.importFromMusicXML = function(MusicXMLChord) {
 		var chord = new ChordModel();
-		
-		if (MusicXMLChord.hasOwnProperty('chordPitch')){
+
+		if (MusicXMLChord.hasOwnProperty('chordPitch')) {
 			chord.setNote(MusicXMLChord.chordPitch);
 		}
-		if (MusicXMLChord.hasOwnProperty('chordType')){
+		if (MusicXMLChord.hasOwnProperty('chordType')) {
 			chord.setChordType(MusicXMLChord.chordType);
 		}
 
