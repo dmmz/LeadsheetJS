@@ -175,18 +175,20 @@ define([
 			var iNextNote = nm.getNextIndexNoteByBeat(endBeat);
 			return isTupletBeat(nm.getNoteBeat(iPrevNote)) || iNextNote < nm.getTotal() && isTupletBeat(nm.getNoteBeat(iNextNote));
 		}
-		
+
 		var initBeat = noteMng.getNoteBeat(this.cursor.getStart());
 		var endBeat = initBeat + durAfter;
 		var divisions;
-		
+
 		if (durAfter < durBefore) {
 			divisions = this.songModel.getBarDivisionsBetweenBeats(initBeat + durAfter, initBeat + durBefore);
 			tmpNm.fillGapWithRests(divisions);
 		} else if (durAfter > durBefore) {
 			if (checkIfBreaksTuplet(initBeat, endBeat, noteMng)) {
 				//TODO: return object
-				UserLog.logAutoFade('error', "Can't break tuplet");
+				var msg = "Can't break tuplet";
+				UserLog.logAutoFade('error', msg);
+				console.warn(msg);
 				return;
 			}
 			var endIndex = noteMng.getNextIndexNoteByBeat(endBeat);
@@ -205,22 +207,23 @@ define([
 
 		return tmpNm;
 	};
-
+	/**
+	 * after duration funcion, we merge rests that concern changed area
+	 */
 	NoteEditionController.prototype.mergeRests = function() {
 		var noteMng = this.songModel.getComponent('notes');
 		var restAreas = noteMng.findRestAreas(this.cursor.getPos());
-		var area , beats, divisions;
+		var area, beats, divisions;
 
-		if (restAreas){
+		if (restAreas) {
 			for (var i = 0; i < restAreas.length; i++) {
 				tmpNm = new NoteManager();
 				area = restAreas[i];
 				beats = noteMng.getBeatIntervalByIndexes(area[0], area[1]);
 				divisions = this.songModel.getBarDivisionsBetweenBeats(beats[0], beats[1]);
 				tmpNm.fillGapWithRests(divisions);
-				area[1]-1;
+				area[1] - 1;
 				noteMng.notesSplice(area, tmpNm.getNotes());
-				
 			}
 		}
 	};
@@ -231,38 +234,43 @@ define([
 	 */
 	NoteEditionController.prototype._runDurationFn = function(fn) {
 
-		var noteMng = this.songModel.getComponent('notes');
-		var tmpNm = this._cloneSelectedNotes();
-		var tmpCursorPos = this.cursor.getPos();
-		var durBefore = tmpNm.getTotalDuration();
+			var noteMng = this.songModel.getComponent('notes');
+			var tmpNm = this._cloneSelectedNotes();
+			var tmpCursorPos = this.cursor.getPos();
+			//saving beat interval, to put again cursor later, regardless of changed notes
+			var tmpBeatInterval = noteMng.getBeatIntervalByIndexes(tmpCursorPos[0], tmpCursorPos[1]);
+			var durBefore = tmpNm.getTotalDuration();
 
-		//Here we run the actual function
-		var res = fn(tmpNm);
-		if (res && res.error) {
-			UserLog.logAutoFade('error', res.error);
-			return;
+			//Here we run the actual function
+			var res = fn(tmpNm);
+			if (res && res.error) {
+				UserLog.logAutoFade('error', res.error);
+				return;
+			}
+
+			var durAfter = tmpNm.getTotalDuration();
+			//check if durations fit in the bar duration
+			if (!this._fitsInBar(tmpNm)) {
+				var msg = "Duration doesn't fit the bar";
+				UserLog.logAutoFade('error', msg);
+				console.warn(msg);
+				return;
+			}
+
+			tmpNm = this._checkDuration(noteMng, tmpNm, durBefore, durAfter, this.songModel);
+			noteMng.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
+			noteMng.reviseNotes();
+			this.mergeRests();
+			tmpCursorPos = noteMng.getIndexesStartingBetweenBeatInterval(tmpBeatInterval[0], tmpBeatInterval[1], true);
+			this.cursor.setPos(tmpCursorPos);
 		}
-
-		var durAfter = tmpNm.getTotalDuration();
-		//check if durations fit in the bar duration
-		if (!this._fitsInBar(tmpNm)) {
-			UserLog.logAutoFade('error', "Duration doesn't fit the bar");
-			return;
-		}
-
-		tmpNm = this._checkDuration(noteMng, tmpNm, durBefore, durAfter, this.songModel);
-		noteMng.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
-		noteMng.reviseNotes();
-		this.mergeRests();
-		this.cursor.setPos(tmpCursorPos);
-	};
-	//Public functions:
-	//
-	//Pitch functions
-	/**
-	 * Set selected notes to a key
-	 * @param {int|letter} If decal is a int, than it will be a decal between current note and wanted note in semi tons, if decal is a letter then current note is the letter
-	 */
+		//Public functions:
+		//
+		//Pitch functions
+		/**
+		 * Set selected notes to a key
+		 * @param {int|letter} If decal is a int, than it will be a decal between current note and wanted note in semi tons, if decal is a letter then current note is the letter
+		 */
 	NoteEditionController.prototype.setPitch = function(decalOrNote) {
 		var selNotes = this._getSelectedNotes();
 		var note;
@@ -544,8 +552,6 @@ define([
 				tmpNm.deleteNote(noteToDelete[k]);
 			}
 		});
-
-		self.cursor.setIndexPos(1, self.cursor.getEnd() - noteToDelete.length);
 
 		if (this._lastCursorIndexHistory !== this.cursor.getPos()) {
 			$.publish('ToHistory-add', 'Change note');

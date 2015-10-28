@@ -159,9 +159,9 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		}
 		return undefined;
 	};
-	
+
 	NoteManager.prototype.getIndexesBetweenBarNumbers = function(barNum1, barNum2, song) {
-		if (!song){
+		if (!song) {
 			throw "NoteManager - getNotesBetweenBarNumbers - missing parameter song";
 		}
 		var barMng = song.getComponent('bars');
@@ -171,7 +171,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	};
 	NoteManager.prototype.getNotesBetweenBarNumbers = function(barNum1, barNum2, song) {
 		var indexes = this.getIndexesBetweenBarNumbers(barNum1, barNum2, song);
-		return this.getNotes(indexes[0],indexes[1]);
+		return this.getNotes(indexes[0], indexes[1]);
 	};
 
 	NoteManager.prototype.getNotesAtBarNumber = function(barNumber, song) {
@@ -309,7 +309,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	 */
 
 	NoteManager.prototype.getIndexesStartingBetweenBeatInterval = function(startBeat, endBeat, ifExactExclude) {
-		
+
 		if (isNaN(startBeat) || startBeat < 0) {
 			startBeat = 1;
 		}
@@ -318,44 +318,47 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		}
 		var index1 = this.getNextIndexNoteByBeat(startBeat);
 		var index2;
-		if (endBeat > this.getTotalDuration()  || endBeat == null){ // important ==, to be true if null or undefined
+		if (endBeat > this.getTotalDuration() || endBeat == null) { // important ==, to be true if null or undefined
 			index2 = ifExactExclude ? this.getTotal() - 1 : this.getTotal();
-		}else{
+		} else {
 			index2 = this.getPrevIndexNoteByBeat(endBeat, ifExactExclude); //ifExactExclude is true, that means that we wont return note starting exactly at endBeat
 		}
+
+		if (index1 > index2) index1 = index2; //if startBeat and endBeat are within a note, the indexes will be [x,x-1], we fix it here
+
 		return [index1, index2];
 	};
 
-	
+
 	NoteManager.prototype.fillGapWithRests = function(durations) {
-		var rests = [], 
+		var rests = [],
 			silenceDurs = [],
 			self = this;
-		
-		if (!Array.isArray(durations)){
+
+		if (!Array.isArray(durations)) {
 			durations = [durations];
 		}
-		
-		durations.forEach(function(duration){
+
+		durations.forEach(function(duration) {
 			silenceDurs = NoteUtils.durationToNotes(duration);
-			if (silenceDurs[0] !== undefined){
+			if (silenceDurs[0] !== undefined) {
 				silenceDurs.forEach(function(dur) {
 					newNote = new NoteModel(dur + 'r');
-					self.addNote(newNote);	
+					self.addNote(newNote);
 				});
 			}
 		});
 	};
 	NoteManager.prototype.onlyRests = function() {
-		
+
 		for (var i = 0; i < this.notes.length; i++) {
-			if (!this.notes[i].isRest){
+			if (!this.notes[i].isRest) {
 				return false;
 			}
 		}
 		return true;
 	};
-	
+
 	/**
 	 * This function is called in a temporal NoteManager with selected notes in a time signature change (from StructureEditionController) 
 	 * so notes are adapted to only one time signature (no time signature changes)
@@ -363,43 +366,42 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	 * @param  {integer} numBars number of bars to change, used when there are only rests, when there are notes, numBars can be undefined
 	 * @return {Array}         of NoteModel
 	 */
-	NoteManager.prototype.getNotesAdaptedToTimeSig = function(timeSig,numBars) {
+	NoteManager.prototype.getNotesAdaptedToTimeSig = function(timeSig, numBars) {
 		var newNoteMng = new NoteManager();
 		var numBeatsBar = timeSig.getQuarterBeats();
-		
+
 		var i;
-		if (this.onlyRests()){
+		if (this.onlyRests()) {
 			var divisions = [];
 			for (i = 0; i < numBars; i++) {
 				divisions.push(timeSig.getQuarterBeats());
 			}
 			newNoteMng.fillGapWithRests(divisions);
-		}
-		else{
+		} else {
 			var accDuration = 0; //accumulated Duration
 			var note, newNote;
 			for (i = 0; i < this.notes.length; i++) {
 				note = this.notes[i];
 				accDuration += note.getDuration();
-				if (roundBeat(accDuration) == numBeatsBar && i < this.notes.length - 1){
+				if (roundBeat(accDuration) == numBeatsBar && i < this.notes.length - 1) {
 					accDuration = 0;
 					newNoteMng.addNote(note);
-				}else if(roundBeat(accDuration) > numBeatsBar){
+				} else if (roundBeat(accDuration) > numBeatsBar) {
 					var diff = roundBeat(accDuration) - numBeatsBar;
 					note.setDurationByBeats(note.getDuration() - diff);
 					note.setTie('start');
 					newNoteMng.addNote(note);
 					newNote = note.clone();
 					newNote.setDurationByBeats(diff);
-					
+
 					newNote.removeTie();
 					newNote.setTie('stop');
 					newNoteMng.addNote(newNote);
 
 					accDuration = diff;
 
-				}else{
-					newNoteMng.addNote(note);	
+				} else {
+					newNoteMng.addNote(note);
 				}
 			}
 			var startingBeat = newNoteMng.getTotalDuration() + 1; //beat is 1 based
@@ -423,98 +425,103 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 			}
 		}
 	};
+	/**
+	 * @param  {Array} pos cursor position e.g. [0,2]
+	 * @return {[type]}     [description]
+	 */
 	NoteManager.prototype.findRestAreas = function(pos) {
+
+		//only merge non tuplet rests
+		function expandableRest(note) {
+			return note.isRest && !note.isTuplet();
+		}
+		//merge areas if they are touching each other
+		function mergeAreas(area1, area2) {
+			var mergedAreas;
+			if (area1 && area2 && area1[1] == area2[0] - 1) {
+				mergedAreas = [area1[0], area2[1]];
+			} else {
+				mergedAreas = area1 || area2;
+			}
+			return mergedAreas;
+		}
+
 		start = pos[0];
 		end = pos[1];
 		var startPos, endPos;
 		var iLeft;
 		var iRight;
 
+		//outer left area (out of cursor position) if there are rests
 		var outerLeftArea = null;
-		if (start > 0){
+		if (start > 0) {
 			iLeft = start - 1;
-			if(this.notes[iLeft].isRest){
+			if (expandableRest(this.notes[iLeft])) {
 				outerLeftArea = [];
 				outerLeftArea[1] = iLeft;
-				while (iLeft >= 0 && this.notes[iLeft].isRest){
+				while (iLeft >= 0 && expandableRest(this.notes[iLeft])) {
 					outerLeftArea[0] = iLeft;
 					iLeft--;
-				}		
+				}
 			}
-			
 		}
-		
+		// outerLeftArea will be :
+		//				like [x, y] (being x first index and y last index), 
+		// 				or 
+		//				null if no area found
+
+		//outer right area
 		var outerRightArea = null;
-		if (end < this.getTotal() - 1){
-			iRight = end + 1;	
-			if (this.notes[iRight].isRest){
+		if (end < this.getTotal() - 1) {
+			iRight = end + 1;
+			if (expandableRest(this.notes[iRight])) {
 				outerRightArea = [];
 				outerRightArea[0] = iRight;
-				while (iRight < this.getTotal() && this.notes[iRight].isRest){
+				while (iRight < this.getTotal() && expandableRest(this.notes[iRight])) {
 					outerRightArea[1] = iRight;
 					iRight++;
 				}
 			}
 		}
-		
-		
+		//inner left area (inside cursor) if there are rests
 		var innerLeftArea = null;
 		iLeft = start;
-		if (this.notes[iLeft].isRest){
+		if (expandableRest(this.notes[iLeft])) {
 			innerLeftArea = [];
 			innerLeftArea[0] = iLeft;
-			while(iLeft <= end && this.notes[iLeft].isRest){
+			while (iLeft <= end && expandableRest(this.notes[iLeft])) {
 				innerLeftArea[1] = iLeft;
 				iLeft++;
 			}
-
 		}
-
+		//inner right area
 		var innerRightArea = null;
 		iRight = end;
 		var limit = innerLeftArea ? innerLeftArea[1] : start;
-		if(this.notes[iRight].isRest && iRight > limit){
+		if (expandableRest(this.notes[iRight]) && iRight > limit) {
 			innerRightArea = [];
 			innerRightArea[1] = iRight;
-			while(iRight > limit && this.notes[iRight].isRest){
+			while (iRight > limit && expandableRest(this.notes[iRight])) {
 				innerRightArea[0] = iRight;
-				iRight--;	
+				iRight--;
 			}
 		}
-		// console.log(outerLeftArea);
-		// console.log(innerLeftArea);
-		// console.log(innerRightArea);
-		// console.log(outerRightArea);
-		
-		var leftArea;
-		if (outerLeftArea && innerLeftArea && outerLeftArea[1] == innerLeftArea[0] - 1){
-			leftArea = [outerLeftArea[0], innerLeftArea[1]];	
-		}
-		else{
-			leftArea = outerLeftArea || innerLeftArea;
-		}
-		
-		var rightArea;
-		if (outerRightArea && innerRightArea && innerRightArea[1] == outerRightArea[0] - 1){
-			rightArea = [innerRightArea[0], outerRightArea[1]];	
-		}
-		else{
-			rightArea = innerRightArea || outerRightArea;
-		}
 
-		if (leftArea && rightArea){
-			if  (leftArea[1] == rightArea[0] - 1){
+		var leftArea = mergeAreas(outerLeftArea, innerLeftArea);
+		var rightArea = mergeAreas(innerRightArea, outerRightArea);
+
+		if (leftArea && rightArea) {
+			if (leftArea[1] == rightArea[0] - 1) {
 				return [
 					[leftArea[0], rightArea[1]]
 				];
-			}else{
+			} else {
 				return [
 					leftArea,
 					rightArea
 				];
 			}
-		}
-		else{
+		} else {
 			return leftArea ? [leftArea] : rightArea ? [rightArea] : null;
 		}
 	};
@@ -632,7 +639,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		return Math.round(beat * 1000000) / 1000000;
 	}
 
-	
+
 
 	return NoteManager;
 });
