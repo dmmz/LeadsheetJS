@@ -32,6 +32,7 @@ define([
 		this.initSubscribe();
 		this.elemMng = new ElementManager();
 	}
+	
 	TagManager.prototype.getType = function() {
 		return this.CL_TYPE;
 	};
