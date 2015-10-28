@@ -430,42 +430,92 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		var iLeft;
 		var iRight;
 
+		var outerLeftArea = null;
+		if (start > 0){
+			iLeft = start - 1;
+			if(this.notes[iLeft].isRest){
+				outerLeftArea = [];
+				outerLeftArea[1] = iLeft;
+				while (iLeft >= 0 && this.notes[iLeft].isRest){
+					outerLeftArea[0] = iLeft;
+					iLeft--;
+				}		
+			}
+			
+		}
+		
+		var outerRightArea = null;
+		if (end < this.getTotal() - 1){
+			iRight = end + 1;	
+			if (this.notes[iRight].isRest){
+				outerRightArea = [];
+				outerRightArea[0] = iRight;
+				while (iRight < this.getTotal() && this.notes[iRight].isRest){
+					outerRightArea[1] = iRight;
+					iRight++;
+				}
+			}
+		}
+		
+		
+		var innerLeftArea = null;
 		iLeft = start;
-		while (iLeft > 0 && this.notes[iLeft - 1].isRest){
-			iLeft--;
+		if (this.notes[iLeft].isRest){
+			innerLeftArea = [];
+			innerLeftArea[0] = iLeft;
+			while(iLeft <= end && this.notes[iLeft].isRest){
+				innerLeftArea[1] = iLeft;
+				iLeft++;
+			}
+
 		}
+
+		var innerRightArea = null;
 		iRight = end;
-		while (iRight < this.getTotal() - 1 && this.notes[iRight + 1].isRest){
-			iRight++;
+		var limit = innerLeftArea ? innerLeftArea[1] : start;
+		if(this.notes[iRight].isRest && iRight > limit){
+			innerRightArea = [];
+			innerRightArea[1] = iRight;
+			while(iRight > limit && this.notes[iRight].isRest){
+				innerRightArea[0] = iRight;
+				iRight--;	
+			}
 		}
-		var outerLeftArea = [iLeft, start];
-		var outerRightArea = [end, iRight];
-
-		iLeft = start;
-		while(iLeft < end  && this.notes[iLeft].isRest){
-			iLeft++;
+		// console.log(outerLeftArea);
+		// console.log(innerLeftArea);
+		// console.log(innerRightArea);
+		// console.log(outerRightArea);
+		
+		var leftArea;
+		if (outerLeftArea && innerLeftArea && outerLeftArea[1] == innerLeftArea[0] - 1){
+			leftArea = [outerLeftArea[0], innerLeftArea[1]];	
+		}
+		else{
+			leftArea = outerLeftArea || innerLeftArea;
+		}
+		
+		var rightArea;
+		if (outerRightArea && innerRightArea && innerRightArea[1] == outerRightArea[0] - 1){
+			rightArea = [innerRightArea[0], outerRightArea[1]];	
+		}
+		else{
+			rightArea = innerRightArea || outerRightArea;
 		}
 
-		iRight = end;
-		while(iRight > iLeft && this.notes[iRight - 1].isRest){
-			iRight--;
+		if (leftArea && rightArea){
+			if  (leftArea[1] == rightArea[0] - 1){
+				return [
+					[leftArea[0], rightArea[1]]
+				];
+			}else{
+				return [
+					leftArea,
+					rightArea
+				];
+			}
 		}
-
-		var innerLeftArea = [start, iLeft];
-		var innerRightArea = [iRight, end];
-
-		var leftArea = [outerLeftArea[0], innerLeftArea[1]];
-		var rightArea = [innerRightArea[0], outerRightArea[1]];
-
-		if (leftArea[1] == rightArea[0]){
-			return [
-				[leftArea[0], rightArea[1]]
-			];
-		}else{
-			return [
-				[leftArea[0], leftArea[1]],
-				[rightArea[0], rightArea[1]]
-			];
+		else{
+			return leftArea ? [leftArea] : rightArea ? [rightArea] : null;
 		}
 	};
 

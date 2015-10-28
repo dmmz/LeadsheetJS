@@ -211,18 +211,18 @@ define([
 		var restAreas = noteMng.findRestAreas(this.cursor.getPos());
 		var area , beats, divisions;
 
-		for (var i = 0; i < restAreas.length; i++) {
-			tmpNm = new NoteManager();
-			area = restAreas[i];
-			beats = noteMng.getBeatIntervalByIndexes(area[0], area[1]);
-			divisions = this.songModel.getBarDivisionsBetweenBeats(beats[0], beats[1]);
-			tmpNm.fillGapWithRests(divisions);
-			area[1]-1;
-			noteMng.notesSplice(area, tmpNm.getNotes());
-			
+		if (restAreas){
+			for (var i = 0; i < restAreas.length; i++) {
+				tmpNm = new NoteManager();
+				area = restAreas[i];
+				beats = noteMng.getBeatIntervalByIndexes(area[0], area[1]);
+				divisions = this.songModel.getBarDivisionsBetweenBeats(beats[0], beats[1]);
+				tmpNm.fillGapWithRests(divisions);
+				area[1]-1;
+				noteMng.notesSplice(area, tmpNm.getNotes());
+				
+			}
 		}
-		return [area[0], area[0] + tmpNm.getTotal()];
-		
 	};
 
 	/**
@@ -253,7 +253,7 @@ define([
 		tmpNm = this._checkDuration(noteMng, tmpNm, durBefore, durAfter, this.songModel);
 		noteMng.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
 		noteMng.reviseNotes();
-		tmpCursorPos = this.mergeRests();
+		this.mergeRests();
 		this.cursor.setPos(tmpCursorPos);
 	};
 	//Public functions:
