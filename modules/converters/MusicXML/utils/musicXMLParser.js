@@ -148,7 +148,7 @@ define(function(require) {
 					if (partGroup) partGroup.push(partNum);
 					var self = this;
 					Array.prototype.forEach.call(elem.childNodes, function(groupElem) {
-						if(groupElem.nodeName === "part-name") {
+						if (groupElem.nodeName === "part-name") {
 							self.partName[partNum] = groupElem.textContent;
 						}
 					});
@@ -191,7 +191,7 @@ define(function(require) {
 			measureInfos.numberOfStaves = this.numStaves[p];
 			measureInfos.stave = [];
 			if (attrs.clef instanceof Array)
-				for (var s = 0; s < this.numStaves[p]; s++){
+				for (var s = 0; s < this.numStaves[p]; s++) {
 					measureInfos.stave[s] = {
 						clef: attrs.clef[s]
 					};
@@ -204,7 +204,7 @@ define(function(require) {
 				measure.part[p].notes.push(noteObj);
 				if (noteObj.grace) continue; // grace note requires VexFlow support
 			}
-			
+
 			measure.part[p].chords = [];
 			var chordElems = this.measures[m][p].getElementsByTagName("harmony");
 			for (var i = 0, c = chordElems.length; i < c; i++) {
@@ -340,7 +340,7 @@ define(function(require) {
 					break;
 				case "duration":
 					var intrinsicTicks = {
-						'numerator': 1/(4 * parseInt(elem.textContent,10)),
+						'numerator': 1 / (4 * parseInt(elem.textContent, 10)),
 						'denominator': attrs.divisions,
 					};
 					if (isNaN(intrinsicTicks.numerator) || isNaN(intrinsicTicks.denominator))
@@ -359,7 +359,7 @@ define(function(require) {
 						beats_occupied = parseInt(beats_occupied.textContent);
 						if (!(num_notes > 0 && beats_occupied > 0)) break;
 						noteObj.tickMultiplier = {
-							'beats_occupied':beats_occupied,
+							'beats_occupied': beats_occupied,
 							'num_notes': num_notes
 						};
 						noteObj.tuplet = {
@@ -481,9 +481,21 @@ define(function(require) {
 			switch (elem.nodeName) {
 				case "root":
 					chordObj.chordPitch = elem.getElementsByTagName("root-step")[0].textContent;
+					if (typeof elem.getElementsByTagName("root-alter")[0] !== "undefined") {
+						if (elem.getElementsByTagName("root-alter")[0].textContent === "-1") {
+							chordObj.chordPitch += 'b';
+						}
+						if (elem.getElementsByTagName("root-alter")[0].textContent === "1") {
+							chordObj.chordPitch += '#';
+						}
+					}
 					break;
 				case "kind":
-					chordObj.chordType = elem.textContent;
+					if (typeof elem.attributes["text"] !== "undefined") {
+						chordObj.chordType = elem.attributes["text"].textContent;
+					} else {
+						chordObj.chordType = elem.textContent;
+					}
 					break;
 			}
 		});
