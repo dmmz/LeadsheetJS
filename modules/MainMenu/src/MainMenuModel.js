@@ -6,11 +6,16 @@ define([
 	/**
 	 * MainMenuModel is the model containing a set of menuList, each menuList contain a menu, each menu contain at least a title
 	 */
-	function MainMenuModel() {
+	function MainMenuModel(allowChangeUrl) {
 		this.menuList = []; // array of menus
 		this.currentMenu = this.menuList[0]; // Current menu represent the current selected menu
+		this.allowChangeUrl = (allowChangeUrl) ? allowChangeUrl : false;
 	}
 
+
+	MainMenuModel.prototype.isAllowChangeUrl = function() {
+		return this.allowChangeUrl;
+	};
 
 	MainMenuModel.prototype.getMenuLength = function() {
 		return this.menuList.length;
