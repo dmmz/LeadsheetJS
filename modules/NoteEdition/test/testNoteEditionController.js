@@ -122,6 +122,7 @@ define(['modules/core/src/NoteModel',
 
 				nec.cursor.setPos([6, 8]);
 				nec.setTuplet();
+				nec.cursor.setPos([6, 8]);
 				assert.equal(nec._getSelectedNotes()[0].isTuplet(), true, 'tuplet with 3 notes selected - first');
 				assert.equal(nec._getSelectedNotes()[1].isTuplet(), true, 'tuplet with 3 notes selected - second');
 				assert.equal(nec._getSelectedNotes()[2].isTuplet(), true, 'tuplet with 3 notes selected - third');
@@ -178,7 +179,7 @@ define(['modules/core/src/NoteModel',
 				assert.equal(nec._getSelectedNotes().toString(), "A/4-q");
 				nec.moveCursorByBar(-1);
 				nec.setCurrDuration("2");
-				assert.equal(nec._getSelectedNotes().toString(), "A/4-32,8..r");
+				assert.equal(nec._getSelectedNotes().toString(), "A/4-32"); //cursor after changes gets one position
 
 				// rhythm  q,8,16,16, triplet(q,q,q)
 				function createRhythmicMelody() {

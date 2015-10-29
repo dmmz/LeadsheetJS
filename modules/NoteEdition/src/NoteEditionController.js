@@ -261,7 +261,10 @@ define([
 			noteMng.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
 			noteMng.reviseNotes();
 			this.mergeRests();
-			tmpCursorPos = noteMng.getIndexesStartingBetweenBeatInterval(tmpBeatInterval[0], tmpBeatInterval[1], true);
+			// tmpCursorPos = noteMng.getIndexesStartingBetweenBeatInterval(tmpBeatInterval[0], tmpBeatInterval[1], true);
+			// if we wanted cursor comprise whole previously selected space we whould have use previous line, 
+			// otherwise, next line (cursor comprises first position)
+			tmpCursorPos = noteMng.getPrevIndexNoteByBeat(tmpBeatInterval[0]);
 			this.cursor.setPos(tmpCursorPos);
 		}
 		//Public functions:
