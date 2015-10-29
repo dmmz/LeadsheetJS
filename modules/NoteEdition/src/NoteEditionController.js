@@ -213,7 +213,7 @@ define([
 	NoteEditionController.prototype.mergeRests = function() {
 		var noteMng = this.songModel.getComponent('notes');
 		var restAreas = noteMng.findRestAreas(this.cursor.getPos());
-		var area, beats, divisions;
+		var area, beats, divisions, tmpNm;
 
 		if (restAreas) {
 			for (var i = 0; i < restAreas.length; i++) {

@@ -336,6 +336,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	 */
 
 	NoteManager.prototype.fillGapWithRests = function(durations) {
+		var newNote;
 		var rests = [],
 			silenceDurs = [],
 			self = this;
@@ -452,11 +453,10 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 			return mergedAreas;
 		}
 
-		start = pos[0];
-		end = pos[1];
-		var startPos, endPos;
-		var iLeft;
-		var iRight;
+		var start = pos[0],
+			end = pos[1],
+			iLeft,
+			iRight;
 
 		//outer left area (out of cursor position) if there are rests
 		var outerLeftArea = null;
