@@ -21,7 +21,6 @@ module.exports = function(grunt) {
 						text: 'external-libs/require-text',
 						pubsub: 'empty:',
 						jsPDF: 'empty:',
-						bootstrap: 'empty:',
 						mustache: 'empty:'
 						
 						/*jquery: 'external-libs/jquery-2.1.0.min',
