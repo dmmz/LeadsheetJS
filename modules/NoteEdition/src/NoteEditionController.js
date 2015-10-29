@@ -248,6 +248,7 @@ define([
 
 			var noteMng = this.songModel.getComponent('notes');
 			var tmpNm = this._cloneSelectedNotes();
+			var onlyRestsBefore = tmpNm.onlyRests();
 			var tmpCursorPos = this.cursor.getPos();
 			//saving beat interval, to put again cursor later, regardless of changed notes
 			var tmpBeatInterval = noteMng.getBeatIntervalByIndexes(tmpCursorPos[0], tmpCursorPos[1]);
@@ -272,7 +273,12 @@ define([
 			tmpNm = this._checkDuration(noteMng, tmpNm, durBefore, durAfter, this.songModel);
 			noteMng.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
 			noteMng.reviseNotes();
-			this.mergeRests();
+
+			//we merge only of we are not changing duration of rests
+			if (!(onlyRestsBefore && tmpNm.onlyRests())){
+				this.mergeRests();	
+			}
+			
 			// tmpCursorPos = noteMng.getIndexesStartingBetweenBeatInterval(tmpBeatInterval[0], tmpBeatInterval[1], true);
 			// if we wanted cursor comprise whole previously selected space we whould have use previous line, 
 			// otherwise, next line (cursor comprises first position)
