@@ -45,6 +45,7 @@ define([
 		}
 		var currentBarNumber = this.songModel.getComponent('notes').getNoteBarNumber(this.cursor.getStart(), this.songModel);
 		var currentBar = this.songModel.getComponent('bars').getBar(currentBarNumber);
+		// TODO get tonality at
 		this.structEditionModel.setSelectedBar(currentBar);
 		var currentSectionNumber = this.songModel.getSectionNumberFromBarNumber(currentBarNumber);
 		var currentSection = this.songModel.getSection(currentSectionNumber);
