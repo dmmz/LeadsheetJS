@@ -1,6 +1,7 @@
 define(function() {
 	function TimeSignatureModel(timeSig) {
 		var re = /\d\/\d/;
+
 		if (!timeSig || !timeSig.match(re)) {
 			throw "TimeSignatureModel - Time signature not valid " + timeSig;
 		}

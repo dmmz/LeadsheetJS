@@ -64,8 +64,10 @@ define(['modules/core/src/TimeSignatureModel'], function(TimeSignatureModel) {
 	BarModel.prototype.setTimeSignatureChange = function(timeSignature) {
 		if (!timeSignature) {
 			this.timeSignature = undefined;
-		} else {
+		} else if (typeof timeSignature === 'string'){
 			this.timeSignature = new TimeSignatureModel(timeSignature);
+		}else{
+			this.timeSignature = timeSignature;
 		}
 	};
 
