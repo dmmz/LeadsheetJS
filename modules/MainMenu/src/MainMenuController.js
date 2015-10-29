@@ -20,7 +20,9 @@ define([
 		if (index !== -1) {
 			var currentMenu = this.model.getMenu(index);
 			this.model.setCurrentMenu(currentMenu);
-			this.pushStateTab(menuTitle);
+			if (this.model.isAllowChangeUrl()) {
+				this.pushStateTab(menuTitle);
+			}
 		}
 	};
 

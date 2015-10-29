@@ -4,8 +4,8 @@ define([
 		"modules/MainMenu/src/MainMenuView"
 	],function(MainMenuController,MainMenuModel,MainMenuView){
 	
-	function MainMenu(elemContainer){
-		this.model = new MainMenuModel();
+	function MainMenu(elemContainer, allowChangeUrl){
+		this.model = new MainMenuModel(allowChangeUrl);
 		this.controller = new MainMenuController(this.model);
 		new MainMenuView(this.model, elemContainer);
 	}
