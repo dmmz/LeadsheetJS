@@ -252,10 +252,21 @@ define([
 
 		// remove chords in bar
 		cm.removeChordsByBarNumber(barNumber);
-
+		// if we are removing bar with time signature change, and following bar has no time signature change,
+		// we move it to following bar
+		//
 		// adjust all chords bar number
 		cm.incrementChordsBarNumberFromBarNumber(-1, barNumber);
+		var timeSigChange = bm.getBar(barNumber).getTimeSignatureChange();
+		if (timeSigChange 
+			&& barNumber < bm.getTotal() - 1
+			&& !bm.getBar(barNumber + 1).getTimeSignatureChange()
+		)
+		{ //if it's not the last bar
+				bm.getBar(barNumber + 1).setTimeSignatureChange(timeSigChange);
+		}
 
+		//we remove the bar
 		bm.removeBar(barNumber);
 
 		// We remove the section in songModel if it was the last bar of the section

@@ -79,7 +79,8 @@ define(['modules/StructureEdition/src/StructureEditionController',
 				//TIME SIGNATURE CHANGES
 				//Rules:
 				//
-				//change time signature only in those measures which are selected, and if inside the selection there is a time signature change, we change until the first time signature change
+				//change time signature only in those measures which are selected, and if inside the selection there is a time signature change, 
+				//we change until the first time signature change
 
 				// if only silences, we just change time signature and replace with appropriate time changes
 				// if not only silences:
