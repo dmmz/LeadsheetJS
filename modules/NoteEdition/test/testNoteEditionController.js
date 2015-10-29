@@ -47,20 +47,36 @@ define(['modules/core/src/NoteModel',
 				assert.equal(nec._getSelectedNotes().toString(), "C/5-q", 'remove accidental');
 
 				// Durations
+				nec.cursor.setPos(0);
 				nec.setCurrDuration("1");
 				assert.equal(nec._getSelectedNotes()[0].getDuration(), 0.0625, 'durations 1');
+				
+				nec.cursor.setPos(0);
 				nec.setCurrDuration("2");
 				assert.equal(nec._getSelectedNotes()[0].getDuration(), 0.125, 'durations 2');
+				
+				nec.cursor.setPos(0);
 				nec.setCurrDuration("3");
 				assert.equal(nec._getSelectedNotes()[0].getDuration(), 0.25, 'durations 3');
+				
+				nec.cursor.setPos(0);
 				nec.setCurrDuration("4");
 				assert.equal(nec._getSelectedNotes()[0].getDuration(), 0.5, 'durations 4');
+				
+				nec.cursor.setPos(0);
 				nec.setCurrDuration("5");
 				assert.equal(nec._getSelectedNotes()[0].getDuration(), 1, 'durations 5');
+				
+				nec.cursor.setPos(0);
 				nec.setCurrDuration("6");
 				assert.equal(nec._getSelectedNotes()[0].getDuration(), 2, 'durations 6');
+				
+				nec.cursor.setPos(0);
+
 				nec.setCurrDuration("7");
 				assert.equal(nec._getSelectedNotes()[0].getDuration(), 4, 'durations 7');
+				
+				nec.cursor.setPos(0);
 				nec.setCurrDuration("8");
 				assert.equal(nec._getSelectedNotes()[0].getDuration(), 4, 'durations 8');
 				assert.throws(function() {
@@ -80,41 +96,7 @@ define(['modules/core/src/NoteModel',
 				nec.addNote();
 				assert.equal(nec._getSelectedNotes().toString(), note, 'add note');
 
-				// Editor test where delete is like silence
-				var necDelete = createRhythmicMelody();
-				// "F#/5-q,G/5-8.,F#/5-16,F#/5-q(3/2),G/5-q(3/2),A/5-q(3/2),Bb/5-q"  	(after each step we show value of necDelete.songModel.getComponent('notes').getNotes().toString())
-				necDelete.setSilence();
-				assert.equal(necDelete._getSelectedNotes().toString(), 'qr', 'delete note');
-				// "qr,G/5-8.,F#/5-16,F#/5-q(3/2),G/5-q(3/2),A/5-q(3/2),Bb/5-q"
-
-				necDelete.cursor.setPos([1, 2]);
-				necDelete.setSilence();
-				assert.equal(necDelete._getSelectedNotes().toString(), '8.r,16r', 'delete note');
-				// "qr,8.r,16r,F#/5-q(3/2),G/5-q(3/2),A/5-q(3/2),Bb/5-q"
-
-				necDelete.cursor.setPos([3, 3]);
-				necDelete.setSilence();
-				assert.equal(necDelete._getSelectedNotes().toString(), 'q(3/2)r', 'Delete tuplet note');
-				assert.equal(necDelete._getSelectedNotes()[0].isTuplet(), true, 'tuplet after one note deletion should be a tuplet');
-				// "qr,8.r,16r,q(3/2)r,G/5-q(3/2),A/5-q(3/2),Bb/5-q"
-
-				necDelete.cursor.setPos([3, 4]);
-				nec.setTuplet();
-
-
-				necDelete.cursor.setPos([3, 5]);
-				necDelete.setSilence();
-				assert.equal(necDelete._getSelectedNotes()[0].isTuplet(), false, 'tuplet after whole note deletion should no more be a tuplet');
-				assert.equal(necDelete._getSelectedNotes()[1].isTuplet(), false, 'tuplet after whole note  deletion should no more be a tuplet');
-				assert.deepEqual(necDelete.cursor.getPos(), [3, 4]);
-
-				necDelete.cursor.setPos([3, 5]);
-				necDelete.setSilence();
-				assert.equal(necDelete._getSelectedNotes()[0].isTuplet(), false, 'tuplet after whole tuplets deletion should no more be a tuplet');
-				assert.equal(necDelete._getSelectedNotes()[1].isTuplet(), false, 'tuplet after whole tuplets  deletion should no more be a tuplet');
-				assert.equal(necDelete._getSelectedNotes()[2].isTuplet(), false, 'tuplet after whole tuplets  deletion should no more be a tuplet');
-
-
+				
 				// Tie notes
 				nec.setTie();
 				assert.equal(nec._getSelectedNotes()[0].isTie(), false, 'tie note with only one selected');
@@ -133,13 +115,14 @@ define(['modules/core/src/NoteModel',
 				assert.equal(nec._getSelectedNotes()[1].isTie(), false, 'remove tie end note');
 
 				// Tuplets
-				nec.cursor.setPos([3, 4]);
-				nec.setTuplet();
-				assert.equal(nec._getSelectedNotes()[0].isTuplet(), false, 'tuplet with not 3 notes same length selected');
-				assert.equal(nec._getSelectedNotes()[0].getTuplet(), undefined, 'type tuplet with not 3 notes same length selected');
+				// nec.cursor.setPos([3, 4]);
+				// nec.setTuplet();
+				// assert.equal(nec._getSelectedNotes()[0].isTuplet(), false, 'tuplet with not 3 notes same length selected');
+				// assert.equal(nec._getSelectedNotes()[0].getTuplet(), undefined, 'type tuplet with not 3 notes same length selected');
 
-				nec.cursor.setPos([5, 7]);
+				nec.cursor.setPos([6, 8]);
 				nec.setTuplet();
+				nec.cursor.setPos([6, 8]);
 				assert.equal(nec._getSelectedNotes()[0].isTuplet(), true, 'tuplet with 3 notes selected - first');
 				assert.equal(nec._getSelectedNotes()[1].isTuplet(), true, 'tuplet with 3 notes selected - second');
 				assert.equal(nec._getSelectedNotes()[2].isTuplet(), true, 'tuplet with 3 notes selected - third');
@@ -148,14 +131,42 @@ define(['modules/core/src/NoteModel',
 				assert.equal(nec._getSelectedNotes()[1].getTuplet(), "middle", 'type tuplet with 3 notes selected - middle');
 				assert.equal(nec._getSelectedNotes()[2].getTuplet(), "stop", 'type tuplet with 3 notes selected - stop');
 
+				nec.cursor.setPos([3,5])
 				var selNotes = nec._getSelectedNotes().toString();
+
 				nec.copyNotes();
 				assert.equal(nec.buffer.toString(), selNotes, 'copy Notes');
 
-				nec.cursor.setPos(5);
+				nec.cursor.setPos(9);
 				nec.pasteNotes();
-				nec.cursor.setPos([5, 7]);
-				assert.equal(nec._getSelectedNotes().toString(), selNotes, 'copy Notes');
+				nec.cursor.setPos([9, 11]);
+				assert.equal(nec._getSelectedNotes().toString(), selNotes, 'paste Notes');
+
+				
+
+				// Editor test where delete is like silence
+				var necDelete = createRhythmicMelody();
+				// "F#/5-q,G/5-8.,F#/5-16,F#/5-q(3/2),G/5-q(3/2),A/5-q(3/2),Bb/5-q"  	(after each step we show value of necDelete.songModel.getComponent('notes').getNotes().toString())
+				necDelete.setSilence();
+				assert.equal(necDelete._getSelectedNotes().toString(), 'qr', 'delete note');
+				// "qr,G/5-8.,F#/5-16,F#/5-q(3/2),G/5-q(3/2),A/5-q(3/2),Bb/5-q"
+
+				necDelete.cursor.setPos([1, 2]);
+				necDelete.setSilence();
+				assert.equal(necDelete._getSelectedNotes().toString(), 'hr', 'delete note');
+				// "hr,F#/5-q(3/2),G/5-q(3/2),A/5-q(3/2),Bb/5-q"
+
+				necDelete.cursor.setPos([1, 1]);
+				necDelete.setSilence();
+				assert.equal(necDelete._getSelectedNotes().toString(), 'q(3/2)r', 'Delete tuplet note');
+				assert.equal(necDelete._getSelectedNotes()[0].isTuplet(), true, 'tuplet after one note deletion should be a tuplet');
+				// "hr,q(3/2)r,G/5-q(3/2),A/5-q(3/2),Bb/5-q"
+
+				necDelete.cursor.setPos([1, 3]);
+				necDelete.setSilence();
+				assert.equal(necDelete._getSelectedNotes()[0].isTuplet(), false, 'removed whole tuple, merged with previous rest');
+				// "wr,Bb/5-q"
+				assert.deepEqual(necDelete.cursor.getPos(), [0, 0]);
 
 				
 
@@ -168,9 +179,7 @@ define(['modules/core/src/NoteModel',
 				assert.equal(nec._getSelectedNotes().toString(), "A/4-q");
 				nec.moveCursorByBar(-1);
 				nec.setCurrDuration("2");
-				assert.equal(nec._getSelectedNotes().toString(), "A/4-32");
-
-
+				assert.equal(nec._getSelectedNotes().toString(), "A/4-32"); //cursor after changes gets one position
 
 				// rhythm  q,8,16,16, triplet(q,q,q)
 				function createRhythmicMelody() {
