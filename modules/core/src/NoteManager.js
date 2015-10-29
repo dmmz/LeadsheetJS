@@ -440,7 +440,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 
 		//only merge non tuplet rests
 		function expandableRest(note) {
-			return note.isRest && !note.isTuplet();
+			return note && note.isRest && !note.isTuplet();
 		}
 		//merge areas if they are touching each other
 		function mergeAreas(area1, area2) {

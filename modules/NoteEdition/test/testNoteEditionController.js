@@ -146,30 +146,35 @@ define(['modules/core/src/NoteModel',
 
 				// Editor test where delete is like silence
 				var necDelete = createRhythmicMelody();
-				// "F#/5-q,G/5-8.,F#/5-16,F#/5-q(3/2),G/5-q(3/2),A/5-q(3/2),Bb/5-q"  	(after each step we show value of necDelete.songModel.getComponent('notes').getNotes().toString())
+				// "F#/5-q,G/5-8.,F#/5-16,F#/5-q(3/2),G/5-q(3/2),A/5-q(3/2),Bb/5-q,Ab/5-q"  	(after each step we show value of necDelete.songModel.getComponent('notes').getNotes().toString())
 				necDelete.setSilence();
 				assert.equal(necDelete._getSelectedNotes().toString(), 'qr', 'delete note');
-				// "qr,G/5-8.,F#/5-16,F#/5-q(3/2),G/5-q(3/2),A/5-q(3/2),Bb/5-q"
+				// "qr,G/5-8.,F#/5-16,F#/5-q(3/2),G/5-q(3/2),A/5-q(3/2),Bb/5-q,Ab/5-q"
 
 				necDelete.cursor.setPos([1, 2]);
 				necDelete.setSilence();
 				assert.equal(necDelete._getSelectedNotes().toString(), 'hr', 'delete note');
-				// "hr,F#/5-q(3/2),G/5-q(3/2),A/5-q(3/2),Bb/5-q"
+				// "hr,F#/5-q(3/2),G/5-q(3/2),A/5-q(3/2),Bb/5-q,Ab/5-q"
 
 				necDelete.cursor.setPos([1, 1]);
 				necDelete.setSilence();
 				assert.equal(necDelete._getSelectedNotes().toString(), 'q(3/2)r', 'Delete tuplet note');
 				assert.equal(necDelete._getSelectedNotes()[0].isTuplet(), true, 'tuplet after one note deletion should be a tuplet');
-				// "hr,q(3/2)r,G/5-q(3/2),A/5-q(3/2),Bb/5-q"
+				// "hr,q(3/2)r,G/5-q(3/2),A/5-q(3/2),Bb/5-q,Ab/5-q"
 
 				necDelete.cursor.setPos([1, 3]);
 				necDelete.setSilence();
 				assert.equal(necDelete._getSelectedNotes()[0].isTuplet(), false, 'removed whole tuple, merged with previous rest');
-				// "wr,Bb/5-q"
+				// "wr,Bb/5-q,Ab/5-q"
 				assert.deepEqual(necDelete.cursor.getPos(), [0, 0]);
 
+				necDelete.cursor.setPos([2, 2]);
+				necDelete.setCurrDuration("4");
+				// "wr, Bb/5-q,Ab/5-8,8r"
 				
-
+				necDelete.cursor.setPos([2, 2]);
+				necDelete.setDot();
+				assert.deepEqual(necDelete.songModel.getComponent('notes').getNotesAsString(),["wr", "Bb/5-q", "Ab/5-8.", "16r"], 'dot in last note');
 
 				songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
 				cM = new CursorModel(songModel.getComponent('notes'));
@@ -180,6 +185,14 @@ define(['modules/core/src/NoteModel',
 				nec.moveCursorByBar(-1);
 				nec.setCurrDuration("2");
 				assert.equal(nec._getSelectedNotes().toString(), "A/4-32"); //cursor after changes gets one position
+
+				var necLastNote = createRhythmicMelody();
+				necLastNote.cursor.setPos(6);
+				necLastNote.setCurrDuration("6"); //convert to half note
+				assert.deepEqual(
+					necLastNote.songModel.getComponent('notes').getNotesAsString(),
+					["F#/5-q", "G/5-8.", "F#/5-16", "F#/5-q(3/2)", "G/5-q(3/2)", "A/5-q(3/2)", "Bb/5-h"]);
+				
 
 				// rhythm  q,8,16,16, triplet(q,q,q)
 				function createRhythmicMelody() {
@@ -220,6 +233,10 @@ define(['modules/core/src/NoteModel',
 					}));
 					rhythmicMelody.push(new NoteModel({
 						pitchList: ["Bb/5"],
+						duration: "q"
+					}));
+					rhythmicMelody.push(new NoteModel({
+						pitchList: ["Ab/5"],
 						duration: "q"
 					}));
 					songModel.getComponent('notes').setNotes(rhythmicMelody);

@@ -195,12 +195,24 @@ define([
 			// after having copied notes sometimes there can be a gap to old duration, if so, we add silences 
 			// (e.g. last not copied is an 8th note that starts at the same point a half note started, 
 			//	so overwriting it, there are 1.5 beats missing to be filled by silences)
-			if (endIndex < noteMng.getTotal()) {
-				var beatEndNote = noteMng.getNoteBeat(endIndex);
-				if (endBeat < beatEndNote) {
-					tmpNm.fillGapWithRests(beatEndNote - endBeat);
-				}
+			
+			var beatEndNote;
+			// when dealing with changes in last note we make sure index does not exceed total notes
+			if (endIndex >= noteMng.getTotal()){
+				var indexLastNote = noteMng.getTotal() - 1;
+				var beatStartLastNote = noteMng.getNoteBeat(indexLastNote);
+				var durLastNote = noteMng.getNotes()[indexLastNote].getDuration();
+				beatEndNote = beatStartLastNote + durLastNote;
+				
+			}else{
+				beatEndNote = noteMng.getNoteBeat(endIndex);
+
+			} 
+			
+			if (endBeat < beatEndNote) {
+				tmpNm.fillGapWithRests(beatEndNote - endBeat);
 			}
+		
 			//important, to keep consistency in noteSpaceMng
 			this.cursor.setPos([this.cursor.getStart(), endIndex - 1]);
 		}
