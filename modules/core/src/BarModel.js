@@ -7,8 +7,8 @@ define(['modules/core/src/TimeSignatureModel'], function(TimeSignatureModel) {
 		this.clef = (typeof(options.clef) !== "undefined") ? options.clef : undefined; // empty clef means it doesn't change from previous 
 		this.ending = (typeof(options.ending) !== "undefined") ? options.ending : undefined; // object with repeat, type (BEGIN,END, BEGIN_END, MID) and ending (text)
 		this.style = (typeof(options.style) !== "undefined") ? options.style : '';
-		this.timeSignature = (typeof(options.timeSignature) !== "undefined") ? options.timeSignature : undefined; // empty timeSignature means it doesn't change from previous
-		this.tonality = (typeof(options.tonality) !== "undefined") ? options.tonality : undefined;
+		this.timeSignatureChange = (typeof(options.timeSignature) !== "undefined") ? options.timeSignature : undefined; // empty timeSignature means it doesn't change from previous
+		this.keySignatureChange = (typeof(options.keySignature) !== "undefined") ? options.keySignature : undefined;
 		this.label = (typeof(options.label) !== "undefined") ? options.label : undefined; // Segno, fine, coda, on cue ...
 		this.sublabel = (typeof(options.sublabel) !== "undefined") ? options.sublabel : undefined; // Ds, Ds al fine, ds al capo ...
 	}
@@ -61,29 +61,29 @@ define(['modules/core/src/TimeSignatureModel'], function(TimeSignatureModel) {
 		return this.style;
 	};
 
-	BarModel.prototype.setTimeSignatureChange = function(timeSignature) {
-		if (!timeSignature) {
-			this.timeSignature = undefined;
-		} else if (typeof timeSignature === 'string'){
-			this.timeSignature = new TimeSignatureModel(timeSignature);
+	BarModel.prototype.setTimeSignatureChange = function(timeSignatureChange) {
+		if (!timeSignatureChange) {
+			this.timeSignatureChange = undefined;
+		} else if (typeof timeSignatureChange === 'string'){
+			this.timeSignatureChange = new TimeSignatureModel(timeSignatureChange);
 		}else{
-			this.timeSignature = timeSignature;
+			this.timeSignatureChange = timeSignatureChange;
 		}
 	};
 
 	BarModel.prototype.getTimeSignatureChange = function() {
-		return this.timeSignature;
+		return this.timeSignatureChange;
 	};
 
-	BarModel.prototype.setTonality = function(tonality) {
-		if (typeof tonality === "undefined") {
-			tonality = '';
+	BarModel.prototype.setKeySignatureChange = function(keySignatureChange) {
+		if (typeof keySignatureChange === "undefined") {
+			keySignatureChange = '';
 		}
-		this.tonality = tonality;
+		this.keySignatureChange = keySignatureChange;
 	};
 
-	BarModel.prototype.getTonality = function() {
-		return this.tonality;
+	BarModel.prototype.getKeySignatureChange = function() {
+		return this.keySignatureChange;
 	};
 
 	BarModel.prototype.setLabel = function(label) {

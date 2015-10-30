@@ -43,11 +43,11 @@ define(['modules/core/src/BarModel'], function(BarModel) {
 				assert.equal(typeof bar.getTimeSignatureChange(), "object");
 
 				// Tonality
-				bar.setTonality();
-				assert.equal(bar.getTonality(), '');
+				bar.setKeySignatureChange();
+				assert.equal(bar.getKeySignatureChange(), '');
 
-				bar.setTonality('F');
-				assert.equal(bar.getTonality(), 'F');
+				bar.setKeySignatureChange('F');
+				assert.equal(bar.getKeySignatureChange(), 'F');
 
 				// Label
 				bar.setLabel();

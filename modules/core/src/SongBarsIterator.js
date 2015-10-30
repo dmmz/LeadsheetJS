@@ -71,7 +71,7 @@ define(function() {
 			return this.bm.getBar(this.index+1);
 		},
 		getBarKeySignature: function(){
-			var keySig = this.getBar().getTonality();
+			var keySig = this.getBar().getKeySignatureChange();
 			if (keySig) {
 				return keySig;
 			}

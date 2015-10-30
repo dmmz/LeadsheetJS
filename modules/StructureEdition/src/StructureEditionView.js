@@ -140,7 +140,7 @@ define([
 	};
 	StructureEditionView.prototype._setSelectedBar = function(currentBar) {
 		this._setBarTimeSignature(currentBar.getTimeSignatureChange());
-		this._setTonality(currentBar.getTonality());
+		this._setTonality(currentBar.getKeySignatureChange());
 		this._setEnding(currentBar.getEnding());
 		this._setLabel(currentBar.getLabel());
 		this._setSublabel(currentBar.getSublabel());

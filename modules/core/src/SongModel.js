@@ -118,7 +118,7 @@ define([
 		var tonality;
 		while (barNumber >= 0) {
 			if (bm.getBar(barNumber) != null) {
-				tonality = bm.getBar(barNumber).getTonality();
+				tonality = bm.getBar(barNumber).getKeySignatureChange();
 				if (typeof tonality !== "undefined" && tonality !== '') {
 					return tonality;
 				}
