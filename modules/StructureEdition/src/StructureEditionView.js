@@ -166,8 +166,8 @@ define([
 		if (typeof timeSignature === "undefined") {
 			timeSignature = "select";
 		}
-		if ($('#edit_each_time_signature_container select').val() !== timeSignature) {
-			$('#edit_each_time_signature_container select').val(timeSignature);
+		if ($('#edit_each_time_signature_container select').val() !== timeSignature.toString()) {
+			$('#edit_each_time_signature_container select').val(timeSignature.toString());
 		}
 	};
 	StructureEditionView.prototype._setTonality = function(tonality) {
