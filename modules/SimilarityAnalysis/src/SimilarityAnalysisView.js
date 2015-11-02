@@ -26,6 +26,7 @@ define([
 			self.computeAnalysis();
 			return false;
 		});
+
 		$('#similarity_compress_select').on('input', function() {
 			var structure = $('#similarity_compress_select').val();
 			$('#similarity_compress_viewer').val(structure);
@@ -35,11 +36,19 @@ define([
 			return false;
 		});
 
-		$('#similarity_strict_checkbox').on('change', function() {
+		$('#similarity_size_select').on('input', function() {
+			var size = $('#similarity_size_select').val();
+			$('#similarity_size_viewer').val(size);
+		});
+		$('#similarity_size_select').on('change', function() {
 			self.computeAnalysis();
 			return false;
 		});
 
+		$('#similarity_strict_checkbox').on('change', function() {
+			self.computeAnalysis();
+			return false;
+		});
 
 
 		$('#similarity_analysis').click(function() {
@@ -61,9 +70,10 @@ define([
 	SimilarityAnalysisView.prototype.computeAnalysis = function() {
 		var threshold = $('#similarity_threshold_select').val();
 		var structure = $('#similarity_compress_select').val();
+		var size = $('#similarity_size_select').val();
 		var strict = Number($('#similarity_strict_checkbox').is(':checked'));
 		$('#similarity_threshold_viewer').val(threshold);
-		$.publish('SimilarityAnalysisView-compute', [threshold, structure, strict]);
+		$.publish('SimilarityAnalysisView-compute', [threshold, size, structure, strict]);
 		$('#remove_similarity_analysis').show();
 	};
 

@@ -3,9 +3,9 @@ define([
 	"modules/FileEdition/src/FileEditionController"
 	], function(FileEditionView, FileEditionController){
 
-	function FileEdition(songModel, canvas, saveFunction, waveManager, params){
+	function FileEdition(songModel, viewer, saveFunction, waveManager, params){
 		this.view = new FileEditionView(params);
-		new FileEditionController(songModel, canvas, saveFunction, waveManager );
+		new FileEditionController(songModel, viewer, saveFunction, waveManager );
 	}
 	return FileEdition;
 });

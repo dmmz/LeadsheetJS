@@ -25,20 +25,20 @@ define([
 		this.viewer = viewer;
 		this.waveMng = waveMng;
 		this.elemMng = new ElementManager();
-		this._adaptViewer();
+		//this.adaptViewer();
 	}
 
 	/**
 	 * update viewer dimensions if needed (space between lines and margin top)
 	 */
-	WaveDrawer.prototype._adaptViewer = function() {
-
+	WaveDrawer.prototype.adaptViewer = function() {
 		if (this.topAudio > 0) { // if audio is greater than 0 it means audio will be on top of score line
 			this.viewer.setLineMarginTop(this.topAudio);
 		} else {
 			distance = (this.heightAudio - this.topAudio) - this.viewer.LINE_HEIGHT;
 			if (distance > 0) {
 				this.viewer.setLineMarginTop(distance, true);
+				
 			}
 		}
 	};

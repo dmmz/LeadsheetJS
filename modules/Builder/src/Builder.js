@@ -138,7 +138,7 @@ define([
 				}
 				if (useMenu) {
 					// Edit files menu
-					var fileEdition = new FileEdition(songModel, viewer.canvas, saveFunction);
+					var fileEdition = new FileEdition(songModel, viewer, saveFunction);
 					edition = Builder._loadEditionModules(viewer, songModel, editNotes, editChords, editStructure, menu, imgUrlEdition); // TODO menu shouldn't be required here
 					cursorNoteModel = edition.cursorNote.model;
 
