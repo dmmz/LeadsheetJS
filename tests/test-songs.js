@@ -428,6 +428,20 @@ define(function() {
 						]
 					}
 				]
+			},
+			{
+				id: 5,
+				name: "F",
+				timeSignature: "3/4",
+				bars: [
+					{
+						timeSignature: "4/4",
+						chords: [{p: "A",ch: "m7",beat: 1}],
+						melody: [
+							{keys: ["B/4"], duration: "h."}
+						]
+					}
+				]
 			}
 		]
 	};

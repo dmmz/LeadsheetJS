@@ -23,6 +23,7 @@ define([
 				//  	global   numBar 12
 				// 			E 			|	|
 				//  	global   numBar 13
+				//  	    F (3/4) 	|4/4| 			
 
 				var barsIt = new SongBarsIterator(song);
 				while (barsIt.hasNext()){
@@ -63,6 +64,10 @@ define([
 						case 13:
 							assert.equal(barsIt.getBarTimeSignature().toString(), "2/4",  "get previous  section time signature change in previous section");
 							assert.equal(barsIt.doesTimeSignatureChange(), false);
+							break;
+						case 14:
+							assert.equal(barsIt.getBarTimeSignature().toString(), "4/4",  "priority to bar change when both at the same time");
+							assert.equal(barsIt.doesTimeSignatureChange(), true);
 							break;
 						
 					}

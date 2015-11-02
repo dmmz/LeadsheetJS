@@ -9,13 +9,21 @@ define(['modules/core/src/TimeSignatureModel'],function(TimeSignatureModel) {
 	}
 	SongBarsIterator.prototype = {
 		_getTimeSignatureChange: function() {
-			if (this.isFirstSectionBar) {
-				var sectionTimeSig = this.song.getSection(this.iSection).getTimeSignature()
+			var barSigChange = this.getBar().getTimeSignatureChange();
+			if (barSigChange){
+				return barSigChange;
+			}else{
+				var sectionTimeSig;
+				if (this.isFirstSectionBar){
+					sectionTimeSig = this.song.getSection(this.iSection).getTimeSignature();
+				}
 				if (sectionTimeSig){
 					return new TimeSignatureModel(sectionTimeSig);	
-				} 
-			} else {
-				return this.getBar().getTimeSignatureChange();
+				}
+				else{
+					return undefined;
+				}
+				
 			}
 		},
 

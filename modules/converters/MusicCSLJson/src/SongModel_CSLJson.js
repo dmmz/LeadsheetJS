@@ -120,12 +120,12 @@ define(function(require) {
 		}
 		var songIt = new SongBarsIterator(song),
 			notes = song.getComponent('notes').getNotes(),
-			currentBarNumBeats,
+			currentBarNumBeats = songIt.getBarTimeSignature().getQuarterBeats(),
 			notesBarDur = 0;
 		
 		var i = 0;
 		while (songIt.hasNext() && i < notes.length){
-			currentBarNumBeats = songIt.getBarTimeSignature().getQuarterBeats();
+			
 			
 			// if it's first note, and duration depends on bar (only whole notes can have durationDependsOnBar = true)
 			if (notesBarDur === 0 && notes[i].durationDependsOnBar){
@@ -137,6 +137,7 @@ define(function(require) {
 				console.warn("note exceeds bar duration (index "+ i +")");
 			}
 			else if (roundBeat(notesBarDur) == currentBarNumBeats ){
+				currentBarNumBeats = songIt.getBarTimeSignature().getQuarterBeats();
 				notesBarDur = 0;
 				songIt.next();	
 			}
