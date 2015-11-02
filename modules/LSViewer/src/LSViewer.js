@@ -76,6 +76,7 @@ define([
 			this.layer = params.layer;
 
 		};
+
 		LSViewer.prototype._getWidthFromContainer = function(divContainer) {
 			return $(this.divContainer).width() * this.CANVAS_DIV_WIDTH_PROPORTION;
 		};
@@ -218,8 +219,17 @@ define([
 				this.LINE_MARGIN_TOP = lineMarginTop;
 			}
 			this.LINE_HEIGHT += lineMarginTop;
-
 		};
+
+		LSViewer.prototype.getLineHeight = function() {
+			return this.LINE_HEIGHT;
+		};
+		LSViewer.prototype.setLineHeight = function(lineHeight) {
+			if (!isNaN(lineHeight)) {
+				this.LINE_HEIGHT = lineHeight;
+			}
+		};
+
 		LSViewer.prototype.setHeight = function(song, barWidthMng) {
 			var totalNumBars = song.getComponent("bars").getTotal();
 			this.canvas.height = (barWidthMng.getDimensions(totalNumBars - 1).top + this.LINE_HEIGHT) * this.SCALE;

@@ -13,8 +13,13 @@ define([
 	'jquery'
 ], function(Mustache, SongModel, SongModel_CSLJson, SongModel_MusicXML, WaveManager, LSViewer, pubsub, UserLog, ComposerServlet, AjaxUtils, jsPDF, $) {
 
-	function FileEditionController(songModel, viewerCanvas, saveFunction, waveManager) {
-		this.viewerCanvas = viewerCanvas;
+	function FileEditionController(songModel, viewer, saveFunction, waveManager) {
+		if (viewer) {
+			this.viewer = viewer;
+			if (viewer.canvas) {
+				this.viewerCanvas = viewer.canvas;
+			}
+		}
 		this.songModel = songModel || new SongModel();
 		this.waveManager = waveManager;
 		this.initSubscribe();
@@ -139,14 +144,22 @@ define([
 	};
 
 	FileEditionController.prototype.exportPNG = function() {
-		var srcCanvas = this.viewerCanvas;
-		var destinationElement = document.createElement("div");
-		var currentViewer = new LSViewer(destinationElement, {
-			'width': srcCanvas.width * 5,
-			'typeResize': 'scale'
-		});
-		currentViewer.draw(this.songModel);
-		this.promptFile(this.songModel.getTitle() + '.png', currentViewer.canvas.toDataURL());
+		var resolutionRatio = 3; // don't go over 3-4 because then toDataUrl is getting too big on long leadsheet and export doesn't work
+		// augment resolution
+		this.viewer.canvas.width = this.viewer.canvas.width * resolutionRatio;
+		this.viewer.typeResize = 'scale';
+		this.viewer._resize(this.viewer.canvas.width);
+		this.viewer.draw(this.songModel);
+
+		// screenshot and export
+		this.promptFile(this.songModel.getTitle() + '.png', this.viewer.canvas.toDataURL("image/png"));
+
+		// reduce resolution
+		this.viewer.typeResize = 'fluid';
+		this.viewer.canvas.width = Math.ceil(this.viewer.canvas.width / resolutionRatio);
+		this.viewer._resize(this.viewer.canvas.width);
+		this.viewer.draw(this.songModel);
+
 	};
 
 	FileEditionController.prototype.exportAndPromptLeadsheetToPDF = function(title, composer, timeSignature, style, sources_abr) {
@@ -156,6 +169,7 @@ define([
 		var currentViewer = new LSViewer(destinationElement, {
 			'width': srcCanvas.width - 10
 		});
+		currentViewer.setLineHeight(this.viewer.getLineHeight());
 		currentViewer.draw(this.songModel);
 
 		// create another dummy CANVAS in which we will draw the first canvas, it prevents black screen to appear

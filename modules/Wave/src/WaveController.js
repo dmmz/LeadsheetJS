@@ -203,6 +203,7 @@ define(['modules/Wave/src/WaveModel',
 				self.enable();
 				self.barTimesMng.setBarTimes(self.songModel, self.model);
 				self.drawer.newCursor(self.model);
+				self.drawer.adaptViewer();
 				if (redraw) {
 					self.viewer.setShortenLastBar(true);
 					self.viewer.draw(self.songModel); // no need to drawAudio(), as it is called on 'drawEnd'
