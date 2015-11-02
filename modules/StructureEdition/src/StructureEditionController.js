@@ -377,7 +377,7 @@ define([
 			//we overwrite adapted notes in general note manager
 			noteMng.notesSplice(indexes, adaptedNotes);
 		} catch (e) {
-			//console.log(e);
+			console.log(e);
 			UserLog.logAutoFade('error', "Tuplets can't be broken");
 			return;
 		}
@@ -390,7 +390,7 @@ define([
 			return;
 		}
 		for (var i = 0, c = selBars.length; i < c; i++) {
-			this.songModel.getComponent("bars").getBar(selBars[i]).setTonality(tonality);
+			this.songModel.getComponent("bars").getBar(selBars[i]).setKeySignatureChange(tonality);
 		}
 		$.publish('ToHistory-add', 'Tonality set to ' + tonality);
 	};

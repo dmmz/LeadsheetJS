@@ -3,7 +3,7 @@ define(['modules/core/src/BarModel'], function(BarModel) {
 
 	BarModel_MusicXML.importFromMusicXML = function(MusicXMLBar) {
 		var bar = new BarModel();
-		if (MusicXMLBar.hasOwnProperty('key')) bar.setTonality(MusicXMLBar.key);
+		if (MusicXMLBar.hasOwnProperty('key')) bar.setKeySignatureChange(MusicXMLBar.key);
 		var clef = "treble";
 		if (MusicXMLBar.hasOwnProperty('stave') && typeof MusicXMLBar.stave[0] !== "undefined" && typeof MusicXMLBar.stave[0].clef !== "undefined") {
 			clef = MusicXMLBar.stave[0].clef;
