@@ -28,8 +28,8 @@ define([
 
 	SimilarityAnalysisController.prototype.initSubscribe = function() {
 		var self = this;
-		$.subscribe('SimilarityAnalysisView-compute', function(el, threshold, structure, strict) {
-			self.computeSimilarityAnalysis(threshold, structure, strict);
+		$.subscribe('SimilarityAnalysisView-compute', function(el, threshold, size, structure, strict) {
+			self.computeSimilarityAnalysis(threshold, size, structure, strict);
 		});
 		$.subscribe('SimilarityAnalysisView-remove', function(el) {
 			self.removeSimilarityAnalysis();
@@ -119,13 +119,13 @@ define([
 
 		return Math.round(r * 255) + "," + Math.round(g * 255) + "," + Math.round(b * 255);
 	}
-	SimilarityAnalysisController.prototype.computeSimilarityAnalysis = function(threshold, structure, strict) {
+	SimilarityAnalysisController.prototype.computeSimilarityAnalysis = function(threshold, size, structure, strict) {
 		var self = this;
 		var simAPI = new SimilarityAnalysisAPI();
 		var idLog = UserLog.log('info', 'Computing...');
 		$.publish('ToLayers-removeLayer');
 		var lastId = self.songModel._id;
-		simAPI.getNotesClustering(self.songModel._id, threshold, 1, structure, strict, function(res) {
+		simAPI.getNotesClustering(self.songModel._id, threshold, size, structure, strict, function(res) {
 			UserLog.removeLog(idLog);
 			var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(self.songModel);
 			var request = {
@@ -143,7 +143,7 @@ define([
 				var color = [];
 				var maxNumberOfCluster = 0;
 				for (var i = 0; i < res.length; i++) {
-					if(res[i].cluster > maxNumberOfCluster){
+					if (res[i].cluster > maxNumberOfCluster) {
 						maxNumberOfCluster = res[i].cluster;
 					}
 				}
