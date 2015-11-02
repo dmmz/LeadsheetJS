@@ -146,48 +146,39 @@ define([
 	 * @return {timeSignatureModel} currentTimeSignature like 3/4
 	 */
 	SongModel.prototype.getTimeSignatureAt = function(barNumber) {
-		var currentTimeSignature = this.getTimeSignature();
+		var songTimeSignature = this.getTimeSignature();
 		var timeSig;
 		var sectionNumber = this.getSectionNumberFromBarNumber(barNumber);
-		if (typeof sectionNumber === "undefined") {
-			return currentTimeSignature; // TODO need test on song that have repetitions on last section and a time signature change
+		if (sectionNumber === undefined) {
+			return songTimeSignature; // TODO need test on song that have repetitions on last section and a time signature change
 		}
-		var startBarSection = this.getStartBarNumberFromSectionNumber(sectionNumber);
+
+		var section = this.getSection(sectionNumber);
 		var bm = this.getComponent("bars");
-		// loop in all previous bar in the current section
-		while (barNumber >= startBarSection) {
+		var startSectionBar = this.getStartBarNumberFromSectionNumber(sectionNumber)
+			// loop in all previous bar in the current section
+		while (barNumber >= 0) {
 			timeSig = bm.getBar(barNumber).getTimeSignatureChange();
-			if (typeof timeSig !== "undefined") {
+			if (timeSig !== undefined) {
 				return timeSig;
+			} else if (barNumber === startSectionBar) {
+				timeSig = section.getTimeSignature();
+				if (timeSig) {
+					return new TimeSignatureModel(timeSig);
+				}
+				//update section data
+				if (barNumber !== 0) {
+					sectionNumber = this.getSectionNumberFromBarNumber(barNumber - 1);
+					section = this.getSection(sectionNumber);
+					startSectionBar = this.getStartBarNumberFromSectionNumber(sectionNumber)
+				}
 			}
 			barNumber--;
 		}
-		// loop in current Section attributes
-		timeSig = this.getSection(sectionNumber).getTimeSignature();
-		if (typeof timeSig !== "undefined") {
-			return timeSig;
-		}
 		// otherwise returns song timeSig
-		return currentTimeSignature;
+		return songTimeSignature;
 	};
 
-
-	// USELESS function, use directly timesignature function instead
-	/**
-	 * The function returns the number of beats from the timeSig arguments or by default on current timeSignature
-	 * @param  {TimeSignatureModel} timeSig
-	 * @return {int} number of beats in a measure in the unit of the signature. E.g.: for 6/8 -> 6, for 4/4 -> 4 for 2/2 -> 2
-	 */
-	/*SongModel.prototype.getBeatsFromTimeSignature = function(timeSig) {
-		if (timeSig !== "undefined") {
-			return timeSig.getBeats();
-		}
-	};*/
-	/*
-	SongModel.prototype.getBeatsFromTimeSignatureAt = function(barNumber) {
-		return this.getBeatsFromTimeSignature(this.getTimeSignatureAt(barNumber));
-	};
-*/
 	/**
 	 * @param  {Integer} index  index of the section
 	 * @return {SectionModel}
@@ -468,7 +459,7 @@ define([
 		var divisions = [];
 		var residualBeat = startBeat - Math.floor(startBeat);
 		var duration = endBeat - startBeat;
-		if (residualBeat !== 0){
+		if (residualBeat !== 0) {
 			var firstSilenceDur = 1 - residualBeat;
 			if (duration >= firstSilenceDur) {
 				divisions.push(firstSilenceDur);
@@ -481,7 +472,7 @@ define([
 			nextBarBeat = 1,
 			currentBarBeat, //bar boundaries (in iteration)
 			endDivisionBeat, startDivisionBeat; //division boundaries
-			
+
 		while (songIt.hasNext()) {
 			// we set bar boundaries
 			currentBarBeat = nextBarBeat;

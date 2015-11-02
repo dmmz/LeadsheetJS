@@ -44,6 +44,7 @@ define(function(require) {
   var testNoteModel = require('modules/core/test/testNoteModel');
   var testBarModel = require('modules/core/test/testBarModel');
   var testBarManager = require('modules/core/test/testBarManager');
+  var testSongBarsIterator = require('modules/core/test/testSongBarsIterator');
 
   var testTimeSignatureModel = require('modules/core/test/testTimeSignatureModel');
 
@@ -96,6 +97,7 @@ define(function(require) {
   testBarManager.run();
   testChordManager.run();
   testTimeSignatureModel.run();
+  testSongBarsIterator.run();
 
   // MusicCSLJSON Module
   testSongModel_CSLJson.run();

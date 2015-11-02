@@ -13,8 +13,40 @@ define(['modules/converters/MusicCSLJson/src/SectionModel_CSLJson', 'modules/cor
 				// testing import
 				var newSection = new SectionModel();
 				SectionModel_CSLJson.importFromMusicCSLJSON(exp, newSection);
+
 				var exp2 = SectionModel_CSLJson.exportToMusicCSLJSON(newSection);
 				assert.deepEqual(exp2, {"name":"A", 'repeat':2, "style":"Bossa Nova"});
+
+				//section timeSignature
+				var exampleSection = {
+					id: 1,
+					name: "B",
+					timeSignature: "6/8",
+					bars: [
+						{
+							chords: [{p: "A",ch: "m7",beat: 1}],
+							melody: [
+								{keys: ["B/4"], duration: "h."}
+							]
+						},
+						{
+							chords: [{p: "B",ch: "m7",beat: 1}],
+							melody: [
+								{keys: ["C/4"], duration: "h."}
+							]
+						},
+						{
+							timeSignature: "3/8",
+							chords: [{p: "A",ch: "m7",beat: 1}],
+							melody: [
+								{keys: ["B/4"], duration: "h."}
+							]
+						}
+					]
+				};
+				SectionModel_CSLJson.importFromMusicCSLJSON(exampleSection, newSection);
+				assert.equal(newSection.getTimeSignature().toString(),"6/8", 'testing section with time signature');
+
 			});
 		}
 	}

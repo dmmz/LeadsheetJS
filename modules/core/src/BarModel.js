@@ -7,7 +7,7 @@ define(['modules/core/src/TimeSignatureModel'], function(TimeSignatureModel) {
 		this.clef = (typeof(options.clef) !== "undefined") ? options.clef : undefined; // empty clef means it doesn't change from previous 
 		this.ending = (typeof(options.ending) !== "undefined") ? options.ending : undefined; // object with repeat, type (BEGIN,END, BEGIN_END, MID) and ending (text)
 		this.style = (typeof(options.style) !== "undefined") ? options.style : '';
-		this.timeSignatureChange = (typeof(options.timeSignature) !== "undefined") ? options.timeSignature : undefined; // empty timeSignature means it doesn't change from previous
+		this.timeSignatureChange = (typeof(options.timeSignature) !== "undefined") ? this.setTimeSignatureChange(options.timeSignature) : undefined; // empty timeSignature means it doesn't change from previous
 		this.keySignatureChange = (typeof(options.keySignature) !== "undefined") ? options.keySignature : undefined;
 		this.label = (typeof(options.label) !== "undefined") ? options.label : undefined; // Segno, fine, coda, on cue ...
 		this.sublabel = (typeof(options.sublabel) !== "undefined") ? options.sublabel : undefined; // Ds, Ds al fine, ds al capo ...
@@ -60,7 +60,10 @@ define(['modules/core/src/TimeSignatureModel'], function(TimeSignatureModel) {
 	BarModel.prototype.getStyle = function() {
 		return this.style;
 	};
-
+	/**
+	 * if param is string, it is converted to TimeSignatureModel
+	 * @param {TimeSignatureModel || String} timeSignatureChange 
+	 */
 	BarModel.prototype.setTimeSignatureChange = function(timeSignatureChange) {
 		if (!timeSignatureChange) {
 			this.timeSignatureChange = undefined;

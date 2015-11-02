@@ -17,7 +17,6 @@ define(['modules/core/src/BarModel'], function(BarModel) {
 		if (JSONBar.hasOwnProperty('ending')) bar.setEnding(JSONBar.ending);
 		if (JSONBar.hasOwnProperty('sublabel')) bar.setSublabel(JSONBar.sublabel);
 		if (JSONBar.hasOwnProperty('timeSignature')) bar.setTimeSignatureChange(JSONBar.timeSignature);
-		console.log(JSONBar.keySignature);
 		if (JSONBar.hasOwnProperty('keySignature')) bar.setKeySignatureChange(JSONBar.keySignature);
 		return bar;
 	};

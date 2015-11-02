@@ -11,7 +11,7 @@ define(['modules/core/src/SectionModel'], function(SectionModel) {
 		}
 		sectionModel.setName(JSONSection.name);
 		sectionModel.setNumberOfBars(JSONSection.bars ? parseInt(JSONSection.bars.length) : 0);
-		sectionModel.setTimeSignature(JSONSection.timeSig);
+		sectionModel.setTimeSignature(JSONSection.timeSignature);
 		sectionModel.setRepeatTimes(JSONSection.repeat ? parseInt(JSONSection.repeat) : 0);
 		sectionModel.setStyle(JSONSection.style);
 	};
