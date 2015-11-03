@@ -123,7 +123,29 @@ define(function(require) {
 			currentBarNumBeats = songIt.getBarTimeSignature().getQuarterBeats(),
 			notesBarDur = 0;
 		
-		for (var i = 0; i < notes.length; i++) {
+		var i = 0;
+		while (songIt.hasNext() && i < notes.length){
+			
+			
+			// if it's first note, and duration depends on bar (only whole notes can have durationDependsOnBar = true)
+			if (notesBarDur === 0 && notes[i].durationDependsOnBar){
+				notes[i].barDuration = currentBarNumBeats;
+			}
+
+			notesBarDur += notes[i].getDuration();
+			if (notesBarDur > currentBarNumBeats){
+				console.warn("note exceeds bar duration (index "+ i +")");
+			}
+			else if (roundBeat(notesBarDur) == currentBarNumBeats ){
+				currentBarNumBeats = songIt.getBarTimeSignature().getQuarterBeats();
+				notesBarDur = 0;
+				songIt.next();	
+			}
+			i++;
+			
+		}
+		/*for (var i = 0; i < notes.length; i++) {
+			// if it's first note, and duration depends on bar (only whole notes can have durationDependsOnBar = true)
 			if (notesBarDur === 0 && notes[i].durationDependsOnBar){
 				notes[i].barDuration = currentBarNumBeats;
 
@@ -140,7 +162,7 @@ define(function(require) {
 					currentBarNumBeats = songIt.getBarTimeSignature().getQuarterBeats();
 				}
 			}
-		}
+		}*/
 
 	};
 	SongModel_CSLJson.exportToMusicCSLJSON = function(songModel) {

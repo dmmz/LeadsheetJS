@@ -82,10 +82,6 @@ define(['vexflow'], function(Vex) {
 		}
 		this.vexflowStave.setContext(ctx).draw();
 	};
-	// LSBarView.prototype.setKeySignature = function(prevKeySignature) {
-	// 	this.keySignature = song.getTonalityAt(this.numBar);
-
-	// };
 	LSBarView.prototype.getKeySignature = function() {
 		return this.keySignature;
 	};

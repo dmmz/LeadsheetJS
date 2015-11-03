@@ -401,11 +401,44 @@ define(function() {
 						melody: [
 							{keys: ["B/4"], duration: "h."}
 						]
-					},
+					}
+				]
+			},
+			{
+				id: 3,
+				name: "D",
+				timeSignature: "2/4",
+				bars: [
 					{
-						chords: [{p: "B",ch: "m7",beat: 1}],
+						chords: [{p: "A",ch: "m7",beat: 1}],
 						melody: [
-							{keys: ["C/4"], duration: "h."}
+							{keys: ["B/4"], duration: "h."}
+						]
+					}
+				]
+			},
+			{
+				id: 4,
+				name: "E",
+				bars: [
+					{
+						chords: [{p: "A",ch: "m7",beat: 1}],
+						melody: [
+							{keys: ["B/4"], duration: "h."}
+						]
+					}
+				]
+			},
+			{
+				id: 5,
+				name: "F",
+				timeSignature: "3/4",
+				bars: [
+					{
+						timeSignature: "4/4",
+						chords: [{p: "A",ch: "m7",beat: 1}],
+						melody: [
+							{keys: ["B/4"], duration: "h."}
 						]
 					}
 				]
