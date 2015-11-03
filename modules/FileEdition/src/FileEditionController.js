@@ -159,7 +159,6 @@ define([
 		this.viewer.canvas.width = Math.ceil(this.viewer.canvas.width / resolutionRatio);
 		this.viewer._resize(this.viewer.canvas.width);
 		this.viewer.draw(this.songModel);
-
 	};
 
 	FileEditionController.prototype.exportAndPromptLeadsheetToPDF = function(title, composer, timeSignature, style, sources_abr) {

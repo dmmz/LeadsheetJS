@@ -362,23 +362,23 @@ define([
 					var realIndex = 0;
 					var metronomeChannel = self.instrumentsIndex.length - 1;
 
-					var currentNote, currentMidiNote, duration, velocityNote, channel, volume;
-					var playNote = false;
 					// for each different position in the song
 					for (var i = 0, c = song.length; i < c; i++) {
-						currentNote = song[i];
+						var currentNote = song[i];
 						if (currentNote && (currentNote.getCurrentTime() * beatDuration) >= playFrom) {
 							// for each notes on a position (polyphonic song will have j > 1)
 							for (var j = 0, v = currentNote.getMidiNote().length; j < v; j++) {
 								(function(currentNote, realIndex, i, j) {
 									self.noteTimeOut[realIndex] = setTimeout(function() {
+										var currentMidiNote, duration, velocityNote, channel, volume;
+										var playNote = false;
 										if (currentNote.getMidiNote() === "undefined") {
 											return;
 										}
 										currentMidiNote = currentNote.getMidiNote()[j];
-										playNote = false;
 										/*if(currentMidiNote === false){}// Silence
 						else {*/
+
 										if (currentNote.getType() == "melody") {
 											channel = self.getMelodyInstrument();
 											volume = 127 * self.getMelodyVolume();
@@ -529,17 +529,23 @@ define([
 			var channels = {};
 			if (typeof instruments !== "undefined") {
 				for (var i = 0, c = instruments.length; i < c; i++) {
-					channels[i] = {
-						instrument: instruments[i],
-						mute: false,
-						mono: false,
-						omni: false,
-						solo: false
-					};
+					if (instruments[i] != "116") {
+						channels[i] = {
+							instrument: parseInt(instruments[i], 10),
+							number: parseInt(instruments[i], 10),
+							program: parseInt(instruments[i], 10),
+							mute: false,
+							mono: false,
+							omni: false,
+							solo: false
+						};
+					}
 				}
 			}
 			channels[9] = {
 				instrument: 116,
+				number: 116,
+				program: 116,
 				mute: false,
 				mono: false,
 				omni: false,
@@ -547,7 +553,6 @@ define([
 			};
 			MIDI.channels = channels;
 		};
-
 		PlayerModel_MidiCSL.prototype.initMidiPlugin = function(instruments) {
 			if (typeof instruments === "undefined") {
 				throw 'PlayerModel_MidiCSL - initMidiPlugin - instruments must be defined';

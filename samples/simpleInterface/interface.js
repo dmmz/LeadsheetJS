@@ -26,6 +26,7 @@ require.config({
 		}
 	}
 });
+
 define(function(require) {
 	var $ = require('jquery');
 	var LJS = require('LJS');
