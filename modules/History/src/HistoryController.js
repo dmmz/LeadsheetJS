@@ -47,6 +47,7 @@ define([
 		if (typeof this.songModel !== "undefined") {
 			if (typeof this.model.getCurrentState().leadsheet !== "undefined" && this.model.getCurrentState().leadsheet.changes.length > 0) {
 				SongModel_CSLJson.importFromMusicCSLJSON(this.model.getCurrentState().leadsheet, this.songModel);
+				$.publish('ToLayers-removeLayer');
 				$.publish('ToViewer-draw', this.songModel);
 			}
 		}

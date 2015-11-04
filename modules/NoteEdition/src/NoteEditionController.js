@@ -37,6 +37,7 @@ define([
 		$.subscribe('NoteEditionView', function(el, fn, param) {
 			if (self.noteSpaceMng.isEnabled()) {
 				self[fn].call(self, param);
+				$.publish('ToLayers-removeLayer');
 				$.publish('ToViewer-draw', self.songModel);
 			}
 		});
@@ -195,24 +196,24 @@ define([
 			// after having copied notes sometimes there can be a gap to old duration, if so, we add silences 
 			// (e.g. last not copied is an 8th note that starts at the same point a half note started, 
 			//	so overwriting it, there are 1.5 beats missing to be filled by silences)
-			
+
 			var beatEndNote;
 			// when dealing with changes in last note we make sure index does not exceed total notes
-			if (endIndex >= noteMng.getTotal()){
+			if (endIndex >= noteMng.getTotal()) {
 				var indexLastNote = noteMng.getTotal() - 1;
 				var beatStartLastNote = noteMng.getNoteBeat(indexLastNote);
 				var durLastNote = noteMng.getNotes()[indexLastNote].getDuration();
 				beatEndNote = beatStartLastNote + durLastNote;
-				
-			}else{
+
+			} else {
 				beatEndNote = noteMng.getNoteBeat(endIndex);
 
-			} 
-			
+			}
+
 			if (endBeat < beatEndNote) {
 				tmpNm.fillGapWithRests(beatEndNote - endBeat);
 			}
-		
+
 			//important, to keep consistency in noteSpaceMng
 			this.cursor.setPos([this.cursor.getStart(), endIndex - 1]);
 		}
@@ -246,52 +247,53 @@ define([
 	 */
 	NoteEditionController.prototype._runDurationFn = function(fn) {
 
-			var noteMng = this.songModel.getComponent('notes');
-			var tmpNm = this._cloneSelectedNotes();
-			var onlyRestsBefore = tmpNm.onlyRests();
-			var tmpCursorPos = this.cursor.getPos();
-			//saving beat interval, to put again cursor later, regardless of changed notes
-			var tmpBeatInterval = noteMng.getBeatIntervalByIndexes(tmpCursorPos[0], tmpCursorPos[1]);
-			var durBefore = tmpNm.getTotalDuration();
+		var noteMng = this.songModel.getComponent('notes');
+		var tmpNm = this._cloneSelectedNotes();
+		var onlyRestsBefore = tmpNm.onlyRests();
+		var tmpCursorPos = this.cursor.getPos();
+		//saving beat interval, to put again cursor later, regardless of changed notes
+		var tmpBeatInterval = noteMng.getBeatIntervalByIndexes(tmpCursorPos[0], tmpCursorPos[1]);
+		var durBefore = tmpNm.getTotalDuration();
 
-			//Here we run the actual function
-			var res = fn(tmpNm);
-			if (res && res.error) {
-				UserLog.logAutoFade('error', res.error);
-				return;
-			}
-
-			var durAfter = tmpNm.getTotalDuration();
-			//check if durations fit in the bar duration
-			if (!this._fitsInBar(tmpNm)) {
-				var msg = "Duration doesn't fit the bar";
-				UserLog.logAutoFade('error', msg);
-				console.warn(msg);
-				return;
-			}
-
-			tmpNm = this._checkDuration(noteMng, tmpNm, durBefore, durAfter, this.songModel);
-			noteMng.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
-			noteMng.reviseNotes();
-
-			//we merge only of we are not changing duration of rests
-			if (!(onlyRestsBefore && tmpNm.onlyRests())){
-				this.mergeRests();	
-			}
-			
-			// tmpCursorPos = noteMng.getIndexesStartingBetweenBeatInterval(tmpBeatInterval[0], tmpBeatInterval[1], true);
-			// if we wanted cursor comprise whole previously selected space we whould have use previous line, 
-			// otherwise, next line (cursor comprises first position)
-			tmpCursorPos = noteMng.getPrevIndexNoteByBeat(tmpBeatInterval[0]);
-			this.cursor.setPos(tmpCursorPos);
+		//Here we run the actual function
+		var res = fn(tmpNm);
+		if (res && res.error) {
+			UserLog.logAutoFade('error', res.error);
+			return;
 		}
-		//Public functions:
-		//
-		//Pitch functions
-		/**
-		 * Set selected notes to a key
-		 * @param {int|letter} If decal is a int, than it will be a decal between current note and wanted note in semi tons, if decal is a letter then current note is the letter
-		 */
+
+		var durAfter = tmpNm.getTotalDuration();
+		//check if durations fit in the bar duration
+		if (!this._fitsInBar(tmpNm)) {
+			var msg = "Duration doesn't fit the bar";
+			UserLog.logAutoFade('error', msg);
+			console.warn(msg);
+			return;
+		}
+
+		tmpNm = this._checkDuration(noteMng, tmpNm, durBefore, durAfter, this.songModel);
+		noteMng.notesSplice(this.cursor.getPos(), tmpNm.getNotes());
+		noteMng.reviseNotes();
+
+		//we merge only of we are not changing duration of rests
+		if (!(onlyRestsBefore && tmpNm.onlyRests())) {
+			this.mergeRests();
+		}
+
+		// tmpCursorPos = noteMng.getIndexesStartingBetweenBeatInterval(tmpBeatInterval[0], tmpBeatInterval[1], true);
+		// if we wanted cursor comprise whole previously selected space we whould have use previous line, 
+		// otherwise, next line (cursor comprises first position)
+		tmpCursorPos = noteMng.getPrevIndexNoteByBeat(tmpBeatInterval[0]);
+		this.cursor.setPos(tmpCursorPos);
+	};
+
+	//Public functions:
+	//
+	//Pitch functions
+	/**
+	 * Set selected notes to a key
+	 * @param {int|letter} If decal is a int, than it will be a decal between current note and wanted note in semi tons, if decal is a letter then current note is the letter
+	 */
 	NoteEditionController.prototype.setPitch = function(decalOrNote) {
 		var selNotes = this._getSelectedNotes();
 		var note;
