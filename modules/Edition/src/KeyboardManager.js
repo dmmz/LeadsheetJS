@@ -92,9 +92,9 @@ define(['utils/NoteUtils',
 				publish('ctrl-c-key', evt);
 			} else if ((keyCode == 86 && evt.ctrlKey) || (keyCode == 86 && metaKey)) { // Ctrl + v or Command + v (mac or windows specific key)
 				publish('ctrl-v-key', evt);
-			} else if (keyCode === 90 && evt.ctrlKey) { // Ctrl + z
+			} else if ((keyCode === 90 && evt.ctrlKey) || (keyCode === 90 && metaKey)) { // Ctrl + z
 				publish('ctrl-z', evt);
-			} else if (keyCode === 89 && evt.ctrlKey) { // Ctrl + y
+			} else if ((keyCode === 89 && evt.ctrlKey) || (keyCode === 89 && metaKey)) { // Ctrl + y
 				publish('ctrl-y', evt);
 			} else if (keyCode == 32) {
 				publish('spacebar', evt);

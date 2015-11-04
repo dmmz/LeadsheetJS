@@ -146,7 +146,6 @@ define([
 			return;
 		}
 		if (this.tags.length <= 0) {
-			console.log('no tag');
 			return;
 		}
 
