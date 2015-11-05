@@ -19,7 +19,7 @@ define(['utils/NoteUtils',
 				doPrevent = true;
 			}
 			if (doPrevent) {
-				//console.log('prevent');
+				// console.log('prevent');
 				stopEvent(evt);
 			}
 		}

@@ -201,8 +201,8 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 				}
 			}
 		}
-		$(this.canvasLayer).mousedown(function(evt) {
-			coords = self._getXandY($(this), evt);
+		$('html').mousedown(function(evt) {
+			coords = self._getXandY($(self.canvasLayer), evt);
 			self.mouseCoordsIni = [coords.x, coords.y];
 			self._setCoords(self.mouseCoordsIni, self.mouseCoordsIni);
 			self.mouseDown = true;
@@ -213,7 +213,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			return false;
 		};
 		// Mouseup on canvas is usefull to allow unselect
-		$(this.canvasLayer).mouseup(function(evt) {
+		$('html').mouseup(function(evt) {
 			self.mouseDown = false;
 			var isClick = self.mouseDidntMove();
 			if (isClick && evt.button == 2){
