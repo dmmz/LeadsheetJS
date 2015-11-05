@@ -114,6 +114,17 @@ define(['modules/core/src/NoteModel',
 				assert.equal(nec._getSelectedNotes()[0].isTie(), false, 'remove tie begin note');
 				assert.equal(nec._getSelectedNotes()[1].isTie(), false, 'remove tie end note');
 
+				nec.cursor.setPos([0, 1]);
+				nec.setTie();
+				nec.cursor.setPos([1, 2]);
+				nec.setTie();
+				nec.cursor.setPos([0, 2]);
+				nec.setSilence();
+				nec.cursor.setPos([0, 2]);
+				assert.equal(nec._getSelectedNotes()[0].isTie(), false, 'remove tie start_stop begin note');
+				assert.equal(nec._getSelectedNotes()[1].isTie(), false, 'remove tie start_stop note');
+				assert.equal(nec._getSelectedNotes()[2].isTie(), false, 'remove tie start_stop end note');
+
 				// Tuplets
 				// nec.cursor.setPos([3, 4]);
 				// nec.setTuplet();

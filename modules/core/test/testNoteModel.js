@@ -25,13 +25,17 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 					note.setTie("wrongTie");
 				});
 				note.setTie("start");
-				assert.equal(note.getTie(), "start");
+				assert.equal(note.getTie(), "start", "add tie note");
 
 				note.setTie("start");
 				assert.equal(note.getTie(), "start");
 
 				note.setTie("stop");
 				assert.equal(note.getTie(), "stop_start");
+
+				note.removeTie();
+				assert.equal(note.getTie(), undefined, "remove tie note");
+
 
 				//tuplet
 				assert.throws(function() {
@@ -151,7 +155,7 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 					durNote.setDurationByBeats(dur);
 					assert.equal(durNote.getDot(), dot, titleTest);
 					assert.equal(durNote.duration, strDur);
-					assert.equal(durNote.getDuration(), dur);	
+					assert.equal(durNote.getDuration(), dur);
 				}
 				
 				testDuration(6, 1, 'w','whole note with dot');

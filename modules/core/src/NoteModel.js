@@ -15,7 +15,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		this.tie = (param && param.tie) ? param.tie : undefined; // contain "start", "stop", "stop_start"
 		this.tuplet = (param && param.tuplet) ? param.tuplet : undefined;
 		this.timeModification = (param && param.timeModification) ? param.timeModification : undefined; // it's an attribute that exist only with tuplet
-		
+
 		//for whole silences that cover an entire measure, duration will depend on bar's time signature:
 		this.durationDependsOnBar = false;
 		this.barDuration = null;
@@ -45,7 +45,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		for (var i = 0; i < this.dot; i++) {
 			dur += ".";
 		}
-		if (this.timeModification){
+		if (this.timeModification) {
 			dur += "(" + this.timeModification + ")";
 		}
 		if (this.isRest) {
@@ -126,7 +126,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		this.octave[i] = octave;
 		return this.octave[i];
 	};
-	
+
 	NoteModel.prototype.getOctave = function(i) {
 		i = i || 0;
 		return this.octave[i];
@@ -175,7 +175,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		if (!tieType) return;
 
 		var arr = ["start", "stop", "stop_start"];
-		if (arr.indexOf(tieType) == -1) throw "not valid tie type " + tieType;
+		if (arr.indexOf(tieType) == -1) throw "NoteModel - setTie - not valid tie type " + tieType;
 
 		if (!this.tie) this.tie = tieType;
 		else if (tieType != this.tie) this.tie = "stop_start";
@@ -186,9 +186,10 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 	};
 
 	NoteModel.prototype.removeTie = function(tieType) {
-		if (this.tie != "stop_start") this.tie = null;
-		else {
-			if (tieType === undefined) throw "tieType not defined";
+		if (this.tie != "stop_start" || tieType === undefined) {
+			this.tie = null;
+		} else {
+			// This part allow keeping a part of tie active when we call removeTie on stop_start note
 			this.tie = (tieType == "start") ? "stop" : "start";
 		}
 	};
