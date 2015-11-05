@@ -3,7 +3,7 @@
  * @param {LSViewer} viewer
  */
 define(['jquery', 'pubsub'], function($, pubsub) {
-	function CanvasLayer(viewer) {
+	function CanvasLayer(viewer, detectEventOnAllDocument) {
 		if (!viewer.canvas) {
 			throw "LSViewer cannot create layer because canvas does not exist";
 		}
@@ -17,9 +17,10 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		this.mouseCoordsEnd = null;
 		this.coords = {};
 		this.mouseDown = false;
+		this.detectEventOnAllDocument = (detectEventOnAllDocument !== undefined) ? detectEventOnAllDocument : false;
 		this._listenEvents(canvasLayer);
-		this.elems = {};	//elements to be added (can be CLICKABLE or CURSOR)
-		this.order = [];    //we keep trace of order in which elements are added, to decide which should be prioritized on click
+		this.elems = {}; //elements to be added (can be CLICKABLE or CURSOR)
+		this.order = []; //we keep trace of order in which elements are added, to decide which should be prioritized on click
 	}
 
 	CanvasLayer.prototype._createLayer = function(viewer) {
@@ -80,13 +81,13 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			throw 'CanvasLayer element needs CL_NAME and CL_TYPE property';
 		}
 		// if it's new, we save its order
-		if (!(elem.CL_NAME in this.elems)){
-			this.order.push(elem.CL_NAME);	//order is useful to control z-index of drawn elements, last drawn elements will be prioritized on click. (see getOneActiveElement())
+		if (!(elem.CL_NAME in this.elems)) {
+			this.order.push(elem.CL_NAME); //order is useful to control z-index of drawn elements, last drawn elements will be prioritized on click. (see getOneActiveElement())
 		}
 		//this will update it if not new, and will create the value in the object if it is new. We were having problems when entering it only when it was not new, because
 		//audioComments where not updated
 		this.elems[elem.CL_NAME] = elem;
-		
+
 	};
 
 	CanvasLayer.prototype._listenEvents = function() {
@@ -104,37 +105,37 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		 * @return {Array}        array of active elements (being elements like ChordSpaceManager, NoteSpaceManager, WaveDrawer. TextElementManager will never be returned because it is not selectable (it does not have getY() function), it is only thought for being clicked)
 		 */
 		function getElemsByYs(coords) {
-				var minY = 999999,
-					maxY = 0,
-					minName, maxName, ys;
-				var activeElems = [];
-				for (var name in self.elems) {
-					if (self.elems[name].getType() === 'CURSOR') {
+			var minY = 999999,
+				maxY = 0,
+				minName, maxName, ys;
+			var activeElems = [];
+			for (var name in self.elems) {
+				if (self.elems[name].getType() === 'CURSOR') {
 
-						ys = self.elems[name].getYs(coords);
-						if (ys.topY < minY) {
-							minY = ys.topY;
-							minName = name;
-						}
-						if (ys.bottomY > maxY) {
-							maxY = ys.bottomY;
-							maxName = name;
-						}
+					ys = self.elems[name].getYs(coords);
+					if (ys.topY < minY) {
+						minY = ys.topY;
+						minName = name;
+					}
+					if (ys.bottomY > maxY) {
+						maxY = ys.bottomY;
+						maxName = name;
 					}
 				}
-				if (minName) {
-					activeElems.push(self.elems[minName]);
-				}
-				if (maxName && minName != maxName) {
-					activeElems.push(self.elems[maxName]);
-				}
-				return activeElems;
 			}
-			/**
-			 * when clicking on an element we will select one only element, this function chooses which one depending on coords
-			 * @param  {Object} coords  e.g.:  {x:12, y:21}
-			 * @return {Object}        class of active element (ChordSpaceManager, NoteSpaceManager, WaveDrawer. TextElementManager...etc.)
-			 */
+			if (minName) {
+				activeElems.push(self.elems[minName]);
+			}
+			if (maxName && minName != maxName) {
+				activeElems.push(self.elems[maxName]);
+			}
+			return activeElems;
+		}
+		/**
+		 * when clicking on an element we will select one only element, this function chooses which one depending on coords
+		 * @param  {Object} coords  e.g.:  {x:12, y:21}
+		 * @return {Object}        class of active element (ChordSpaceManager, NoteSpaceManager, WaveDrawer. TextElementManager...etc.)
+		 */
 		function getOneActiveElement(coords) {
 			var name;
 			for (var i = self.order.length - 1; i >= 0; i--) {
@@ -147,11 +148,11 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 
 		function resetElems() {
 			for (var name in self.elems) {
-				if(self.elems[name].getType() == 'CURSOR'){
+				if (self.elems[name].getType() == 'CURSOR') {
 					self.elems[name].setCursorEditable(false);
 				}
 				self.elems[name].disable();
-				
+
 			}
 		}
 
@@ -171,7 +172,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 
 			for (var i in activElems) {
 				activElems[i].onSelected(self.coords, clicked, mouseUp);
-				if ( activElems[i].getType() == 'CURSOR'){
+				if (activElems[i].getType() == 'CURSOR') {
 					activElems[i].setCursorEditable(true);
 				}
 				activElems[i].enable();
@@ -201,35 +202,50 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 				}
 			}
 		}
-		$('html').mousedown(function(evt) {
-			coords = self._getXandY($(self.canvasLayer), evt);
-			self.mouseCoordsIni = [coords.x, coords.y];
-			self._setCoords(self.mouseCoordsIni, self.mouseCoordsIni);
-			self.mouseDown = true;
-		});
+
+		if (this.detectEventOnAllDocument) {
+			$('html').mousedown(function(evt) {
+				mouseDown(evt);
+			});
+			// Mouseup on canvas is usefull to allow unselect
+			$('html').mouseup(function(evt) {
+				mouseUp(evt);
+			});
+		} else {
+			$(this.canvasLayer).mousedown(function(evt) {
+				mouseDown(evt);
+			});
+			// Mouseup on canvas is usefull to allow unselect
+			$(this.canvasLayer).mouseup(function(evt) {
+				mouseUp(evt);
+			});
+		}
 
 		//we prevent default mouse right-click
 		document.oncontextmenu = function() {
 			return false;
 		};
-		// Mouseup on canvas is usefull to allow unselect
-		$('html').mouseup(function(evt) {
+
+		function mouseDown(evt) {
+			coords = self._getXandY($(self.canvasLayer), evt);
+			self.mouseCoordsIni = [coords.x, coords.y];
+			self._setCoords(self.mouseCoordsIni, self.mouseCoordsIni);
+			self.mouseDown = true;
+		}
+
+		function mouseUp(evt) {
 			self.mouseDown = false;
 			var isClick = self.mouseDidntMove();
-			if (isClick && evt.button == 2){
+			if (isClick && evt.button == 2) {
 				$.publish('right-click');
-			}else{
-				selection(isClick, true);
+			} else {
+				// check if we click on something that is canvas or that contain canvas to prevent click on something that is above a player or menu etc
+				if (evt.target.id === $(self.canvasLayer).attr('id') || $(evt.target).find($(self.canvasLayer)).length > 0) {
+					selection(isClick, true);
+				} else {
+				}
 			}
-		});
-
-		// Mouseup on the whole page allows user to go out of the canvas when he selects (it only work in case a mousemove happened)
-		$('html').mouseup(function(evt) {
-			if (self.mouseDown === true) {
-				self.mouseDown = false;
-				selection(self.mouseDidntMove(), true);
-			}
-		});
+		}
 
 		$('html').mousemove(function(evt) {
 			//draw cursor selection

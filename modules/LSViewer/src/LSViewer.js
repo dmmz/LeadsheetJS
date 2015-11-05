@@ -67,6 +67,7 @@ define([
 
 			this.canvasId = "ls" + ($("canvas").length + 1);
 			var width = (params.width) ? params.width : this._getWidthFromContainer(divContainer);
+			this.detectEventOnAllDocument = (params.detectEventOnAllDocument) ? params.detectEventOnAllDocument : false; // canvasLayer attributes
 			this.canvas = this._createCanvas(this.canvasId, width, this.DEFAULT_HEIGHT);
 			var renderer = new Vex.Flow.Renderer(this.canvas, Vex.Flow.Renderer.Backends.CANVAS);
 			this.ctx = renderer.getContext("2d");
@@ -389,7 +390,7 @@ define([
 			// TODO: this.layer anhd this.forceNewLayer are more or less the same
 			if (this.layer && (!this.canvasLayer) || (this.layer && this.forceNewCanvasLayer)) {
 				this.forceNewCanvasLayer = false;
-				this.canvasLayer = new CanvasLayer(this); //the canvasLayer needs to be created after the score has been drawn
+				this.canvasLayer = new CanvasLayer(this, this.detectEventOnAllDocument); //the canvasLayer needs to be created after the score has been drawn
 			}
 			$.publish('LSViewer-drawEnd', this);
 		};
