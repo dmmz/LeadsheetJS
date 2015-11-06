@@ -168,8 +168,8 @@ define(['modules/StructureEdition/src/StructureEditionController',
 				function transposingSong () {
 					var simpleTransposeSong = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
 					var seM = new StructureEditionModel();
-					cursor = new CursorModel(simpleTransposeSong.getComponent('notes'));
-					structEdition = new StructureEditionController(simpleTransposeSong, cursor, seM);
+					var cursor = new CursorModel(simpleTransposeSong.getComponent('notes'));
+					var structEdition = new StructureEditionController(simpleTransposeSong, cursor, seM);
 					var notes = simpleTransposeSong.getComponent('notes').getNotes();
 					var chords = simpleTransposeSong.getComponent('chords').getChords();
 
@@ -199,12 +199,12 @@ define(['modules/StructureEdition/src/StructureEditionController',
 				function complexOperations () {
 					var simpleTransposeSong = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
 					var seM = new StructureEditionModel();
-					cursor = new CursorModel(simpleTransposeSong.getComponent('notes'));
-					structEdition = new StructureEditionController(simpleTransposeSong, cursor, seM);
+					var cursor = new CursorModel(simpleTransposeSong.getComponent('notes'));
+					var structEdition = new StructureEditionController(simpleTransposeSong, cursor, seM);
 
 					//last bar looks like: | A/4-q, F/4-q, G/4-q, E/4-q |
 					cursor.setPos(30); //set cursor to a note of last bar
-					structEdition.setTimeSignature("3/4"); 
+					structEdition.setTimeSignature("3/4");
 
 					//now last bar has been replaced by two bars: | A/4-q, F/4-q, G/4-q | E/4-q, hr |
 					structEdition.addSection();
