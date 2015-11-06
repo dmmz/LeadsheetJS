@@ -251,13 +251,11 @@ define([
 	// ready
 	PlayerView.prototype.playerIsReady = function() {
 		$('#play_button img').attr('src', this.imgPath + '/play.png');
-		$('#play_button_container').css('color', 'black');
 		$('#play_button_container .player_text').html('Play');
 	};
 
 	PlayerView.prototype.playerIsNotReady = function() {
 		$('#play_button img').attr('src', this.imgPath + '/play_grey.png');
-		$('#play_button_container').css('color', 'grey');
 		$('#play_button_container .player_text').html('Loading');
 	};
 

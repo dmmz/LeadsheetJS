@@ -306,7 +306,7 @@ define([
 		 * @param  {float} playTo is an optionnal attributes, if it's filled then player will play until playTo in sec, otherwise it play til the end
 		 */
 		PlayerModel_MidiCSL.prototype.play = function(tempo, playFrom, playTo) {
-			if (this.isEnabled === false) {
+			if (this.isEnabled === false || this.getReady() === false) {
 				return;
 			}
 			if (typeof tempo === "undefined" || isNaN(tempo)) {
@@ -324,7 +324,7 @@ define([
 				var metronome = midiSongModel.generateMetronome(self.songModel);
 				midiSongModel.setFromType(metronome, 'metronome');
 				var song = midiSongModel.getSong();
-				if (song.length !== 0 && self.getReady() === true) {
+				if (song.length !== 0) {
 					var lastNote = midiSongModel.getLastNote(); // Looking for last note
 					var beatDuration = self.getBeatDuration(tempo);
 					self.noteTimeOut = []; // Keep every setTimeout so we can clear them on pause/stop
@@ -360,7 +360,7 @@ define([
 					var randomVelocityRange = 40;
 
 					var realIndex = 0;
-					var metronomeChannel = self.instrumentsIndex.length - 1;
+					var metronomeChannel = 9;
 
 					// for each different position in the song
 					for (var i = 0, c = song.length; i < c; i++) {
@@ -376,32 +376,31 @@ define([
 											return;
 										}
 										currentMidiNote = currentNote.getMidiNote()[j];
-										/*if(currentMidiNote === false){}// Silence
-						else {*/
-
-										if (currentNote.getType() == "melody") {
-											channel = self.getMelodyInstrument();
-											volume = 127 * self.getMelodyVolume();
-											velocityNote = Math.random() * randomVelocityRange + velocityMin;
-											playNote = true;
-										} else if (currentNote.getType() == "chord") {
-											channel = self.getChordsInstrument();
-											volume = 80 * self.getChordsVolume();
-											velocityNote = Math.random() * randomVelocityRange + velocityMin;
-											MIDI.setVolume(channel, 80 * self.getChordsVolume());
-											playNote = true;
-										} else if (currentNote.getType() == "metronome" && self.doMetronome() === true) {
-											channel = metronomeChannel;
-											volume = 127 * self.getMelodyVolume();
-											velocityNote = Math.random() * randomVelocityRange + velocityMin;
-											playNote = true;
-										}
-										if (playNote === true) {
-											MIDI.setVolume(channel, volume);
-											duration = currentNote.getDuration() * (60 / tempo);
-											//console.log(channel, currentMidiNote, velocityNote);
-											MIDI.noteOn(channel, currentMidiNote, velocityNote);
-											MIDI.noteOff(channel, currentMidiNote, currentNote.getDuration() * (60 / tempo));
+										if (currentMidiNote === false) {} // Silence
+										else {
+											if (currentNote.getType() == "melody") {
+												channel = self.getMelodyInstrument();
+												volume = 127 * self.getMelodyVolume();
+												velocityNote = Math.random() * randomVelocityRange + velocityMin;
+												playNote = true;
+											} else if (currentNote.getType() == "chord") {
+												channel = self.getChordsInstrument();
+												volume = 80 * self.getChordsVolume();
+												velocityNote = Math.random() * randomVelocityRange + velocityMin;
+												MIDI.setVolume(channel, 80 * self.getChordsVolume());
+												playNote = true;
+											} else if (currentNote.getType() == "metronome" && self.doMetronome() === true) {
+												channel = metronomeChannel;
+												volume = 127 * self.getMelodyVolume();
+												velocityNote = Math.random() * randomVelocityRange + velocityMin;
+												playNote = true;
+											}
+											if (playNote === true) {
+												MIDI.setVolume(channel, volume);
+												duration = currentNote.getDuration() * (60 / tempo);
+												MIDI.noteOn(channel, currentMidiNote, velocityNote);
+												MIDI.noteOff(channel, currentMidiNote, currentNote.getDuration() * (60 / tempo));
+											}
 										}
 										if (currentNote.getType() == "melody") {
 											if (typeof currentNote.tieNotesNumber !== "undefined" && currentNote.tieNotesNumber) {
@@ -411,7 +410,6 @@ define([
 											}
 											self.setPositionInPercent((Date.now() - self._startTime) / self.songDuration);
 										}
-										/*}*/
 										if (currentNote == lastNote || (currentNote.getCurrentTime() * self.getBeatDuration(tempo) >= playTo)) {
 											//self.setPositionInPercent(1);
 											setTimeout((function() {
@@ -558,10 +556,11 @@ define([
 				throw 'PlayerModel_MidiCSL - initMidiPlugin - instruments must be defined';
 			}
 			var self = this;
+
 			MIDI.loadPlugin({
 				soundfontUrl: self.soundfontPath,
 				instruments: instruments,
-				callback: self.MidiPluginIsReady.bind(self)
+				onsuccess: self.MidiPluginIsReady.bind(self)
 			});
 		};
 

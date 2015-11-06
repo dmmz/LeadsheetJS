@@ -87,7 +87,6 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		//this will update it if not new, and will create the value in the object if it is new. We were having problems when entering it only when it was not new, because
 		//audioComments where not updated
 		this.elems[elem.CL_NAME] = elem;
-
 	};
 
 	CanvasLayer.prototype._listenEvents = function() {
