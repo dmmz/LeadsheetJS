@@ -39,6 +39,10 @@ define([
 		$('#leadsheet_save').click(function() {
 			$.publish('FileEditionView-save');
 		});
+		$('#leadsheet_save_as').click(function() {
+			$.publish('FileEditionView-saveAs');
+		});
+
 		/*
 		$('#leadsheet_edit_chord_sequence').click(function() {
 

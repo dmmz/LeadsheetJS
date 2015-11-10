@@ -52,7 +52,9 @@ define([
 		$.subscribe('FileEditionView-save', function(el) {
 			self.save();
 		});
-
+		$.subscribe('FileEditionView-saveAs', function(el) {
+			self.saveAs();
+		});
 	};
 
 	FileEditionController.prototype.importMusicCSLJSON = function(JSONSong) {
@@ -218,15 +220,16 @@ define([
 		export_link.remove();
 	};
 
-	FileEditionController.prototype.save = function() {
+	FileEditionController.prototype.save = function(newLeadsheet) {
 		var songId;
-		if (typeof this.songModel._id !== "undefined") {
-			songId = this.songModel._id;
+		if (typeof newLeadsheet === "undefined" || newLeadsheet === false) {
+			if (typeof this.songModel._id !== "undefined") {
+				songId = this.songModel._id;
+			}
 		}
 
 		this.songModel._id = undefined; // we need to clean songModel id otherwise update doesn't work
 		var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel);
-
 
 		if (typeof this.saveFn !== "undefined") {
 			var self = this;
@@ -242,6 +245,16 @@ define([
 			});
 		}
 	};
+
+	FileEditionController.prototype.saveAs = function() {
+		var newTitle = window.prompt('Give a new name to your song:');
+		if (newTitle !== null) {
+			this.songModel.setTitle(newTitle);
+		}
+		this.save(true);
+		$.publish('ToViewer-draw', this.songModel);
+	};
+
 
 	return FileEditionController;
 });
