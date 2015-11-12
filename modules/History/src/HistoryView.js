@@ -10,6 +10,7 @@ define([
 		this.parentHTML = (parentHTML) ? parentHTML : $('#rightPanel');
 		this.displayHistory = (typeof displayHistory !== "undefined") ? displayHistory : true;
 		this.displayTime = !!displayTime;
+		this.isActive = true;
 		this.initController();
 		this.initKeyboard();
 		this.initSubscribe();
@@ -29,6 +30,8 @@ define([
 			return;
 		}
 		var history = '';
+		history += '<span class="pull-right history-fold">></span>';
+		history += '<div class="history-container">';
 		history += '<h3>History</h3>';
 		history += '<ul class="history_ul">';
 		var text = '',
@@ -51,6 +54,7 @@ define([
 			}
 		}
 		history += '</ul>';
+		history += '</div>';
 		this.parentHTML.html(history);
 		//$.publish('HistoryView-render');
 	};
@@ -72,6 +76,23 @@ define([
 		this.parentHTML.on('click', ".history_ul li", function() {
 			var indexItem = parseInt($(this).attr('data-history'), 10);
 			$.publish('HistoryView-selectHistory', indexItem);
+		});
+
+		this.parentHTML.addClass('history-open');
+		this.parentHTML.on('click', ".history-fold", function() {
+			if (self.isActive === true) {
+				$('.history-fold').html('<');
+				self.parentHTML.removeClass('history-open');
+				self.parentHTML.addClass('history-close');
+				self.parentHTML.find('.history-container').hide();
+				self.isActive = false;
+			} else {
+				$('.history-fold').html('>');
+				self.parentHTML.removeClass('history-close');
+				self.parentHTML.addClass('history-open');
+				self.parentHTML.find('.history-container').show();
+				self.isActive = true;
+			}
 		});
 	};
 
@@ -99,7 +120,7 @@ define([
 	};
 
 	HistoryView.prototype.activeView = function() {
-		$('#rightPanel').show('slow');
+		$(this.parentHTML).show('slow');
 	};
 
 	return HistoryView;
