@@ -226,6 +226,10 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		};
 
 		function mouseDown(evt) {
+			var d = evt.srcElement || evt.target;
+			if (d.tagName.toUpperCase() === 'TEXTAREA' || d.tagName.toUpperCase() === 'INPUT' || d.tagName.toUpperCase() === 'SELECT'  || d.tagName.toUpperCase() === 'OPTION' ) {
+				return;
+			}
 			coords = self._getXandY($(self.canvasLayer), evt);
 			self.mouseCoordsIni = [coords.x, coords.y];
 			self._setCoords(self.mouseCoordsIni, self.mouseCoordsIni);
@@ -241,7 +245,6 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 				// check if we click on something that is canvas or that contain canvas to prevent click on something that is above a player or menu etc
 				if (evt.target.id === $(self.canvasLayer).attr('id') || $(evt.target).find($(self.canvasLayer)).length > 0) {
 					selection(isClick, true);
-				} else {
 				}
 			}
 		}
