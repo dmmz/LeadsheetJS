@@ -18,12 +18,11 @@ define([
 	) {
 		var SongConverterMidi_MidiCSL = {};
 
-		SongConverterMidi_MidiCSL.exportToMidiCSL = function(songModel, callback) {
+		SongConverterMidi_MidiCSL.exportToMidiCSL = function(songModel, useServlet, callback) {
 			if (!songModel instanceof SongModel) {
 				throw 'SongConverterMidi_MidiCSL - exportToMusicCSLJSON - songModel parameters must be an instanceof SongModel';
 			}
 			var song = [];
-			var useServlet = true;
 			if (useServlet === true) {
 				SongConverterMidi_MidiCSL.unfoldUsingServlet(songModel, function(newSongModel) {
 					song = SongConverterMidi_MidiCSL.exportElementsToMidiCSL(newSongModel);

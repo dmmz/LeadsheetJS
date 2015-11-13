@@ -15,7 +15,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/model/PlayerModel_Mid
 					var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
 
 					// Convert songmodel to a readable model that we can insert in SongModel_MidiCSL
-					var midiSong = SongConverterMidi_MidiCSL.exportToMidiCSL(songModel);
+					var midiSong = SongConverterMidi_MidiCSL.exportToMidiCSL(songModel, false);
 					var midiSongModel = new SongModel_MidiCSL({
 						'song': midiSong
 					});
