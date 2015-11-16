@@ -244,7 +244,7 @@ define([
 		section.setNumberOfBars(sectionNumberOfBars - 1);
 
 		// remove notes in bar
-		var beatDuration = this.songModel.getTimeSignatureAt(barNumber).getQuarterBeats() - 1; // I am not sure why we remove 1 here
+		var beatDuration = this.songModel.getTimeSignatureAt(barNumber).getQuarterBeats() - 0.001; // I am not sure why we remove 0.001 here
 		var numBeat = this.songModel.getStartBeatFromBarNumber(barNumber);
 		var index = nm.getNextIndexNoteByBeat(numBeat);
 		var index2 = nm.getPrevIndexNoteByBeat(numBeat + beatDuration);

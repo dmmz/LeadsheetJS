@@ -47,6 +47,7 @@ define(['modules/StructureEdition/src/StructureEditionController',
 					sec.removeBar();
 					assert.equal(nm.getNotesAtBarNumber(0, songModel).toString(), "wr", "test remove bar");
 
+
 					cM.setPos(0);
 					var selBar = sec._getSelectedBars();
 					assert.deepEqual(selBar, [0], "Selected bar");
@@ -96,8 +97,8 @@ define(['modules/StructureEdition/src/StructureEditionController',
 					//Empty song in 4/4, with a whole rest in each bar
 					var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.wholeSilencesSong, song);
 
-					cM = new CursorModel(song.getComponent('notes'));
-					sec = new StructureEditionController(song, cM);
+					var cM = new CursorModel(song.getComponent('notes'));
+					var sec = new StructureEditionController(song, cM);
 					var noteMng = song.getComponent('notes');
 
 					assert.equal(noteMng.getNotes().toString(), 'wr,wr,wr,wr,wr,wr,wr,wr', 'initial notes for empty song');
@@ -142,7 +143,7 @@ define(['modules/StructureEdition/src/StructureEditionController',
 					var cursor = new CursorModel(simpleSong.getComponent('notes'));
 					var structEdition = new StructureEditionController(simpleSong, cursor);
 					var barMng = simpleSong.getComponent('bars');
-					noteMng = simpleSong.getComponent('notes');
+					var noteMng = simpleSong.getComponent('notes');
 
 
 					cursor.setPos(5); //set cursor in first note of 2nd bar
@@ -201,6 +202,7 @@ define(['modules/StructureEdition/src/StructureEditionController',
 					var seM = new StructureEditionModel();
 					var cursor = new CursorModel(simpleTransposeSong.getComponent('notes'));
 					var structEdition = new StructureEditionController(simpleTransposeSong, cursor, seM);
+					var nm = simpleTransposeSong.getComponent('notes');
 
 					//last bar looks like: | A/4-q, F/4-q, G/4-q, E/4-q |
 					cursor.setPos(30); //set cursor to a note of last bar
@@ -209,12 +211,17 @@ define(['modules/StructureEdition/src/StructureEditionController',
 					//now last bar has been replaced by two bars: | A/4-q, F/4-q, G/4-q | E/4-q, hr |
 					structEdition.addSection();
 					assert.equal(1,1);
+
+					cursor.setPos(0);
+					var bar2 = nm.getNotesAtBarNumber(1, simpleTransposeSong);
+					structEdition.removeBar();
+					assert.deepEqual(nm.getNotesAtBarNumber(0, simpleTransposeSong), bar2, "Remove bar");
 				}
 
-				// basicFunctionalities();
-				// timeSignatureChangesWithRests();
-				// timeSignatureChangesWithNotes();
-				// transposingSong();
+				basicFunctionalities();
+				timeSignatureChangesWithRests();
+				timeSignatureChangesWithNotes();
+				transposingSong();
 				complexOperations();
 
 			});
