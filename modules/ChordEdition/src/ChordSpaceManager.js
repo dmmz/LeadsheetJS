@@ -196,7 +196,6 @@ define([
 			chordModel = ChordModel_CSLJson.importFromMusicCSLJSON(chordJson);
 			chordMng.setChord(chordModel,i);
 		}
-		console.log(chordMng);
 		$.publish('ToHistory-add', 'Update Chords ' + chordModel.toString());
 
 	};
