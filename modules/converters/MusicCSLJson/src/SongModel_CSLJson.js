@@ -70,8 +70,7 @@ define(function(require) {
 							barManager.addBar(bar);
 							if (JSONBar.chords != null) {
 								JSONBar.chords.forEach(function(JSONChord) {
-									chord = new ChordModel();
-									ChordModel_CSLJson.importFromMusicCSLJSON(JSONChord, chord);
+									chord = ChordModel_CSLJson.importFromMusicCSLJSON(JSONChord);
 									chord.setBarNumber(barNumber);
 									chordManager.addChord(chord);
 								});

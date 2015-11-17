@@ -13,8 +13,7 @@ define(['modules/converters/MusicCSLJson/src/ChordModel_CSLJson', 'modules/core/
 				assert.deepEqual(exp,{'ch':'m7', 'p':'G', 'beat': 3, 'parenthesis': true} );
 
 				// testing import
-				var newChord = new ChordModel();
-				ChordModel_CSLJson.importFromMusicCSLJSON(exp, newChord);
+				var newChord = ChordModel_CSLJson.importFromMusicCSLJSON(exp);
 				var exp2 = ChordModel_CSLJson.exportToMusicCSLJSON(newChord);
 				assert.deepEqual(exp2,{'ch':'m7', 'p':'G', 'beat': 3, 'parenthesis': true} );
 			});

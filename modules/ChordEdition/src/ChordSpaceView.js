@@ -151,38 +151,42 @@ define([
 		}
 	};
 
-	ChordSpaceView.prototype.onChange = function(chord, value) {
-		var chordInfos = {
-			'chordString': value,
-			'chordModel': chord,
-			'chordSpace': this,
-		};
-		$.publish('ChordSpaceView-updateChord', chordInfos);
-	};
+	ChordSpaceView.prototype.onChange = function(songModel, newChordString) {
+		var currentChord = this._getChordAtThisPosition(songModel);
+		var chordJson = ChordUtils.string2Json(newChordString);
 
+		var removingChord = !!(chordJson.empty && currentChord !== undefined);
+		var noUpdateToEmptyChord = !!(chordJson.empty && currentChord === undefined);
+		var addingNewChord = (!chordJson.empty && currentChord === undefined);
+
+		if (chordJson.error) {
+			UserLog.logAutoFade('error','Chord "' + newChordString + '" not well formated');
+		} else if (!noUpdateToEmptyChord && (removingChord || addingNewChord || !currentChord.equalsTo(chordJson))) {
+			//last condition refers to when we are modifying existing chord
+			$.publish('ChordSpaceView-updateChord', [chordJson, currentChord, this]);
+		}
+	};
 
 	ChordSpaceView.prototype.createAutocomplete = function(input, songModel, list, inputVal) {
 		var self = this;
 		// input.select();
 		input.devbridgeAutocomplete({
-			'lookup': list,
-			'maxHeight': 200,
-			'lookupLimit': 40,
-			'width': 140,
-			'triggerSelectOnValidInput': false,
-			'showNoSuggestionNotice': true,
-			'autoSelectFirst': true,
+			lookup: list,
+			maxHeight: 200,
+			lookupLimit: 40,
+			width: 140,
+			triggerSelectOnValidInput: false,
+			showNoSuggestionNotice: true,
+			autoSelectFirst: true,
+			delimiter: "/",
 			// You may need to modify that if at first it appears incorrectly, it's probably because ur element is not absolute position
 			// 'appendTo': myAbsolutedPositionElement, // dom or jquery (see devbridgeAutocomplete doc)
-			'noSuggestionNotice': 'No Chord match',
+			noSuggestionNotice: 'No Chord match',
 			lookupFilter: function(suggestion, originalQuery, queryLowerCase) {
 				return suggestion.value.indexOf(originalQuery) !== -1;
 			},
-			onSelect: function(suggestion) {
-				//console.log('select');
-				//$(input).val(suggestion.value);
-				chord = self._getChordAtThisPosition(songModel);
-				self.onChange(chord, suggestion.value);
+			onSelect: function() {
+				self.onChange(songModel, $(input).val());
 				//input.devbridgeAutocomplete('dispose');
 			}
 		});
@@ -190,18 +194,8 @@ define([
 		input.val(inputVal);
 		input.focus(); // this focus launch autocomplete directly when value is not empty
 		// on blur event we change the value, blur is launched when we enter and click somewhere else
-		// We don't use blur because it prevent onclick element to be launched
-
-		$('#autocomplete-suggestion').on('click', function() {
-			//console.log('click');
-			chord = self._getChordAtThisPosition(songModel);
-			self.onChange(chord, $(input).val());
-			//input.devbridgeAutocomplete('dispose');
-		});
 		input.on('blur', function() {
-			//console.log('blur');
-			chord = self._getChordAtThisPosition(songModel);
-			self.onChange(chord, $(this).val());
+			self.onChange(songModel, $(this).val());
 			// input.devbridgeAutocomplete('dispose');
 		});
 		// on tab call (tab doesn't trigger blur event)
@@ -209,14 +203,8 @@ define([
 			var code = e.keyCode || e.which;
 			if (code == '9') {
 				//console.log('tab');
-				chord = self._getChordAtThisPosition(songModel);
-				self.onChange(chord, $(this).val());
+				self.onChange(songModel, $(this).val());
 				input.devbridgeAutocomplete('dispose');
-			}
-			if (code == '13') {
-				// console.log('enter');
-				//self.onChange(chord, $(this).val());
-				//input.devbridgeAutocomplete('dispose');
 			}
 		});
 		// We use a filter function to make it easier for user to enter chords
@@ -232,9 +220,9 @@ define([
 		var chordItem = {};
 		for (var i = 0, c = chords.length; i < c; i++) {
 			chordItem = {
-				'note': chords[i].note,
-				'chordType': chords[i].chordType,
-				'startBeat': songModel.getStartBeatFromBarNumber(chords[i].barNumber) + chords[i].beat
+				note: chords[i].note,
+				chordType: chords[i].chordType,
+				startBeat: songModel.getStartBeatFromBarNumber(chords[i].barNumber) + chords[i].beat
 			};
 			chordList.push(chordItem);
 		}

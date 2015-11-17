@@ -35,6 +35,7 @@ define(function(require) {
   var QUnit = require('qunit');
   var testUserLog = require('utils/test/testUserLog');
   var testAjaxUtils = require('utils/test/testAjaxUtils');
+  var testChordUtils = require('utils/test/testChordUtils');
 
   var testSongModel = require('modules/core/test/testSongModel');
   var testSectionModel = require('modules/core/test/testSectionModel');
@@ -86,6 +87,7 @@ define(function(require) {
   // Utils
   testUserLog.run();
   testAjaxUtils.run();
+  testChordUtils.run();
 
   // Core Module
   testNoteModel.run();

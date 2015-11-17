@@ -36,7 +36,6 @@ define(function() {
 			}
 			return maps;
 		}
-
 	}
 
 	/* Basic getter setter */
@@ -165,69 +164,6 @@ define(function() {
 		return string;
 	};
 
-	ChordModel.prototype.setChordFromString = function(stringChord) {
-		// Looking for base chord
-		stringChord = stringChord.split('/');
-		var note, chordType;
-
-		var stringChordRoot = stringChord[0];
-
-		if (stringChord.length >= 2) {
-			var stringChordBase = stringChord[1];
-			if (this.base instanceof ChordModel === false) {
-				this.base = new ChordModel();
-			}
-			this.base.setChordFromString(stringChordBase);
-		}
-
-		// Set current chord note and chordtype
-		stringChordRoot = stringChordRoot.replace(/\s/g, '');
-
-		//var r = validateSimpleChord(stringChordRoot);
-		var pos;
-		if (stringChordRoot.charAt(1) == "b" || stringChordRoot.charAt(1) == "#" || stringChordRoot.charAt(1) == "%")
-			pos = 2;
-		else if (stringChordRoot == "NC")
-			pos = stringChordRoot.length;
-		else
-			pos = 1;
-
-		var pitchClass = stringChordRoot.substring(0, pos);
-		var chordType = stringChordRoot.substring(pos, stringChordRoot.length);
-		this.setNote(pitchClass);
-		this.setChordType(chordType);
-
-		/*
-		function validateSimpleChord(cChord) {
-			var pitchClasses = ["C", "C#", "Cb", "D", "D#", "Db", "E", "E#", "Eb", "F", "F#", "Fb", "G", "G#", "Gb", "A", "A#", "Ab", "B", "B#", "Bb", "%", "%%", "NC"];
-
-			var chordTypes = NoteTools.getCollection('chordtype');
-			var nChord = jQuery.trim(cChord);
-			var pos;
-			if (nChord.charAt(1) == "b" || nChord.charAt(1) == "#" || nChord.charAt(1) == "%")
-				pos = 2;
-			else if (nChord == "NC")
-				pos = nChord.length;
-			else
-				pos = 1;
-
-			var pitchClass = nChord.substring(0, pos);
-			var chordType = nChord.substring(pos, nChord.length);
-
-			if ((pitchClasses.indexOf(pitchClass) == -1 || chordTypes.indexOf(chordType) == -1) && cChord.length != 0) {
-				//error            
-				return {
-					err: true,
-					msg: "incorrect chord " + pitchClass + " " + chordType
-				}
-			} else return {
-				note: pitchClass,
-				chordType: chordType
-			}
-		};
-*/
-	};
-
 	ChordModel.prototype.serialize = function() {
 		var chordObj = {};
 		chordObj.note = this.note;
@@ -248,7 +184,7 @@ define(function() {
 	};
 
 	/*
-	 * The function transform a chordType String to symbols according chordSymbolList maps
+	 * The function transforms a chordType String to symbols according chordSymbolList maps
 	 * Example: halfdim become ø
 	 */
 	ChordModel.prototype.formatChordType = function(chordTypeName) {
@@ -269,6 +205,31 @@ define(function() {
 			chordTypeName = chordTypeName.replace(this.chordSymbolList[props], props);
 		}
 		return chordTypeName;
+	};
+	/**
+	 * [equalsTo description]
+	 * @param  {Object} chordJson {p: 'F', ch: 'm7', pb: 'C', pch: 'm7'}  (pch is almost never used)
+	 * @return {[type]}           [description]
+	 */
+	ChordModel.prototype.equalsTo = function(chordJson) {
+		if (this.getNote() === chordJson.p &&
+			(!this.getChordType() && !chordJson.ch || //either both base chord types don't exists
+				this.getChordType() === chordJson.ch // either they are equal
+			)
+		) {
+			if (this.isEmptyBase() && !chordJson.bp) {
+				return true;
+			} else if (!this.isEmptyBase() && chordJson.bp){
+				if (this.getBase().getNote() == chordJson.bp) {
+					if (!this.getBase().getChordType() && !chordJson.bch) {	//either both base chord types don't exists
+						return true;
+					} else if (this.getBase().getChordType() === chordJson.bch) { //either they are equal
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	};
 
 	return ChordModel;
