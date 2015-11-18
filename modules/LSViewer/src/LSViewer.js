@@ -28,7 +28,7 @@ define([
 		 *    If scale, when canvas is wider than containing div, it will scale to fit; if "fluid" it will try to fit withouth scaling.
 		 *  - displayTitle
 		 *  - displayComposer   // TODO: possibility of combining both (scale partially and then fluid)
-		 *  - layer: true
+		 *  - layer: true 	// Layer represents the interaction layer, so if true, can use mouse (but layer=true is not enough to be able to select notes) TODO: really
 		 *
 		 */
 		function LSViewer(divContainer, params) {

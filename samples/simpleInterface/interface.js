@@ -3,21 +3,20 @@ require.config({
 	baseUrl: "../../",
 	paths: {
 		jquery: 'external-libs/jquery-2.1.0.min',
-		jquery_autocomplete: 'external-libs/jquery.autocomplete.min',
+		// jquery_autocomplete: 'external-libs/jquery.autocomplete.min',
 		vexflow: 'external-libs/vexflow-min',
 		Midijs: 'external-libs/Midijs/midijs.min',
 		pubsub: 'external-libs/tiny-pubsub.min',
 		mustache: 'external-libs/mustache',
 		text: 'external-libs/require-text',
-		bootstrap: 'external-libs/bootstrap/bootstrap.min',
-		jsPDF: 'external-libs/jspdf/jspdf.min',
+		// bootstrap: 'external-libs/bootstrap/bootstrap.min',
+		// jsPDF: 'external-libs/jspdf/jspdf.min',
 		//bootstrap: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min',
-		LeadsheetJS: 'build/LeadsheetJS-0.1.0.min',
 	},
 	shim: {
-		'LeadsheetJS': {
-			exports: 'LS'
-		},
+		// 'LeadsheetJS': {
+		// 	exports: 'LS'
+		// },
 		'vexflow': {
 			exports: 'Vex'
 		},
@@ -30,7 +29,7 @@ require.config({
 define(function(require) {
 	var $ = require('jquery');
 	var LJS = require('LJS');
-	var bootstrap = require('bootstrap');
+	
 	// console.log(LJS);
 
 	var testSongs = require('tests/test-songs');
@@ -46,35 +45,60 @@ define(function(require) {
 	var soundfontUrl = "../../external-libs/Midijs/soundfont/";
 
 	var viewerOptions = {
-		'HTMLElement': viewerHTML,
-		'viewOptions': {
-			'displayTitle': true,
-			'displayComposer': true,
-			'layer': true,
-			'typeResize': "fluid", // "scale" | "fluid"
-			'heightOverflow': "auto", // "scroll" | "auto"
+		HTMLElement: viewerHTML,
+		viewOptions: {
+			//displayTitle: true,
+			//displayComposer: true,
+			layer: true//,
+			//typeResize: "fluid", // "scale" | "fluid"
+			//heightOverflow: "auto", // "scroll" | "auto"
 		}
 	};
 
 	var playerOptions = {
-		'soundfontUrl': soundfontUrl,
-		'HTMLElement': playerHTML,
-		'imgUrl': '/modules/MidiCSL/img',
-		'viewOptions': {
-			'displayMetronome': true,
-			'displayLoop': true,
-			'displayTempo': true,
-			'changeInstrument': true,
-			'autoload': false,
-			'progressBar': true
+		soundfontUrl: soundfontUrl,
+		HTMLElement: playerHTML,
+		imgUrl: '/modules/MidiCSL/img',
+		viewOptions: {
+			displayMetronome: true,
+			displayLoop: true,
+			displayTempo: true,
+			changeInstrument: true,
+			autoload: false,
+			progressBar: true
 		},
-		'useAudio': true
+		useAudio: true
 	};
 
+	var tagOptions = {
+		analysis: [{
+			startBeat: 1,
+			endBeat: 5,
+			name: 'First bar',
+			color: "#559"
+		}, {
+			startBeat: 5,
+			endBeat: 16,
+			name: 'This is second part',
+			color: "#995"
+		}, {
+			startBeat: 16,
+			endBeat: 33,
+			name: 'New line !',
+			color: "#599"
+		}, {
+			startBeat: 44,
+			endBeat: 49,
+			name: 'Outro',
+			color: "#595"
+		}]
+	}
+
 	var params = {
-		'viewer': viewerOptions,
-		'player': playerOptions,
-		'edition': {
+		viewer: viewerOptions,
+		tag : tagOptions,
+		player: playerOptions,
+		/*'edition': {
 			'notes': true,
 			'imgUrl': {
 				'notes': '/modules/NoteEdition/img',
@@ -90,14 +114,14 @@ define(function(require) {
 		},
 		'menu': {
 			'HTMLElement': menuHTML
-		}
+		}*/
 	};
 
 	// var myLeadsheet1 = LJS.easyBuild('viewer', testSongs.simpleLeadSheet, viewerHTML, viewerOptions);
 	// var myLeadsheet2 = LJS.easyBuild('player', testSongs.simpleLeadSheet, playerHTML, playerOptions);
 	var myLeadsheet = LJS.init(testSongs.simpleLeadSheet, params);
-	console.log(myLeadsheet);
-	if (typeof myLeadsheet.audioComments !== "undefined") {
+	//console.log(myLeadsheet);
+	/*if (typeof myLeadsheet.audioComments !== "undefined") {
 		addComments(myLeadsheet.audioComments);
 	}
 	if (typeof myLeadsheet.audioPlayer !== "undefined") {
@@ -123,6 +147,6 @@ define(function(require) {
 			timeInterval: [3.3, 10.1],
 
 		});
-	}
+	}*/
 
 });

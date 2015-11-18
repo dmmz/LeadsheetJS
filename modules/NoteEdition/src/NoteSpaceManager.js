@@ -157,14 +157,7 @@ define([
 				var canvasOffset = $(ctx.canvas).offset().top;
 				var viewportHeight = $(window).height();
 				var scrollTop = $(window).scrollTop();
-				/*
-				console.log('---');
-				console.log(viewportHeight);
-				console.log(posLastCursorBottom);
-				console.log(canvasOffset);
-				console.log(scrollTop);
-				console.log((canvasOffset + posLastCursorBottom), (viewportHeight - 100));
-				*/
+				
 				while ((canvasOffset + posLastCursorBottom - scrollTop) > (viewportHeight - 90) && iSafe < 15) {
 					posLastCursorBottom = areas[areas.length - 1].y + areas[areas.length - 1].h;
 					canvasOffset = $(ctx.canvas).offset().top;
@@ -175,7 +168,7 @@ define([
 					iSafe++;
 				}
 				if (iSafe === 0) {
-					while (((canvasOffset + posLastCursorTop) < scrollTop) && iSafe < 15) {
+					while (canvasOffset + posLastCursorTop < scrollTop && iSafe < 15) {
 						//console.log('up');
 						posLastCursorTop = areas[areas.length - 1].y + areas[areas.length - 1].h;
 						canvasOffset = $(ctx.canvas).offset().top;
