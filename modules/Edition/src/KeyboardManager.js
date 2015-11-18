@@ -26,7 +26,7 @@ define(['utils/NoteUtils',
 
 		function isInHtmlInput(d) {
 			return (
-				d.tagName.toUpperCase() === 'TEXTAREA' || (d.tagName.toUpperCase() === 'INPUT' && (d.type.toUpperCase() === 'TEXT' || d.type.toUpperCase() === 'PASSWORD' || d.type.toUpperCase() === 'FILE' || d.type.toUpperCase() === 'NUMBER'))
+				d.tagName.toUpperCase() === 'TEXTAREA' || d.tagName.toUpperCase() === 'SELECT' || (d.tagName.toUpperCase() === 'INPUT' && (d.type.toUpperCase() === 'TEXT' || d.type.toUpperCase() === 'PASSWORD' || d.type.toUpperCase() === 'FILE' || d.type.toUpperCase() === 'NUMBER'))
 			);
 		}
 
@@ -48,6 +48,7 @@ define(['utils/NoteUtils',
 				"n": "n"
 			};
 			var inc;
+
 			if (keyCode === 8) {
 				preventBackspace(evt, d);
 			}
