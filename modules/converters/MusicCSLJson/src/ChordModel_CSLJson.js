@@ -1,7 +1,8 @@
 define(['modules/core/src/ChordModel'], function(ChordModel) {
 	var ChordModel_CSLJson = {};
 
-	ChordModel_CSLJson.importFromMusicCSLJSON = function(JSONChord, chordModel) {
+	ChordModel_CSLJson.importFromMusicCSLJSON = function(JSONChord) {
+		var chordModel = new ChordModel();
 		chordModel.setNote(JSONChord.p);
 		chordModel.setChordType(JSONChord.ch);
 		chordModel.setParenthesis(JSONChord.parenthesis);
@@ -15,6 +16,7 @@ define(['modules/core/src/ChordModel'], function(ChordModel) {
 		if (JSONChord.barNumber != null) {
 			chordModel.barNumber = JSONChord.barNumber;
 		}
+		return chordModel;
 	};
 
 

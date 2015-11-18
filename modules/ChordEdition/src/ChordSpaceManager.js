@@ -3,11 +3,12 @@ define([
 	'modules/core/src/ChordModel',
 	'modules/ChordEdition/src/ChordSpaceView',
 	'modules/Cursor/src/CursorModel',
+	'modules/converters/MusicCSLJson/src/ChordModel_CSLJson',
 	'utils/UserLog',
 	'modules/Edition/src/ElementManager',
 	'jquery',
 	'pubsub'
-], function(SongModel, ChordModel, ChordSpaceView, CursorModel, UserLog, ElementManager, $, pubsub) {
+], function(SongModel, ChordModel, ChordSpaceView, CursorModel, ChordModel_CSLJson, UserLog, ElementManager, $, pubsub) {
 
 	function ChordSpaceManager(songModel, cursor) {
 		if (!songModel || !cursor) {
@@ -40,8 +41,8 @@ define([
 			viewer.canvasLayer.refresh();
 		});
 
-		$.subscribe('ChordSpaceView-updateChord', function(el, update) {
-			self.updateChord(update.chordString, update.chordModel, update.chordSpace);
+		$.subscribe('ChordSpaceView-updateChord', function(el, chordJson, chordModel, chordSpace) {
+			self.updateChord(chordJson, chordModel, chordSpace);
 			$.publish('ToViewer-draw', self.songModel);
 		});
 		// cursor view subscribe
@@ -180,18 +181,23 @@ define([
 		this.cursor.setEditable(bool);
 	};
 
-	ChordSpaceManager.prototype.updateChord = function(chordString, chordModel, chordSpace) {
-		if (typeof chordModel === "undefined" && typeof chordSpace !== "undefined") {
-			chordModel = new ChordModel({
-				'beat': chordSpace.beatNumber,
-				'barNumber': chordSpace.barNumber,
-			});
-			this.songModel.getComponent('chords').addChord(chordModel);
+	ChordSpaceManager.prototype.updateChord = function(chordJson, chordModel, chordSpace) {
+		var chordMng = this.songModel.getComponent('chords');
+		chordJson.beat = chordSpace.beatNumber;
+		chordJson.barNumber = chordSpace.barNumber;
+		
+		if (chordModel === undefined) { //adding new chord
+			var chordModel = ChordModel_CSLJson.importFromMusicCSLJSON(chordJson);
+			chordMng.addChord(chordModel);
+		}else if(chordJson.empty){
+			chordMng.removeChord(chordModel);
+		}else{
+			var i = chordMng.getChordIndex(chordModel);
+			chordModel = ChordModel_CSLJson.importFromMusicCSLJSON(chordJson);
+			chordMng.setChord(chordModel,i);
 		}
-		if (chordString !== chordModel.toString()) {
-			chordModel.setChordFromString(chordString);
-			$.publish('ToHistory-add', 'Update Chords ' + chordString);
-		}
+		$.publish('ToHistory-add', 'Update Chords ' + chordModel.toString());
+
 	};
 
 	ChordSpaceManager.prototype.getChordsInPath = function(coords) {
