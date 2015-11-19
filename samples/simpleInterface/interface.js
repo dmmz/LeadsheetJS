@@ -67,7 +67,8 @@ define(function(require) {
 			autoload: false,
 			progressBar: true
 		},
-		useAudio: true
+		useAudio: true,
+		audioFile: '/tests/audio/solar.wav'
 	};
 
 	var tagOptions = {
@@ -96,8 +97,8 @@ define(function(require) {
 
 	var params = {
 		viewer: viewerOptions,
-		tag : tagOptions,
-		player: playerOptions,
+		//tag : tagOptions,
+		player: playerOptions//,
 		/*'edition': {
 			'notes': true,
 			'imgUrl': {

@@ -192,12 +192,23 @@ define([
 		}
 		if (usePlayer) {
 
-			require(["modules/MidiCSL/src/main","modules/Cursor/src/Cursor"], function(MidiCSL,Cursor){
+			//we load both MIDI and Audio modules (as this won't bother the user with external dependencies)
+			require(['modules/MidiCSL/src/main','modules/Cursor/src/Cursor','modules/Wave/src/WaveController'], function(MidiCSL,Cursor,Wave){
 				loadedModules.playerView = LJS._loadPlayerView(MidiCSL, playerHTML, imgUrl, playerViewOptions);
 				var cursorNoteModel = new Cursor(songModel.getComponent('notes'), 'notes', 'arrow').model;
 
-				if (useMidi === true) {
+				if (useMidi) {
 					loadedModules.midiPlayer = LJS._loadMidiPlayer(MidiCSL, songModel, soundfontUrl, loadedModules.playerView, cursorNoteModel);
+				}
+
+				if(useAudio){
+
+					if (!params.player.audioFile){
+						throw "no audioFile specified";
+					}
+					var wave = LJS._loadAudioPlayer(Wave, songModel, viewer, cursorNoteModel); // audio player is use to get audio wave, it's why it needs viewer
+					wave.load(params.player.audioFile, 170, true);
+					// loadedModules.audioPlayer = wave;	
 				}
 			});
 			// Load players (midi and audio)
@@ -214,6 +225,7 @@ define([
 		if (useViewer) {
 			viewer.draw(songModel);
 		}
+		
 		//TAG
 		if (params.tag){
 			require([
@@ -341,7 +353,7 @@ define([
 		return player;
 	};
 
-	LJS._loadAudioPlayer = function(songModel, viewer, cursorModel) {
+	LJS._loadAudioPlayer = function(Wave, songModel, viewer, cursorModel) {
 		var params = {
 			showHalfWave: true,
 			//drawMargins: true,
@@ -351,7 +363,7 @@ define([
 			//tempo: 170
 		};
 		var waveMng = new Wave(songModel, viewer, cursorModel, params);
-		$.publish('ToPlayer-disableAll');
+		//$.publish('ToPlayer-disableAll');
 		return waveMng;
 	};
 
