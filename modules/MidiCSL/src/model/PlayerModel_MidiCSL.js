@@ -331,9 +331,9 @@ define([
 					var beatOfLastNoteOff = lastNote.getCurrentTime() + lastNote.getDuration();
 					var endTime = beatOfLastNoteOff * beatDuration + Date.now();
 					self.songDuration = beatOfLastNoteOff * beatDuration;
-
 					if (typeof playFrom === "undefined" || isNaN(playFrom)) {
 						var cursorPosition = self.cursorModel.getPos();
+						playFrom = 0;
 						if (cursorPosition[0] !== 0) {
 							if (typeof midiSongModel.getMelodySoundModelFromIndex(cursorPosition[0]) !== "undefined") {
 								playFrom = midiSongModel.getMelodySoundModelFromIndex(cursorPosition[0]).getCurrentTime() * beatDuration;
@@ -341,16 +341,14 @@ define([
 								// case of tie notes
 								playFrom = midiSongModel.getMelodySoundModelFromIndex(cursorPosition[0] - 1).getCurrentTime() * beatDuration;
 							}
-							if (cursorPosition.length !== 1 && cursorPosition[1] !== cursorPosition[0]) {
-								if (typeof midiSongModel.getMelodySoundModelFromIndex(cursorPosition[1]) !== "undefined") {
-									playTo = midiSongModel.getMelodySoundModelFromIndex(cursorPosition[1]).getCurrentTime() * beatDuration;
-								} else {
-									// case of tie notes
-									playTo = midiSongModel.getMelodySoundModelFromIndex(cursorPosition[1] - 1).getCurrentTime() * beatDuration;
-								}
+						}
+						if (cursorPosition.length !== 1 && cursorPosition[1] !== cursorPosition[0]) {
+							if (typeof midiSongModel.getMelodySoundModelFromIndex(cursorPosition[1]) !== "undefined") {
+								playTo = midiSongModel.getMelodySoundModelFromIndex(cursorPosition[1]).getCurrentTime() * beatDuration;
+							} else {
+								// case of tie notes
+								playTo = midiSongModel.getMelodySoundModelFromIndex(cursorPosition[1] - 1).getCurrentTime() * beatDuration;
 							}
-						} else {
-							playFrom = 0;
 						}
 					}
 
@@ -412,12 +410,15 @@ define([
 										}
 										if (currentNote == lastNote || (currentNote.getCurrentTime() * self.getBeatDuration(tempo) >= playTo)) {
 											//self.setPositionInPercent(1);
+											if (self.doLoop() !== false) {
+												self.stop(); // TODO stop on setTimeout Else make it buggy
+											}
 											setTimeout((function() {
 												if (self.doLoop() === false) {
+													self.stop();
 													self.setPositionIndex(0);
 													self.setPositionInPercent(0);
 													$.publish('PlayerModel-onfinish');
-													self.stop();
 												} else {
 													$.publish('PlayerModel-onloopstart');
 													self.play(tempo, playFrom, playTo);
