@@ -211,7 +211,7 @@ body {
 /*	padding: 20px 15px;*/
 }
 
-#stop_button_container, #play_button_container, #tempo_container, #metronome_container, #volume_container, #volume_slider_container, #pause_button_container, #loop_button_container {
+#type_button_container, #stop_button_container, #play_button_container, #tempo_container, #metronome_container, #volume_container, #volume_slider_container, #pause_button_container, #loop_button_container {
 	display: inline-block;
 	text-align: center;
 }

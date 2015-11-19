@@ -5,8 +5,7 @@ define([
 		"modules/MidiCSL/src/model/NoteModel_MidiCSL",
 		"modules/MidiCSL/src/model/PlayerModel_MidiCSL",
 		"modules/MidiCSL/src/model/SongModel_MidiCSL",
-		"modules/MidiCSL/src/PlayerController_MidiCSL",
-		"modules/MidiCSL/src/PlayerView_MidiCSL",
+		"modules/MidiCSL/src/PlayerController_MidiCSL"
 	],
 	function(
 		ChordConverterMidi_MidiCSL,
@@ -15,8 +14,7 @@ define([
 		NoteModel_MidiCSL,
 		PlayerModel_MidiCSL,
 		SongModel_MidiCSL,
-		PlayerController,
-		PlayerView
+		PlayerController
 	) {
 		return {
 			"ChordConverterMidi_MidiCSL": ChordConverterMidi_MidiCSL,
@@ -25,8 +23,7 @@ define([
 			"NoteModel_MidiCSL": NoteModel_MidiCSL,
 			"PlayerModel_MidiCSL": PlayerModel_MidiCSL,
 			"SongModel_MidiCSL": SongModel_MidiCSL,
-			"PlayerController": PlayerController,
-			"PlayerView": PlayerView
+			"PlayerController": PlayerController
 		};
 	}
 );

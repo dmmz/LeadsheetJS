@@ -116,6 +116,7 @@ define([
 		return this.elemMng.getYs(this.waveBarDimensions, coords);
 	};
 
+	// WaveDrawer is a CanvasLayer element, so here, enabled means that user is interacting with it (selecting parts of the wave audio)
 	/**
 	 * @interface
 	 */
@@ -124,7 +125,7 @@ define([
 	};
 
 	/**
-	 * @interface
+	 * @interface  			
 	 */
 	WaveDrawer.prototype.enable = function() {
 		this.enabled = true;

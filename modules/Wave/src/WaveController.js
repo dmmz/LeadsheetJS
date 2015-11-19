@@ -52,7 +52,7 @@ define(['modules/Wave/src/WaveModel',
 		var self = this;
 		//when window is resized, leadsheet is drawn, and audio needs to be redrawn too
 		$.subscribe('LSViewer-drawEnd', function() {
-			if (!self.model.isEnabled) {
+			if (!self.model.isDrawingEnabled) {
 				return;
 			}
 			if (self.isLoaded && !isNaN(self.model.getDuration())) {
@@ -93,14 +93,18 @@ define(['modules/Wave/src/WaveModel',
 			self.disable();
 		});*/
 
-		$.subscribe('ToPlayer-enable', function(el) {
-			self.enable();
+		$.subscribe('ToAudioPlayer-enable', function() {
+			self.model.enablePlaying();
 		});
-		$.subscribe('ToPlayer-disableAll', function(el) {
+		$.subscribe('ToAudioPlayer-disable', function() {
+			self.model.disablePlaying();
+		});
+
+		$.subscribe('ToPlayer-disableAll', function() {
 			self.disable();
 		});
 
-		$.subscribe('PlayerModel-playing', function(el) {
+		$.subscribe('PlayerModel-playing', function() {
 			self.restartAnimationLoop();
 		});
 

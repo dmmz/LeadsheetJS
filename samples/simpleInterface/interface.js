@@ -56,19 +56,23 @@ define(function(require) {
 	};
 
 	var playerOptions = {
-		soundfontUrl: soundfontUrl,
 		HTMLElement: playerHTML,
 		imgUrl: '/modules/MidiCSL/img',
 		viewOptions: {
 			displayMetronome: true,
 			displayLoop: true,
 			displayTempo: true,
-			changeInstrument: true,
+			changeInstrument: false,
 			autoload: false,
 			progressBar: true
 		},
-		useAudio: true,
-		audioFile: '/tests/audio/solar.wav'
+		audio:{
+			audioFile: '/tests/audio/solar.wav'
+			//otheroptions
+		},
+		midi:{
+			soundfontUrl: soundfontUrl
+		}
 	};
 
 	var tagOptions = {

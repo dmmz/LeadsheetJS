@@ -80,12 +80,12 @@ define([
 			playerHTML = params.player.HTMLElement;
 			imgUrl = params.player.imgUrl || undefined;
 			playerViewOptions = params.player.viewOptions || {};
-		
-			if (params.player.soundfontUrl !== undefined) {
-				soundfontUrl = params.player.soundfontUrl;
+			
+			if (params.player.midi && params.player.midi.soundfontUrl) {
+				soundfontUrl = params.player.midi.soundfontUrl;
 				useMidi = true;
 			}
-			useAudio = (params.player.useAudio !== undefined) ? params.player.useAudio : false;
+			useAudio = !!(params.player.audio && params.player.audio.audioFile);
 			
 		}
 		
@@ -193,23 +193,33 @@ define([
 		if (usePlayer) {
 
 			//we load both MIDI and Audio modules (as this won't bother the user with external dependencies)
-			require(['modules/MidiCSL/src/main','modules/Cursor/src/Cursor','modules/Wave/src/WaveController'], function(MidiCSL,Cursor,Wave){
-				loadedModules.playerView = LJS._loadPlayerView(MidiCSL, playerHTML, imgUrl, playerViewOptions);
-				var cursorNoteModel = new Cursor(songModel.getComponent('notes'), 'notes', 'arrow').model;
+			require([
+				'modules/PlayerView/src/PlayerView',
+				'modules/MidiCSL/src/main',
+				'modules/Cursor/src/Cursor',
+				'modules/Wave/src/WaveController'], function(PlayerView, MidiCSL, Cursor, Wave){
+					
+					playerViewOptions.displayTypeSwitch = useAudio && useMidi;
 
-				if (useMidi) {
-					loadedModules.midiPlayer = LJS._loadMidiPlayer(MidiCSL, songModel, soundfontUrl, loadedModules.playerView, cursorNoteModel);
-				}
 
-				if(useAudio){
+					loadedModules.playerView = new PlayerView(playerHTML, imgUrl, playerViewOptions);
 
-					if (!params.player.audioFile){
-						throw "no audioFile specified";
+					var cursorNoteModel = new Cursor(songModel.getComponent('notes'), 'notes', 'arrow').model;
+
+					if (useMidi) {
+						var disableOnload =  useAudio;
+						loadedModules.midiPlayer = LJS._loadMidiPlayer(MidiCSL, songModel, soundfontUrl, loadedModules.playerView, cursorNoteModel, disableOnload);
 					}
-					var wave = LJS._loadAudioPlayer(Wave, songModel, viewer, cursorNoteModel); // audio player is use to get audio wave, it's why it needs viewer
-					wave.load(params.player.audioFile, 170, true);
-					// loadedModules.audioPlayer = wave;	
-				}
+
+					if(useAudio){
+						$.publish('ToMidiPlayer-disable');
+						if (!params.player.audio.audioFile){
+							throw "no audioFile specified";
+						}
+						var wave = LJS._loadAudioPlayer(Wave, songModel, viewer, cursorNoteModel); // audio player is use to get audio wave, it's why it needs viewer
+						wave.load(params.player.audio.audioFile, 170, true);
+						// loadedModules.audioPlayer = wave;	
+					}
 			});
 			// Load players (midi and audio)
 			/*loadedModules.playerView = LJS._loadPlayerView(playerHTML, imgUrl, playerViewOptions);
@@ -339,12 +349,7 @@ define([
 		return edition;
 	};
 
-	LJS._loadPlayerView = function(MidiCSL, HTMLPlayer, imgUrl, playerOptions) {
-		var pV = new MidiCSL.PlayerView(HTMLPlayer, imgUrl, playerOptions);
-		return pV;
-	};
-
-	LJS._loadMidiPlayer = function(MidiCSL, songModel, soundfontUrl, playerView, cursorModel) {
+	LJS._loadMidiPlayer = function(MidiCSL, songModel, soundfontUrl, playerView, cursorModel, disableOnload) {
 		
 		var player = new MidiCSL.PlayerModel_MidiCSL(songModel, soundfontUrl, {
 			'cursorModel': cursorModel
