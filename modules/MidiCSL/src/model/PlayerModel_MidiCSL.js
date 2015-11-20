@@ -334,7 +334,8 @@ define([
 					if (typeof playFrom === "undefined" || isNaN(playFrom)) {
 						var cursorPosition = self.cursorModel.getPos();
 						playFrom = 0;
-						if (cursorPosition[0] !== 0) {
+						// should check here if cursor is enabled
+						if ( cursorPosition[0] !== 0) {
 							if (typeof midiSongModel.getMelodySoundModelFromIndex(cursorPosition[0]) !== "undefined") {
 								playFrom = midiSongModel.getMelodySoundModelFromIndex(cursorPosition[0]).getCurrentTime() * beatDuration;
 							} else {

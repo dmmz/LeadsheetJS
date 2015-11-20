@@ -10,7 +10,7 @@ define(['jquery', 'utils/NoteUtils', 'utils/ChordTypesCollection'], function($, 
 	 */
 	ChordUtils.getAllChordTypeFromDB = function(callback) {
 		$.ajax({
-			url: 'api/chordsTypesInfo.php',
+			url: 'api/ChordTypeInfoApi.php',
 			dataType: 'jsonp',
 			type: 'POST',
 			data: {
