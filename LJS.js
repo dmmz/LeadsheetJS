@@ -2,7 +2,10 @@ define([
 	'modules/AudioComments/src/AudioCommentsController',
 	'modules/ChordEdition/src/ChordEdition',
 	'modules/chordSequence/src/SongView_chordSequence',
+	"modules/converters/MusicCSLJson/src/main",
+	"modules/converters/MusicXML/src/main",
 	'modules/Constraint/src/Constraint',
+	"modules/core/src/main", // most important module
 	'modules/Cursor/src/Cursor',
 	'modules/Edition/src/Edition',
 	'modules/FileEdition/src/FileEdition',
@@ -14,17 +17,23 @@ define([
 	'modules/MidiCSL/src/main',
 	'modules/NoteEdition/src/NoteEdition',
 	'modules/NoteEdition/src/NoteSpaceManager',
+	'modules/PlayerView/src/PlayerView',
 	'modules/core/src/SongModel',
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
+	"modules/SimilarityAnalysis/src/SimilarityAnalysis",
 	'modules/StructureEdition/src/StructureEdition',
+	'modules/Tag/src/TagManager',
+	'utils/main',
 	'modules/Wave/src/WaveController',
-	'modules/PlayerView/src/PlayerView',
 	'jquery'
 ], function(
 	AudioComments,
 	ChordEdition,
 	chordSequence,
+	convertersMusicCSLJson,
+	convertersMusicXML,
 	Constraint,
+	core,
 	Cursor,
 	Edition,
 	FileEdition,
@@ -36,14 +45,42 @@ define([
 	MidiCSL,
 	NoteEdition,
 	NoteSpaceManager,
+	PlayerView,
 	SongModel,
 	SongModel_CSLJson,
+	SimilarityAnalysis,
 	StructureEdition,
+	TagManager,
+	utils,
 	Wave,
-	PlayerView,
 	$
 ) {
-	var LJS = {};
+	var LJS = {
+		"AudioComments": AudioComments,
+		"ChordEdition": ChordEdition,
+		"chordSequence": chordSequence,
+		"Constraint": Constraint,
+		"converters": {
+			"MusicCSLJson": convertersMusicCSLJson,
+			"MusicXML": convertersMusicXML
+		},
+		"core": core,
+		"Cursor": Cursor,
+		"Edition": Edition,
+		"FileEdition": FileEdition,
+		"HistoryC": HistoryC,
+		"HarmonicAnalysis": HarmonicAnalysis,
+		"Harmonizer": Harmonizer,
+		"LSViewer": LSViewer,
+		"MainMenu": MainMenu,
+		"MidiCSL": MidiCSL,
+		"NoteEdition": NoteEdition,
+		"SimilarityAnalysis": SimilarityAnalysis,
+		"StructureEdition": StructureEdition,
+		"Tag": TagManager,
+		"Wave": Wave,
+		"utils": utils
+	};
 	
 	LJS.init = function(MusicCSLJSON, params) {
 		if (MusicCSLJSON === undefined) {
@@ -178,9 +215,13 @@ define([
 						});
 					}
 				}
-			} 
+			} else {
+				//for player and tags
+				cursorNoteModel = (new Cursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow')).model;
+			}
 
 			if (!allowEdition || !editNotes) {
+				//when we need tags and there is no edition
 				loadedModules.noteSpaceMng = new NoteSpaceManager(cursorNoteModel, viewer);
 			} else {
 				loadedModules.noteSpaceMng = edition.noteEdition.noteSpaceMng;
@@ -197,7 +238,6 @@ define([
 
 			loadedModules.playerView = new PlayerView(playerHTML, imgUrl, playerViewOptions);
 
-			var cursorNoteModel = new Cursor(songModel.getComponent('notes'), 'notes', 'arrow').model;
 
 			if (useMidi) {
 				var disableOnload =  useAudio;
@@ -215,20 +255,17 @@ define([
 			}
 		
 		}
+		//TAG
+		if (params.tags){
+			
+			// TagManager take as argument your array of tags here call analysis, an array of color (here undefined because we use built in colors)
+			new TagManager(songModel, loadedModules.noteSpaceMng, params.tags, undefined, true, false);
+			//$.publish('ToViewer-draw', songModel); // redraw
+		}
 		if (useViewer) {
 			viewer.draw(songModel);
 		}
 		
-		//TAG
-		if (params.tag){
-			
-			var cursorNoteModel = new Cursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow').model;
-			var noteSpaceMng = new NoteSpaceManager(cursorNoteModel, viewer);
-			var analysis = params.tag.analysis;
-			// TagManager take as argument your array of tags here call analysis, an array of color (here undefined because we use built in colors)
-			new tagManager.TagManager(songModel, noteSpaceMng, analysis, undefined, true, false);
-			$.publish('ToViewer-draw', songModel); // redraw
-		}
 
 		/*if (typeof edition !== "undefined") {
 			loadedModules.edition = edition;
@@ -367,15 +404,15 @@ define([
 		return audioComments;
 	};
 
-	LJS._generateUuid = function() {
-		// Creating uniq id
-		function s4() {
-			return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-		}
-		return (function() {
-			return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
-		})();
-	};
+	// LJS._generateUuid = function() {
+	// 	// Creating uniq id
+	// 	function s4() {
+	// 		return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+	// 	}
+	// 	return (function() {
+	// 		return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+	// 	})();
+	// };
 
 	return LJS;
 });

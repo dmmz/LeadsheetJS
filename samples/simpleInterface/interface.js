@@ -75,8 +75,7 @@ define(function(require) {
 		}
 	};
 
-	var tagOptions = {
-		analysis: [{
+	var tags = [{
 			startBeat: 1,
 			endBeat: 5,
 			name: 'First bar',
@@ -96,12 +95,11 @@ define(function(require) {
 			endBeat: 49,
 			name: 'Outro',
 			color: "#595"
-		}]
-	}
+		}];
 
 	var params = {
 		viewer: viewerOptions,
-		//tag : tagOptions,
+		tags : tags,
 		player: playerOptions,
 		'edition': {
 			'notes': true,
