@@ -1,45 +1,47 @@
 define([
-	// "modules/AudioComments/src/AudioCommentsController",
-	// "modules/ChordEdition/src/ChordEdition",
-	// "modules/chordSequence/src/SongView_chordSequence",
-	// "modules/Constraint/src/Constraint",
-	// "modules/Cursor/src/Cursor",
-	// "modules/Edition/src/Edition",
-	// "modules/FileEdition/src/FileEdition",
-	// "modules/History/src/HistoryC",
-	// "modules/HarmonicAnalysis/src/HarmonicAnalysis",
-	// "modules/Harmonizer/src/Harmonizer",
-	"modules/LSViewer/src/main",
-	// "modules/MainMenu/src/MainMenu",
-	// "modules/MidiCSL/src/main",
-	// "modules/NoteEdition/src/NoteEdition",
-	// "modules/NoteEdition/src/NoteSpaceManager",
-	// 'modules/core/src/SongModel',
+	'modules/AudioComments/src/AudioCommentsController',
+	'modules/ChordEdition/src/ChordEdition',
+	'modules/chordSequence/src/SongView_chordSequence',
+	'modules/Constraint/src/Constraint',
+	'modules/Cursor/src/Cursor',
+	'modules/Edition/src/Edition',
+	'modules/FileEdition/src/FileEdition',
+	'modules/History/src/HistoryC',
+	'modules/HarmonicAnalysis/src/HarmonicAnalysis',
+	'modules/Harmonizer/src/Harmonizer',
+	'modules/LSViewer/src/main',
+	'modules/MainMenu/src/MainMenu',
+	'modules/MidiCSL/src/main',
+	'modules/NoteEdition/src/NoteEdition',
+	'modules/NoteEdition/src/NoteSpaceManager',
+	'modules/core/src/SongModel',
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
-	// "modules/StructureEdition/src/StructureEdition",
-	// "modules/Wave/src/WaveController",
-	"jquery"
+	'modules/StructureEdition/src/StructureEdition',
+	'modules/Wave/src/WaveController',
+	'modules/PlayerView/src/PlayerView',
+	'jquery'
 ], function(
-	// AudioComments,
-	// ChordEdition,
-	// chordSequence,
-	// Constraint,
-	// Cursor,
-	// Edition,
-	// FileEdition,
-	// HistoryC,
-	// HarmonicAnalysis,
-	// Harmonizer,
+	AudioComments,
+	ChordEdition,
+	chordSequence,
+	Constraint,
+	Cursor,
+	Edition,
+	FileEdition,
+	HistoryC,
+	HarmonicAnalysis,
+	Harmonizer,
 	LSViewer,
-	// MainMenu,
-	// MidiCSL,
-	// NoteEdition,
-	// NoteSpaceManager,
-	// SongModel,
+	MainMenu,
+	MidiCSL,
+	NoteEdition,
+	NoteSpaceManager,
+	SongModel,
 	SongModel_CSLJson,
-	// StructureEdition,
-	// Wave,
-	 $
+	StructureEdition,
+	Wave,
+	PlayerView,
+	$
 ) {
 	var LJS = {};
 	
@@ -47,7 +49,7 @@ define([
 		if (MusicCSLJSON === undefined) {
 			throw "missing MusicCLJSON song";
 		}
-		// Check for externals libraries, and shim
+		
 
 		/**
 		 * In first Part we read options
@@ -91,16 +93,16 @@ define([
 		
 		// Edition
 		allowEdition = false;
-		/*var editNotes, editChords, editStructure, saveFunction, imgUrlEdition, allowHistory;
-		if (typeof params.edition !== "undefined") {
+		var editNotes, editChords, editStructure, saveFunction, imgUrlEdition, allowHistory;
+		if (params.edition) {
 			allowEdition = true;
-			editNotes = (typeof params.edition.notes !== "undefined") ? params.edition.notes : true;
-			editChords = (typeof params.edition.chords !== "undefined") ? params.edition.chords : true;
-			editStructure = (typeof params.edition.structure !== "undefined") ? params.edition.structure : true;
-			saveFunction = (typeof params.edition.saveFunction !== "undefined") ? params.edition.saveFunction : undefined;
+			editNotes = (params.edition.notes !== undefined) ? params.edition.notes : true;
+			editChords = (params.edition.chords !== undefined) ? params.edition.chords : true;
+			editStructure = (params.edition.structure !== undefined) ? params.edition.structure : true;
+			saveFunction = (params.edition.saveFunction !== undefined) ? params.edition.saveFunction : undefined;
 			imgUrlEdition = params.edition.imgUrl || {};
 			allowHistory = false;
-			if (typeof params.edition.history !== "undefined") {
+			if (params.edition.history !== undefined) {
 				if (params.edition.history.enable) {
 					allowHistory = true;
 					// if not precised, then it doesn't display history but keyboard ctrl+z and y are working
@@ -118,7 +120,7 @@ define([
 				menuHTML = params.menu.HTMLElement;
 			}
 		}
-	*/
+	
 		var loadedModules = {}; // we store loaded modules in this object, this object is return for developer
 		
 		// On second Part we use options to initialize modules
@@ -134,11 +136,11 @@ define([
 			// Reading only
 			viewer = LJS._loadViewer(songModel, viewerHTML, viewerOptions);
 			loadedModules.viewer = viewer;
-			/*if (useMenu) {
+			if (useMenu) {
 				// Load menus
 				menu = LJS._loadMenu(menuHTML);
 				loadedModules.menu = menu;
-			}*/
+			}
 			if (allowEdition) {
 				if (allowHistory) {
 					LJS._loadHistory(songModel, historyHTML);
@@ -176,61 +178,42 @@ define([
 						});
 					}
 				}
-			} else {
-				
-				
-				
+			} 
 
-			}
 			if (!allowEdition || !editNotes) {
-				//loadedModules.noteSpaceMng = new NoteSpaceManager(cursorNoteModel, viewer);
+				loadedModules.noteSpaceMng = new NoteSpaceManager(cursorNoteModel, viewer);
 			} else {
 				loadedModules.noteSpaceMng = edition.noteEdition.noteSpaceMng;
 			}
-		} else {
-			viewer = undefined;
 		}
+
+
 		if (usePlayer) {
 
 			//we load both MIDI and Audio modules (as this won't bother the user with external dependencies)
-			require([
-				'modules/PlayerView/src/PlayerView',
-				'modules/MidiCSL/src/main',
-				'modules/Cursor/src/Cursor',
-				'modules/Wave/src/WaveController'], function(PlayerView, MidiCSL, Cursor, Wave){
-					
-					playerViewOptions.displayTypeSwitch = useAudio && useMidi;
-
-
-					loadedModules.playerView = new PlayerView(playerHTML, imgUrl, playerViewOptions);
-
-					var cursorNoteModel = new Cursor(songModel.getComponent('notes'), 'notes', 'arrow').model;
-
-					if (useMidi) {
-						var disableOnload =  useAudio;
-						loadedModules.midiPlayer = LJS._loadMidiPlayer(MidiCSL, songModel, soundfontUrl, loadedModules.playerView, cursorNoteModel, disableOnload);
-					}
-
-					if(useAudio){
-						$.publish('ToMidiPlayer-disable');
-						if (!params.player.audio.audioFile){
-							throw "no audioFile specified";
-						}
-						var wave = LJS._loadAudioPlayer(Wave, songModel, viewer, cursorNoteModel); // audio player is use to get audio wave, it's why it needs viewer
-						wave.load(params.player.audio.audioFile, 170, true);
-						// loadedModules.audioPlayer = wave;	
-					}
-			});
-			// Load players (midi and audio)
-			/*loadedModules.playerView = LJS._loadPlayerView(playerHTML, imgUrl, playerViewOptions);
 			
-			if (useViewer && useAudio) {
-				var wave = LJS._loadAudioPlayer(songModel, viewer, cursorNoteModel); // audio player is use to get audio wave, it's why it needs viewer
-				loadedModules.audioPlayer = wave;
+			playerViewOptions.displayTypeSwitch = useAudio && useMidi;
 
-				var audioComments = LJS._loadComments(wave, viewer, songModel);
-				loadedModules.audioComments = audioComments;
-			}*/
+
+			loadedModules.playerView = new PlayerView(playerHTML, imgUrl, playerViewOptions);
+
+			var cursorNoteModel = new Cursor(songModel.getComponent('notes'), 'notes', 'arrow').model;
+
+			if (useMidi) {
+				var disableOnload =  useAudio;
+				loadedModules.midiPlayer = LJS._loadMidiPlayer(MidiCSL, songModel, soundfontUrl, loadedModules.playerView, cursorNoteModel, disableOnload);
+			}
+
+			if(useAudio){
+				$.publish('ToMidiPlayer-disable');
+				if (!params.player.audio.audioFile){
+					throw "no audioFile specified";
+				}
+				var wave = LJS._loadAudioPlayer(Wave, songModel, viewer, cursorNoteModel); // audio player is use to get audio wave, it's why it needs viewer
+				wave.load(params.player.audio.audioFile, 170, true);
+				// loadedModules.audioPlayer = wave;	
+			}
+		
 		}
 		if (useViewer) {
 			viewer.draw(songModel);
@@ -238,19 +221,13 @@ define([
 		
 		//TAG
 		if (params.tag){
-			require([
-				'modules/Tag/src/main',
-				'modules/NoteEdition/src/NoteSpaceManager',
-				'modules/Cursor/src/Cursor'
-				], function(tagManager, NoteSpaceManager, Cursor){
-				var cursorNoteModel = new Cursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow').model;
-				var noteSpaceMng = new NoteSpaceManager(cursorNoteModel, viewer);
-				var analysis = params.tag.analysis;
-				// TagManager take as argument your array of tags here call analysis, an array of color (here undefined because we use built in colors)
-				new tagManager.TagManager(songModel, noteSpaceMng, analysis, undefined, true, false);
-				$.publish('ToViewer-draw', songModel); // redraw
-			});
 			
+			var cursorNoteModel = new Cursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow').model;
+			var noteSpaceMng = new NoteSpaceManager(cursorNoteModel, viewer);
+			var analysis = params.tag.analysis;
+			// TagManager take as argument your array of tags here call analysis, an array of color (here undefined because we use built in colors)
+			new tagManager.TagManager(songModel, noteSpaceMng, analysis, undefined, true, false);
+			$.publish('ToViewer-draw', songModel); // redraw
 		}
 
 		/*if (typeof edition !== "undefined") {

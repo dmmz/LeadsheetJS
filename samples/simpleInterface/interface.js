@@ -3,14 +3,14 @@ require.config({
 	baseUrl: "../../",
 	paths: {
 		jquery: 'external-libs/jquery-2.1.0.min',
-		// jquery_autocomplete: 'external-libs/jquery.autocomplete.min',
+		jquery_autocomplete: 'external-libs/jquery.autocomplete.min',
 		vexflow: 'external-libs/vexflow-min',
 		Midijs: 'external-libs/Midijs/midijs.min',
 		pubsub: 'external-libs/tiny-pubsub.min',
 		mustache: 'external-libs/mustache',
 		text: 'external-libs/require-text',
-		// bootstrap: 'external-libs/bootstrap/bootstrap.min',
-		// jsPDF: 'external-libs/jspdf/jspdf.min',
+		bootstrap: 'external-libs/bootstrap/bootstrap.min',
+		jsPDF: 'external-libs/jspdf/jspdf.min',
 		//bootstrap: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min',
 	},
 	shim: {
@@ -102,8 +102,8 @@ define(function(require) {
 	var params = {
 		viewer: viewerOptions,
 		//tag : tagOptions,
-		player: playerOptions//,
-		/*'edition': {
+		player: playerOptions,
+		'edition': {
 			'notes': true,
 			'imgUrl': {
 				'notes': '/modules/NoteEdition/img',
@@ -119,7 +119,7 @@ define(function(require) {
 		},
 		'menu': {
 			'HTMLElement': menuHTML
-		}*/
+		}
 	};
 
 	// var myLeadsheet1 = LJS.easyBuild('viewer', testSongs.simpleLeadSheet, viewerHTML, viewerOptions);
