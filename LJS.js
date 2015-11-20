@@ -124,7 +124,7 @@ define([
 				soundfontUrl = params.player.midi.soundfontUrl;
 				useMidi = true;
 			}
-			useAudio = !!(params.player.audio && params.player.audio.audioFile);
+			useAudio = !!(params.player.audio);
 			
 		}
 		
@@ -246,12 +246,13 @@ define([
 
 			if(useAudio){
 				$.publish('ToMidiPlayer-disable');
-				if (!params.player.audio.audioFile){
-					throw "no audioFile specified";
-				}
+				
 				var wave = LJS._loadAudioPlayer(Wave, songModel, viewer, cursorNoteModel); // audio player is use to get audio wave, it's why it needs viewer
-				wave.load(params.player.audio.audioFile, 170, true);
-				// loadedModules.audioPlayer = wave;	
+				if (params.player.audio.audioFile){
+					wave.load(params.player.audio.audioFile, 170, true);	
+				}
+				
+				loadedModules.audioPlayer = wave;	
 			}
 		
 		}
@@ -266,10 +267,10 @@ define([
 			viewer.draw(songModel);
 		}
 		
-
-		/*if (typeof edition !== "undefined") {
+		//eiditon is used outside
+		if (typeof edition !== "undefined") {
 			loadedModules.edition = edition;
-		}*/
+		}
 		return loadedModules;
 	};
 
