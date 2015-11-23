@@ -120,6 +120,44 @@ define([
 		ctx.globalAlpha = 0.2;
 		var currentNoteSpace;
 		var areas = [];
+		var self = this;
+
+		function scrollWindow(ctx, areas) {
+			var iSafe = 0;
+			var posLastCursorBottom = areas[areas.length - 1].y + areas[areas.length - 1].h;
+			var posLastCursorTop = areas[areas.length - 1].y;
+			var canvasOffset = $(ctx.canvas).offset().top;
+			var viewportHeight = $(window).height();
+			var scrollTop = $(window).scrollTop();
+			/*
+			console.log('---');
+			console.log(viewportHeight);
+			console.log(posLastCursorBottom);
+			console.log(canvasOffset);
+			console.log(scrollTop);
+			console.log((canvasOffset + posLastCursorBottom), (viewportHeight - 100));
+			*/
+			while ((canvasOffset + posLastCursorBottom - scrollTop) > (viewportHeight - 90) && iSafe < 15) {
+				posLastCursorBottom = areas[areas.length - 1].y + areas[areas.length - 1].h;
+				canvasOffset = $(ctx.canvas).offset().top;
+				viewportHeight = $(window).height();
+				scrollTop = $(window).scrollTop();
+				//console.log('down');
+				$(window).scrollTop($(window).scrollTop() + self.viewer.LINE_HEIGHT);
+				iSafe++;
+			}
+			if (iSafe === 0) {
+				while (((canvasOffset + posLastCursorTop) < scrollTop) && iSafe < 15) {
+					//console.log('up');
+					posLastCursorTop = areas[areas.length - 1].y + areas[areas.length - 1].h;
+					canvasOffset = $(ctx.canvas).offset().top;
+					viewportHeight = $(window).height();
+					scrollTop = $(window).scrollTop();
+					$(window).scrollTop($(window).scrollTop() - self.viewer.LINE_HEIGHT);
+					iSafe++;
+				}
+			}
+		}
 
 		if (position[0] !== null) {
 			if (position[0] === position[1]) {
@@ -149,42 +187,7 @@ define([
 			ctx.fillStyle = saveFillColor;
 			ctx.globalAlpha = 1;
 			if (areas.length === 1) {
-
-				var iSafe = 0;
-
-				var posLastCursorBottom = areas[areas.length - 1].y + areas[areas.length - 1].h;
-				var posLastCursorTop = areas[areas.length - 1].y;
-				var canvasOffset = $(ctx.canvas).offset().top;
-				var viewportHeight = $(window).height();
-				var scrollTop = $(window).scrollTop();
-				/*
-				console.log('---');
-				console.log(viewportHeight);
-				console.log(posLastCursorBottom);
-				console.log(canvasOffset);
-				console.log(scrollTop);
-				console.log((canvasOffset + posLastCursorBottom), (viewportHeight - 100));
-				*/
-				while ((canvasOffset + posLastCursorBottom - scrollTop) > (viewportHeight - 90) && iSafe < 15) {
-					posLastCursorBottom = areas[areas.length - 1].y + areas[areas.length - 1].h;
-					canvasOffset = $(ctx.canvas).offset().top;
-					viewportHeight = $(window).height();
-					scrollTop = $(window).scrollTop();
-					//console.log('down');
-					$(window).scrollTop($(window).scrollTop() + this.viewer.LINE_HEIGHT);
-					iSafe++;
-				}
-				if (iSafe === 0) {
-					while (((canvasOffset + posLastCursorTop) < scrollTop) && iSafe < 15) {
-						//console.log('up');
-						posLastCursorTop = areas[areas.length - 1].y + areas[areas.length - 1].h;
-						canvasOffset = $(ctx.canvas).offset().top;
-						viewportHeight = $(window).height();
-						scrollTop = $(window).scrollTop();
-						$(window).scrollTop($(window).scrollTop() - this.viewer.LINE_HEIGHT);
-						iSafe++;
-					}
-				}
+				// scrollWindow(ctx, areas);
 			}
 		}
 
