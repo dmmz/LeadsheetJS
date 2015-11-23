@@ -250,9 +250,9 @@ define([
 		var newTitle = window.prompt('Give a new name to your song:');
 		if (newTitle !== null) {
 			this.songModel.setTitle(newTitle);
+			this.save(true);
+			$.publish('ToViewer-draw', this.songModel);
 		}
-		this.save(true);
-		$.publish('ToViewer-draw', this.songModel);
 	};
 
 

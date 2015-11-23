@@ -258,12 +258,8 @@ define([
 		// adjust all chords bar number
 		cm.incrementChordsBarNumberFromBarNumber(-1, barNumber);
 		var timeSigChange = bm.getBar(barNumber).getTimeSignatureChange();
-		if (timeSigChange 
-			&& barNumber < bm.getTotal() - 1
-			&& !bm.getBar(barNumber + 1).getTimeSignatureChange()
-		)
-		{ //if it's not the last bar
-				bm.getBar(barNumber + 1).setTimeSignatureChange(timeSigChange);
+		if (timeSigChange && barNumber < bm.getTotal() - 1 && !bm.getBar(barNumber + 1).getTimeSignatureChange()) { //if it's not the last bar
+			bm.getBar(barNumber + 1).setTimeSignatureChange(timeSigChange);
 		}
 
 		//we remove the bar
@@ -354,7 +350,11 @@ define([
 
 			//HERE we change time signature
 			var prevTimeSignature = song.getTimeSignatureAt(selBars[0]);
-			barMng.getBar(selBars[0]).setTimeSignatureChange(timeSignature);
+			if (selBars[0] === 0) { // in case it's first measure we change the whole song time signature
+				song.setTimeSignature(timeSignature);
+			} else {
+				barMng.getBar(selBars[0]).setTimeSignatureChange(timeSignature);
+			}
 
 			//check if we have to create bars to fit melody (normally if new time sign. has less beats than old one)
 			var diffBars = numBarsAdaptedNotes - numSelectedBars;

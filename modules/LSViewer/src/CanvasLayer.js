@@ -227,7 +227,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 
 		function mouseDown(evt) {
 			var d = evt.srcElement || evt.target;
-			if (d.tagName.toUpperCase() === 'TEXTAREA' || d.tagName.toUpperCase() === 'INPUT' || d.tagName.toUpperCase() === 'SELECT'  || d.tagName.toUpperCase() === 'OPTION' ) {
+			if (d.tagName.toUpperCase() === 'TEXTAREA' || d.tagName.toUpperCase() === 'INPUT' || d.tagName.toUpperCase() === 'SELECT' || d.tagName.toUpperCase() === 'OPTION') {
 				return;
 			}
 			coords = self._getXandY($(self.canvasLayer), evt);
@@ -242,11 +242,17 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			if (isClick && evt.button == 2) {
 				$.publish('right-click');
 			} else {
-				// check if we click on something that is canvas or that contain canvas to prevent click on something that is above a player or menu etc
-				if (evt.target.id === $(self.canvasLayer).attr('id') || $(evt.target).find($(self.canvasLayer)).length > 0) {
+				if (isTargetValid(evt)) {
 					selection(isClick, true);
 				}
 			}
+		}
+		// check if we click on something that is canvas or that contain canvas to prevent click on something that is above a player or menu etc
+		function isTargetValid(evt) {
+			if (evt.target.id === $(self.canvasLayer).attr('id') || $(evt.target).find($(self.canvasLayer)).length > 0) {
+				return true;
+			}
+			return false;
 		}
 
 		$('html').mousemove(function(evt) {
@@ -257,7 +263,9 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 				self.mouseCoordsEnd = [xy.x, xy.y];
 				self._setCoords(self.mouseCoordsIni, self.mouseCoordsEnd);
 				self._clampCoords($(self.canvasLayer));
-				selection();
+				if (isTargetValid(evt)) {
+					selection();
+				}
 			}
 			setPointerIfInPath(xy);
 		});
