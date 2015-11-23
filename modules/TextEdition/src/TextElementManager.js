@@ -73,7 +73,7 @@ define([
 		});
 
 		if (this.suggestions) {
-			$(input).devbridgeAutocomplete({
+			input.devbridgeAutocomplete({
 				'lookup': this.suggestions,
 				'width': 500,
 				lookupFilter: function(suggestion, originalQuery, queryLowerCase) {
@@ -90,6 +90,7 @@ define([
 	};
 	TextElementManager.prototype.disable = function() {
 		if (this.htmlInput) {
+			this.htmlInput.input.devbridgeAutocomplete('dispose');
 			this.htmlInput.remove();
 			$.publish('ToViewer-draw', this.songModel);
 		}
