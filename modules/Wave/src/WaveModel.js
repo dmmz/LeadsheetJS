@@ -11,8 +11,8 @@ define([
 		this.audioCtx = new(window.AudioContext || window.webkitAudioContext)();
 		this.source = this.audioCtx.createBufferSource();
 		this.tempo = null;
-		this.isPlayingEnabled = true; //this is initialized on load
-		this.isDrawingEnabled = true;
+		this.isPlayingEnabled = false; //this is initialized on load
+		this.isDrawingEnabled = false;
 		this.initModelEvents();
 
 		var initVolume;
@@ -148,6 +148,7 @@ define([
 				self.source.connect(self.audioCtx.destination);
 				audioCtxIsLoaded = true;
 				checkLoad();
+				self.enable();
 				//source.start(0)
 			},
 			function(e) {

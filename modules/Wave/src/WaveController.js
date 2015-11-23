@@ -89,9 +89,9 @@ define(['modules/Wave/src/WaveModel',
 			self.toggleLoop();
 		});
 
-		/*$.subscribe("ToLayers-removeLayer", function() {
+		$.subscribe("ToLayers-removeLayer", function() {
 			self.disable();
-		});*/
+		});
 
 		$.subscribe('ToAudioPlayer-enable', function() {
 			self.model.enablePlaying();
