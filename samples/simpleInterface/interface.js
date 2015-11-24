@@ -49,7 +49,8 @@ define(function(require) {
 		viewOptions: {
 			//displayTitle: true,
 			//displayComposer: true,
-			layer: true//,
+			layer: true,
+			detectEventOnAllDocument: true
 			//typeResize: "fluid", // "scale" | "fluid"
 			//heightOverflow: "auto", // "scroll" | "auto"
 		}
@@ -111,7 +112,7 @@ define(function(require) {
 			'chords': true,
 			'structure': true,
 			'history': {
-				'enable': true,
+				'enable': false,
 				'HTMLElement': historyHTML, // if not precised, then it doesn't display history but keyboard ctrl+z and y are working
 			}
 		},
