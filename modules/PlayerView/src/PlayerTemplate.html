@@ -6,14 +6,13 @@
 		</div>
 	</div>
 	{{/progressBar}}
-	<!--<div id="switch_player" class="current_button">Player</div>-->
+	
 	<div id="player_buttons_container">
-		{{#displayTypeSwitch}}
-		<div id="type_button_container">
+		
+		<div id="type_button_container" style="display:none">
 			<span>MIDI <input type="radio" style="vertical-align: top" name="typeSwitch" value="MIDI"></span><br/>
 			<span>Audio <input type="radio" style="vertical-align: top" name="typeSwitch" value="Audio" checked="true"></span>
 		</div>
-		{{/displayTypeSwitch}}
 		<div id="stop_button_container" class="player_button">
 			<div id="stop_button">
 				<img src="{{imgPath}}/stop.png" alt="stop" title="Stop" />

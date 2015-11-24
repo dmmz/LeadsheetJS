@@ -133,7 +133,7 @@ define([
 			//if (viewerWidth < this.LINE_WIDTH){
 			this.LINE_WIDTH = viewerWidth;
 			//}
-		};
+		};	
 
 		LSViewer.prototype.scale = function(ctx) {
 			ctx = ctx || this.ctx;
@@ -385,10 +385,9 @@ define([
 				this._displayTitle(song.getTitle());
 			}
 			this.resetScale();
-			//console.timeEnd('whole draw');
-			// if we requested to have a layer and we haven't already created it
-			// TODO: this.layer anhd this.forceNewLayer are more or less the same
-			if (this.layer && (!this.canvasLayer) || (this.layer && this.forceNewCanvasLayer)) {
+			
+			// if constructor was supposed to have a layer and either canvasLayer is not created, either we are forcing to recreate it (e.g. on resize)
+			if (this.layer && (this.forceNewCanvasLayer || !this.canvasLayer)) {
 				this.forceNewCanvasLayer = false;
 				this.canvasLayer = new CanvasLayer(this, this.detectEventOnAllDocument); //the canvasLayer needs to be created after the score has been drawn
 			}

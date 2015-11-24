@@ -568,7 +568,7 @@ define([
 
 		PlayerModel_MidiCSL.prototype.MidiPluginIsReady = function() {
 			this.setReady(true);
-			$.publish('PlayerModel-onload');
+			$.publish('PlayerModel-onload','midi');
 		};
 
 		return PlayerModel_MidiCSL;

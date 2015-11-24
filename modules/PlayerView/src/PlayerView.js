@@ -8,11 +8,14 @@ define([
 
 	function PlayerView(parentHTML, imgPath, options) {
 		options = options || {};
+		//PlayerView can be playing Midi, audio or both at the same time
+		this.midiPlayer = false; 
+		this.audioPlayer = false;
+
 		this.displayMetronome = !!options.displayMetronome;
 		this.displayLoop = !!options.displayLoop;
 		this.displayTempo = !!options.displayTempo;
 		this.progressBar = !!options.progressBar;
-		this.displayTypeSwitch = !!options.displayTypeSwitch;
 		this.tempo = options.tempo ? options.tempo : 120;
 		this.el = undefined;
 		this.imgPath = imgPath;
@@ -152,6 +155,23 @@ define([
 			e.preventDefault();
 		});
 	};
+	PlayerView.prototype.setPlayer = function(type) {
+		if (type === 'midi'){
+			this.midiPlayer = true;
+		}
+		else{ //type === 'audio'
+			this.audioPlayer = true;
+		}
+	};
+	
+	PlayerView.prototype.unsetPlayer = function(type) {
+		if (type === 'midi'){
+			this.midiPlayer = false;
+		}
+		else{ //type === 'audio'
+			this.audioPlayer = false;
+		}
+	}
 
 	PlayerView.prototype.initKeyboard = function() {
 		var self = this;
@@ -191,13 +211,12 @@ define([
 		$.subscribe('PlayerModel-onvolumechange', function(el, volume) {
 			self.setVolume(volume);
 		});
-
-		$.subscribe('PlayerModel-onload', function(el) {
+		
+		$.subscribe('PlayerModel-onload', function(el, type) {
+			self.setPlayer(type);
+			self.updateSwitch();
 			self.playerIsReady();
 		});
-
-		$.subscribe('PlayerModel-onChordsInstrument', function(el, instrument) {});
-		$.subscribe('PlayerModel-onMelodyInstrument', function(el, instrument) {});
 
 		$.subscribe('PlayerModel-toggleMetronome', function(el, isMetronome) {
 			if (isMetronome) {
@@ -363,6 +382,18 @@ define([
 		$('#volume_controller_barre').css({
 			top: (relativePosition - middleController) + 'px'
 		});
+	};
+	PlayerView.prototype.updateSwitch = function() {
+		var typeSwitch = $("#type_button_container");
+		var visible = (typeSwitch.css('display') !== 'none');
+		console.log(this.midiPlayer);
+		console.log(this.audioPlayer);
+
+		if (this.midiPlayer && this.audioPlayer && !visible){
+			typeSwitch.show();
+		}else{
+			typeSwitch.hide();
+		}
 	};
 
 	PlayerView.prototype.hide = function() {

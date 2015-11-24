@@ -229,6 +229,8 @@ define(['modules/Wave/src/WaveModel',
 
 	WaveController.prototype.disable = function() {
 		this.model.disable();
+		self.viewer.setShortenLastBar(false);
+		self.viewer.draw(self.songModel); // no need to drawAudio(), as it is called on 'drawEnd'
 	};
 
 	WaveController.prototype.restartAnimationLoop = function() {
@@ -248,7 +250,7 @@ define(['modules/Wave/src/WaveModel',
 			if (!self.isPause) {
 				if (self.getPlayedTime() >= timeStep + minBeatStep) {
 					iNote = noteMng.getPrevIndexNoteByBeat(self.getPlayedTime() / self.model.beatDuration + 1);
-					if (iNote != prevINote) {
+						if (iNote != prevINote && self.cursorNotes) { //if cursorNotes is not defined (or null) we don't use it (so audioPlayer works and is not dependent on cursor)
 						self.cursorNotes.setPos(iNote);
 						prevINote = iNote;
 					}
