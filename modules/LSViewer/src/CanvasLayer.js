@@ -257,7 +257,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			return false;
 		}
 
-		$('html').mousemove(function(evt) {
+		$('html').on('mousemove',function(evt) {
 			//draw cursor selection
 			var xy = self._getXandY($(self.canvasLayer), evt);
 			if (self.mouseDown) {
@@ -361,6 +361,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 	CanvasLayer.prototype.destroy = function() {
 		$('html').off('mousedown');
 		$('html').off('mouseup');
+		$('html').off('mousemove');
 			// Mouseup on canvas is usefull to allow unselect
 	};
 	return CanvasLayer;
