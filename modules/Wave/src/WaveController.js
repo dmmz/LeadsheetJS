@@ -229,8 +229,10 @@ define(['modules/Wave/src/WaveModel',
 
 	WaveController.prototype.disable = function() {
 		this.model.disable();
-		self.viewer.setShortenLastBar(false);
-		self.viewer.draw(self.songModel); // no need to drawAudio(), as it is called on 'drawEnd'
+		this.viewer.setShortenLastBar(false);
+		this.viewer.resetLinesHeight();
+		this.viewer.draw(this.songModel); // no need to drawAudio(), as it is called on 'drawEnd'
+		$.publish('Audio-disabled');
 	};
 
 	WaveController.prototype.restartAnimationLoop = function() {

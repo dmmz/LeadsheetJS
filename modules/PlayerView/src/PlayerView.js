@@ -9,7 +9,7 @@ define([
 	function PlayerView(parentHTML, imgPath, options) {
 		options = options || {};
 		//PlayerView can be playing Midi, audio or both at the same time
-		this.midiPlayer = false; 
+		this.midiPlayer = false;
 		this.audioPlayer = false;
 
 		this.displayMetronome = !!options.displayMetronome;
@@ -21,7 +21,7 @@ define([
 		this.imgPath = imgPath;
 		this.initSubscribe();
 		this.render(parentHTML);
-	
+
 	}
 
 	PlayerView.prototype.render = function(parentHTML) {
@@ -36,7 +36,7 @@ define([
 			progressBar: self.progressBar,
 			tempo: self.tempo
 		});
-	
+
 		self.el = parentHTML;
 		self.initController();
 		self.initKeyboard();
@@ -94,13 +94,12 @@ define([
 				$.publish('ToPlayer-onToggleMute', 0);
 			}
 		});
-		$('input[type=radio][name=typeSwitch]').on('change',function(){
-			
-			if ($(this).val() == 'MIDI'){
+		$('input[type=radio][name=typeSwitch]').on('change', function() {
+
+			if ($(this).val() == 'midi') {
 				$.publish('ToAudioPlayer-disable');
 				$.publish('ToMidiPlayer-enable');
-			}
-			else{
+			} else { //$(this).val() == 'audio'
 				$.publish('ToMidiPlayer-disable');
 				$.publish('ToAudioPlayer-enable');
 			}
@@ -156,19 +155,17 @@ define([
 		});
 	};
 	PlayerView.prototype.setPlayer = function(type) {
-		if (type === 'midi'){
+		if (type === 'midi') {
 			this.midiPlayer = true;
-		}
-		else{ //type === 'audio'
+		} else { //type === 'audio'
 			this.audioPlayer = true;
 		}
 	};
-	
+
 	PlayerView.prototype.unsetPlayer = function(type) {
-		if (type === 'midi'){
+		if (type === 'midi') {
 			this.midiPlayer = false;
-		}
-		else{ //type === 'audio'
+		} else { //type === 'audio'
 			this.audioPlayer = false;
 		}
 	}
@@ -211,11 +208,16 @@ define([
 		$.subscribe('PlayerModel-onvolumechange', function(el, volume) {
 			self.setVolume(volume);
 		});
-		
+
 		$.subscribe('PlayerModel-onload', function(el, type) {
 			self.setPlayer(type);
 			self.updateSwitch();
 			self.playerIsReady();
+		});
+		$.subscribe('Audio-disabled', function() {
+			self.setPlayer('midi');
+			self.unsetPlayer('audio');
+			self.updateSwitch();
 		});
 
 		$.subscribe('PlayerModel-toggleMetronome', function(el, isMetronome) {
@@ -386,12 +388,13 @@ define([
 	PlayerView.prototype.updateSwitch = function() {
 		var typeSwitch = $("#type_button_container");
 		var visible = (typeSwitch.css('display') !== 'none');
-		console.log(this.midiPlayer);
-		console.log(this.audioPlayer);
 
-		if (this.midiPlayer && this.audioPlayer && !visible){
-			typeSwitch.show();
-		}else{
+		if (this.midiPlayer && this.audioPlayer) {
+			if (!visible) {
+				typeSwitch.show();
+			}
+			$("input[name=typeSwitch][value=audio]").prop("checked", true);
+		} else {
 			typeSwitch.hide();
 		}
 	};
