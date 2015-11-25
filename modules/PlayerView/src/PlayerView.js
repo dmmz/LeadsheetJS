@@ -8,17 +8,20 @@ define([
 
 	function PlayerView(parentHTML, imgPath, options) {
 		options = options || {};
+		//PlayerView can be playing Midi, audio or both at the same time
+		this.midiPlayer = false;
+		this.audioPlayer = false;
+
 		this.displayMetronome = !!options.displayMetronome;
 		this.displayLoop = !!options.displayLoop;
 		this.displayTempo = !!options.displayTempo;
 		this.progressBar = !!options.progressBar;
-		this.displayTypeSwitch = !!options.displayTypeSwitch;
 		this.tempo = options.tempo ? options.tempo : 120;
 		this.el = undefined;
 		this.imgPath = imgPath;
 		this.initSubscribe();
 		this.render(parentHTML);
-	
+
 	}
 
 	PlayerView.prototype.render = function(parentHTML) {
@@ -33,7 +36,7 @@ define([
 			progressBar: self.progressBar,
 			tempo: self.tempo
 		});
-	
+
 		self.el = parentHTML;
 		self.initController();
 		self.initKeyboard();
@@ -91,13 +94,12 @@ define([
 				$.publish('ToPlayer-onToggleMute', 0);
 			}
 		});
-		$('input[type=radio][name=typeSwitch]').on('change',function(){
-			
-			if ($(this).val() == 'MIDI'){
+		$('input[type=radio][name=typeSwitch]').on('change', function() {
+
+			if ($(this).val() == 'midi') {
 				$.publish('ToAudioPlayer-disable');
 				$.publish('ToMidiPlayer-enable');
-			}
-			else{
+			} else { //$(this).val() == 'audio'
 				$.publish('ToMidiPlayer-disable');
 				$.publish('ToAudioPlayer-enable');
 			}
@@ -152,6 +154,21 @@ define([
 			e.preventDefault();
 		});
 	};
+	PlayerView.prototype.setPlayer = function(type) {
+		if (type === 'midi') {
+			this.midiPlayer = true;
+		} else { //type === 'audio'
+			this.audioPlayer = true;
+		}
+	};
+
+	PlayerView.prototype.unsetPlayer = function(type) {
+		if (type === 'midi') {
+			this.midiPlayer = false;
+		} else { //type === 'audio'
+			this.audioPlayer = false;
+		}
+	}
 
 	PlayerView.prototype.initKeyboard = function() {
 		var self = this;
@@ -192,12 +209,16 @@ define([
 			self.setVolume(volume);
 		});
 
-		$.subscribe('PlayerModel-onload', function(el) {
+		$.subscribe('PlayerModel-onload', function(el, type) {
+			self.setPlayer(type);
+			self.updateSwitch();
 			self.playerIsReady();
 		});
-
-		$.subscribe('PlayerModel-onChordsInstrument', function(el, instrument) {});
-		$.subscribe('PlayerModel-onMelodyInstrument', function(el, instrument) {});
+		$.subscribe('Audio-disabled', function() {
+			self.setPlayer('midi');
+			self.unsetPlayer('audio');
+			self.updateSwitch();
+		});
 
 		$.subscribe('PlayerModel-toggleMetronome', function(el, isMetronome) {
 			if (isMetronome) {
@@ -363,6 +384,19 @@ define([
 		$('#volume_controller_barre').css({
 			top: (relativePosition - middleController) + 'px'
 		});
+	};
+	PlayerView.prototype.updateSwitch = function() {
+		var typeSwitch = $("#type_button_container");
+		var visible = (typeSwitch.css('display') !== 'none');
+
+		if (this.midiPlayer && this.audioPlayer) {
+			if (!visible) {
+				typeSwitch.show();
+			}
+			$("input[name=typeSwitch][value=audio]").prop("checked", true);
+		} else {
+			typeSwitch.hide();
+		}
 	};
 
 	PlayerView.prototype.hide = function() {

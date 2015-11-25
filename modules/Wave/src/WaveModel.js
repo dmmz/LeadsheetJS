@@ -158,7 +158,7 @@ define([
 
 		function checkLoad() {
 			if (HTMLTagIsLoaded && audioCtxIsLoaded) {
-				$.publish('PlayerModel-onload');
+				$.publish('PlayerModel-onload','audio');
 				if (typeof callback !== "undefined") {
 					callback();
 				}

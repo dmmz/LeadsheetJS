@@ -46,18 +46,22 @@ define([
 
 			this.CANVAS_DIV_WIDTH_PROPORTION = 0.9; //width proportion between canvas created and divContainer (space between canvas border and divContainer border)
 			this.NOTE_WIDTH = 20; // estimated note width in order to be more flexible
-			this.LINE_HEIGHT = 150;
+			this.INITIAL_LINE_HEIGHT = 150;
 			this.LINE_WIDTH = 1550;
 			this.BARS_PER_LINE = 4;
 			this.ENDINGS_Y = 20; //0 -> thisChordsPosY==40, the greater the closer to stave 
 			this.LABELS_Y = 0; //like this.ENDINGS_Y
-			this.MARGIN_TOP = 100;
+			this.INITIAL_MARGIN_TOP = 100;
 			this.CHORDS_DISTANCE_STAVE = 20; //distance from stave
 			this.DISPLAY_TITLE = (params.displayTitle != undefined) ? params.displayTitle : true;
 			this.DISPLAY_COMPOSER = (params.displayComposer != undefined) ? params.displayComposer : true;
-			this.LINE_MARGIN_TOP = 0;
+			this.INITIAL_LINE_MARGIN_TOP = 0;
 			this.LAST_BAR_WIDTH_RATIO = 0.75; //in case of this.shortenLastBar = true (rendering audio), we make the last bar more compressed so that we left space for recordings longer than piece
 			this.FONT_CHORDS = "18px Verdana";
+			//next three fields are set as vars and not constants because they change (e.g. when visualizing audio)
+			this.lineMarginTop = this.INITIAL_LINE_MARGIN_TOP; 
+			this.marginTop  = this.INITIAL_MARGIN_TOP;
+			this.lineHeight = this.INITIAL_LINE_HEIGHT;
 
 			this.shortenLastBar = false;
 
@@ -133,7 +137,7 @@ define([
 			//if (viewerWidth < this.LINE_WIDTH){
 			this.LINE_WIDTH = viewerWidth;
 			//}
-		};
+		};	
 
 		LSViewer.prototype.scale = function(ctx) {
 			ctx = ctx || this.ctx;
@@ -215,25 +219,30 @@ define([
 		};
 		LSViewer.prototype.setLineMarginTop = function(lineMarginTop, bottom) {
 			if (!bottom) {
-				this.MARGIN_TOP += lineMarginTop;
+				this.marginTop += lineMarginTop;
 			} else {
-				this.LINE_MARGIN_TOP = lineMarginTop;
+				this.lineMarginTop = lineMarginTop;
 			}
-			this.LINE_HEIGHT += lineMarginTop;
+			this.lineHeight += lineMarginTop;
 		};
 
 		LSViewer.prototype.getLineHeight = function() {
-			return this.LINE_HEIGHT;
+			return this.lineHeight;
 		};
 		LSViewer.prototype.setLineHeight = function(lineHeight) {
 			if (!isNaN(lineHeight)) {
-				this.LINE_HEIGHT = lineHeight;
+				this.lineHeight = lineHeight;
 			}
+		};
+		LSViewer.prototype.resetLinesHeight = function() {
+			this.lineHeight = this.INITIAL_LINE_HEIGHT;
+			this.marginTop  = this.INITIAL_MARGIN_TOP;
+			this.lineMarginTop  = this.INITIAL_LINE_MARGIN_TOP;
 		};
 
 		LSViewer.prototype.setHeight = function(song, barWidthMng) {
 			var totalNumBars = song.getComponent("bars").getTotal();
-			this.canvas.height = (barWidthMng.getDimensions(totalNumBars - 1).top + this.LINE_HEIGHT) * this.SCALE;
+			this.canvas.height = (barWidthMng.getDimensions(totalNumBars - 1).top + this.lineHeight) * this.SCALE;
 			/*if (this.canvas.height > $(this.divContainer).height() && this.heightOverflow == 'scroll') {
 				$(this.divContainer).css({
 					overflowY: "scroll"
@@ -288,7 +297,7 @@ define([
 				tieMng = new TieManager();
 
 			var lastBarWidthRatio = this.shortenLastBar ? this.LAST_BAR_WIDTH_RATIO : 1;
-			this.barWidthMng = new BarWidthManager(this.LINE_HEIGHT, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE, this.MARGIN_TOP, lastBarWidthRatio);
+			this.barWidthMng = new BarWidthManager(this.lineHeight, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE, this.marginTop, lastBarWidthRatio);
 			this.barWidthMng.calculateBarsStructure(song, nm, cm, this.ctx, this.FONT_CHORDS);
 			this.setHeight(song, this.barWidthMng);
 			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
@@ -385,10 +394,9 @@ define([
 				this._displayTitle(song.getTitle());
 			}
 			this.resetScale();
-			//console.timeEnd('whole draw');
-			// if we requested to have a layer and we haven't already created it
-			// TODO: this.layer anhd this.forceNewLayer are more or less the same
-			if (this.layer && (!this.canvasLayer) || (this.layer && this.forceNewCanvasLayer)) {
+			
+			// if constructor was supposed to have a layer and either canvasLayer is not created, either we are forcing to recreate it (e.g. on resize)
+			if (this.layer && (this.forceNewCanvasLayer || !this.canvasLayer)) {
 				this.forceNewCanvasLayer = false;
 				if (this.canvasLayer){
 					this.canvasLayer.destroy();//to remove html listeners

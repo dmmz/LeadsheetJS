@@ -81,19 +81,19 @@ define([
 		"Wave": Wave,
 		"utils": utils
 	};
-	
+
 	LJS.init = function(MusicCSLJSON, params) {
 		if (MusicCSLJSON === undefined) {
 			throw "missing MusicCLJSON song";
 		}
-		
+
 
 		/**
 		 * In first Part we read options
 		 */
 		// Viewer
 		var useViewer = false;
-		var viewerHTML, 
+		var viewerHTML,
 			viewerOptions;
 
 		if (params.viewer !== undefined) {
@@ -104,7 +104,7 @@ define([
 			useViewer = true;
 			viewerHTML = params.viewer.HTMLElement;
 			viewerOptions = params.viewer.viewOptions || {};
-			
+
 		}
 
 		// Player
@@ -114,20 +114,20 @@ define([
 			if (params.player.HTMLElement === undefined) {
 				throw "Missing HTMLElement for player";
 			}
-			
+
 			usePlayer = true;
 			playerHTML = params.player.HTMLElement;
 			imgUrl = params.player.imgUrl || undefined;
 			playerViewOptions = params.player.viewOptions || {};
-			
+
 			if (params.player.midi && params.player.midi.soundfontUrl) {
 				soundfontUrl = params.player.midi.soundfontUrl;
 				useMidi = true;
 			}
 			useAudio = !!(params.player.audio);
-			
+
 		}
-		
+
 		// Edition
 		allowEdition = false;
 		var editNotes, editChords, editStructure, saveFunction, imgUrlEdition, allowHistory;
@@ -157,11 +157,11 @@ define([
 				menuHTML = params.menu.HTMLElement;
 			}
 		}
-	
+
 		var loadedModules = {}; // we store loaded modules in this object, this object is return for developer
-		
+
 		// On second Part we use options to initialize modules
-		
+
 		var songModel = SongModel_CSLJson.importFromMusicCSLJSON(MusicCSLJSON);
 		loadedModules.songModel = songModel;
 		doLoadMidiPlayer = true; // only for debug false true
@@ -217,13 +217,13 @@ define([
 				}
 			} else {
 				//for player and tags
-				cursorNoteModel = (new Cursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow')).model;
+				cursorNoteModel = new Cursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow').model;
 			}
 
-			if (!allowEdition || !editNotes) {
+			if (params.tags && (!allowEdition || !editNotes)) {
 				//when we need tags and there is no edition
 				loadedModules.noteSpaceMng = new NoteSpaceManager(cursorNoteModel, viewer);
-			} else {
+			} else if (allowEdition && edition.noteEdition) {
 				loadedModules.noteSpaceMng = edition.noteEdition.noteSpaceMng;
 			}
 		}
@@ -232,7 +232,7 @@ define([
 		if (usePlayer) {
 
 			//we load both MIDI and Audio modules (as this won't bother the user with external dependencies)
-			
+
 			playerViewOptions.displayTypeSwitch = useAudio && useMidi && params.player.audio.audioFile; //if audioFile is not defined, we do not load displayTypeSwitch
 
 
@@ -240,25 +240,24 @@ define([
 
 
 			if (useMidi) {
-				var disableOnload =  useAudio;
-				loadedModules.midiPlayer = LJS._loadMidiPlayer(MidiCSL, songModel, soundfontUrl, loadedModules.playerView, cursorNoteModel, disableOnload);
+				loadedModules.midiPlayer = LJS._loadMidiPlayer(MidiCSL, songModel, soundfontUrl, loadedModules.playerView, cursorNoteModel);
 			}
 
-			if(useAudio){
+			if (useAudio) {
 				$.publish('ToMidiPlayer-disable');
-				
+
 				var wave = LJS._loadAudioPlayer(Wave, songModel, viewer, cursorNoteModel); // audio player is use to get audio wave, it's why it needs viewer
-				if (params.player.audio.audioFile){
-					wave.load(params.player.audio.audioFile, 170, true);	
+				if (params.player.audio.audioFile) {
+					wave.load(params.player.audio.audioFile, 170, true);
 				}
-				
-				loadedModules.audioPlayer = wave;	
+
+				loadedModules.audioPlayer = wave;
 			}
-		
+
 		}
 		//TAG
-		if (params.tags){
-			
+		if (params.tags) {
+
 			// TagManager take as argument your array of tags here call analysis, an array of color (here undefined because we use built in colors)
 			new TagManager(songModel, loadedModules.noteSpaceMng, params.tags, undefined, true, false);
 			//$.publish('ToViewer-draw', songModel); // redraw
@@ -266,7 +265,7 @@ define([
 		if (useViewer) {
 			viewer.draw(songModel);
 		}
-		
+
 		//eiditon is used outside
 		if (typeof edition !== "undefined") {
 			loadedModules.edition = edition;
@@ -364,8 +363,8 @@ define([
 		return edition;
 	};
 
-	LJS._loadMidiPlayer = function(MidiCSL, songModel, soundfontUrl, playerView, cursorModel, disableOnload) {
-		
+	LJS._loadMidiPlayer = function(MidiCSL, songModel, soundfontUrl, playerView, cursorModel) {
+
 		var player = new MidiCSL.PlayerModel_MidiCSL(songModel, soundfontUrl, {
 			'cursorModel': cursorModel
 		});
