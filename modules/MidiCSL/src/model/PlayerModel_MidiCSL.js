@@ -43,7 +43,7 @@ define([
 			this.songModel = songModel;
 			this.isEnabled = true; //this is initialized on load
 			if (typeof songModel !== "undefined") {
-				this.tempo = songModel.getTempo();
+				this.setTempo(songModel.getTempo());
 			}
 			this.soundfontPath = soundfontPath;
 

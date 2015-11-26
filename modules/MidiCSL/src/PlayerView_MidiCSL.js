@@ -211,6 +211,10 @@ define([
 			}
 		});
 
+		$.subscribe('PlayerModel-onTempoChange', function(el, tempo) {
+			self.setTempo(tempo);
+		});
+
 		$.subscribe('PlayerModel-onvolumechange', function(el, volume) {
 			self.setVolume(volume);
 		});
@@ -311,6 +315,10 @@ define([
 			$('#volume_container .sound_2').hide();
 			$('#volume_container .' + pic).show();
 		}
+	};
+
+	PlayerView.prototype.setTempo = function(tempo) {
+		$('#tempo_container #tempo').val('tempo');
 	};
 
 	PlayerView.prototype.getTempo = function() {

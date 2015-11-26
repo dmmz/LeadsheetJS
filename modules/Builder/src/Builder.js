@@ -182,6 +182,23 @@ define([
 		}
 		if (usePlayer) {
 			// Load players (midi and audio)
+			
+			/*var tempo = songModel.getTempo();
+			if (!tempo) {
+				if (typeof globalVariables.tempo !== "undefined" && globalVariables.tempo !== null) {
+					var minTempo = parseInt(globalVariables.tempo['minTempo']);
+					var maxTempo = parseInt(globalVariables.tempo['maxTempo']);
+					var range = maxTempo - minTempo;
+					var tempo = Math.round((Math.random() * range) + minTempo);
+					$('#tempo_container #tempo').val(tempo);
+				} else {
+					tempo = $('#tempo_container #tempo').val();
+				}
+			} else {
+				$('#tempo_container #tempo').val(tempo);
+			}*/
+
+
 			loadedModules.playerView = Builder._loadPlayerView(playerHTML, imgUrl, playerViewOptions);
 			if (useMidi === true) {
 				loadedModules.midiPlayer = Builder._loadMidiPlayer(songModel, soundfontUrl, loadedModules.playerView, cursorNoteModel);
