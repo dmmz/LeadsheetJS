@@ -195,25 +195,6 @@ define([
 					});
 					LJS._loadActiveMenuOrDefault(menu, 'File');
 
-					// Harmonize menu
-					if (params.harmonizer) {
-						var harm = new Harmonizer(songModel, menu.model);
-						menu.model.addMenu({
-							title: 'Harmonizer',
-							view: harm.view,
-							order: 6
-						});
-					}
-
-					if (editNotes && params.harmonicAnalysis) {
-						// Harmonic Analysis menu
-						var harmAn = new HarmonicAnalysis(songModel, edition.noteEdition.noteSpaceMng);
-						menu.model.addMenu({
-							title: 'Harmonic Analysis',
-							view: harmAn.view,
-							order: 7
-						});
-					}
 				}
 			} else {
 				//for player and tags
@@ -276,7 +257,7 @@ define([
 
 
 	LJS._loadHistory = function(songModel, HTMLElement) {
-		new HistoryC(songModel, HTMLElement, 20, true, false);
+		new HistoryC(songModel, HTMLElement, {maxHistoryLength:2}, true, false);
 		$.publish('ToHistory-add', 'Open song - ' + songModel.getTitle());
 	};
 

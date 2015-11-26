@@ -35,7 +35,7 @@ define([
 
 
 	/**
-	 * Function is call to load the state of one history
+	 * Function is called to load the state of one history
 	 * @param  {int} currentHistory represent the index of history that will be loaded
 	 */
 	HistoryController.prototype.loadHistory = function(currentHistory) {
@@ -44,9 +44,10 @@ define([
 			return;
 		}
 		this.model.setCurrentPosition(currentHistory);
-		if (typeof this.songModel !== "undefined") {
-			if (typeof this.model.getCurrentState().leadsheet !== "undefined" && this.model.getCurrentState().leadsheet.changes.length > 0) {
-				SongModel_CSLJson.importFromMusicCSLJSON(this.model.getCurrentState().leadsheet, this.songModel);
+		if (this.songModel) {
+			var retrievedLeadsheet = this.model.getCurrentState();
+			if (retrievedLeadsheet){
+				SongModel_CSLJson.importFromMusicCSLJSON(retrievedLeadsheet, this.songModel);
 				$.publish('ToLayers-removeLayer');
 				$.publish('ToViewer-draw', this.songModel);
 			}
@@ -54,7 +55,7 @@ define([
 	};
 
 	/**
-	 * Function is call to load the state of one history before or after (typically, ctrl+z or ctrl+y)
+	 * Function is called to load the state of one history before or after (typically, ctrl+z or ctrl+y)
 	 * @param  {int} inc represent the decal of history relative to currentHistory to be loaded
 	 */
 	HistoryController.prototype.moveSelectHistory = function(inc) {
@@ -65,16 +66,15 @@ define([
 	};
 
 	/**
-	 * Function is call to save a state to history
+	 * Function is called to save a state to history
 	 */
 	HistoryController.prototype.addToHistory = function(title) {
 		var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel); // Exporting current songModel to json
 		this.model.addToHistory(JSONSong, title);
-		this.model.setCurrentPosition(this.model.historyList.length - 1);
 	};
 
 	/**
-	 * Function is call to update last entry songModel state, but title is merged, it's used to not create another entry in history state
+	 * Function is called to update last entry songModel state, but title is merged, it's used to not create another entry in history state
 	 */
 	HistoryController.prototype.updateLastEntry = function() {
 		var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel); // Exporting current songModel to json

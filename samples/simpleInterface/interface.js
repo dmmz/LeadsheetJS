@@ -11,17 +11,21 @@ require.config({
 		text: 'external-libs/require-text',
 		bootstrap: 'external-libs/bootstrap/bootstrap.min',
 		jsPDF: 'external-libs/jspdf/jspdf.min',
+		JsonDelta: 'external-libs/json_delta_1.1.3_minified'
 		//bootstrap: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min',
 	},
 	shim: {
 		// 'LeadsheetJS': {
 		// 	exports: 'LS'
 		// },
-		'vexflow': {
+		vexflow: {
 			exports: 'Vex'
 		},
-		'Midijs': {
+		Midijs: {
 			exports: 'MIDI'
+		},
+		JsonDelta: {
+			exports: 'JSON_delta'
 		}
 	}
 });
@@ -102,22 +106,22 @@ define(function(require) {
 		viewer: viewerOptions,
 		tags : tags,
 		player: playerOptions,
-		'edition': {
-			'notes': true,
-			'imgUrl': {
-				'notes': '/modules/NoteEdition/img',
-				'chords': '/modules/NoteEdition/img',
-				'structure': '/modules/NoteEdition/img',
+		edition: {
+			notes: true,
+			imgUrl: {
+				notes: '/modules/NoteEdition/img',
+				chords: '/modules/NoteEdition/img',
+				structure: '/modules/NoteEdition/img',
 			},
-			'chords': true,
-			'structure': true,
-			'history': {
-				'enable': false,
-				'HTMLElement': historyHTML, // if not precised, then it doesn't display history but keyboard ctrl+z and y are working
+			chords: true,
+			structure: true,
+			history: {
+				enable: true,
+				HTMLElement: historyHTML, // if not precised, then it doesn't display history but keyboard ctrl+z and y are working
 			}
 		},
-		'menu': {
-			'HTMLElement': menuHTML
+		menu: {
+			HTMLElement: menuHTML
 		}
 	};
 
