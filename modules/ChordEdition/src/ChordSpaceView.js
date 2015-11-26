@@ -195,7 +195,7 @@ define([
 		input.focus(); // this focus launch autocomplete directly when value is not empty
 		// on blur event we change the value, blur is launched when we enter and click somewhere else
 		input.on('blur', function() {
-			self.onChange(songModel, $(this).val());
+			self.onChange(songModel, $(this).val())
 			// input.devbridgeAutocomplete('dispose');
 		});
 		// on tab call (tab doesn't trigger blur event)

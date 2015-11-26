@@ -3,66 +3,44 @@ define([
 	'mustache',
 	'utils/UserLog',
 	'pubsub',
-	'text!modules/MidiCSL/src/PlayerTemplate_MidiCSL.html',
-], function($, Mustache, UserLog, pubsub, PlayerTemplate_MidiCSL) {
+	'text!modules/PlayerView/src/PlayerTemplate.html',
+], function($, Mustache, UserLog, pubsub, PlayerTemplate) {
 
 	function PlayerView(parentHTML, imgPath, options) {
 		options = options || {};
-		this.displayMetronome = (typeof(options.displayMetronome) !== "undefined") ? options.displayMetronome : false;
-		this.displayLoop = (typeof(options.displayLoop) !== "undefined") ? options.displayLoop : false;
-		this.displayTempo = (typeof(options.displayTempo) !== "undefined") ? options.displayTempo : false;
-		this.changeInstrument = (typeof(options.changeInstrument) !== "undefined") ? options.changeInstrument : false;
-		this.progressBar = (typeof(options.progressBar) !== "undefined") ? options.progressBar : false;
+		//PlayerView can be playing Midi, audio or both at the same time
+		this.midiPlayer = false;
+		this.audioPlayer = false;
+
+		this.displayMetronome = !!options.displayMetronome;
+		this.displayLoop = !!options.displayLoop;
+		this.displayTempo = !!options.displayTempo;
+		this.progressBar = !!options.progressBar;
 		this.tempo = options.tempo ? options.tempo : 120;
 		this.el = undefined;
 		this.imgPath = imgPath;
 		this.initSubscribe();
-		var self = this;
-		this.render(parentHTML, true);
+		this.render(parentHTML);
+
 	}
 
-	PlayerView.prototype.render = function(parentHTML, force, callback) {
-		force = force || false;
+	PlayerView.prototype.render = function(parentHTML) {
 		// case el has never been rendered
 		var self = this;
-		if (typeof this.el === "undefined" || (typeof this.el !== "undefined" && force === true)) {
-			this.initView(parentHTML, function() {
-				self.initController();
-				self.initKeyboard();
-				$.publish('PlayerView-render');
-				if (typeof callback === "function") {
-					callback();
-				}
-				return;
-			});
-		} else {
-			if (typeof callback === "function") {
-				callback();
-			}
-			return;
-		}
-	};
-
-	PlayerView.prototype.initView = function(parentHTML, callback) {
-		var self = this;
-		//$.get('/modules/MidiCSL/src/PlayerTemplate_MidiCSL.html', function(template) {
-		var rendered = Mustache.render(PlayerTemplate_MidiCSL, {
+		parentHTML.innerHTML = Mustache.render(PlayerTemplate, {
 			imgPath: self.imgPath,
 			displayLoop: self.displayLoop,
+			displayTypeSwitch: self.displayTypeSwitch,
 			displayMetronome: self.displayMetronome,
 			displayTempo: self.displayTempo,
-			changeInstrument: self.changeInstrument,
 			progressBar: self.progressBar,
 			tempo: self.tempo
 		});
-		if (typeof parentHTML !== "undefined") {
-			parentHTML.innerHTML = rendered;
-		}
+
 		self.el = parentHTML;
-		if (typeof callback === "function") {
-			callback();
-		}
-		//});
+		self.initController();
+		self.initKeyboard();
+		$.publish('PlayerView-render');
 	};
 
 	/**
@@ -116,6 +94,16 @@ define([
 				$.publish('ToPlayer-onToggleMute', 0);
 			}
 		});
+		$('input[type=radio][name=typeSwitch]').on('change', function() {
+
+			if ($(this).val() == 'midi') {
+				$.publish('ToAudioPlayer-disable');
+				$.publish('ToMidiPlayer-enable');
+			} else { //$(this).val() == 'audio'
+				$.publish('ToMidiPlayer-disable');
+				$.publish('ToAudioPlayer-enable');
+			}
+		});
 
 		// volume slider
 		var dragStart = false;
@@ -154,15 +142,6 @@ define([
 			}
 		});
 
-		// instument selection
-		$('#chords_instrument_container select').change(function() {
-			$.publish('ToPlayer-onChordInstrumentChange', $(this).val());
-		});
-
-		$('#melody_instrument_container select').change(function() {
-			$.publish('ToPlayer-onMelodyInstrumentChange', $(this).val());
-		});
-
 		$('.progress_bar_player').click(function(e) {
 			var width = $(this).width();
 			var relX = e.pageX - $(this).parent().offset().left;
@@ -175,6 +154,21 @@ define([
 			e.preventDefault();
 		});
 	};
+	PlayerView.prototype.setPlayer = function(type) {
+		if (type === 'midi') {
+			this.midiPlayer = true;
+		} else { //type === 'audio'
+			this.audioPlayer = true;
+		}
+	};
+
+	PlayerView.prototype.unsetPlayer = function(type) {
+		if (type === 'midi') {
+			this.midiPlayer = false;
+		} else { //type === 'audio'
+			this.audioPlayer = false;
+		}
+	}
 
 	PlayerView.prototype.initKeyboard = function() {
 		var self = this;
@@ -219,12 +213,16 @@ define([
 			self.setVolume(volume);
 		});
 
-		$.subscribe('PlayerModel-onload', function(el) {
+		$.subscribe('PlayerModel-onload', function(el, type) {
+			self.setPlayer(type);
+			self.updateSwitch();
 			self.playerIsReady();
 		});
-
-		$.subscribe('PlayerModel-onChordsInstrument', function(el, instrument) {});
-		$.subscribe('PlayerModel-onMelodyInstrument', function(el, instrument) {});
+		$.subscribe('Audio-disabled', function() {
+			self.setPlayer('midi');
+			self.unsetPlayer('audio');
+			self.updateSwitch();
+		});
 
 		$.subscribe('PlayerModel-toggleMetronome', function(el, isMetronome) {
 			if (isMetronome) {
@@ -394,6 +392,19 @@ define([
 		$('#volume_controller_barre').css({
 			top: (relativePosition - middleController) + 'px'
 		});
+	};
+	PlayerView.prototype.updateSwitch = function() {
+		var typeSwitch = $("#type_button_container");
+		var visible = (typeSwitch.css('display') !== 'none');
+
+		if (this.midiPlayer && this.audioPlayer) {
+			if (!visible) {
+				typeSwitch.show();
+			}
+			$("input[name=typeSwitch][value=audio]").prop("checked", true);
+		} else {
+			typeSwitch.hide();
+		}
 	};
 
 	PlayerView.prototype.hide = function() {

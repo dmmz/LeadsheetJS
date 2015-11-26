@@ -49,18 +49,15 @@ define([
 		$.subscribe('ToPlayer-onTempo', function(el, tempo) {
 			self.onTempoChange(tempo);
 		});
-		$.subscribe('ToPlayer-onChordInstrumentChange', function(el, instrument) {
-			self.onChordInstrumentChange(instrument);
-		});
-		$.subscribe('ToPlayer-onMelodyInstrumentChange', function(el, instrument) {
-			self.onMelodyInstrumentChange(instrument);
-		});
 		$.subscribe('ToPlayer-toggleLoop', function(el) {
 			self.toggleLoop();
 		});
 
-		$.subscribe('ToPlayer-enable', function(el) {
+		$.subscribe('ToMidiPlayer-enable', function(el) {
 			self.enable();
+		});
+		$.subscribe('ToMidiPlayer-disable', function(el) {
+			self.disable();
 		});
 		$.subscribe('ToPlayer-disableAll', function(el) {
 			self.disable();

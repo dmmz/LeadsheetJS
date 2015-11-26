@@ -6,8 +6,13 @@
 		</div>
 	</div>
 	{{/progressBar}}
-	<!--<div id="switch_player" class="current_button">Player</div>-->
+	
 	<div id="player_buttons_container">
+		
+		<div id="type_button_container" style="display:none">
+			<span>MIDI <input type="radio" style="vertical-align: top" name="typeSwitch" value="midi"></span><br/>
+			<span>Audio <input type="radio" style="vertical-align: top" name="typeSwitch" value="audio" checked="true"></span>
+		</div>
 		<div id="stop_button_container" class="player_button">
 			<div id="stop_button">
 				<img src="{{imgPath}}/stop.png" alt="stop" title="Stop" />
@@ -80,71 +85,5 @@
 		{{/displayMetronome}}
 
 	</div>
-	{{#changeInstrument}}
-	<div id="player_instrument_container">
-		<div id="player_chords">
-			<div id="chords_instrument_container">
-				<select>
-					<option>--None--</option>
-					<optgroup label="Midi instrument">
-						<option value="0" selected>acoustic_grand_piano</option>
-	<!-- 						<option value="1">electric_guitar_clean</option>
-								
-						<option value="1">acoustic_guitar_nylon</option>
-						<option value="1">electric_guitar_jazz</option>
-						<option value="2">acoustic_guitar_steel</option>
-						<option value="3">electric_guitar_jazz</option>
-						<option value="4">distortion_guitar</option>
-						<option value="5">electric_bass_finger</option>
-						<option value="6">electric_bass_pick</option>
-						<option value="7">trumpet</option>
-						<option value="8">brass_section</option>
-						<option value="9">soprano_sax</option> -->
-						<!--<option value="1">alto_sax</option>-->
-	<!-- 								<option value="11">tenor_sax</option>
-						<option value="12">baritone_sax</option>
-						<option value="13">flute</option>
-						<option value="14">synth_drum</option> -->
-					</optgroup>
-				</select>
-				<div class="player_text">
-					Chords
-				</div>
-			</div>
-
-		</div>
-
-
-		<div id="player_melody">
-			<div id="melody_instrument_container">
-				<select>
-					<option>--None--</option>
-					<optgroup label="Midi instrument">
-						<option value="0" selected>acoustic_grand_piano</option>
-	<!--					<option value="1">electric_guitar_clean</option>
-	 								<option value="1">electric_guitar_jazz</option>
-						<option value="1">acoustic_guitar_nylon</option>
-						<option value="2">acoustic_guitar_steel</option>
-						<option value="4">distortion_guitar</option>
-						<option value="5">electric_bass_finger</option>
-						<option value="6">electric_bass_pick</option>
-						<option value="7">trumpet</option>
-						<option value="8">brass_section</option>
-						<option value="9">soprano_sax</option> -->
-						<!--<option value="1">alto_sax</option>-->
-	<!-- 								<option value="11">tenor_sax</option>
-						<option value="12">baritone_sax</option>
-						<option value="13">flute</option> -->
-						<!-- <option value="2">taiko_drum</option> -->
-					</optgroup>
-				</select>
-				<div class="player_text">
-					Melody
-				</div>
-			</div>
-		</div>
-		
-	</div>
-	{{/changeInstrument}}
-
+	
 </div>

@@ -203,12 +203,14 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		}
 
 		if (this.detectEventOnAllDocument) {
-			$('html').mousedown(function(evt) {
+			$('html').on('mousedown', function(evt) {
 				mouseDown(evt);
+				//evt.stopImmediatePropagation();
 			});
 			// Mouseup on canvas is usefull to allow unselect
-			$('html').mouseup(function(evt) {
+			$('html').on('mouseup',function(evt) {
 				mouseUp(evt);
+				//evt.stopImmediatePropagation();
 			});
 		} else {
 			$(this.canvasLayer).mousedown(function(evt) {
@@ -255,7 +257,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			return false;
 		}
 
-		$('html').mousemove(function(evt) {
+		$('html').on('mousemove',function(evt) {
 			//draw cursor selection
 			var xy = self._getXandY($(self.canvasLayer), evt);
 			if (self.mouseDown) {
@@ -268,6 +270,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 				}
 			}
 			setPointerIfInPath(xy);
+
 		});
 
 		$.subscribe('CanvasLayer-refresh', function(el) {
@@ -354,6 +357,12 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			this.ctx.strokeStyle = style;
 		}
 
+	};
+	CanvasLayer.prototype.destroy = function() {
+		$('html').off('mousedown');
+		$('html').off('mouseup');
+		$('html').off('mousemove');
+			// Mouseup on canvas is usefull to allow unselect
 	};
 	return CanvasLayer;
 });

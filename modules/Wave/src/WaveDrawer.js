@@ -35,7 +35,7 @@ define([
 		if (this.topAudio > 0) { // if audio is greater than 0 it means audio will be on top of score line
 			this.viewer.setLineMarginTop(this.topAudio);
 		} else {
-			distance = (this.heightAudio - this.topAudio) - this.viewer.LINE_HEIGHT;
+			distance = (this.heightAudio - this.topAudio) - this.viewer.lineHeight;
 			if (distance > 0) {
 				this.viewer.setLineMarginTop(distance, true);
 				
@@ -116,6 +116,7 @@ define([
 		return this.elemMng.getYs(this.waveBarDimensions, coords);
 	};
 
+	// WaveDrawer is a CanvasLayer element, so here, enabled means that user is interacting with it (selecting parts of the wave audio)
 	/**
 	 * @interface
 	 */
@@ -124,7 +125,7 @@ define([
 	};
 
 	/**
-	 * @interface
+	 * @interface  			
 	 */
 	WaveDrawer.prototype.enable = function() {
 		this.enabled = true;

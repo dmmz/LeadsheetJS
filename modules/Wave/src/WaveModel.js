@@ -11,7 +11,8 @@ define([
 		this.audioCtx = new(window.AudioContext || window.webkitAudioContext)();
 		this.source = this.audioCtx.createBufferSource();
 		this.tempo = null;
-		this.isEnabled = true; //this is initialized on load
+		this.isPlayingEnabled = false; //this is initialized on load
+		this.isDrawingEnabled = false;
 		this.initModelEvents();
 
 		var initVolume;
@@ -26,7 +27,7 @@ define([
 	}
 
 	WaveModel.prototype.play = function(playFrom, playTo) {
-		if (this.isEnabled === false) {
+		if (this.isPlayingEnabled === false) {
 			return;
 		}
 		if (typeof playFrom !== "undefined") {
@@ -43,7 +44,7 @@ define([
 	};
 
 	WaveModel.prototype.pause = function() {
-		if (this.isEnabled === false) {
+		if (this.isPlayingEnabled === false) {
 			return;
 		}
 		this.audio.pause();
@@ -51,7 +52,7 @@ define([
 	};
 
 	WaveModel.prototype.stop = function() {
-		if (this.isEnabled === false || this.audio.readyState === 0) {
+		if (this.isPlayingEnabled === false || this.audio.readyState === 0) {
 			return;
 		}
 		this.audio.pause();
@@ -68,7 +69,7 @@ define([
 	};
 
 	WaveModel.prototype.setVolume = function(volume) {
-		if (this.isEnabled === false) {
+		if (this.isPlayingEnabled === false) {
 			return;
 		}
 		if (typeof volume === "undefined" || isNaN(volume)) {
@@ -80,7 +81,7 @@ define([
 	};
 
 	WaveModel.prototype.mute = function() {
-		if (this.isEnabled === false) {
+		if (this.isPlayingEnabled === false) {
 			return;
 		}
 		this.tmpVolume = this.audio.volume;
@@ -88,14 +89,14 @@ define([
 	};
 
 	WaveModel.prototype.unmute = function() {
-		if (this.isEnabled === false) {
+		if (this.isPlayingEnabled === false) {
 			return;
 		}
 		this.setVolume(this.tmpVolume);
 	};
 
 	WaveModel.prototype.setLoop = function(loop) {
-		if (this.isEnabled === false) {
+		if (this.isPlayingEnabled === false) {
 			return;
 		}
 		if (typeof loop !== "undefined") {
@@ -108,7 +109,7 @@ define([
 	};
 
 	WaveModel.prototype.toggleLoop = function() {
-		if (this.isEnabled === false) {
+		if (this.isPlayingEnabled === false) {
 			return;
 		}
 		if (this.audio.loop === true) {
@@ -147,6 +148,7 @@ define([
 				self.source.connect(self.audioCtx.destination);
 				audioCtxIsLoaded = true;
 				checkLoad();
+				self.enable();
 				//source.start(0)
 			},
 			function(e) {
@@ -156,7 +158,7 @@ define([
 
 		function checkLoad() {
 			if (HTMLTagIsLoaded && audioCtxIsLoaded) {
-				$.publish('PlayerModel-onload');
+				$.publish('PlayerModel-onload','audio');
 				if (typeof callback !== "undefined") {
 					callback();
 				}
@@ -167,19 +169,19 @@ define([
 	WaveModel.prototype.initModelEvents = function() {
 		var self = this;
 		$(this.audio).on('ended', function() {
-			if (self.isEnabled === false) {
+			if (self.isPlayingEnabled === false) {
 				return;
 			}
 			$.publish('PlayerModel-onfinish');
 		});
 		$(this.audio).on('playing', function() {
-			if (self.isEnabled === false) {
+			if (self.isPlayingEnabled === false) {
 				return;
 			}
 			$.publish('PlayerModel-playing');
 		});
 		$(this.audio).on('timeupdate', function() {
-			if (self.isEnabled === false) {
+			if (self.isPlayingEnabled === false) {
 				return;
 			}
 			if (typeof self.playTo !== "undefined") {
@@ -209,11 +211,25 @@ define([
 	};
 
 	WaveModel.prototype.enable = function() {
-		this.isEnabled = true;
+		this.isPlayingEnabled = true;
+		this.isDrawingEnabled = true;
 	};
 	WaveModel.prototype.disable = function() {
 		this.stop();
-		this.isEnabled = false;
+		this.isPlayingEnabled = false;
+		this.isDrawingEnabled = false;
+	};
+	WaveModel.prototype.enablePlaying = function() {
+		this.isPlayingEnabled = true;
+	};
+	WaveModel.prototype.disablePlaying = function() {
+		this.isPlayingEnabled = false;
+	};
+	WaveModel.prototype.enableDrawing = function() {
+		this.isDrawingEnabled = true;
+	};
+	WaveModel.prototype.disableDrawing = function() {
+		this.isDrawingEnabled = false;
 	};
 
 	WaveModel.prototype.getPeaks = function(length, startPoint, endPoint) {

@@ -143,7 +143,7 @@ define([
 				viewportHeight = $(window).height();
 				scrollTop = $(window).scrollTop();
 				//console.log('down');
-				$(window).scrollTop($(window).scrollTop() + self.viewer.LINE_HEIGHT);
+				$(window).scrollTop($(window).scrollTop() + self.viewer.lineHeight);
 				iSafe++;
 			}
 			if (iSafe === 0) {
@@ -153,7 +153,7 @@ define([
 					canvasOffset = $(ctx.canvas).offset().top;
 					viewportHeight = $(window).height();
 					scrollTop = $(window).scrollTop();
-					$(window).scrollTop($(window).scrollTop() - self.viewer.LINE_HEIGHT);
+					$(window).scrollTop($(window).scrollTop() - self.viewer.lineHeight);
 					iSafe++;
 				}
 			}
