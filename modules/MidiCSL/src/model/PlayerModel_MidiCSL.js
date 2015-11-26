@@ -43,7 +43,7 @@ define([
 			this.songModel = songModel;
 			this.isEnabled = true; //this is initialized on load
 			if (typeof songModel !== "undefined") {
-				this.setTempo(songModel.getTempo());
+				this.tempo = songModel.getTempo();
 			}
 			this.soundfontPath = soundfontPath;
 
@@ -568,7 +568,7 @@ define([
 
 		PlayerModel_MidiCSL.prototype.MidiPluginIsReady = function() {
 			this.setReady(true);
-			$.publish('PlayerModel-onload','midi');
+			$.publish('PlayerModel-onload', 'midi');
 		};
 
 		return PlayerModel_MidiCSL;
