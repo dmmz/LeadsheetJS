@@ -17,6 +17,14 @@ define(['modules/Edition/src/ElementView'], function(ElementView) {
 	};
 	/**
 	 * @interface
+	 * @param  {Object}  coords [description]
+	 * @return {Boolean}        [description]
+	 */
+	NoteSpaceView.prototype.isBetweenYs = function(coords) {
+		return ElementView.isBetweenYs(coords, this.position, this.scaler);
+	};
+	/**
+	 * @interface
 	 */
 	NoteSpaceView.prototype.getArea = function() {
 		return this.position;

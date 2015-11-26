@@ -18,6 +18,19 @@ define(function() {
 			posYe = pos.y + pos.h;
 		return (area.x < posXe && area.xe > pos.x) && (area.y < posYe && area.ye > pos.y);
 	};
+	/**
+	 * [isBetweenYs description]
+	 * @param  {Array}  ys       [yMin, yMax]
+	 * @param  {[type]}  position [description]
+	 * @param  {[type]}  scaler   [description]
+	 * @return {Boolean}          [description]
+	 */
+	ElementView.isBetweenYs = function(ys, position, scaler) {
+		var pos = scaler.getScaledObj(position),
+			posYe = pos.y + pos.h;
+		return (ys[0] < posYe && ys[1] > pos.y);
+	};
+
 
 	return ElementView;
 });

@@ -90,9 +90,12 @@ define([
 	 * @interface
 	 * @param  {Object} coords
 	 */
-	NoteSpaceManager.prototype.onSelected = function(coords) {
-
-		var notes = this.elemMng.getElemsInPath(this.noteSpace, coords);
+	NoteSpaceManager.prototype.onSelected = function(coords, ini, fin) {
+		var notes;
+		var coordsTop, coordsBottom;
+		
+		notes = this.elemMng.getElemsInPath(this.noteSpace, coords, ini, fin,  this.getYs(coords));
+		
 
 		if (notes) {
 			this.cursor.setPos(notes);

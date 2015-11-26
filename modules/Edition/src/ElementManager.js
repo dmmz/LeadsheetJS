@@ -10,12 +10,89 @@ define(function() {
 	 * @param  {[type]} coords
 	 * @return {Array}  of two positions [min, max], or booelan false if nothing found
 	 */
-	ElementManager.prototype.getElemsInPath = function(elems, coords) {
-		var note,
-			min = null,
+	ElementManager.prototype.getElemsInPath = function(elems, coords, ini, fin, ys) {
+		var min = null,
 			max = null;
+		if (ini && fin && ys && 
+			(ini[0] < fin[0] && ini[1] > fin[1] || ini[0] > fin[0] && ini[1] < fin[1]) && ys.topY != ys.bottomY) {
+			coordsTop = (ini[1] < fin[1]) ? ini : fin;
+			coordsBottom = (ini[1] > fin[1]) ? ini : fin;
+			return this.getInvertedElemsInPath(elems, coords);
+		}
+		else{
+			for (var i in elems) {
+				if (elems[i].isInPath(coords)) {
+					if (min == null) {
+						min = Number(i);
+					}
+					if (max == null || max < i) {
+						max = Number(i);
+					}
+				}
+			}
+			return (min === null && max === null) ? false : [min, max];
+		}
+	};
+
+	ElementManager.prototype.getInvertedElemsInPath = function(elems, coords) {
+
+		function getFirstAndLast (inPathElems) {
+			
+			var firstLastElement = null;
+			if (inPathElems.length < 2){
+				//console.warn("inPathElems cannot be lower than 2");
+				return false;
+			}
+			var i = 0;
+			var elem;
+			var smallestY =  inPathElems[0].y;
+
+			while (inPathElems[i].y === smallestY){
+				i++;
+			}
+			
+			var indexFirstLine = inPathElems[i - 1].index;
+			var hightestY = inPathElems[inPathElems.length - 1].y;
+			
+			i = inPathElems.length - 1;
+			while (inPathElems[i].y === hightestY){
+				i--;
+			}
+			var indexLastLine = inPathElems[i + 1].index;
+			return (indexFirstLine == null && indexLastLine == null) ? false : [indexFirstLine, indexLastLine];
+		}
+
+		var min = null,
+			max = null;
+		var inPathElems = [];
 		for (var i in elems) {
 			if (elems[i].isInPath(coords)) {
+				if (min == null) {
+					min = Number(i);
+				}
+				if (max == null || max < i) {
+					max = Number(i);
+				}
+
+				inPathElems.push({index:Number(i), y:elems[i].position.y});
+			}
+		}
+		return getFirstAndLast(inPathElems)
+		
+		//return (min === null && max === null) ? false : [min, max];
+	};
+
+	/**
+	 * [getElemsBetweenYs description]
+	 * @param  {Array} elems array of elements; e.g. 'NoteSpaceView'
+	 * @param  {Array} ys    [yMin, yMax]
+	 * @return {Array} of two positions [min, max], or boolean false if nothing found
+	 */	
+	ElementManager.prototype.getElemsBetweenYs = function(elems, ys) {
+		var min = null, 
+			max = null;
+		for (var i in elems) {
+			if (elems[i].isBetweenYs(ys)) {
 				if (min == null) {
 					min = Number(i);
 				}
@@ -33,7 +110,7 @@ define(function() {
 	 * @param  {Object} coords
 	 */
 	ElementManager.prototype.getYs = function(elems, coords) {
-		var cursor = this.getElemsInPath(elems, coords);
+		var cursor = this.getElemsBetweenYs(elems, [coords.y, coords.ye]);
 		if (cursor) {
 			return {
 				topY: elems[cursor[0]].getArea().y,

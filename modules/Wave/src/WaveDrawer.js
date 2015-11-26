@@ -93,7 +93,7 @@ define([
 	 * @interface
 	 * @param  {Object} coords
 	 */
-	WaveDrawer.prototype.onSelected = function(coords, clicked, mouseUp) {
+	WaveDrawer.prototype.onSelected = function(coords, ini, fin, clicked, mouseUp) {
 		var self = this;
 		var cursorBars = this.elemMng.getElemsInPath(this.waveBarDimensions, coords);
 

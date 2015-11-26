@@ -25,6 +25,12 @@ define([
 	/**
 	 * @interface
 	 */
+	ChordSpaceView.prototype.isBetweenYs = function(coords) {
+		return ElementView.isBetweenYs(coords, this.position, this.scaler);
+	};
+	/**
+	 * @interface
+	 */
 	ChordSpaceView.prototype.getArea = function() {
 		return this.position;
 	};
