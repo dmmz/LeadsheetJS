@@ -215,7 +215,9 @@ define([
 			//we load both MIDI and Audio modules (as this won't bother the user with external dependencies)
 
 			playerViewOptions.displayTypeSwitch = useAudio && useMidi && params.player.audio.audioFile; //if audioFile is not defined, we do not load displayTypeSwitch
-
+			if (!isNaN(songModel.getTempo())) {
+				playerViewOptions.tempo = songModel.getTempo();
+			}
 
 			loadedModules.playerView = new PlayerView(playerHTML, imgUrl, playerViewOptions);
 

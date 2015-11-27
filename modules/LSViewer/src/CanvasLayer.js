@@ -110,7 +110,6 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			var activeElems = [];
 			for (var name in self.elems) {
 				if (self.elems[name].getType() === 'CURSOR') {
-
 					ys = self.elems[name].getYs(coords);
 					if (ys.topY < minY) {
 						minY = ys.topY;
@@ -170,7 +169,8 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			}
 
 			for (var i in activElems) {
-				activElems[i].onSelected(self.coords, clicked, mouseUp);
+				
+				activElems[i].onSelected(self.coords, self.mouseCoordsIni, self.mouseCoordsEnd, clicked, mouseUp);			
 				if (activElems[i].getType() == 'CURSOR') {
 					activElems[i].setCursorEditable(true);
 				}
@@ -312,7 +312,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			else if (type == "greater") evaluation = (mouseCoordsIni[num] > mouseCoordsEnd[num]);
 			return evaluation ? mouseCoordsIni[num] : mouseCoordsEnd[num];
 		}
-		this.coords.x = get("x", "smaller");
+		this.coords.x = get("x", "smaller");	
 		this.coords.y = get("y", "smaller");
 		this.coords.xe = get("x", "greater");
 		this.coords.ye = get("y", "greater");
