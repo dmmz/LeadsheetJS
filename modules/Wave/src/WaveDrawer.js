@@ -93,13 +93,23 @@ define([
 	 * @interface
 	 * @param  {Object} coords
 	 */
-	WaveDrawer.prototype.onSelected = function(coords, clicked, mouseUp) {
+	WaveDrawer.prototype.onSelected = function(coords, ini, end, clicked, mouseUp) {
 		var self = this;
-		var cursorBars = this.elemMng.getElemsInPath(this.waveBarDimensions, coords);
+		var cursorBars = this.elemMng.getElemsInPath(this.waveBarDimensions, coords, ini, end, this.getYs(coords));
+		var ys = this.getYs(coords);
 
 		if (cursorBars[0] != null && cursorBars[1] != null) {
-			var pos1 = this._getAudioTimeFromPos(coords.x, cursorBars[0]);
-			var pos2 = this._getAudioTimeFromPos(coords.xe, cursorBars[1]);
+			var x1, x2;
+			if ((this.elemMng.fromLeftBottom2TopRight(ini, end) || this.elemMng.fromTopRight2BottomLeft(ini, end)) && this.elemMng.includesMultipleLines(ys)){
+				x1 = coords.xe;
+				x2 = coords.x;	
+			}
+			else{
+				x1 = coords.x;
+				x2 = coords.xe;
+			}
+			var pos1 = this._getAudioTimeFromPos(x1, cursorBars[0]);
+			var pos2 = this._getAudioTimeFromPos(x2, cursorBars[1]);
 			this.cursor.setPos([pos1, pos2]);
 		}
 		if (mouseUp) {

@@ -98,11 +98,11 @@ define([
 	 * @param  {Object} coords
 	 * @param  {Booelan} mouseUp
 	 */
-	ChordSpaceManager.prototype.onSelected = function(coords, mouseUp) {
+	ChordSpaceManager.prototype.onSelected = function(coords, ini, fin, mouseUp) {
 
 		this.undrawEditableChord();
 
-		var posCursor = this.getChordsInPath(coords);
+		var posCursor = this.elemMng.getElemsInPath(this.chordSpace, coords, ini, fin, this.getYs(coords));
 
 		if (posCursor[0] !== null) {
 			this.cursor.setPos(posCursor);
