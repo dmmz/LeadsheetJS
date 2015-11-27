@@ -90,11 +90,11 @@ define([
 	 * @interface
 	 * @param  {Object} coords
 	 */
-	NoteSpaceManager.prototype.onSelected = function(coords, ini, fin) {
+	NoteSpaceManager.prototype.onSelected = function(coords, ini, end) {
 		var notes;
 		var coordsTop, coordsBottom;
 		
-		notes = this.elemMng.getElemsInPath(this.noteSpace, coords, ini, fin,  this.getYs(coords));
+		notes = this.elemMng.getElemsInPath(this.noteSpace, coords, ini, end, this.getYs(coords));
 		
 
 		if (notes) {

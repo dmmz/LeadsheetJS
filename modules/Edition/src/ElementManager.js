@@ -4,22 +4,56 @@ define(function() {
 	 */
 	function ElementManager() {}
 
-	/**
-	 *
-	 * @param  {Array} elems  array of elements; e.g. 'NoteSpaceView'
-	 * @param  {[type]} coords
-	 * @return {Array}  of two positions [min, max], or booelan false if nothing found
+	/*
+	 * @param  {Array} ini Array of two numbers representing x and y ([x,y]), represents the initial position (where user clicked initially on selection)
+	 * @param  {[type]} end  Exactly the same as ini, but represents the end position (where user did mousup after dragging on selection),
+	 * @return {Boolean}     
 	 */
-	ElementManager.prototype.getElemsInPath = function(elems, coords, ini, fin, ys) {
+	ElementManager.prototype.fromLeftBottom2TopRight = function(ini,end) {
+		return ini[0] < end[0] && ini[1] > end[1];
+	};
+
+	/*
+	 * @param  {Array} ini Array of two numbers representing x and y ([x,y]), represents the initial position (where user clicked initially on selection)
+	 * @param  {[type]} end  Exactly the same as ini, but represents the end position (where user did mousup after dragging on selection),
+	 * @return {Boolean}     
+	 */
+	ElementManager.prototype.fromTopRight2BottomLeft = function(ini,end) {
+		return ini[0] > end[0] && ini[1] < end[1];
+	};
+	
+	/**
+	 * [includesMultipleLines description]
+	 * @param  {Object} ys Has ys delimiting selection. e.g.:{bottomY: 12, topY: 24}
+	 * @return {Boolean}    
+	 */
+	ElementManager.prototype.includesMultipleLines = function(ys) {
+		return ys.topY != ys.bottomY;
+	};
+
+	/**
+	 * gets elements on a selection delimitied by an area, with some special cases
+	 * @param  {Array} elems  array of elements; e.g. 'NoteSpaceView'
+	 * @param  {Object} coords e.g. {x:23, y:34, xe: 153, ye: 45}
+	 * @param  {Array} ini    Array of two numbers representing x and y ([x,y]), represents the initial position (where user clicked initially on selection), x is equal to coords.x or coords.xe, and y is equal to coords.y or coords.ye (yes, it's redundant data, and should be refactored)
+	 * @param  {Array} end    Exactly the same as ini, but represents the end position (where user did mousup after dragging on selection),
+	 * @param  {Object} ys    Has ys delimiting selection. e.g.:{bottomY: 12, topY: 24}
+	 * @return {Array}        returns indexes including selected elements
+	 */
+	ElementManager.prototype.getElemsInPath = function(elems, coords, ini, end, ys) {
+
+
 		var min = null,
 			max = null;
-		if (ini && fin && ys && 
-			(ini[0] < fin[0] && ini[1] > fin[1] || ini[0] > fin[0] && ini[1] < fin[1]) && ys.topY != ys.bottomY) {
-			coordsTop = (ini[1] < fin[1]) ? ini : fin;
-			coordsBottom = (ini[1] > fin[1]) ? ini : fin;
+
+		//special case of getElemsInPath: if we had selected from top right to bottom left, or from bottom left to top right, and elements selected
+		//include more than one line: 
+		//	we have to get elements  starting after top right, and finishing before bottom left.
+		//otherwise, we do a normal 'getElemsInPath', maybe we should refactor this to not treat so many 'special cases' and 'ifs'
+		if (ini && end && ys &&
+			(this.fromLeftBottom2TopRight(ini, end) || this.fromTopRight2BottomLeft(ini, end)) && this.includesMultipleLines(ys)) {
 			return this.getInvertedElemsInPath(elems, coords);
-		}
-		else{
+		} else {
 			for (var i in elems) {
 				if (elems[i].isInPath(coords)) {
 					if (min == null) {
@@ -34,28 +68,34 @@ define(function() {
 		}
 	};
 
+	/**
+	 * instead of selecting elements specified by an area, gets for the very first line, and the last one, those not including getArea
+	 * @param  {Array} elems  array of elements; e.g. 'NoteSpaceView'
+	 * @param  {Object} coords e.g. {x:23, y:34, xe: 153, ye: 45}
+	 * @return {[type]}        [description]
+	 */
 	ElementManager.prototype.getInvertedElemsInPath = function(elems, coords) {
 
-		function getFirstAndLast (inPathElems) {
-			
+		function getFirstAndLast(inPathElems) {
+
 			var firstLastElement = null;
-			if (inPathElems.length < 2){
+			if (inPathElems.length < 2) {
 				//console.warn("inPathElems cannot be lower than 2");
 				return false;
 			}
 			var i = 0;
 			var elem;
-			var smallestY =  inPathElems[0].y;
+			var smallestY = inPathElems[0].y;
 
-			while (inPathElems[i].y === smallestY){
+			while (inPathElems[i].y === smallestY) {
 				i++;
 			}
-			
+
 			var indexFirstLine = inPathElems[i - 1].index;
 			var hightestY = inPathElems[inPathElems.length - 1].y;
-			
+
 			i = inPathElems.length - 1;
-			while (inPathElems[i].y === hightestY){
+			while (inPathElems[i].y === hightestY) {
 				i--;
 			}
 			var indexLastLine = inPathElems[i + 1].index;
@@ -67,29 +107,22 @@ define(function() {
 		var inPathElems = [];
 		for (var i in elems) {
 			if (elems[i].isInPath(coords)) {
-				if (min == null) {
-					min = Number(i);
-				}
-				if (max == null || max < i) {
-					max = Number(i);
-				}
-
-				inPathElems.push({index:Number(i), y:elems[i].position.y});
+				inPathElems.push({
+					index: Number(i),
+					y: elems[i].position.y
+				});
 			}
 		}
 		return getFirstAndLast(inPathElems)
-		
-		//return (min === null && max === null) ? false : [min, max];
 	};
 
 	/**
-	 * [getElemsBetweenYs description]
 	 * @param  {Array} elems array of elements; e.g. 'NoteSpaceView'
 	 * @param  {Array} ys    [yMin, yMax]
 	 * @return {Array} of two positions [min, max], or boolean false if nothing found
-	 */	
+	 */
 	ElementManager.prototype.getElemsBetweenYs = function(elems, ys) {
-		var min = null, 
+		var min = null,
 			max = null;
 		for (var i in elems) {
 			if (elems[i].isBetweenYs(ys)) {
