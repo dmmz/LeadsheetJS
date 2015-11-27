@@ -29,16 +29,15 @@ define([
 	};
 
 	HistoryModel.prototype.getCurrentState = function() {
-		var leadsheet = this.lastLeadsheet;
-		for (var i = this.historyList.length - 1; i >= this.currentPosition; i--) {
+		var leadsheet = JSON.parse(JSON.stringify(this.lastLeadsheet)) ; //cloning,so that this.lastLeadsheet is not affected
+		for (var i = this.historyList.length - 1; i > this.currentPosition; i--) {
 			leadsheet = JSON_delta.patch(leadsheet,this.historyList[i].invertedDelta);
 		}
-
 		return leadsheet;
 	};
 
 	HistoryModel.prototype.setCurrentPosition = function(position) {
-		if (!isNaN(position) && position >= 0 && position < this.historyList.length) {
+		if (!isNaN(position) && position >= -1 && position < this.historyList.length) {
 			this.currentPosition = position;
 			$.publish('HistoryModel-setCurrentPosition', this);
 		}
@@ -73,6 +72,7 @@ define([
 			if (this.historyList.length > this.maxHistoryLength){
 				this.historyList.splice(0,1);	
 			}
+			this.setCurrentPosition(this.currentPosition + 1);
 		}
 		this.lastLeadsheet = leadsheet;
 		$.publish('HistoryModel-addToHistory', this);	
