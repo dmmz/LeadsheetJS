@@ -45,13 +45,13 @@ define([
 			// // Edit chords on view
 			var cursorChord = new Cursor(songModel.getSongTotalBeats(), 'chords', 'tab');
 			cursorChord.controller.model.setEditable(false);
-			var chordEdition = new ChordEdition(songModel, cursorChord.controller.model, viewer, params.chords.imgPath);
+			this.chordEdition = new ChordEdition(songModel, cursorChord.controller.model, viewer, params.chords.imgPath);
 			this.cursorChord = cursorChord;
 
 			if (params.chords.menu) {
 				menuModel.addMenu({
 					title: params.chords.menu.title,
-					view: chordEdition.view,
+					view: this.chordEdition.view,
 					order: params.chords.menu.order
 				});
 			}

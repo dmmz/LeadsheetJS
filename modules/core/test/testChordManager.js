@@ -5,6 +5,8 @@ define(function(require) {
 	var BarModel = require('modules/core/src/BarModel');
 	var ChordManager = require('modules/core/src/ChordManager');
 	var ChordModel = require('modules/core/src/ChordModel');
+	var testSongs = require('tests/test-songs');
+	var SongModel_CSLJson = require('modules/converters/MusicCSLJson/src/SongModel_CSLJson');
 	return {
 		run: function() {
 			test("ChordManager", function(assert) {
@@ -83,6 +85,13 @@ define(function(require) {
 				assert.equal(cm.getChords().toString(), "G7,FM7,Cm");
 				cm.removeChordsBetweenPositions(2, 1, 3, 3);
 				assert.equal(cm.getChords().toString(), "G7,Cm");
+				
+				var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
+				var chordMng = song.getComponent('chords');
+				assert.deepEqual(chordMng.getBeatIntervalByIndexes(song, 0, 0),[1,5],'getBeatIntervalByIndexes');
+				assert.deepEqual(chordMng.getBeatIntervalByIndexes(song, 0, 1),[1,13]);
+				assert.deepEqual(chordMng.getBeatIntervalByIndexes(song, 1, 2),[9,21]);
+				assert.deepEqual(chordMng.getBeatIntervalByIndexes(song, 0, 3),[1,29]);
 
 			});
 		}
