@@ -259,7 +259,8 @@ define([
 
 
 	LJS._loadHistory = function(songModel, HTMLElement) {
-		new HistoryC(songModel, HTMLElement, {maxHistoryLength:2}, true, false);
+		//new HistoryC(songModel, HTMLElement, {maxHistoryLength:2}, true, false);
+		new HistoryC(songModel, HTMLElement, null, true, false);
 		$.publish('ToHistory-add', 'Open song - ' + songModel.getTitle());
 	};
 

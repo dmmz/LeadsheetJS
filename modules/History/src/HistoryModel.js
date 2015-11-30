@@ -54,26 +54,28 @@ define([
 		this.historyList = this.historyList.slice(0, this.currentPosition + 1);
 		var time = new Date().toLocaleString();
 		title = title ? title : '';
+		var invertedDelta;
 
 		if (this.lastLeadsheet){
 
-			var invertedDelta = JSON_delta.diff(leadsheet, this.lastLeadsheet);
-			
+			invertedDelta = JSON_delta.diff(leadsheet, this.lastLeadsheet);	
 			if (invertedDelta.length === 0){ //in case there was no change (not probable)
 				return;
 			}
-			
-			var newHistorical = {
-				'invertedDelta': invertedDelta,
-				'title': title,
-				'time': time
-			};
-			this.historyList.push(newHistorical);
-			if (this.historyList.length > this.maxHistoryLength){
-				this.historyList.splice(0,1);	
-			}
-			this.setCurrentPosition(this.currentPosition + 1);
+		}else{
+			invertedDelta = null;
 		}
+		var newHistorical = {
+			'invertedDelta': invertedDelta,
+			'title': title,
+			'time': time
+		};
+		this.historyList.push(newHistorical);
+		if (this.historyList.length > this.maxHistoryLength){
+			this.historyList.splice(0,1);	
+		}
+		this.setCurrentPosition(this.currentPosition + 1);
+		
 		this.lastLeadsheet = leadsheet;
 		$.publish('HistoryModel-addToHistory', this);	
 		
