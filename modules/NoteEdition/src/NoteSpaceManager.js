@@ -51,6 +51,10 @@ define([
 
 		});
 
+		$.subscribe('ToNoteSpaceManager-enable',function(){
+			self.enable();
+		})
+
 	};
 
 	NoteSpaceManager.prototype.createNoteSpace = function(viewer) {
