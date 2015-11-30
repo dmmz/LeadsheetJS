@@ -184,17 +184,9 @@ define([
 			if (self.isPlayingEnabled === false) {
 				return;
 			}
-			if (typeof self.playTo !== "undefined") {
-				if (self.audio.currentTime > self.playTo) {
-					if (self.audio.loop === true) {
-						self.play(self.playFrom, self.playTo);
-					}
-					/* User probably want the player to continue in this case, it's why it's commented
-					else { 
-						self.stop();
-					}
-					*/
-				}
+			//loops on audio
+			if (self.playTo !== undefined && self.audio.currentTime > self.playTo && self.audio.loop === true) {
+				self.play(self.playFrom, self.playTo);
 			}
 			var songDuration = self.getDuration();
 			var positionInPercent = self.audio.currentTime / songDuration;

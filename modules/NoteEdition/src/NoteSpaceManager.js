@@ -99,10 +99,11 @@ define([
 		var coordsTop, coordsBottom;
 		
 		notes = this.elemMng.getElemsInPath(this.noteSpace, coords, ini, end, this.getYs(coords));
-		
 
 		if (notes) {
 			this.cursor.setPos(notes);
+			//when clicking on a note, if there is an audio player, cursor should be updated
+			$.publish('ToWave-setCursor', this.cursor.getPos()); // getPos() returns array, of two elements, each element will be one parameter
 		}
 	};
 

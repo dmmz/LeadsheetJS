@@ -61,6 +61,12 @@ define(['modules/Wave/src/WaveModel',
 				self.load(self.file, self.tempo);
 			}
 		});
+		$.subscribe("ToWave-setCursor", function (el, cursorStart, cursorEnd) {
+				var beats = self.songModel.getComponent('notes').getBeatIntervalByIndexes(cursorStart, cursorEnd);
+				var startTime = self.model.beatDuration * (beats[0] - 1);
+				var endTime = self.model.beatDuration * (beats[1] - 1);
+				self.drawer.cursor.setPos([startTime,endTime]);
+		});
 		$.subscribe("ToPlayer-play", function() {
 			self.play();
 		});

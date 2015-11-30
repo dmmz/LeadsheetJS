@@ -82,7 +82,7 @@ define(function(require) {
 
 	var tags = [{
 			startBeat: 1,
-			endBeat: 5,
+			endBeat: 4,
 			name: 'First bar',
 			color: "#559"
 		}, {
