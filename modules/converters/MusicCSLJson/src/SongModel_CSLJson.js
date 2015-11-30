@@ -15,6 +15,7 @@ define(function(require) {
 	var NoteManager_CSLJson = require('modules/converters/MusicCSLJson/src/NoteManager_CSLJson');
 	var NoteModel_CSLJson = require('modules/converters/MusicCSLJson/src/NoteModel_CSLJson');
 	var SongBarsIterator = require('modules/core/src/SongBarsIterator');
+	var NoteUtils = require('utils/NoteUtils');
 
 	var SongModel_CSLJson = {};
 

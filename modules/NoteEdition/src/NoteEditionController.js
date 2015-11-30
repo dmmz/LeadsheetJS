@@ -123,7 +123,8 @@ define([
 		var duration;
 		for (var i = 0; i < notesNew.length; i++) {
 			duration = notesNew[i].getDuration();
-			if (barRelativeBeat < barBeatDuration && Math.round((barRelativeBeat + duration) * 100000) / 100000 > barBeatDuration) {
+			if (NoteUtils.roundBeat(barRelativeBeat) < barBeatDuration && 
+				NoteUtils.roundBeat(barRelativeBeat + duration) > barBeatDuration) {
 				return false;
 			}
 			barRelativeBeat += duration;

@@ -21,7 +21,8 @@ module.exports = function(grunt) {
 						text: 'external-libs/require-text',
 						pubsub: 'empty:',
 						jsPDF: 'empty:',
-						mustache: 'empty:'
+						mustache: 'empty:',
+						JsonDelta: 'empty:'
 						
 						/*jquery: 'external-libs/jquery-2.1.0.min',
 						jquery_autocomplete: 'external-libs/jquery.autocomplete.min',

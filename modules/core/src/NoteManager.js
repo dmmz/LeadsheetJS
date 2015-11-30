@@ -24,7 +24,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		notes.forEach(function(note) {
 			totalDur += note.getDuration();
 		});
-		return roundBeat(totalDur);
+		return NoteUtils.roundBeat(totalDur);
 	};
 
 	NoteManager.prototype.addNote = function(note, pos) {
@@ -127,7 +127,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		for (i = 0; i < index; i++) {
 			noteBeat += this.notes[i].getDuration();
 		}
-		return roundBeat(noteBeat);
+		return NoteUtils.roundBeat(noteBeat);
 	};
 
 	/**
@@ -204,7 +204,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 
 		var barNumBeats = song.getBarNumBeats(numBar, null);
 		for (var i = 0; i <= index; i++) {
-			if (roundBeat(duration) == barNumBeats) {
+			if (NoteUtils.roundBeat(duration) == barNumBeats) {
 				numBar++;
 				duration = 0;
 				barNumBeats = song.getBarNumBeats(numBar, barNumBeats);
@@ -230,7 +230,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		}
 		var startBeat = this.getNoteBeat(start);
 		var endBeat = this.getNoteBeat(end) + this.getNote(end).getDuration();
-		endBeat = roundBeat(endBeat);
+		endBeat = NoteUtils.roundBeat(endBeat);
 		return [startBeat, endBeat];
 	};
 	/**
@@ -244,7 +244,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 			curNote,
 			curBeat = 1;
 		//we round in the comparison in order to not carry the rounding in curBeat (which is cumulative inside the iteration)
-		while (roundBeat(curBeat) < beat) { //to avoid problems with tuplet 
+		while (NoteUtils.roundBeat(curBeat) < beat) { //to avoid problems with tuplet 
 			curNote = this.getNote(i);
 			if (curNote === undefined) {
 				// throw 'NoteManager - _getIndexAndCurBeat - Note not found (possibly beat is greater than last note beat)';
@@ -390,11 +390,11 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 			for (i = 0; i < this.notes.length; i++) {
 				note = this.notes[i];
 				accDuration += note.getDuration();
-				if (roundBeat(accDuration) == numBeatsBar && i < this.notes.length - 1) {
+				if (NoteUtils.roundBeat(accDuration) == numBeatsBar && i < this.notes.length - 1) {
 					accDuration = 0;
 					newNoteMng.addNote(note);
-				} else if (roundBeat(accDuration) > numBeatsBar) {
-					var diff = roundBeat(accDuration) - numBeatsBar;
+				} else if (NoteUtils.roundBeat(accDuration) > numBeatsBar) {
+					var diff = NoteUtils.roundBeat(accDuration) - numBeatsBar;
 					note.setDurationByBeats(note.getDuration() - diff);
 					note.setTie('start');
 					newNoteMng.addNote(note);
@@ -634,18 +634,6 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		checkTuplets(this.notes);
 		checkTies(this.notes);
 	};
-
-
-	/**
-	 * private function for rounding beats
-	 * we round to avoid problems with triplet as 12.9999999 is less than 13 and that would not work
-	 * @return {[type]} [description]
-	 */
-	function roundBeat(beat) {
-		return Math.round(beat * 1000000) / 1000000;
-	}
-
-
 
 	return NoteManager;
 });
