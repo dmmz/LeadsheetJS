@@ -130,13 +130,15 @@ define([
 
 		// Edition
 		allowEdition = false;
-		var editNotes, editChords, editStructure, saveFunction, imgUrlEdition, allowHistory;
+		var editNotes, editChords, editStructure, saveFunction, imgUrlEdition, allowHistory, buttonSave, buttonSaveAs;
 		if (params.edition) {
 			allowEdition = true;
 			editNotes = (params.edition.notes !== undefined) ? params.edition.notes : true;
 			editChords = (params.edition.chords !== undefined) ? params.edition.chords : true;
 			editStructure = (params.edition.structure !== undefined) ? params.edition.structure : true;
 			saveFunction = (params.edition.saveFunction !== undefined) ? params.edition.saveFunction : undefined;
+			saveButton = (params.edition.saveButton !== undefined) ? params.edition.saveButton : true;
+			saveAsButton = (params.edition.saveAsButton !== undefined) ? params.edition.saveAsButton : true;
 			imgUrlEdition = params.edition.imgUrl || {};
 			allowHistory = false;
 			if (params.edition.history !== undefined) {
@@ -184,7 +186,7 @@ define([
 				}
 				if (useMenu) {
 					// Edit files menu
-					var fileEdition = new FileEdition(songModel, viewer, saveFunction);
+					var fileEdition = new FileEdition(songModel, viewer, saveFunction, {saveButton:saveButton, saveAsButton:saveAsButton});
 					edition = LJS._loadEditionModules(viewer, songModel, editNotes, editChords, editStructure, menu, imgUrlEdition); // TODO menu shouldn't be required here
 					cursorNoteModel = edition.cursorNote.model;
 

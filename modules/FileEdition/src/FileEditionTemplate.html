@@ -2,8 +2,8 @@
 	{{#save}}
 	<div id="save_container">
 		<div id="save_menu_each_container">
-			<button class="btn btn-primary" id="leadsheet_save">Save</button>
-			<button class="btn btn-primary" id="leadsheet_save_as">Save As</button>
+			{{#saveButton}}<button class="btn btn-primary" id="leadsheet_save">Save</button>{{/saveButton}}
+			{{#saveAsButton}}<button class="btn btn-primary" id="leadsheet_save_as">Save As</button>{{/saveAsButton}}
 		</div>
 	</div>
 	{{/save}}

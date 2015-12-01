@@ -7,7 +7,7 @@ define([
 	'text!modules/FileEdition/src/FileEditionTemplate.html',
 ], function($, Mustache, SongModel, UserLog, pubsub, FileEditionTemplate) {
 	/**
-	 * [FileEditionView description]
+	 * [FileEditionView description] 
 	 * @param {Object} params {
 	 *	import: Boolean,
 	 *	export: Boolean,
@@ -22,11 +22,13 @@ define([
 	}
 
 	FileEditionView.prototype.render = function(params) {
-		params = params || {
-			import:true,
-			export: true,
-			save: true
-		};
+		
+		params = params || {};
+		params.import = (params.import !== undefined) ? params.import : true;
+		params.export = (params.export !== undefined) ? params.export : true;
+		params.save = (params.save !== undefined) ? params.save : true;
+		params.saveButton = (params.saveButton !== undefined) ? params.saveButton : true;
+		params.saveAsButton = (params.saveAsButton !== undefined) ? params.saveAsButton : true;
 		this.el = Mustache.render(FileEditionTemplate, params);
 	};
 	/**
