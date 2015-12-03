@@ -7,10 +7,10 @@ define([
 	SimilarityAnalysisAPI.prototype.getNotesClustering = function(leadsheet, threshold, numMeasure, structure, strict, callback) {
 		$.ajax({
 			url: 'http://palindromes.flow-machines.com/color/threshold/' + threshold + '/size/' + numMeasure + '/structure/' + structure + '/strict/' + strict,
-			dataType: 'JSON',
+			dataType: 'json',
 			type: 'POST',
 			data: {
-				leadsheet: leadsheet
+				"leadsheet": leadsheet,
 			},
 			success: function(data) {
 				if (typeof callback !== "undefined") {
