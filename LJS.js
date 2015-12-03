@@ -268,7 +268,7 @@ define([
 			viewer.draw(songModel);
 		}
 
-		//eiditon is used outside
+		//edition is used outside
 		if (typeof edition !== "undefined") {
 			loadedModules.edition = edition;
 		}
@@ -340,12 +340,12 @@ define([
 		if (editChords) {
 			modules.chords = {
 				active: true,
-				menu: {
+				/*menu: {
 					title: 'Chords',
 					order: 4
-				},
-				imgPath: imgUrl.chords
-					// menu: false /* if we don't want menu*/
+				},*/
+				imgPath: imgUrl.chords,
+				menu: false // if we don't want menu
 			};
 		}
 		if (editStructure) {

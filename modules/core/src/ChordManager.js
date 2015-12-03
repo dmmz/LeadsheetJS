@@ -383,6 +383,25 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 	};
 
 	/**
+	 * Return the index of numberOfChords chords before and after the selected chords
+	 * @param  {[type]} numberOfChords [description]
+	 * @return {[type]}                 [description]
+	 */
+	ChordManager.prototype.getContextOfSelectedChords = function(cursor, numberOfChords) {
+		var leftContext = [];
+		var rightContext = [];
+		for (var i = 1; i <= numberOfChords; i++) {
+			if (cursor[0] - i >= 0) {
+				leftContext.push(cursor[0] - i);
+			}
+			if (cursor[1] + i < this.chords.length) {
+				rightContext.push(cursor[1] + i);
+			}
+		}
+		return [leftContext, rightContext];
+	};
+
+	/**
 	 * Function look which chords have their startbeat between startBeat and EndBeat
 	 * It returns an array of 2 chords index, first index is the first chord that match, second is the last chord that match (it can be the same)
 	 * by beat interval without including the last beat (just like in notes).

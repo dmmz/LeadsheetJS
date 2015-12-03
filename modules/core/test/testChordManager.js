@@ -83,6 +83,9 @@ define(function(require) {
 				assert.equal(cm.getChords().toString(), "G7,FM7,Cm");
 				cm.removeChordsBetweenPositions(2, 1, 3, 3);
 				assert.equal(cm.getChords().toString(), "G7,Cm");
+				
+				assert.deepEqual(cm.getContextOfSelectedChords([0,0], 1), [[],[1]], "context selection");
+				assert.deepEqual(cm.getContextOfSelectedChords([1,1], 1), [[0],[]], "context selection");
 
 			});
 		}

@@ -46,12 +46,12 @@ define(['modules/core/src/ChordModel'], function(ChordModel) {
 				assert.equal(chordMaj.toString("", true), "A", 'testing major chord to string');
 				assert.equal(chordMaj.toString("", false), "A", 'testing major chord to string');
 
-				// // setChordFromString
-				// chord.setChordFromString('A#m9/E');
-				// assert.equal(chord.getNote(), "A#");
-				// assert.equal(chord.getChordType(), "m9");
-				// assert.equal(chord.getBase().getNote(), "E");
-				// assert.equal(chord.getBase().getChordType(), "");
+				// setChordFromString
+				chord.setChordFromString('A#m9/E');
+				assert.equal(chord.getNote(), "A#");
+				assert.equal(chord.getChordType(), "m9");
+				assert.equal(chord.getBase().getNote(), "E");
+				assert.equal(chord.getBase().getChordType(), "");
 
 
 				assert.ok(new ChordModel({
@@ -169,5 +169,5 @@ define(['modules/core/src/ChordModel'], function(ChordModel) {
 				assert.deepEqual(clonedChord, newChord);
 			});
 		}
-	}
+	};
 });
