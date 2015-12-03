@@ -13,6 +13,7 @@ require.config({
     mustache: 'external-libs/mustache',
     bootstrap: 'external-libs/bootstrap/bootstrap.min',
     text: 'external-libs/require-text',
+    JsonDelta: 'external-libs/json_delta_1.1.3_minified'
   },
   shim: {
     'qunit': {
@@ -27,6 +28,9 @@ require.config({
     },
     'Midijs': {
       exports: 'MIDI'
+    },
+    JsonDelta: {
+      exports: 'JSON_delta'
     }
   }
 });

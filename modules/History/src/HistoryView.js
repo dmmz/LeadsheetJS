@@ -23,12 +23,10 @@ define([
 	 * @return {[type]} [description]
 	 */
 	HistoryView.prototype.render = function(model) {
-		if (this.displayHistory === false) {
+		if (this.displayHistory === false || !this.parentHTML) {
 			return;
 		}
-		if (typeof this.parentHTML === "undefined") {
-			return;
-		}
+
 		var history = '';
 		history += '<span class="pull-right history-fold">></span>';
 		history += '<div class="history-container">';
@@ -37,7 +35,7 @@ define([
 		var text = '',
 			classCurrent = "";
 		// loop through each history state
-		if (typeof model !== "undefined") {
+		if (model) {
 			for (var i = 0, c = model.historyList.length; i < c; i++) {
 				classCurrent = "";
 				if (i == model.currentPosition) {
@@ -75,7 +73,7 @@ define([
 		var self = this;
 		this.parentHTML.on('click', ".history_ul li", function() {
 			var indexItem = parseInt($(this).attr('data-history'), 10);
-			$.publish('HistoryView-selectHistory', indexItem);
+				$.publish('HistoryView-selectHistory', indexItem);
 		});
 
 		this.parentHTML.addClass('history-open');

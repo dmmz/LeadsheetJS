@@ -367,18 +367,18 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 	/**
 	 * getBeatIntervalByIndexes return the beat interval between chords[start] and chords[end] + chords[end] duration
 	 * @interface
-	 * @param  {integer} start
-	 * @param  {integer} end
+	 * @param  {Number} start
+	 * @param  {Number} end
 	 * @return {Array}
 	 */
 	ChordManager.prototype.getBeatIntervalByIndexes = function(songModel, start, end) {
-		if (typeof start === "undefined" || isNaN(start) || typeof end === "undefined" || isNaN(end)) {
+		if (start === undefined || isNaN(start) || end === undefined || isNaN(end)) {
 			throw 'Start and End parameters should be number';
 		}
 		var startChord = this.getChord(start);
 		var endChord = this.getChord(end);
-		var startBeat = songModel.getBeatsBeforeBarNumber(startChord.getBarNumber()) + startChord.getBeat();
-		var endBeat = songModel.getBeatsBeforeBarNumber(endChord.getBarNumber()) + 1 + songModel.getTimeSignatureAt(endChord.getBarNumber()).getBeats();
+		var startBeat = songModel.getStartBeatFromBarNumber(startChord.getBarNumber()) - 1 + startChord.getBeat();
+		var endBeat = songModel.getStartBeatFromBarNumber(endChord.getBarNumber()) + songModel.getTimeSignatureAt(endChord.getBarNumber()).getBeats();
 		return [startBeat, endBeat];
 	};
 

@@ -3,14 +3,16 @@ define([
 	'jquery',
 	'utils/UserLog',
 	'pubsub',
-], function(Mustache, $, UserLog, pubsub) {
-	/**
+	'JsonDelta'
+], function(Mustache, $, UserLog, pubsub, JSON_delta) {
+		/**
 	 * HistoryModel is an array of state, it allow a high level management of Historys
 	 * @param {object} options
 	 */
 	var HistoryModel = function(options) {
 		this.init();
-		this.maxHistoryLength = (typeof options !== "undefined" && !isNaN(options.maxHistoryLength)) ? options.maxHistoryLength : 20;
+		this.maxHistoryLength = options && !isNaN(options.maxHistoryLength) ? options.maxHistoryLength : 20;
+		this.lastLeadsheet = null;
 	};
 
 	/**
@@ -19,7 +21,7 @@ define([
 	 */
 	HistoryModel.prototype.init = function() {
 		this.historyList = []; // state list
-		this.currentPosition = 0; // current Position start at 0
+		this.currentPosition = -1; // current Position start at 0
 	};
 
 	HistoryModel.prototype.getCurrentPosition = function() {
@@ -27,11 +29,15 @@ define([
 	};
 
 	HistoryModel.prototype.getCurrentState = function() {
-		return this.historyList[this.currentPosition];
+		var leadsheet = JSON.parse(JSON.stringify(this.lastLeadsheet)) ; //cloning,so that this.lastLeadsheet is not affected
+		for (var i = this.historyList.length - 1; i > this.currentPosition; i--) {
+			leadsheet = JSON_delta.patch(leadsheet,this.historyList[i].invertedDelta);
+		}
+		return leadsheet;
 	};
 
 	HistoryModel.prototype.setCurrentPosition = function(position) {
-		if (!isNaN(position) && position >= 0 && position < this.historyList.length) {
+		if (!isNaN(position) && position >= -1 && position < this.historyList.length) {
 			this.currentPosition = position;
 			$.publish('HistoryModel-setCurrentPosition', this);
 		}
@@ -44,21 +50,36 @@ define([
 	 * A date paramateres will automatically be added to history
 	 */
 	HistoryModel.prototype.addToHistory = function(leadsheet, title) {
+		
 		this.historyList = this.historyList.slice(0, this.currentPosition + 1);
-		var time = (new Date()).toLocaleString();
+		var time = new Date().toLocaleString();
 		title = title ? title : '';
+		var invertedDelta;
+
+		if (this.lastLeadsheet){
+
+			invertedDelta = JSON_delta.diff(leadsheet, this.lastLeadsheet);	
+			if (invertedDelta.length === 0){ //in case there was no change (not probable)
+				return;
+			}
+		}else{
+			invertedDelta = null;
+		}
 		var newHistorical = {
-			'leadsheet': leadsheet,
+			'invertedDelta': invertedDelta,
 			'title': title,
 			'time': time
 		};
 		this.historyList.push(newHistorical);
-		var safety = 1000;
-		while (this.historyList.length > this.maxHistoryLength && safety > 0) {
-			safety--;
-			this.historyList.shift();
+		if (this.historyList.length > this.maxHistoryLength){
+			this.historyList.splice(0,1);	
 		}
-		$.publish('HistoryModel-addToHistory', this);
+		this.setCurrentPosition(this.currentPosition + 1);
+		
+		this.lastLeadsheet = leadsheet;
+		$.publish('HistoryModel-addToHistory', this);	
+		
+		
 	};
 
 	return HistoryModel;

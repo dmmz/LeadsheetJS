@@ -319,7 +319,9 @@ define(function() {
 
 		return notes;
 	};
-
+	NoteUtils.roundBeat = function(beat){
+		return Math.round(beat * 1000000) / 1000000;
+	}
 
 	return NoteUtils;
 });

@@ -15,6 +15,7 @@ define(function(require) {
 	var NoteManager_CSLJson = require('modules/converters/MusicCSLJson/src/NoteManager_CSLJson');
 	var NoteModel_CSLJson = require('modules/converters/MusicCSLJson/src/NoteModel_CSLJson');
 	var SongBarsIterator = require('modules/core/src/SongBarsIterator');
+	var NoteUtils = require('utils/NoteUtils');
 
 	var SongModel_CSLJson = {};
 
@@ -68,6 +69,7 @@ define(function(require) {
 						JSONSection.bars.forEach(function(JSONBar) {
 							bar = BarModel_CSLJson.importFromMusicCSLJSON(JSONBar, new BarModel());
 							barManager.addBar(bar);
+							//chords:
 							if (JSONBar.chords != null) {
 								JSONBar.chords.forEach(function(JSONChord) {
 									chord = ChordModel_CSLJson.importFromMusicCSLJSON(JSONChord);
@@ -75,6 +77,7 @@ define(function(require) {
 									chordManager.addChord(chord);
 								});
 							}
+							//melody;
 							if (JSONBar.melody != null) {
 								onlyOneNote = (JSONBar.melody.length === 1);
 								JSONBar.melody.forEach(function(JSONNote) {
@@ -86,6 +89,13 @@ define(function(require) {
 									note.durationDependsOnBar = true; // if it's a whole rest, it will take bar's duration
 									wholeRestFound = true;
 								}
+							}
+							else{ //if no notes in bar, we add a whole rest
+								note = new NoteModel();
+								note.setNoteFromString("wr");
+								noteManager.addNote(note);
+								note.durationDependsOnBar = true; 
+								wholeRestFound = true;
 							}
 							barNumber++;
 						});

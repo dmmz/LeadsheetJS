@@ -8,7 +8,6 @@ define([
 		this.chordSpaceMng = new ChordSpaceManager(songModel, cursorModel, viewer);
 		this.view = new ChordEditionView(cursorModel, imgPath);
 		this.controller = new ChordEditionController(songModel, cursorModel, this.chordSpaceMng);
-
 	}
 	return ChordEdition;
 });
