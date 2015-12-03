@@ -47,7 +47,6 @@ define([
 			cursorChord.controller.model.setEditable(false);
 			this.chordEdition = new ChordEdition(songModel, cursorChord.controller.model, viewer, params.chords.imgPath);
 			this.cursorChord = cursorChord;
-
 			if (params.chords.menu) {
 				menuModel.addMenu({
 					title: params.chords.menu.title,

@@ -1,4 +1,6 @@
-define(function() {
+define([
+	'utils/ChordUtils'
+], function(ChordUtils) {
 	/**
 	 * Chord Model is a core model representing a leadsheet chord
 	 * @param {} param is an object of parameters
@@ -37,6 +39,8 @@ define(function() {
 			return maps;
 		}
 	}
+
+	ChordModel.prototype.initChord = function(param) {};
 
 	/* Basic getter setter */
 	ChordModel.prototype.getNote = function() {
@@ -219,9 +223,9 @@ define(function() {
 		) {
 			if (this.isEmptyBase() && !chordJson.bp) {
 				return true;
-			} else if (!this.isEmptyBase() && chordJson.bp){
+			} else if (!this.isEmptyBase() && chordJson.bp) {
 				if (this.getBase().getNote() == chordJson.bp) {
-					if (!this.getBase().getChordType() && !chordJson.bch) {	//either both base chord types don't exists
+					if (!this.getBase().getChordType() && !chordJson.bch) { //either both base chord types don't exists
 						return true;
 					} else if (this.getBase().getChordType() === chordJson.bch) { //either they are equal
 						return true;
@@ -232,5 +236,25 @@ define(function() {
 		return false;
 	};
 
+	/**
+	 * Set chord from a string in the format as C#m7 or C7/G
+	 * @param {string} format as C#m7 or C7/G
+	 */
+	ChordModel.prototype.setChordFromString = function(stringChord) {
+		var jsonChord = ChordUtils.string2Json(stringChord);
+		this.note = (jsonChord.p) ? jsonChord.p : "";
+		this.chordType = (jsonChord.ch) ? jsonChord.ch : "";
+		this.base = {};
+		if (jsonChord.bp || jsonChord.bch) {
+			this.base = new ChordModel();
+			if (jsonChord.bp) {
+				this.base.setNote(jsonChord.bp);
+			}
+			if (jsonChord.bch) {
+				this.base.setChordType(jsonChord.bch);
+			}
+		}
+		this.parenthesis = (typeof jsonChord.parenthesis !== "undefined") ? jsonChord.parenthesis : false;
+	};
 	return ChordModel;
 });

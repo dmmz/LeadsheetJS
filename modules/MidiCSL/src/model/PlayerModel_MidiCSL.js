@@ -367,6 +367,7 @@ define([
 						if (currentNote && (currentNote.getCurrentTime() * beatDuration) >= playFrom) {
 							// for each notes on a position (polyphonic song will have j > 1)
 							for (var j = 0, v = currentNote.getMidiNote().length; j < v; j++) {
+								// Use let instead of var when ES6 will be supported across browser
 								(function(currentNote, realIndex, i, j) {
 									self.noteTimeOut[realIndex] = setTimeout(function() {
 										var currentMidiNote, duration, velocityNote, channel, volume;

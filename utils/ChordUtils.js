@@ -138,11 +138,11 @@ define(['jquery', 'utils/NoteUtils', 'utils/ChordTypesCollection'], function($, 
 			ChordUtils.pitchClasses.indexOf(note) === -1 && note !== 'NC' && note.length !== 0) {
 			return {
 				error: true
-			}
+			};
 		} else if (note.length === 0) {
 			return {
 				empty: true
-			}
+			};
 		}
 
 		var jsonChord = {

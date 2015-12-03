@@ -86,12 +86,17 @@ define(function(require) {
 				cm.removeChordsBetweenPositions(2, 1, 3, 3);
 				assert.equal(cm.getChords().toString(), "G7,Cm");
 				
+
+				assert.deepEqual(cm.getContextOfSelectedChords([0,0], 1), [[],[1]], "context selection");
+				assert.deepEqual(cm.getContextOfSelectedChords([1,1], 1), [[0],[]], "context selection");
+
 				var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
 				var chordMng = song.getComponent('chords');
 				assert.deepEqual(chordMng.getBeatIntervalByIndexes(song, 0, 0),[1,5],'getBeatIntervalByIndexes');
 				assert.deepEqual(chordMng.getBeatIntervalByIndexes(song, 0, 1),[1,13]);
 				assert.deepEqual(chordMng.getBeatIntervalByIndexes(song, 1, 2),[9,21]);
 				assert.deepEqual(chordMng.getBeatIntervalByIndexes(song, 0, 3),[1,29]);
+
 
 			});
 		}

@@ -8,12 +8,13 @@ define([
 	 * @param {Int|Array|Object} listElements allows to get size of a list, must be an int, or an array, or an object, if it's an object then getTotal function will be called to get list length
 	 * @param {Array} optCursor gets a cursor as an array of two positions [start,end]
 	 */
-	function CursorModel(listElements, optCursor, isEditable) {
+	function CursorModel(listElements, id, optCursor, isEditable) {
 		this.listElements = listElements;
 		optCursor = optCursor || [0, 0];
 		if (!(optCursor instanceof Array)) optCursor = [optCursor, optCursor];
 
 		this.sideSelected = 1;
+		this.id = (typeof id !== "undefined") ? id : '';
 		this.isEditable = (typeof isEditable !== "undefined") ? isEditable : true;
 		this.setPos(optCursor);
 		// this.color = color || "#0099FF";
@@ -36,7 +37,7 @@ define([
 		
 		pos = this._checkPosition(pos);
 		this.pos = pos;
-		$.publish('CursorModel-setPos', this.pos);
+		$.publish('CursorModel-setPos', [this.pos, this.id]);
 	};
 
 	CursorModel.prototype.getStart = function() {
@@ -58,7 +59,7 @@ define([
 		}
 		pos = this._checkPosition(pos)[0];
 		this.pos[index] = pos;
-		$.publish('CursorModel-setPos', this.pos);
+		$.publish('CursorModel-setPos', [this.pos, this.id]);
 	};
 
 	/**

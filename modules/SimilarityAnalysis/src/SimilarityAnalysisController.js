@@ -18,12 +18,6 @@ define([
 
 		// init threshold
 		var self = this;
-		var simAPI = new SimilarityAnalysisAPI();
-		if (typeof self.songModel._id !== "undefined") {
-			simAPI.getThresholdClustering(self.songModel._id, function(data) {
-				self.view.setThreshold(data);
-			});
-		}
 	}
 
 	SimilarityAnalysisController.prototype.initSubscribe = function() {
@@ -124,12 +118,15 @@ define([
 		var simAPI = new SimilarityAnalysisAPI();
 		var idLog = UserLog.log('info', 'Computing...');
 		$.publish('ToLayers-removeLayer');
-		var lastId = self.songModel._id;
-		simAPI.getNotesClustering(self.songModel._id, threshold, size, structure, strict, function(res) {
+
+		var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel);
+		var leadsheet = JSON.stringify(JSONSong);
+		simAPI.getNotesClustering(leadsheet, threshold, size, structure, strict, function(res) {
 			UserLog.removeLog(idLog);
-			var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(self.songModel);
+			
+			var lastId = self.songModel._id;
 			var request = {
-				'leadsheet': JSON.stringify(JSONSong),
+				'leadsheet': leadsheet
 			};
 			idLog = UserLog.log('info', 'Unfolding...');
 			AjaxUtils.servletRequest('jsonsong', 'unfold', request, function(data) {

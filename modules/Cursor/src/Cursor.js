@@ -5,7 +5,7 @@ define([
 ], function(CursorController, CursorModel, CursorListener) {
 
 	function Cursor(listElement, id, keyType) {
-		this.model = new CursorModel(listElement);
+		this.model = new CursorModel(listElement, id);
 		var cV = new CursorListener(id, keyType);
 		this.controller = new CursorController(this.model, cV);
 	}
