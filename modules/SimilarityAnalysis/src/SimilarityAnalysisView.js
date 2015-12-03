@@ -62,11 +62,6 @@ define([
 		});
 	};
 
-	SimilarityAnalysisView.prototype.setThreshold = function(threshold) {
-		$('#similarity_threshold_viewer').val(threshold);
-		$('#similarity_threshold_select').val(threshold);
-	};
-
 	SimilarityAnalysisView.prototype.computeAnalysis = function() {
 		var threshold = $('#similarity_threshold_select').val();
 		var structure = $('#similarity_compress_select').val();
