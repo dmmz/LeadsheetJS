@@ -11,7 +11,7 @@ define([
 	 */
 	var HistoryModel = function(options) {
 		this.init();
-		this.maxHistoryLength = options && !isNaN(options.maxHistoryLength) ? options.maxHistoryLength : 20;
+		this.maxHistoryLength = options && !isNaN(options.maxHistoryLength) ? options.maxHistoryLength : 200;
 		this.lastLeadsheet = null;
 	};
 

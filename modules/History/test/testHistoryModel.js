@@ -119,6 +119,18 @@ define([
 					composer: 'hey'
 				}, 'checking going back to entry' );
 
+				//Testing history length
+				var shortHm = new HistoryModel({maxHistoryLength:2});
+				shortHm.addToHistory({example:'1'}, 'first add');
+				assert.equal(shortHm.historyList.length,1,'testing history length (maxLength == 2)');
+				
+				shortHm.addToHistory({example:'2'}, 'second add');
+				assert.equal(shortHm.historyList.length,2,'after 2nd add: length == 2');
+
+				shortHm.addToHistory({example:'3'}, 'third add');
+				assert.equal(shortHm.historyList.length,2,'after third add, still length == 2');
+				assert.deepEqual(shortHm.getState(0),{example:'2'}, 'oldest state is example 2, as we have deleted example 1 when adding example 3');
+
 			});
 		}
 	};
