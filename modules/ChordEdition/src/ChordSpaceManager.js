@@ -10,7 +10,7 @@ define([
 	'pubsub'
 ], function(SongModel, ChordModel, ChordSpaceView, CursorModel, ChordModel_CSLJson, UserLog, ElementManager, $, pubsub) {
 
-	function ChordSpaceManager(songModel, cursor) {
+	function ChordSpaceManager(songModel, cursor, viewer) {
 		if (!songModel || !cursor) {
 			throw "ChordSpaceManager missing params";
 		}
@@ -24,6 +24,7 @@ define([
 		this.enabled = false;
 		this.MARGIN_TOP = 5;
 		this.MARGIN_RIGHT = 5;
+		this.viewer = viewer;
 	}
 
 	/**
@@ -49,6 +50,11 @@ define([
 		$.subscribe('Cursor-moveCursorByElement-chords', function(el, inc) {
 			self.moveCursorByBar(inc);
 		});
+		$.subscribe('ctrl-a',function(){
+			self.enable();
+			self.cursor.selectAll();
+			self.viewer.canvasLayer.refresh();
+		})
 	};
 	ChordSpaceManager.prototype.getType = function() {
 		return this.CL_TYPE;

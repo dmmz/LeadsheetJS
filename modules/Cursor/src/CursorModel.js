@@ -91,6 +91,9 @@ define([
 		}
 	};
 
+	CursorModel.prototype.selectAll = function() {
+		this.setPos([0, this.getListLength() - 1]);
+	};
 	/**
 	 * expands (= moves just one side of the cursor)
 	 * @param  {int} inc      -1 or 1, expand to left or right
