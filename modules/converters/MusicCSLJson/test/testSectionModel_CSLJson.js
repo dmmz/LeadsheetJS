@@ -26,20 +26,20 @@ define(['modules/converters/MusicCSLJson/src/SectionModel_CSLJson', 'modules/cor
 						{
 							chords: [{p: "A",ch: "m7",beat: 1}],
 							melody: [
-								{keys: ["B/4"], duration: "h."}
+								{keys: ["B/4"], duration: "h", dot:1}
 							]
 						},
 						{
 							chords: [{p: "B",ch: "m7",beat: 1}],
 							melody: [
-								{keys: ["C/4"], duration: "h."}
+								{keys: ["C/4"], duration: "h", dot:1}
 							]
 						},
 						{
 							timeSignature: "3/8",
 							chords: [{p: "A",ch: "m7",beat: 1}],
 							melody: [
-								{keys: ["B/4"], duration: "h."}
+								{keys: ["B/4"], duration: "h", dot:1}
 							]
 						}
 					]

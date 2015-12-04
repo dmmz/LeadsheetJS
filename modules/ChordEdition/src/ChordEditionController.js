@@ -1,11 +1,10 @@
 define([
 	'mustache',
-	'modules/core/src/SongModel',
-	'modules/Cursor/src/CursorModel',
+	'modules/core/src/SongBarsIterator',
 	'utils/UserLog',
 	'jquery',
 	'pubsub',
-], function(Mustache, CursorModel, SongModel, UserLog, $, pubsub) {
+], function(Mustache, SongBarsIterator, UserLog, $, pubsub) {
 
 	function ChordEditionController(songModel, cursor, chordSpaceMng) {
 		if (!songModel || !cursor || !chordSpaceMng) {
@@ -67,9 +66,13 @@ define([
 	};
 
 	ChordEditionController.prototype.copyChords = function() {
-		var indexes = this.getSelectedChordsIndexes();
-		var chordManager = this.songModel.getComponent('chords');
-		this.buffer = chordManager.cloneElems(indexes[0], indexes[indexes.length - 1] + 1);
+		this.buffer = this.cursor.getPos();
+		console.log(this.buffer); 
+		console.log(this.chordSpaceMng);
+
+		// var indexes = this.getSelectedChordsIndexes();
+		// var chordManager = this.songModel.getComponent('chords');
+		// this.buffer = chordManager.cloneElems(indexes[0], indexes[indexes.length - 1] + 1);
 	};
 
 	ChordEditionController.prototype.pasteChords = function() {
@@ -77,7 +80,6 @@ define([
 			return;
 		}
 		var chordManager = this.songModel.getComponent('chords');
-
 		var firstChordSpace = this.chordSpaceMng.chordSpace[this.cursor.getStart()];
 		var decalBarNumber = firstChordSpace.barNumber - this.buffer[0].getBarNumber();
 		var decalBeat = firstChordSpace.beatNumber - this.buffer[0].getBeat();
@@ -96,6 +98,32 @@ define([
 	/*ChordEditionController.prototype.chordTabEvent = function(way) {
 		console.log('chordTabEvent', way);
 	};*/
+
+	ChordEditionController.prototype.getSelectedChordBeats = function() {
+		var songIt = new SongBarsIterator(this.songModel);
+		var startChordSpace = this.chordSpaceMng.chordSpace[this.cursor.getStart()];
+		var startBarNum = startChordSpace.barNumber;
+
+		songIt.setBarIndex(startBarNum);
+		var beatInc = 4 / songIt.getBarTimeSignature().getBeatUnit(); //will be 1 for x/4 time signatures, 2 for x/2, and 0.5 for x/8
+		var barOffset = (startChordSpace.beatNumber - 1) * beatInc;
+		var startBeat = this.songModel.getStartBeatFromBarNumber(startBarNum) + barOffset;
+		var iBeat = startBeat;
+
+		for (var i = this.cursor.getStart(); i <= this.cursor.getEnd(); i++) {
+			iBeat += beatInc;
+			barOffset += beatInc;
+			
+			if (barOffset === songIt.getBarTimeSignature().getQuarterBeats() - 1 && songIt.hasNext()){
+				songIt.next();
+				beatInc = 4 / songIt.getBarTimeSignature().getBeatUnit();
+				barOffset = 0;
+			}else if(barOffset > songIt.getBarTimeSignature().getQuarterBeats()){
+				console.warn("barOffset > total bar duration"); //should never enter here
+			}
+		}
+		return [startBeat, iBeat];
+	};
 
 	ChordEditionController.prototype.getSelectedChordsIndexes = function() {
 		var chordManager = this.songModel.getComponent('chords');
