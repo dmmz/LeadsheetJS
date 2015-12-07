@@ -6,7 +6,7 @@ module.exports = function(grunt) {
 			all: ['tests/*.html']
 		},
 		jshint: {
-			all: ['Gruntfile.js', 'modules/**/*.js', 'utils/**/*.js', 'tests/**/*.js']
+			all: ['Gruntfile.js', 'LJS.js', 'modules/**/*.js', 'utils/**/*.js', 'tests/**/*.js']
 		},
 		requirejs: {
 			compile: {
@@ -23,8 +23,9 @@ module.exports = function(grunt) {
 						jsPDF: 'empty:',
 						mustache: 'empty:',
 						JsonDelta: 'empty:'
-						
-						/*jquery: 'external-libs/jquery-2.1.0.min',
+
+						/*
+						jquery: 'external-libs/jquery-2.1.0.min',
 						jquery_autocomplete: 'external-libs/jquery.autocomplete.min',
 						qunit: 'external-libs/qunit/qunit',
 						vexflow: 'external-libs/vexflow-min',
@@ -32,8 +33,10 @@ module.exports = function(grunt) {
 						text: 'external-libs/require-text',
 						pubsub: 'external-libs/tiny-pubsub.min',
 						jsPDF: 'external-libs/jspdf/jspdf.min',
-						mustache: 'external-libs/mustache'*/
-						
+						mustache: 'external-libs/mustache',
+						JsonDelta: 'external-libs/json_delta_1.1.3_minified.js'
+						*/
+
 					},
 					//cjsTranslate: true,
 					//findNestedDependencies: true,
