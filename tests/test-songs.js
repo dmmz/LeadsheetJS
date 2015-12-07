@@ -299,6 +299,8 @@ define(function() {
 				name: "A",
 				bars: 
 				[{
+					//barNum: 0 , measureBeat: 1 (measureBeat is the beat related to time signature, 
+					//which differs from quarter beat (i.e. beat base  quarter note duration)
 					chords: [{p: "A",ch: "M7",beat: 1}, {p: "B",ch: "m7",beat: 3}],
 					melody: [
 						{keys: ["a/4"],duration: "q"}, 
@@ -307,6 +309,7 @@ define(function() {
 						{keys: ["e/4"],duration: "q"}
 					],
 				}, {
+					//barNum: 1, measureBeat: 5
 					timeSignature: "3/4",
 					melody: [
 						{keys: ["a/4"],duration: "q"}, 
@@ -316,6 +319,7 @@ define(function() {
 					],
 					chords: [{p: "D",ch: "7",beat: 1}, {p: "E",ch: "m7",beat: 3}],
 				}, {
+					//barNum: 2, measureBeat: 8
 					chords: [{p: "B",ch: "7",beat: 1}],
 					melody: [
 							{keys: ["a/4"],duration: "q",tuplet: "start",time_modification: "3/2"}, 
@@ -324,6 +328,7 @@ define(function() {
 							{keys: ["g/4"],duration: "q"}
 						]
 				}, {
+					//barNum: 3, measureBeat: 11
 					timeSignature: "2/4",
 					chords: [{p: "C",ch: "7",beat: 1}],
 					melody: [
@@ -331,6 +336,7 @@ define(function() {
 						{keys: ["f/4"],duration: "q"}
 					],
 				}, {
+					//barNum: 4, measureBeat: 13
 					timeSignature: "4/4",
 					keySignature: "D",
 					chords: [{p: "E",ch: "m",beat: 1}],
@@ -341,6 +347,7 @@ define(function() {
 						{keys: ["e/4"],duration: "q"}
 					],
 				}, {
+					//barNum: 5, measureBeat: 17
 					chords: [{p: "G",ch: "m",beat: 1}],
 					melody: [
 						{keys: ["a/4"],duration: "q"}, 
@@ -349,6 +356,7 @@ define(function() {
 						{keys: ["e/4"],duration: "q"}
 					]
 				}, {
+					//barNum: 6, measureBeat: 21
 					chords: [{p: "F",ch: "7",beat: 1}],
 					melody: [
 						{keys: ["a/4"],duration: "q"}, 
@@ -357,6 +365,7 @@ define(function() {
 						{keys: ["e/4"],duration: "q"}
 					]
 				}, {
+					//barNum: 7, measureBeat: 25
 					chords: [{p: "A",ch: "m7",beat: 1}],
 					melody: [
 						{keys: ["a/4"],duration: "q"}, 
@@ -372,22 +381,25 @@ define(function() {
 				timeSignature: "6/8",
 				bars: [
 					{
+						//barNum: 8, measureBeat: 29, quarterBeat 29
 						chords: [{p: "A",ch: "m7",beat: 1}],
 						melody: [
-							{keys: ["B/4"], duration: "h."}
+							{keys: ["B/4"], duration: "h", dot:1}
 						]
 					},
 					{
+						//barNum: 9, measureBeat: 35, quarterBeat: 32
 						chords: [{p: "B",ch: "m7",beat: 1}],
 						melody: [
-							{keys: ["C/4"], duration: "h."}
+							{keys: ["C/4"], duration: "h", dot:1}
 						]
 					},
 					{
+						//barNum: 10, measureBeat: 41, quarterBeat: 35
 						timeSignature: "3/8",
 						chords: [{p: "A",ch: "m7",beat: 1}],
 						melody: [
-							{keys: ["B/4"], duration: "h."}
+							{keys: ["B/4"], duration: "q", dot:1}
 						]
 					}
 				]
@@ -397,9 +409,10 @@ define(function() {
 				name: "C",
 				bars: [
 					{
+						//barNum: 11, measureBeat: 44, quarterBeat: 36.5
 						chords: [{p: "A",ch: "m7",beat: 1}],
 						melody: [
-							{keys: ["B/4"], duration: "h."}
+							{keys: ["B/4"], duration: "q", dot:1}
 						]
 					}
 				]
@@ -410,9 +423,10 @@ define(function() {
 				timeSignature: "2/4",
 				bars: [
 					{
+						//barNum: 12, measureBeat: 47, quarterBeat: 39
 						chords: [{p: "A",ch: "m7",beat: 1}],
 						melody: [
-							{keys: ["B/4"], duration: "h."}
+							{keys: ["B/4"], duration: "h"}
 						]
 					}
 				]
@@ -422,9 +436,10 @@ define(function() {
 				name: "E",
 				bars: [
 					{
+						//barNum: 13, measureBeat: 49, quarterBeat: 41
 						chords: [{p: "A",ch: "m7",beat: 1}],
 						melody: [
-							{keys: ["B/4"], duration: "h."}
+							{keys: ["B/4"], duration: "h"}
 						]
 					}
 				]
@@ -435,13 +450,15 @@ define(function() {
 				timeSignature: "3/4",
 				bars: [
 					{
+						//barNum: 14, measureBeat: 51, quarterBeat: 43
 						timeSignature: "4/4",
 						chords: [{p: "A",ch: "m7",beat: 1}],
 						melody: [
-							{keys: ["B/4"], duration: "h."}
+							{keys: ["B/4"], duration: "w"}
 						]
 					}
 				]
+				//total measure beats 54, total quarterBeats:  46
 			}
 		]
 	};

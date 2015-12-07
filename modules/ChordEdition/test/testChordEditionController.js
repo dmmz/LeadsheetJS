@@ -10,24 +10,58 @@ define(['modules/core/src/ChordModel',
 		run: function() {
 			test("Chords Edition Controller", function(assert) {
 
-				var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
-				var cM = new CursorModel(songModel.getSongTotalBeats());
-				var csm = new ChordSpaceManager(songModel, cM);
-				var cec = new ChordEditionController(songModel, cM, csm);
+				var songTimeSigChanges = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.leadSheetTimeSigChanges);
+				var cmTimeSigChanges = new CursorModel(songTimeSigChanges.getSongTotalBeats());
+				var csmTsc = new ChordSpaceManager(songTimeSigChanges, cmTimeSigChanges);
+				var cecTsc = new ChordEditionController(songTimeSigChanges, cmTimeSigChanges, csmTsc);
 				var viewer = new LSViewer($("#test")[0], {
 					layer: true
 				});
+				viewer.draw(songTimeSigChanges);
+				csmTsc.cursor.setPos([0,0]);
+				assert.deepEqual(cecTsc.getSelectedChordsBeats(),[1,2], 'get chord beats: first measure');
 
+				csmTsc.cursor.setPos([0,3]);
+				assert.deepEqual(cecTsc.getSelectedChordsBeats(),[1,5], 'get chord beats: first measure');
+
+				csmTsc.cursor.setPos([0,6]);
+				assert.deepEqual(cecTsc.getSelectedChordsBeats(),[1,8], 'get chord beats: first 2 measures');
+
+				csmTsc.cursor.setPos([26,29]);
+				assert.deepEqual(cecTsc.getSelectedChordsBeats(),[27,30], 'cursor including two consecutive measures with time signature with different beat units');
+
+				csmTsc.cursor.setPos([27,27]);
+				assert.deepEqual(cecTsc.getSelectedChordsBeats(),[28,29], 'cursor in last position before time signature change');
+
+				csmTsc.cursor.setPos([27,28]);
+				assert.deepEqual(cecTsc.getSelectedChordsBeats(),[28,29.5], 'cursor including only two positions, that comprise different time signature measures');
+				
+				csmTsc.cursor.setPos([26,47]);
+				assert.deepEqual(cecTsc.getSelectedChordsBeats(),[27,40], 'cursor including two time signature changes with different beat unit');
+
+				csmTsc.cursor.setPos([51,54]);
+				assert.deepEqual(cecTsc.getSelectedChordsBeats(),[43,46],'last measure');
+
+				//copu / paste / delete
+				var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
+				
+				var cM = new CursorModel(songModel.getSongTotalBeats());
+				var csm = new ChordSpaceManager(songModel, cM);
+				var cec = new ChordEditionController(songModel, cM, csm);
+				viewer = new LSViewer($("#test")[0], {
+					layer: true
+				});
 				viewer.draw(songModel);
-				//csm.createChordSpace(viewer);
 
+				csm.createChordSpace(viewer);
+
+				 
+				// Delete chords
 				csm.cursor.setPos([0, 1]);
 				assert.deepEqual(cec.getSelectedChordsIndexes(), [0], 'getSelectedChordsIndexes');
 
 				csm.cursor.setPos([0, 8]);
 				assert.deepEqual(cec.getSelectedChordsIndexes(), [0, 1], 'getSelectedChordsIndexes');
-
-				// Delete chords
 				csm.cursor.setPos([0, 1]);
 				cec.deleteChords();
 				assert.deepEqual(cec.getSelectedChordsIndexes(), [], 'delete chords');
