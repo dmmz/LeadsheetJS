@@ -1,4 +1,8 @@
-define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(SongModel, ChordModel) {
+define([
+	'modules/core/src/SongModel', 
+	'modules/core/src/ChordModel',
+	'modules/core/src/SongBarsIterator'
+	], function(SongModel, ChordModel, SongBarsIterator) {
 	function ChordManager(chords) {
 		this.chords = chords ? chords : []; // array of chordModel
 	}
@@ -44,6 +48,86 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 		return undefined;
 	};
 
+	ChordManager.prototype.getBeatsBasedChordIndexes = function(song) {
+		var indexesChords = [];
+		var songIt = new SongBarsIterator(song);
+		var barEndBeat;
+		var barStartBeat = 1;
+		var iBar,beat;
+		var iChord = 0;
+		var offsetBar, chord, beatInc;
+		while (songIt.hasNext())
+		{
+			//barEndBeat = barStartBeat + songIt.getBarTimeSignature().getQuarterBeats();
+			iBar = songIt.getBarIndex();
+			beatInc = 4 / songIt.getBarTimeSignature().getBeatUnit();
+
+			while (iChord < this.chords.length && this.chords[iChord].getBarNumber() <= iBar){
+				chord = this.chords[iChord];
+				offsetBar = (chord.getBeat() - 1) * beatInc;
+				beat = barStartBeat + offsetBar;
+				indexesChords[iChord] = beat;
+				iChord++;
+			}
+			barStartBeat += songIt.getBarTimeSignature().getQuarterBeats();
+			songIt.next();
+			offsetBar = 0;
+		}
+		return indexesChords;
+	};
+
+	ChordManager.prototype.getChordsRelativeToBeat = function(song, startBeat, endBeat, arrBeatChords) {
+		
+		arrBeatChords = arrBeatChords || this.getBeatsBasedChordIndexes(song);
+
+		var selectedChords = [];
+		for (var i = 0; i < arrBeatChords.length; i++) {
+			if (arrBeatChords[i] >= startBeat && arrBeatChords[i] < endBeat){
+				selectedChords.push({
+					index: i,
+					beat: arrBeatChords[i] - startBeat
+				});
+			}
+		}
+		return selectedChords;
+	};
+
+	ChordManager.prototype.getBarNumAndBeatFromBeat = function(song, beat) {
+		var songIt = new SongBarsIterator(song);
+		var startBeat = 1;
+		var endBeat, incBeat, offset;
+		while (songIt.hasNext()){
+			endBeat = startBeat + songIt.getBarTimeSignature().getQuarterBeats();
+			if (endBeat > beat){
+				offset = beat - startBeat;
+				incBeat = 4 / songIt.getBarTimeSignature().getBeatUnit();
+				return {
+					beatNumber: Math.round(offset / incBeat) + 1,
+					barNumber: songIt.getBarIndex()
+				};
+			}
+			songIt.next();
+			startBeat = endBeat;
+		}
+	};
+	// ChordManager.prototype.getBeatFromBarNumAndBeat = function(song, barNumAndBeat) {
+	// 	var songIt = new SongBarsIterator(song);
+	// 	var startBeat = 1;
+	// 	var incBeat, offsetBeat;
+	// 	while (songIt.hasNext()){
+
+	// 		if (songIt.getBarIndex() === barNumAndBeat.barNum){
+	// 			incBeat = 4 / songIt.getBarTimeSignature().getBeatUnit();
+	// 			offsetBeat = (barNumAndBeat.beat - 1) * incBeat;
+	// 			return 
+
+	// 		}
+
+	// 		songIt.next();
+	// 		startBeat += songIt.getBarTimeSignature().getQuarterBeats();
+	// 	}
+	// };
+
 	/**
 	 * Set a new chord to a specific index, if chords[index] already have a chord it will replace it
 	 * @param {ChordModel} chord
@@ -68,23 +152,6 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 		}
 		this._sortChordsList();
 	};
-
-	// ---- ChordManager - insertChord - may be not use anymore since _sortChordsList ------
-	/**
-	 * Insert a  new chord to a specific index, all chords after index will have their index incremented
-	 * @param {ChordModel} chord
-	 * @param {int} index
-	 */
-	/*ChordManager.prototype.insertChord = function(index, chord) {
-		if (typeof index !== "undefined" && isNaN(index)) {
-			throw 'Index must be a int in insert chord';
-		}
-		if (typeof chord === "undefined" || !(chord instanceof ChordModel)) {
-			chord = new ChordModel();
-		}
-		this.chords.splice(index, 0, chord);
-		this_sortChordsList();
-	};*/
 
 	/**
 	 * Search and remove a chord from the array, chordModel is destroyed
@@ -162,6 +229,11 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 			}
 		}
 	};
+
+	ChordManager.prototype.removeChordsByBeats = function(song, startBeat, endBeat) {
+		
+	}
+
 
 	/**
 	 *

@@ -52,6 +52,7 @@ define(function(require) {
 				});
 				cm.addChord(chord2);
 
+
 				assert.equal(cm.getChordDurationFromBarNumber(sm, 0, 0), 3, 'chord duration - first bar');
 				assert.equal(cm.getChordDurationFromBarNumber(sm, 0, 1), 4, 'chord duration - last full bar');
 				assert.equal(cm.getChordDurationFromBarNumber(sm, 0, 2), 2, 'chord duration - end bar');
@@ -96,6 +97,11 @@ define(function(require) {
 				assert.deepEqual(chordMng.getBeatIntervalByIndexes(song, 0, 1),[1,13]);
 				assert.deepEqual(chordMng.getBeatIntervalByIndexes(song, 1, 2),[9,21]);
 				assert.deepEqual(chordMng.getBeatIntervalByIndexes(song, 0, 3),[1,29]);
+
+				
+				console.log(chordMng.getChordsRelativeToBeat(song, 1, 30));
+				console.log(chordMng.getChordsRelativeToBeat(song, 5, 20));
+				//assert.deepEqual();
 
 
 			});
