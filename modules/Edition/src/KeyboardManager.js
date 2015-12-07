@@ -48,7 +48,6 @@ define(['utils/NoteUtils',
 				"n": "n"
 			};
 			var inc;
-
 			if (keyCode === 8) {
 				preventBackspace(evt, d);
 			}
@@ -89,14 +88,16 @@ define(['utils/NoteUtils',
 				publish('supr-key', evt); // in our editor we want to replace note by silence and not delete note
 			} else if (keyCode == 13) { //enter
 				publish('enter-key', evt);
-			} else if ((keyCode == 67 && evt.ctrlKey) || (keyCode == 67 && metaKey)) { // Ctrl + c or Command + c (mac or windows specific key)
+			} else if (keyCode == 67 && (evt.ctrlKey || metaKey)) { // Ctrl + c or Command + c (mac or windows specific key)
 				publish('ctrl-c-key', evt);
-			} else if ((keyCode == 86 && evt.ctrlKey) || (keyCode == 86 && metaKey)) { // Ctrl + v or Command + v (mac or windows specific key)
+			} else if (keyCode == 86 && (evt.ctrlKey || metaKey)) { // Ctrl + v or Command + v (mac or windows specific key)
 				publish('ctrl-v-key', evt);
-			} else if ((keyCode === 90 && evt.ctrlKey) || (keyCode === 90 && metaKey)) { // Ctrl + z
+			} else if (keyCode === 90 && (evt.ctrlKey || metaKey)) { // Ctrl + z
 				publish('ctrl-z', evt);
-			} else if ((keyCode === 89 && evt.ctrlKey) || (keyCode === 89 && metaKey)) { // Ctrl + y
+			} else if (keyCode === 89 && (evt.ctrlKey || metaKey)) { // Ctrl + y
 				publish('ctrl-y', evt);
+			} else if (keyCode === 65 && (evt.ctrlKey || metaKey)) { // Ctrl + y
+				publish('ctrl-a', evt);
 			} else if (keyCode == 32) {
 				publish('spacebar', evt);
 			} else if (keyCode == 9) {

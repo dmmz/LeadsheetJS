@@ -10,8 +10,8 @@ define([
 
 				var hc = new HistoryController(hm);
 
-				hc.addToHistory({}, 'test');
-				hc.addToHistory({}, 'test2');
+				hc.addToHistory('test', false);
+				hc.addToHistory('test2',false);
 				assert.equal(hm.historyList.length, 2);
 
 				//Following tests are commented because sometimes gives error due to the publish to the drawer

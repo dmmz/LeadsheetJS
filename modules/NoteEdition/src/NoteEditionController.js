@@ -26,6 +26,45 @@ define([
 	NoteEditionController.prototype.initSubscribe = function() {
 		var self = this;
 
+		function getHistoryName(fn) {
+			var name;
+			switch (fn) {
+				case 'setPitch':
+					name = 'Change pitch';
+					break;
+				case 'addAccidental':
+					name = 'Change note accidental';
+					break;
+				case 'setCurrDuration':
+				case 'setDot':
+				case 'setDoubleDot':
+					name = 'Change note duration';
+					break;
+				case 'setTie':
+					name = 'Add tie';
+					break;
+				case 'setTuplet':
+					name = 'Add tuplets';
+					break;
+				case 'setSilence':
+					name = 'Change note';
+					break;
+				case 'addNote':
+					name = 'Add note';
+					break;
+				case 'pasteNotes':
+					name = 'Paste notes';
+					break;
+			}
+			return name;
+		}
+
+		function addToHistory(fn) {
+			var updateLastEntry = self._lastCursorIndexHistory === self.cursor.getPos();
+			$.publish('ToHistory-add', [getHistoryName(fn), updateLastEntry]);
+			self._lastCursorIndexHistory = self.cursor.getPos();
+		}
+
 		// cursor view subscribe
 		$.subscribe('Cursor-moveCursorByElement-notes', function(el, inc) {
 			if (self.cursor.getEditable()) {
@@ -36,7 +75,12 @@ define([
 		// All functions related with note edition go here
 		$.subscribe('NoteEditionView', function(el, fn, param) {
 			if (self.noteSpaceMng.isEnabled()) {
+
 				self[fn].call(self, param);
+
+				if (fn !== 'copyNotes') { //copyNotes is the only function that we don't save in history 
+					addToHistory(fn);
+				}
 				$.publish('ToLayers-removeLayer');
 				$.publish('ToViewer-draw', self.songModel);
 			}
@@ -123,7 +167,7 @@ define([
 		var duration;
 		for (var i = 0; i < notesNew.length; i++) {
 			duration = notesNew[i].getDuration();
-			if (NoteUtils.roundBeat(barRelativeBeat) < barBeatDuration && 
+			if (NoteUtils.roundBeat(barRelativeBeat) < barBeatDuration &&
 				NoteUtils.roundBeat(barRelativeBeat + duration) > barBeatDuration) {
 				return false;
 			}
@@ -313,12 +357,6 @@ define([
 				note.setNoteFromString(newKey);
 			}
 		}
-		if (this._lastCursorIndexHistory !== this.cursor.getPos()) {
-			$.publish('ToHistory-add', 'Change pitch');
-			this._lastCursorIndexHistory = this.cursor.getPos();
-		} else {
-			$.publish('ToHistory-updateLastEntry');
-		}
 	};
 
 	NoteEditionController.prototype.addAccidental = function(accidental) {
@@ -335,12 +373,6 @@ define([
 			} else {
 				note.setAccidental(accidental);
 			}
-		}
-		if (this._lastCursorIndexHistory !== this.cursor.getPos()) {
-			$.publish('ToHistory-add', 'Change note accidental');
-			this._lastCursorIndexHistory = this.cursor.getPos();
-		} else {
-			$.publish('ToHistory-updateLastEntry');
 		}
 	};
 
@@ -373,12 +405,6 @@ define([
 				notes[i].setDuration(newDur);
 			}
 		});
-		if (this._lastCursorIndexHistory !== this.cursor.getPos()) {
-			$.publish('ToHistory-add', 'Change note duration');
-			this._lastCursorIndexHistory = this.cursor.getPos();
-		} else {
-			$.publish('ToHistory-updateLastEntry');
-		}
 	};
 
 	NoteEditionController.prototype.setDot = function() {
@@ -396,12 +422,6 @@ define([
 			}
 			return notes;
 		});
-		if (this._lastCursorIndexHistory !== this.cursor.getPos()) {
-			$.publish('ToHistory-add', 'Change note duration');
-			this._lastCursorIndexHistory = this.cursor.getPos();
-		} else {
-			$.publish('ToHistory-updateLastEntry');
-		}
 	};
 	NoteEditionController.prototype.setDoubleDot = function() {
 		this._runDurationFn(function(tmpNm) {
@@ -418,12 +438,6 @@ define([
 			}
 			return notes;
 		});
-		if (this._lastCursorIndexHistory !== this.cursor.getPos()) {
-			$.publish('ToHistory-add', 'Change note duration');
-			this._lastCursorIndexHistory = this.cursor.getPos();
-		} else {
-			$.publish('ToHistory-updateLastEntry');
-		}
 	};
 
 	NoteEditionController.prototype.setTie = function() {
@@ -444,12 +458,6 @@ define([
 						note.setTie("stop");
 				}
 			}
-		}
-		if (this._lastCursorIndexHistory !== this.cursor.getPos()) {
-			$.publish('ToHistory-add', 'Add tie notes');
-			this._lastCursorIndexHistory = this.cursor.getPos();
-		} else {
-			$.publish('ToHistory-updateLastEntry');
 		}
 	};
 
@@ -530,12 +538,6 @@ define([
 				}
 			}
 		});
-		if (this._lastCursorIndexHistory !== this.cursor.getPos()) {
-			$.publish('ToHistory-add', 'Add tuplets');
-			this._lastCursorIndexHistory = this.cursor.getPos();
-		} else {
-			$.publish('ToHistory-updateLastEntry');
-		}
 	};
 
 	NoteEditionController.prototype.setSilence = function() {
@@ -576,13 +578,6 @@ define([
 				tmpNm.deleteNote(noteToDelete[k]);
 			}
 		});
-
-		if (this._lastCursorIndexHistory !== this.cursor.getPos()) {
-			$.publish('ToHistory-add', 'Change note');
-			this._lastCursorIndexHistory = this.cursor.getPos();
-		} else {
-			$.publish('ToHistory-updateLastEntry');
-		}
 		//self.cursor.setIndexPos(1, self.cursor.getEnd() - noteToDelete.length);
 	};
 
@@ -592,13 +587,6 @@ define([
 			var cloned = tmpNm.getNotes()[0].clone(false);
 			tmpNm.addNote(cloned, 0);
 		});
-
-		if (this._lastCursorIndexHistory !== this.cursor.getPos()) {
-			$.publish('ToHistory-add', 'Add note');
-			this._lastCursorIndexHistory = this.cursor.getPos();
-		} else {
-			$.publish('ToHistory-updateLastEntry');
-		}
 	};
 
 	NoteEditionController.prototype.copyNotes = function() {
@@ -621,6 +609,11 @@ define([
 		}
 	};
 
+	/**
+	 * This is the only function not called by 'NoteEditionView' event, (see NoteEditionController.initSubscribe)
+	 * @param  {[type]} inc [description]
+	 * @return {[type]}     [description]
+	 */
 	NoteEditionController.prototype.moveCursorByBar = function(inc) {
 		if (this.cursor.getEditable() === false) {
 			return;

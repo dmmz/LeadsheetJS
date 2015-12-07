@@ -24,8 +24,8 @@ define([
 		$.subscribe('HistoryView-moveSelectHistory', function(el, inc) {
 			self.moveSelectHistory(inc);
 		});
-		$.subscribe('ToHistory-add', function(el, title) {
-			self.addToHistory(title);
+		$.subscribe('ToHistory-add', function(el, title, updateLastEntry) {
+			self.addToHistory(title, updateLastEntry);
 		});
 		$.subscribe('ToHistory-updateLastEntry', function() {
 			self.updateLastEntry();
@@ -68,9 +68,9 @@ define([
 	/**
 	 * Function is called to save a state to history
 	 */
-	HistoryController.prototype.addToHistory = function(title) {
+	HistoryController.prototype.addToHistory = function(title, updateLastEntry) {
 		var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel); // Exporting current songModel to json
-		this.model.addToHistory(JSONSong, title);
+		this.model.addToHistory(JSONSong, title, updateLastEntry);
 	};
 
 	/**

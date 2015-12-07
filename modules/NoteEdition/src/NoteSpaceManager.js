@@ -54,6 +54,11 @@ define([
 		$.subscribe('ToNoteSpaceManager-enable',function(){
 			self.enable();
 		})
+		$.subscribe('ctrl-a',function(){
+			self.enable();
+			self.cursor.selectAll();
+			self.viewer.canvasLayer.refresh();
+		});
 
 	};
 
