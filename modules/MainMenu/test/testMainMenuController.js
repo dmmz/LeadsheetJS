@@ -1,10 +1,8 @@
 define([
 	'modules/MainMenu/src/MainMenuModel',
 	'modules/MainMenu/src/MainMenuController',
-	'modules/MainMenu/src/MainMenuView',
-	'modules/Harmonizer/src/HarmonizerController',
-	'modules/Harmonizer/src/HarmonizerView',
-], function(MainMenuModel, MainMenuController, MainMenuView, HarmonizerController, HarmonizerView) {
+	'modules/MainMenu/src/MainMenuView'
+], function(MainMenuModel, MainMenuController, MainMenuView) {
 	return {
 		run: function() {
 			test("MainMenuController", function(assert) {

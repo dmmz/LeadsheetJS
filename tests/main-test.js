@@ -79,7 +79,6 @@ define(function(require) {
   var testStructureEditionController = require('modules/StructureEdition/test/testStructureEditionController');
   var testFileEditionController = require('modules/FileEdition/test/testFileEditionController');
 
-  var testHarmonizerController = require('modules/Harmonizer/test/testHarmonizerController');
   var testModuleManager = require('modules/ModuleManager/test/testModuleManager');
   var testMainMenuModel = require('modules/MainMenu/test/testMainMenuModel');
   var testMainMenuController = require('modules/MainMenu/test/testMainMenuController');
@@ -143,7 +142,6 @@ define(function(require) {
 
   testSongConverterMidi_MidiCSL.run();
 
-  testHarmonizerController.run();
 
   testHistoryModel.run();
   testHistoryController.run();
