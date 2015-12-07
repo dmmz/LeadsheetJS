@@ -381,7 +381,7 @@ define(function() {
 				timeSignature: "6/8",
 				bars: [
 					{
-						//barNum: 8, measureBeat: 29
+						//barNum: 8, measureBeat: 29, quarterBeat 29
 						chords: [{p: "A",ch: "m7",beat: 1}],
 						melody: [
 							{keys: ["B/4"], duration: "h", dot:1}
