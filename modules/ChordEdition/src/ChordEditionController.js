@@ -82,14 +82,19 @@ define([
 		var arrBeatChords = chordMng.getBeatsBasedChordIndexes(this.songModel);
 		var indexesBeats = chordMng.getChordsRelativeToBeat(this.songModel,this.buffer[0], this.buffer[1], arrBeatChords);
 		
+		if (indexesBeats.length === 0){
+			//no chords selected
+			return;
+		}
+
 		var pos1 = indexesBeats[0].index;
 		var pos2 = indexesBeats[indexesBeats.length - 1].index;
 
 		var copiedChords = chordMng.cloneElems(pos1, pos2 + 1);
 		var startPasteBeat = this.getSelectedChordsBeats()[0];
-		var endPasteBeat = startPasteBeat + this.buffer[1] - this.buffer[0];
+		var endPasteBeat = startPasteBeat + this.buffer[1] - this.buffer[0] - 1;
 
-		console.log(copiedChords);
+
 		var firstChordSpace = chordMng.getBarNumAndBeatFromBeat(this.songModel,startPasteBeat);
 		var lastChordSpace = chordMng.getBarNumAndBeatFromBeat(this.songModel,endPasteBeat);
 		chordMng.removeChordsBetweenPositions(firstChordSpace.barNumber, firstChordSpace.beatNumber, lastChordSpace.barNumber, lastChordSpace.beatNumber);
