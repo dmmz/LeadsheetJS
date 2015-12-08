@@ -224,7 +224,7 @@ define([
 
 				var wave = LJS._loadAudioPlayer(Wave, songModel, viewer, cursorNoteModel); // audio player is use to get audio wave, it's why it needs viewer
 				if (params.player.audio.audioFile) {
-					wave.load(params.player.audio.audioFile, 170, true);
+					wave.load(params.player.audio.audioFile, params.player.audio.tempo, true);
 				}
 
 				loadedModules.audioPlayer = wave;
