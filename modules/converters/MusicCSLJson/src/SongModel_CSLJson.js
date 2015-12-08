@@ -111,7 +111,6 @@ define(function(require) {
 			//songModel.getUnfoldedSongStructure();
 			if (wholeRestFound) { //if found bars with only one whole rest
 				SongModel_CSLJson._updateNotesBarDuration(songModel);
-
 			}
 		}
 		return songModel;
