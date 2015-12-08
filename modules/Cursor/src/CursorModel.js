@@ -33,7 +33,7 @@ define([
 		if (!(pos instanceof Array)) pos = [pos, pos];
 		if (isNaN(pos[0])){
 			return;  //in the case we are setting position from audio playing, we check the cursor really exists, if not we do not optate	
-		} 
+		}
 		
 		pos = this._checkPosition(pos);
 		this.pos = pos;
