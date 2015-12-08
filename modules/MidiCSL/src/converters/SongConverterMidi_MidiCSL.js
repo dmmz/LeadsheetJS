@@ -26,9 +26,9 @@ define([
 			if (useServlet === true) {
 				SongConverterMidi_MidiCSL.unfoldUsingServlet(songModel, function(newSongModel) {
 					if (typeof newSongModel.error !== "undefined") {
-						// newSongModel = songModel.clone();
-						// newSongModel.unfold();
-						song = SongConverterMidi_MidiCSL.exportElementsToMidiCSL(songModel);
+						newSongModel = songModel.clone();
+						newSongModel.unfold();
+						song = SongConverterMidi_MidiCSL.exportElementsToMidiCSL(newSongModel);
 					} else {
 						song = SongConverterMidi_MidiCSL.exportElementsToMidiCSL(newSongModel);
 					}
@@ -49,7 +49,7 @@ define([
 		};
 
 		SongConverterMidi_MidiCSL.unfoldUsingServlet = function(songModel, callback) {
-			if (typeof callback !== "undefined") {
+			if (typeof callback === "undefined") {
 				return;
 			}
 			var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(songModel);
