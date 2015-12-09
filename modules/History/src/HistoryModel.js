@@ -5,7 +5,7 @@ define([
 	'pubsub',
 	'JsonDelta'
 ], function(Mustache, $, UserLog, pubsub, JSON_delta) {
-		/**
+	/**
 	 * HistoryModel is an array of state, it allow a high level management of Historys
 	 * @param {object} options
 	 */
@@ -29,9 +29,9 @@ define([
 	};
 
 	HistoryModel.prototype.getState = function(position) {
-		var leadsheet = JSON.parse(JSON.stringify(this.lastLeadsheet)) ; //cloning,so that this.lastLeadsheet is not affected
+		var leadsheet = JSON.parse(JSON.stringify(this.lastLeadsheet)); //cloning,so that this.lastLeadsheet is not affected
 		for (var i = this.historyList.length - 1; i > position; i--) {
-			leadsheet = JSON_delta.patch(leadsheet,this.historyList[i].invertedDelta);
+			leadsheet = JSON_delta.patch(leadsheet, this.historyList[i].invertedDelta);
 		}
 		return leadsheet;
 	};
@@ -56,46 +56,45 @@ define([
 	 *
 	 */
 	HistoryModel.prototype.addToHistory = function(leadsheet, title, updateLastEntry) {
-		
+
 		var time = new Date().toLocaleString();
 		title = title ? title : '';
 		var invertedDelta;
 		var leadsheetToCompareTo;
 		//first time lastLeadsheet will be null so there will be no delta to obtain
-		if (this.lastLeadsheet)
-		{
-			if (updateLastEntry){
+		if (this.lastLeadsheet) {
+			if (updateLastEntry) {
 				leadsheetToCompareTo = this.getState(this.currentPosition - 1); //get previous leadsheet, as we want delta to get to previous leadsheet, not the last
-			}else{
-				leadsheetToCompareTo = this.getState(this.currentPosition);	//get leadsheet of currentPosition
+			} else {
+				leadsheetToCompareTo = this.getState(this.currentPosition); //get leadsheet of currentPosition
 			}
 			invertedDelta = JSON_delta.diff(leadsheet, leadsheetToCompareTo);
-			if (invertedDelta.length === 0){ //in case there was no change (not probable)
+			if (invertedDelta.length === 0) { //in case there was no change (not probable)
 				return;
 			}
-		}else{
+		} else {
 			invertedDelta = null;
 		}
-		
+
 		var newHistorical = {
 			invertedDelta: invertedDelta,
 			title: title,
 			time: time
 		};
-		
-		if (updateLastEntry){
+
+		if (updateLastEntry) {
 			this.historyList[this.historyList.length - 1] = newHistorical;
-		}else{
+		} else {
 			this.historyList = this.historyList.slice(0, this.currentPosition + 1);
 			this.historyList.push(newHistorical);
-			if (this.historyList.length > this.maxHistoryLength){
-				this.historyList.splice(0,1);	
+			if (this.historyList.length > this.maxHistoryLength) {
+				this.historyList.splice(0, 1);
 			}
 			this.setCurrentPosition(this.currentPosition + 1);
 		}
 		this.lastLeadsheet = leadsheet;
 		$.publish('HistoryModel-addToHistory', this);
-		
+
 	};
 
 	return HistoryModel;

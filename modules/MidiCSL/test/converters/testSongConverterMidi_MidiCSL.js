@@ -13,7 +13,7 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 
 				var done = assert.async();
 				// Convert songmodel to a readable model that we can insert in SongModel_midiCSL
-				SongConverterMidi_MidiCSL.exportToMidiCSL(songModel, false, function(midiSong) {
+				SongConverterMidi_MidiCSL.exportToMidiCSL(songModel, true, function(midiSong) {
 					var midiSongModel = new SongModel_midiCSL({'song': midiSong});
 
 					var fakeSong = [];
