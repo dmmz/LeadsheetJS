@@ -72,8 +72,8 @@ define(function(require) {
 			progressBar: true
 		},
 		audio:{
-			audioFile: '/tests/audio/solar.wav'
-			//otheroptions
+			audioFile: '/tests/audio/solar.wav',
+			tempo: 120
 		},
 		midi:{
 			soundfontUrl: soundfontUrl
