@@ -67,6 +67,7 @@ define(['modules/Wave/src/WaveModel',
 				var endTime = self.model.beatDuration * (beats[1] - 1);
 				if (self.drawer.cursor){	
 					self.drawer.cursor.setPos([startTime,endTime]);	
+					self.drawer.updateCursorPlaying(startTime);
 				}
 				
 		});
@@ -252,7 +253,7 @@ define(['modules/Wave/src/WaveModel',
 			window.webkitRequestAnimationFrame;
 		this.startTime = this.model.audio.currentTime;
 		var timeStep = 0;
-		var currBar = 0;
+		var barIndex = 0;
 		var frame = function() {
 			if (!self.isPause) {
 				if (self.getPlayedTime() >= timeStep + minBeatStep) {
@@ -265,11 +266,11 @@ define(['modules/Wave/src/WaveModel',
 					timeStep += minBeatStep;
 				}
 				time = self.getPlayedTime();
-				currBar = self.barTimesMng.getCurrBarByTime(time, currBar);
+				barIndex = self.barTimesMng.getBarIndexByTime(time, barIndex);
 
-				// To avoid problems when finishing audio, we play while currBar is in barTimesMng, if not, we pause
-				if (currBar < self.barTimesMng.getLength()) {
-					self.drawer.updateCursorPlaying(time);
+				// To avoid problems when finishing audio, we play while barIndex is in barTimesMng, if not, we pause
+				if (barIndex < self.barTimesMng.getLength()) {
+					self.drawer.updateCursorPlaying(time, barIndex);
 					self.drawer.viewer.canvasLayer.refresh();
 					requestFrame(frame);
 				} else {

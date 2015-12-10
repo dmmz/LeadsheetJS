@@ -33,12 +33,12 @@ define(['modules/core/src/SongBarsIterator'],
 		getLength: function(){
 			return this.barTimes.length;
 		},
-		getCurrBarByTime: function(time, currBar){
-			currBar = currBar || 0;
-			while (currBar < this.barTimes.length && this.barTimes[currBar] < time) {
-				currBar++;
+		getBarIndexByTime: function(time, barIndex){
+			barIndex = barIndex || 0;
+			while (barIndex < this.barTimes.length && this.barTimes[barIndex] < time) {
+				barIndex++;
 			}
-			return currBar; //to inform the value of index after being updated
+			return barIndex; //to inform the value of index after being updated
 		},
 		getTimeLimits: function(index){
 			if (typeof index === "undefined") throw "BarTimesManager - error: index not defined";
@@ -50,12 +50,6 @@ define(['modules/core/src/SongBarsIterator'],
 		getCurrBarTime: function(index){
 			var limits = this.getTimeLimits(index);
 			return limits.end - limits.start;
-		},
-		getIndexByTime: function(time){
-			for (var i = 0; i < this.barTimes.length; i++) {
-				if (time < this.barTimes[i]) break;
-			}
-			return i;
 		}
 	};
 
