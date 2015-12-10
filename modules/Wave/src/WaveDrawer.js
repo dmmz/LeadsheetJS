@@ -282,6 +282,20 @@ define([
 	WaveDrawer.prototype.drawPeaks = function(peaks, area, color, viewer) {
 		var ctx = viewer.ctx;
 		var self = this;
+		
+		function normalize (peaks) {
+			var NORM_FACTOR = 0.8; //if 1, maximum will draw until the very top of the audio space
+			var max = 0;
+			for (var i = 0; i < peaks.length; i++) {
+				if (peaks[i] > max) max = peaks[i];
+			}
+			if (max !== 0){
+				for (var i = 0; i < peaks.length; i++) {
+					peaks[i] /= max / NORM_FACTOR;
+				}
+			}
+			return peaks;
+		}
 
 		viewer.drawElem(function() {
 			// A half-pixel offset makes lines crisp
@@ -294,6 +308,8 @@ define([
 			var scale;
 			var i, h, maxH;
 
+			peaks = normalize(peaks);
+			
 			// if (self.params.fillParent && width != length) {
 			//     scale = width / length;
 			// }
