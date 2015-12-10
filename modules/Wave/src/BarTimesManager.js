@@ -4,7 +4,6 @@ define(['modules/core/src/SongBarsIterator'],
 	 * We save the time in which each bar finishes
 	 */
 	function BarTimesManager() {
-		this.index = 0;
 		this.barTimes = [];
 	}
 
@@ -31,17 +30,15 @@ define(['modules/core/src/SongBarsIterator'],
 			}
 			this.barTimes = calculateBarTimes(song,audio);
 		},
-		reset: function(){
-			this.index = 0;
-		},
 		getLength: function(){
 			return this.barTimes.length;
 		},
-		updateCurrBarByTime: function(time, index){
-			while (this.index < this.barTimes.length && this.barTimes[this.index] < time) {
-				this.index++;
+		getCurrBarByTime: function(time, currBar){
+			currBar = currBar || 0;
+			while (currBar < this.barTimes.length && this.barTimes[currBar] < time) {
+				currBar++;
 			}
-			return this.index; //to inform the value of index after being updated
+			return currBar; //to inform the value of index after being updated
 		},
 		getTimeLimits: function(index){
 			if (typeof index === "undefined") throw "BarTimesManager - error: index not defined";

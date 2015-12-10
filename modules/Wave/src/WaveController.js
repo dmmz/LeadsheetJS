@@ -254,7 +254,6 @@ define(['modules/Wave/src/WaveModel',
 		var requestFrame = window.requestAnimationFrame ||
 			window.webkitRequestAnimationFrame;
 		this.startTime = this.model.audio.currentTime;
-		this.barTimesMng.reset(); //every time we start playing we reset barTimesMng (= we set currBar to 0) because, for the moment, we play always from the beginning
 		var timeStep = 0;
 		var currBar = 0;
 		var frame = function() {
@@ -268,7 +267,7 @@ define(['modules/Wave/src/WaveModel',
 					timeStep += minBeatStep;
 				}
 				time = self.getPlayedTime();
-				currBar = self.barTimesMng.updateCurrBarByTime(time);
+				currBar = self.barTimesMng.getCurrBarByTime(time, currBar);
 				// To avoid problems when finishing audio, we play while currBar is in barTimesMng, if not, we pause
 				if (currBar < self.barTimesMng.getLength()) {
 					self.drawer.updateCursorPlaying(time);
