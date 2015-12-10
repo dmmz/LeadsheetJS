@@ -25,32 +25,46 @@ define([
 			var song = [];
 			if (useServlet === true) {
 				SongConverterMidi_MidiCSL.unfoldUsingServlet(songModel, function(newSongModel) {
-					song = SongConverterMidi_MidiCSL.exportElementsToMidiCSL(newSongModel);
+					if (typeof newSongModel.error !== "undefined") {
+						newSongModel = songModel.clone();
+						newSongModel.unfold();
+						song = SongConverterMidi_MidiCSL.exportElementsToMidiCSL(newSongModel);
+					} else {
+						song = SongConverterMidi_MidiCSL.exportElementsToMidiCSL(newSongModel);
+					}
 					if (typeof callback !== "undefined") {
 						callback(song);
 					}
 					return song;
 				});
-			} else {
-				song = SongConverterMidi_MidiCSL.exportElementsToMidiCSL(songModel);
-				if (typeof callback !== "undefined") {
-					callback(song);
-				}
-				return song;
+			}
+			return song;
+		};
+
+		SongConverterMidi_MidiCSL.unfold = function(songModel, callback) {
+			song = SongConverterMidi_MidiCSL.exportElementsToMidiCSL(songModel);
+			if (typeof callback !== "undefined") {
+				callback(song);
 			}
 		};
 
 		SongConverterMidi_MidiCSL.unfoldUsingServlet = function(songModel, callback) {
+			if (typeof callback === "undefined") {
+				return;
+			}
 			var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(songModel);
 			var request = {
 				'leadsheet': JSON.stringify(JSONSong),
 			};
 			AjaxUtils.servletRequest('jsonsong', 'unfold', request, function(data) {
+				if (typeof data.error !== "undefined") {
+					callback(data);
+					return;
+				}
 				var unfoldedSongModel = new SongModel();
 				SongModel_CSLJson.importFromMusicCSLJSON(data.unfolded, unfoldedSongModel);
-				if (typeof callback !== "undefined") {
-					callback(unfoldedSongModel);
-				}
+				callback(unfoldedSongModel);
+				return;
 			});
 		};
 

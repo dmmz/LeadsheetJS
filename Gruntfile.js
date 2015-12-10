@@ -96,7 +96,7 @@ module.exports = function(grunt) {
 					dest: 'build/<%= pkg.name %>-<%= pkg.version %>UMD.min.js', // optional, if missing the src will be used
 					// can be specified by name (e.g. 'umd'); if missing, the templates/umd.hbs
 					// file will be used from [libumd](https://github.com/bebraw/libumd)
-					objectToExport: 'library', // optional, internal object that will be exported
+					objectToExport: 'LJS', // optional, internal object that will be exported
 					amdModuleId: 'LJS', // optional, if missing the AMD module will be anonymous
 					globalAlias: 'LJS', // optional, changes the name of the global variable
 				}

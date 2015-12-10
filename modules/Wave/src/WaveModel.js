@@ -16,7 +16,7 @@ define([
 		this.initModelEvents();
 
 		var initVolume;
-		if ((typeof option !== "undefined" && typeof(option.volume) !== "undefined")) {
+		if (option && option.volume !== undefined) {
 			// case that developper explicitly declared volume
 			initVolume = option.volume;
 		} else {
@@ -30,10 +30,10 @@ define([
 		if (this.isPlayingEnabled === false) {
 			return;
 		}
-		if (typeof playFrom !== "undefined") {
+		if (playFrom !== undefined) {
 			this.audio.currentTime = playFrom;
 		}
-		if (typeof playTo !== "undefined") {
+		if (playTo !== undefined) {
 			this.playTo = playTo;
 			this.playFrom = playFrom;
 		} else {

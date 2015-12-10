@@ -67,8 +67,8 @@ define(['modules/Wave/src/WaveModel',
 				var endTime = self.model.beatDuration * (beats[1] - 1);
 				if (self.drawer.cursor){	
 					self.drawer.cursor.setPos([startTime,endTime]);	
+					self.drawer.updateCursorPlaying(startTime);
 				}
-				
 		});
 		$.subscribe("ToPlayer-play", function() {
 			self.play();
@@ -141,12 +141,9 @@ define(['modules/Wave/src/WaveModel',
 		if (this.isLoaded) {
 			this.isPause = false;
 			// this.restartAnimationLoop(); // now we use playing event
-			var playTo;
-			var playFrom;
-			if (this.drawer.cursor.getPos()[0] !== this.drawer.cursor.getPos()[1]) {
-				playTo = this.drawer.cursor.getPos()[0];
-				playFrom = this.drawer.cursor.getPos()[1];
-			}
+			var playTo = this.drawer.cursor.getPos()[0];
+			var playFrom = this.drawer.cursor.getPos()[1];
+			
 			this.model.play(playTo, playFrom);
 		}
 	};
@@ -254,24 +251,28 @@ define(['modules/Wave/src/WaveModel',
 		var requestFrame = window.requestAnimationFrame ||
 			window.webkitRequestAnimationFrame;
 		this.startTime = this.model.audio.currentTime;
-		this.barTimesMng.reset(); //every time we start playing we reset barTimesMng (= we set currBar to 0) because, for the moment, we play always from the beginning
 		var timeStep = 0;
-		var currBar = 0;
+		var barIndex = 0;
 		var frame = function() {
 			if (!self.isPause) {
 				if (self.getPlayedTime() >= timeStep + minBeatStep) {
+
+					//we update note cursor
 					iNote = noteMng.getPrevIndexNoteByBeat(self.getPlayedTime() / self.model.beatDuration + 1);
-						if (iNote != prevINote && self.cursorNotes && iNote > self.cursorNotes.getListLength()) { //if cursorNotes is not defined (or null) we don't use it (so audioPlayer works and is not dependent on cursor)
+					if (iNote != prevINote && self.cursorNotes && iNote < self.cursorNotes.getListLength()) { //if cursorNotes is not defined (or null) we don't use it (so audioPlayer works and is not dependent on cursor)
+						
 						self.cursorNotes.setPos(iNote);
 						prevINote = iNote;
 					}
 					timeStep += minBeatStep;
+
 				}
 				time = self.getPlayedTime();
-				currBar = self.barTimesMng.updateCurrBarByTime(time);
-				// To avoid problems when finishing audio, we play while currBar is in barTimesMng, if not, we pause
-				if (currBar < self.barTimesMng.getLength()) {
-					self.drawer.updateCursorPlaying(time);
+				barIndex = self.barTimesMng.getBarIndexByTime(time, barIndex);
+
+				// To avoid problems when finishing audio, we play while barIndex is in barTimesMng, if not, we pause
+				if (barIndex < self.barTimesMng.getLength()) {
+					self.drawer.updateCursorPlaying(time, barIndex);
 					self.drawer.viewer.canvasLayer.refresh();
 					requestFrame(frame);
 				} else {
