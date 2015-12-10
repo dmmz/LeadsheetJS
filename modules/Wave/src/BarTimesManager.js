@@ -41,7 +41,7 @@ define(['modules/core/src/SongBarsIterator'],
 			return barIndex; //to inform the value of index after being updated
 		},
 		getTimeLimits: function(index){
-			if (typeof index === "undefined") throw "BarTimesManager - error: index not defined";
+			if (index === undefined) throw "BarTimesManager - error: index not defined";
 			return {
 				start: (index === 0) ? 0 : this.barTimes[index - 1],
 				end: this.barTimes[index]

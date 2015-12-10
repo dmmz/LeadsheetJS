@@ -69,7 +69,6 @@ define(['modules/Wave/src/WaveModel',
 					self.drawer.cursor.setPos([startTime,endTime]);	
 					self.drawer.updateCursorPlaying(startTime);
 				}
-				
 		});
 		$.subscribe("ToPlayer-play", function() {
 			self.play();
@@ -257,13 +256,16 @@ define(['modules/Wave/src/WaveModel',
 		var frame = function() {
 			if (!self.isPause) {
 				if (self.getPlayedTime() >= timeStep + minBeatStep) {
+
 					//we update note cursor
 					iNote = noteMng.getPrevIndexNoteByBeat(self.getPlayedTime() / self.model.beatDuration + 1);
-						if (iNote != prevINote && self.cursorNotes && iNote > self.cursorNotes.getListLength()) { //if cursorNotes is not defined (or null) we don't use it (so audioPlayer works and is not dependent on cursor)
+					if (iNote != prevINote && self.cursorNotes && iNote < self.cursorNotes.getListLength()) { //if cursorNotes is not defined (or null) we don't use it (so audioPlayer works and is not dependent on cursor)
+						
 						self.cursorNotes.setPos(iNote);
 						prevINote = iNote;
 					}
 					timeStep += minBeatStep;
+
 				}
 				time = self.getPlayedTime();
 				barIndex = self.barTimesMng.getBarIndexByTime(time, barIndex);

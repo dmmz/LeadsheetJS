@@ -252,7 +252,7 @@ define([
 			}
 			this.indexPosition = indexPosition;
 			this.cursorModel.setPos(indexPosition);
-			$.subscribe('CanvasLayer-refresh');
+			$.publish('CanvasLayer-refresh');
 		};
 
 
