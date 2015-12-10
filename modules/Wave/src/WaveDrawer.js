@@ -85,6 +85,7 @@ define([
 	 * @return {Object}          e.g. { x: 12, y: 23, w:5, h:5}
 	 */
 	WaveDrawer.prototype._getCursorDims = function(time, barIndex) {
+		console.log("barIndex "+barIndex);
 		barIndex = barIndex || this.waveMng.barTimesMng.index;
 		return this._getAudioPosFromTime(time, barIndex);
 
@@ -97,6 +98,8 @@ define([
 		var self = this;
 		var cursorBars = this.elemMng.getElemsInPath(this.waveBarDimensions, coords, ini, end, this.getYs(coords));
 		var ys = this.getYs(coords);
+
+		end = end || ini;
 
 		if (cursorBars[0] != null && cursorBars[1] != null) {
 			var x1, x2;
@@ -111,6 +114,10 @@ define([
 			var pos1 = this._getAudioTimeFromPos(x1, cursorBars[0]);
 			var pos2 = this._getAudioTimeFromPos(x2, cursorBars[1]);
 			this.cursor.setPos([pos1, pos2]);
+			console.log("pos1 "+pos1);
+			this.updateCursorPlaying(pos1);
+
+
 		}
 		if (mouseUp) {
 			var posCursor = this.cursor.getPos();
@@ -189,7 +196,9 @@ define([
 			this.cursor.setEditable(bool);
 		}
 	};
+	
 	WaveDrawer.prototype.updateCursorPlaying = function(time) {
+		console.log("updateCursorPlaying");
 		this.cursorPos = this._getCursorDims(time);
 	};
 

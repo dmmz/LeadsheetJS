@@ -127,7 +127,7 @@ define(function(require) {
 
 	// var myLeadsheet1 = LJS.easyBuild('viewer', testSongs.simpleLeadSheet, viewerHTML, viewerOptions);
 	// var myLeadsheet2 = LJS.easyBuild('player', testSongs.simpleLeadSheet, playerHTML, playerOptions);
-	var myLeadsheet = LJS.init(testSongs.leadSheetTimeSigChanges, params);
+	var myLeadsheet = LJS.init(testSongs.simpleLeadSheet, params);
 	//console.log(myLeadsheet);
 	/*if (typeof myLeadsheet.audioComments !== "undefined") {
 		addComments(myLeadsheet.audioComments);
