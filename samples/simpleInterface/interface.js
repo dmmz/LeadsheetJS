@@ -11,12 +11,12 @@ require.config({
 		text: 'external-libs/require-text',
 		bootstrap: 'external-libs/bootstrap/bootstrap.min',
 		jsPDF: 'external-libs/jspdf/jspdf.min',
-		JsonDelta: 'external-libs/json_delta_1.1.3_minified'
+		JsonDelta: 'external-libs/json_delta_1.1.3_minified',
 		//bootstrap: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min',
 	},
 	shim: {
 		// 'LeadsheetJS': {
-		// 	exports: 'LS'
+		//	exports: 'LS'
 		// },
 		vexflow: {
 			exports: 'Vex'
@@ -33,13 +33,13 @@ require.config({
 define(function(require) {
 	var $ = require('jquery');
 	var LJS = require('LJS');
-	
+		
 	// console.log(LJS);
 
 	var testSongs = require('tests/test-songs');
 
-	//var popIn = new LJS.PopIn.PopIn('Hello', 'Test<br />ok');
-	//popIn.render();
+	// var popIn = new LJS.PopIn.PopIn('Hello', 'Test<br />ok');
+	// popIn.render();
 
 	var menuHTML = document.getElementById('menu-container');
 	var viewerHTML = $("#canvas_container")[0];

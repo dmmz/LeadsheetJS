@@ -2,11 +2,36 @@ module.exports = function(grunt) {
 	// Project configuration.
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
-		qunit: {
-			all: ['tests/*.html']
+		watch: {
+			scripts: {
+				files: ['Gruntfile.js', 'LJS.js', 'modules/**/*.js', 'modules/**/*.html', 'utils/**/*.js', '*.js'],
+				tasks: 'default',
+				options: {
+					spawn: false,
+				},
+			},
 		},
-		jshint: {
-			all: ['Gruntfile.js', 'LJS.js', 'modules/**/*.js', 'utils/**/*.js', 'tests/**/*.js']
+		umd: {
+			all: {
+				options: {
+					src: 'build/<%= pkg.name %>-<%= pkg.version %>.min.js',
+					dest: 'build/<%= pkg.name %>-<%= pkg.version %>UMD.min.js', // optional, if missing the src will be used
+					// can be specified by name (e.g. 'umd'); if missing, the templates/umd.hbs
+					// file will be used from [libumd](https://github.com/bebraw/libumd)
+					objectToExport: 'LJS', // optional, internal object that will be exported
+					amdModuleId: 'LJS', // optional, if missing the AMD module will be anonymous
+					globalAlias: 'LJS', // optional, changes the name of the global variable
+				}
+			}
+		},
+		jsdoc: {
+			dist: {
+				src: ['modules/**/*.js', 'utils/**/*.js'],
+				options: {
+					destination: 'doc',
+					access: 'all'
+				}
+			}
 		},
 		requirejs: {
 			compile: {
@@ -80,38 +105,20 @@ module.exports = function(grunt) {
 				}
 			}
 		},
-		watch: {
-			scripts: {
-				files: ['modules/**/*.js', 'modules/**/*.html', '!modules/core/src/SongModel.old.js', 'utils/**/*.js', '*.js'],
-				tasks: 'default',
-				options: {
-					spawn: false,
-				},
-			},
+		qunit: {
+			all: ['tests/test.html']
 		},
-		umd: {
-			all: {
-				options: {
-					src: 'build/<%= pkg.name %>-<%= pkg.version %>.min.js',
-					dest: 'build/<%= pkg.name %>-<%= pkg.version %>UMD.min.js', // optional, if missing the src will be used
-					// can be specified by name (e.g. 'umd'); if missing, the templates/umd.hbs
-					// file will be used from [libumd](https://github.com/bebraw/libumd)
-					objectToExport: 'LJS', // optional, internal object that will be exported
-					amdModuleId: 'LJS', // optional, if missing the AMD module will be anonymous
-					globalAlias: 'LJS', // optional, changes the name of the global variable
-				}
-			}
-		}
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-requirejs');
 	grunt.loadNpmTasks('grunt-contrib-qunit');
-	grunt.loadNpmTasks('grunt-contrib-jshint');
+	grunt.loadNpmTasks('grunt-jsdoc');
 	grunt.loadNpmTasks('grunt-umd');
 
 	// Default task(s).
 
+	grunt.registerTask('all', ['requirejs', 'jsdoc']);
 	grunt.registerTask('default', ['requirejs']);
 
 };

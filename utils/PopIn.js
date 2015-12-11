@@ -74,8 +74,8 @@ define([
 
 	/**
 	 * Function gets the template, render it and insert as the content
-	 * @param  {Function} callback [description]
-	 * @return {[type]}            [description]
+	 * @param  {Function} callback function that will be executed after
+	 * @return {String}            Render template
 	 */
 	PopIn.prototype.renderTemplate = function(callback) {
 		$.get(this.template, function(template) {

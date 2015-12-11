@@ -1,11 +1,15 @@
 define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(SongModel, ChordModel) {
+	/**
+    * Chord manager represents list of chords, it's a component of SongModel
+    * @exports core/ChordManager
+    */
 	function ChordManager(chords) {
 		this.chords = chords ? chords : []; // array of chordModel
 	}
 
 	/**
 	 * Interface functions (this functions are also in NoteManagerModel  )
-	 * @interface
+	 * @interface getTotal
 	 */
 	ChordManager.prototype.getTotal = function() {
 		return this.chords.length;
@@ -205,12 +209,12 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 	};
 
 	/**
-	 * @interface
+	 * @interface cloneElems
 	 *
 	 * returns a copy of the chords from, pos1, to pos2.
 	 * @param  {Integer} pos1
 	 * @param  {Integer} pos2
-	 * @return {[type]}      [description]
+	 * @return {ChordModel}      return a new Chordmodel
 	 */
 	ChordManager.prototype.cloneElems = function(pos1, pos2) {
 		var newChords = [];
@@ -366,7 +370,7 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 
 	/**
 	 * getBeatIntervalByIndexes return the beat interval between chords[start] and chords[end] + chords[end] duration
-	 * @interface
+	 * @interface getBeatIntervalByIndexes
 	 * @param  {Number} start
 	 * @param  {Number} end
 	 * @return {Array}
@@ -384,8 +388,9 @@ define(['modules/core/src/SongModel', 'modules/core/src/ChordModel'], function(S
 
 	/**
 	 * Return the index of numberOfChords chords before and after the selected chords
-	 * @param  {[type]} numberOfChords [description]
-	 * @return {[type]}                 [description]
+	 * @param  {Array} cursor cursor array containing position [1,3]
+	 * @param  {Integer} numberOfChords indicate how many chords you want to add on the left and right of your context
+	 * @return {Array}                Return an array that contain new positions of chord
 	 */
 	ChordManager.prototype.getContextOfSelectedChords = function(cursor, numberOfChords) {
 		var leftContext = [];

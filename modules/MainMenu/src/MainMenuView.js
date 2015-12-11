@@ -7,6 +7,8 @@ define([
 ], function(MainMenuModel, $, pubsub, Mustache, MainMenuTemplate) {
 	/**
 	 * MainMenuView is the model containing a set of menu, each menu contain at least a title
+	 * MainMenuView creates menu template and call each view of menu that are loaded
+	 * @exports MainMenu/MainMenuView
 	 */
 	function MainMenuView(model, parentHTML) {
 		this.model = (model) ? model : new MainMenuModel();

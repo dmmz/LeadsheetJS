@@ -3,6 +3,7 @@ define([
 ], function(ChordUtils) {
 	/**
 	 * Chord Model is a core model representing a leadsheet chord
+     * @exports core/ChordModel
 	 * @param {} param is an object of parameters
 	 * param accept : {
 	 *		note: "C",				// note is a string indicating the root pitch of chord, it also can be % or %% (for repeat) or NC for No Chords
@@ -59,7 +60,7 @@ define([
 
 	/**
 	 *
-	 * @param {String} chordType, could be undefined, e.g. in "NC" (no chord)
+	 * @param {String} chordType could be undefined, e.g. in "NC" (no chord)
 	 */
 	ChordModel.prototype.setChordType = function(chordType) {
 		this.chordType = chordType;
@@ -211,9 +212,9 @@ define([
 		return chordTypeName;
 	};
 	/**
-	 * [equalsTo description]
+	 * Compare current ChordModel to a chord JSON
 	 * @param  {Object} chordJson {p: 'F', ch: 'm7', pb: 'C', pch: 'm7'}  (pch is almost never used)
-	 * @return {[type]}           [description]
+	 * @return {Boolean}
 	 */
 	ChordModel.prototype.equalsTo = function(chordJson) {
 		if (this.getNote() === chordJson.p &&

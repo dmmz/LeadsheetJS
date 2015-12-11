@@ -1,4 +1,8 @@
 define(['modules/core/src/TimeSignatureModel'], function(TimeSignatureModel) {
+	/**
+    * Bar core model
+    * @exports core/BarModel
+    */
 	function BarModel(options) {
 		if (typeof options === "undefined") {
 			options = {};
@@ -63,7 +67,7 @@ define(['modules/core/src/TimeSignatureModel'], function(TimeSignatureModel) {
 	};
 	/**
 	 * if param is string, it is converted to TimeSignatureModel
-	 * @param {TimeSignatureModel || String} timeSignatureChange 
+	 * @param {TimeSignatureModel | String} timeSignatureChange 
 	 */
 	BarModel.prototype.setTimeSignatureChange = function(timeSignatureChange) {
 		if (!timeSignatureChange) {

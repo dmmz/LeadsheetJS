@@ -5,7 +5,10 @@ define([
 	'utils/UserLog',
 	'pubsub',
 ], function($, Mustache, PlayerModel_MidiCSL, UserLog, pubsub) {
-
+	/**
+	 * PlayerController manages all interaction between player view and player model
+	 * @exports MidiCSL/PlayerController
+	 */
 	function PlayerController(model, view) {
 		this.model = model || new PlayerModel_MidiCSL();
 		this.view = view;

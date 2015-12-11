@@ -8,6 +8,7 @@ define([
 ], function($, Mustache, SongModel, UserLog, pubsub, FileEditionTemplate) {
 	/**
 	 * [FileEditionView description] 
+	 * @exports FileEdition/FileEditionView
 	 * @param {Object} params {
 	 *	import: Boolean,
 	 *	export: Boolean,

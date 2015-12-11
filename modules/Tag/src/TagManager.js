@@ -4,9 +4,9 @@ define([
 	'jquery',
 	'pubsub',
 ], function(TagSpaceView, ElementManager, $, pubsub) {
-
 	/**
 	 * Create and display tags
+	 * @exports Tag/TagManager
 	 * @param {Object} songModel
 	 * @param {Array} tags      Array of object that contain at least a startBeat, a endBeat, can also contain a name
 	 * @param {Array} colors    Array of colors in rgba or hexadecimal or html color
@@ -32,7 +32,7 @@ define([
 		this.initSubscribe();
 		this.elemMng = new ElementManager();
 	}
-	
+
 	TagManager.prototype.getType = function() {
 		return this.CL_TYPE;
 	};

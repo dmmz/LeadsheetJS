@@ -1,4 +1,9 @@
 define(function() {
+	/**
+     * TimeSignature is a model to represent time signature for songmodel or barmodel, it contains all informations
+     * about beatUnit and number of beats in a bar
+     * @exports core/TimeSignatureModel
+	 */
 	function TimeSignatureModel(timeSig) {
 		var re = /\d\/\d/;
 

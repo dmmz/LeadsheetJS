@@ -4,7 +4,10 @@ define([
 	'jquery',
 	'pubsub',
 ], function(Mustache, UserLog, $, pubsub) {
-
+	/**
+	 * History view
+	 * @exports History/HistoryView
+	 */
 	function HistoryView(parentHTML, displayHistory, displayTime) {
 		this.el = undefined;
 		this.parentHTML = (parentHTML) ? parentHTML : $('#rightPanel');
@@ -20,7 +23,6 @@ define([
 
 	/**
 	 * Render will build and display a new dom in parentHTML using model historyList
-	 * @return {[type]} [description]
 	 */
 	HistoryView.prototype.render = function(model) {
 		if (this.displayHistory === false || !this.parentHTML) {
@@ -73,7 +75,7 @@ define([
 		var self = this;
 		this.parentHTML.on('click', ".history_ul li", function() {
 			var indexItem = parseInt($(this).attr('data-history'), 10);
-				$.publish('HistoryView-selectHistory', indexItem);
+			$.publish('HistoryView-selectHistory', indexItem);
 		});
 
 		this.parentHTML.addClass('history-open');

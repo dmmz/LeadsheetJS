@@ -1,9 +1,9 @@
 define(['utils/NoteUtils'], function(NoteUtils) {
 
 	/**
-	 * [NoteModel description]
-	 * @see [description]
-	 * @param {Object, String, null} param : depending on the type it will create an empty note, a rest note or a pitch note
+	 * Note Model is a core model representing a leadsheet note
+	 * @exports core/NoteModel
+	 * @param {Object|String|null} param : depending on the type it will create an empty note, a rest note or a pitch note
 	 */
 	function NoteModel(param) {
 		this.pitchClass = []; // Note c, b
@@ -57,8 +57,8 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 	};
 	/**
 	 * String examples: C#/4-8. 
-	 * @param {[type]} string [description]
-	 * @param {[type]} index  [description]
+	 * @param {String} string string defining a note like C#/4-8
+	 * @param {Integer} index  
 	 */
 	NoteModel.prototype.setNoteFromString = function(string, index) {
 		index = index || 0;
@@ -226,7 +226,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		if (typeTuplet != "middle") this.tuplet = typeTuplet;
 	};
 	/**
-	 * @return {"start","stop","stop_start","middle"}
+	 * @return {String} it can be "start", "stop", "stop_start", "middle"
 	 */
 	NoteModel.prototype.getTuplet = function() {
 		if (this.timeModification && !this.tuplet) return "middle";
@@ -241,6 +241,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		this.timeModification = null;
 		this.tuplet = null;
 	};
+
 	/**
 	 * if "type" is undefined, just checkes that is tuplet,
 	 * if type is 'start' or 'stop' returns checks that tuplet is type

@@ -79,7 +79,6 @@ define(function(require) {
   var testStructureEditionController = require('modules/StructureEdition/test/testStructureEditionController');
   var testFileEditionController = require('modules/FileEdition/test/testFileEditionController');
 
-  var testModuleManager = require('modules/ModuleManager/test/testModuleManager');
   var testMainMenuModel = require('modules/MainMenu/test/testMainMenuModel');
   var testMainMenuController = require('modules/MainMenu/test/testMainMenuController');
 
@@ -146,7 +145,6 @@ define(function(require) {
   testHistoryModel.run();
   testHistoryController.run();
 
-  testModuleManager.run();
   testMainMenuModel.run();
   testMainMenuController.run();
 

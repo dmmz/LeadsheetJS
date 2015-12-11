@@ -1,11 +1,11 @@
 define(function() {
 	var EditionUtils = {};
 	/**
-	 * [getElementsAreaFromCursor description]
-	 * @param  {Array} elems      [description]
-	 * @param  {[Integer, Integer]} cursor     [description]
+	 * getElementsAreaFromCursor
+	 * @param  {Array} elems      list of elements
+	 * @param  {Array} cursor     [Integer, Integer]
 	 * @param  {Object} cursorDims
-	 * @return {Array of Objects}    Object in this form: {area.x, area.y, area.xe, area.ye}
+	 * @return {Array }    Array of Objects that are in this form: {area.x, area.y, area.xe, area.ye}
 	 */
 	EditionUtils.getElementsAreaFromCursor = function(elems, cursor, cursorDims) {
 		

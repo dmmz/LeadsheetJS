@@ -1,4 +1,8 @@
 define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, NoteUtils) {
+	/**
+    * Note manager represents list of notes, it's a component of SongModel
+    * @exports core/NoteManager
+    */
 	function NoteManager() {
 		this.notes = [];
 	}
@@ -6,8 +10,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	// Interface functions (this functions are also in ChordManagerModel)
 
 	/**
-	 * @interface
-	 * @return {integer}
+	 * @interface getTotal
 	 */
 	NoteManager.prototype.getTotal = function() {
 		return this.notes.length;
@@ -69,8 +72,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	};
 
 	/**
-	 * @interface
-	 *
+	 * @interface cloneElems
 	 * returns a copy of the notes from, pos1, to pos2.
 	 * @param  {Integer} pos1 if not specified, 0
 	 * @param  {Integer} pos2 first note that is not taken, e.g if to = 4, notes will be taken from 'from' to 3.
@@ -91,7 +93,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	 * replace notes from pos1 to pos2+1, by default will always replace one note, if we want to insert notes at
 	 * position pos without replacing note at 'pos' (e.g. scoreeditor.addBar() does it) we need to call it with cursor = [pos, pos -1 ]
 	 * @param  {Array} cursor       [pos1,pos2]
-	 * @param  {Array } notesToPaste array of NoteModel
+	 * @param  {Array} notesToPaste array of NoteModel
 	 */
 	NoteManager.prototype.notesSplice = function(cursor, notesToPaste) {
 		var part1 = this.notes.slice(0, cursor[0]);
@@ -103,7 +105,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 
 	/**
 	 * Adds notes in a given position (special case of noteSplice)
-	 * @param {Array of NoteModel} notes
+	 * @param {Array} notes Array of NoteModel
 	 * @param {Integer} position
 	 */
 	NoteManager.prototype.addNotes = function(notes, position) {
@@ -235,9 +237,8 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	};
 	/**
 	 * abstraction of code used by both getNextIndexNoteByBeat and getPrevIndexNoteByBeat
-	 * @param  {} curBeat [description]
-	 * @param  {[type]} beat    [description]
-	 * @return {[type]}         [description]
+	 * @param  {Integer} beat    Global beat from where you want informations
+	 * @return {Object}         Return an object that contain index and curBeat parameter
 	 */
 	NoteManager.prototype._getIndexAndCurBeat = function(beat) {
 		var i = 0,
@@ -332,7 +333,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 
 	/**
 	 *
-	 * @param  {Array or Number} durations array of durations corresponding to bars divisions
+	 * @param  {Array | Number} durations array of durations corresponding to bars divisions
 	 */
 
 	NoteManager.prototype.fillGapWithRests = function(durations) {
@@ -434,7 +435,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	};
 	/**
 	 * @param  {Array} pos cursor position e.g. [0,2]
-	 * @return {[type]}     [description]
+	 * @return {Array|null}     search on left then right, then if nothing is found it return null
 	 */
 	NoteManager.prototype.findRestAreas = function(pos) {
 
@@ -535,7 +536,6 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	/**
 	 * this function is called after deleting a note or copy and pasting notes, to check if there is a malformed tuplet or a malformed tie
 	 * if it does, it deletes the tie or the tuplet
-	 * @return {[type]} [description]
 	 */
 	NoteManager.prototype.reviseNotes = function() {
 
@@ -558,10 +558,10 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		 * This function parses input controling that all transitions are valid,
 		 * if it finds a problem, removes the property that causes the error
 		 *
-		 * @param  {Array of NoteModel} notes          notes to modify
+		 * @param  {Array} notes          Array of NoteModel, notes to modify
 		 * @param  {Object} graph          tranistion graph represents valid transitions
 		 * @param  {Array}  input          array of states, taken from notes
-		 * @param  {[type]} removeFunction function to remove property
+		 * @param  {Function} removeFunction function to remove property
 		 */
 		function parser(notes, graph, input, removeFunction) {
 			var prevState, currState;

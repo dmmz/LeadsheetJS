@@ -5,7 +5,8 @@ define([
 	'modules/Edition/src/HtmlInputElement'
 ], function($, pubsub, TextElementView, HtmlInputElement) {
 	/**
-	 * [TextElementManager description]
+	 * Allow text in canvas to be clickabel and editable
+	 * @exports TextEdition/TextElementManager
 	 * @param {Object} fieldElement its a property of the viewer (LSViewer), which is created in the function draw, and contains de dimensions of the object. E.g.: titleView, or composerView which are created respectively in LSViewer._displayTitle() and LSViewer._displayComposer()
 	 * @param {String} name         should be UpperCamelCase (first letter capital), and there should a setter and a getter in songModel. e.g. name = 'Title', functions songModel.getTitle() and songModel.setTitle() exists, same for name = 'Composer', songModel.setComposer(), songModel.getComposer(). TODO: composers will be treated as ana array, so we have function 'addComposer'. It is not solved yet how to update a composer (or several). When we'll do it, maybe we should pass set and get functions as arguments instead of 'name'
 	 * @param {LSViewer} viewer       

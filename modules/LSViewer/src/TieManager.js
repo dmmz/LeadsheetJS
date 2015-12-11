@@ -1,14 +1,18 @@
 define(['vexflow'], function(Vex) {
+	/**
+	 * LSBarView is a module called by LSViewer to draw tie notes
+	 * @exports LSViewer/TieManager
+	 */
 	function TieManager() {
-			this.ties = [];
-			this.numTies = 0;
-			this.prevTieType = null;
-		}
-		/**
-		 * saves information for drawing ties
-		 * @param  {NoteModel} note
-		 * @param  {Number} iNote index of note
-		 */
+		this.ties = [];
+		this.numTies = 0;
+		this.prevTieType = null;
+	}
+	/**
+	 * saves information for drawing ties
+	 * @param  {NoteModel} note
+	 * @param  {Number} iNote index of note
+	 */
 	TieManager.prototype.checkTie = function(note, iNote) {
 		var tieType;
 

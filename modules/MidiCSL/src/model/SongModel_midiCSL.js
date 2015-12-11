@@ -1,4 +1,9 @@
 define(['modules/MidiCSL/src/model/NoteModel_MidiCSL'], function(NoteModel_MidiCSL) {
+
+	/**
+	 * SongModel_MidiCSL represent a song that is ready to be readed by midi player
+	 * @exports MidiCSL/SongModel_MidiCSL
+	 */
 	function SongModel_MidiCSL(option) {
 		this.song = (typeof(option) !== "undefined" && typeof(option.song) !== "undefined") ? option.song : [];
 	}
@@ -84,7 +89,7 @@ define(['modules/MidiCSL/src/model/NoteModel_MidiCSL'], function(NoteModel_MidiC
 	SongModel_MidiCSL.prototype.getMelodySoundModelFromIndex = function(index) {
 		if (!isNaN(index) && index >= 0) {
 			for (var i = 0, c = this.song.length; i < c; i++) {
-				if (this.song[i].getNoteIndex() === index &&  this.song[i].getType() === 'melody') {
+				if (this.song[i].getNoteIndex() === index && this.song[i].getType() === 'melody') {
 					return this.song[i];
 				}
 			}

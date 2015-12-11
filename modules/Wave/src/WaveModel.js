@@ -2,6 +2,11 @@ define([
 	'jquery',
 	'pubsub',
 ], function($, pubsub) {
+
+	/**
+	 * Model for audio wave, it control audio html tag, it also interact with audio data to compute peaks
+	 * @exports Wave/WaveModel
+	 */
 	function WaveModel(songNumBeats, volume) {
 		this.audio = new Audio();
 		document.body.appendChild(this.audio);
@@ -21,7 +26,7 @@ define([
 			initVolume = this.initVolume(0.7);
 		}
 		this.setVolume(initVolume);
-		
+
 	}
 
 	/**
@@ -29,8 +34,8 @@ define([
 	 * @param  {Number} pos1 
 	 * @param  {Number} pos2 
 	 * @return {Boolean}      
-	 */		
-	WaveModel.prototype._positionsEqual = function(pos1,pos2) {
+	 */
+	WaveModel.prototype._positionsEqual = function(pos1, pos2) {
 		return Math.abs(pos1 - pos2) < 0.1;
 	};
 
@@ -41,11 +46,11 @@ define([
 
 	WaveModel.prototype.play = function() {
 		this.audio.currentTime = this.playFrom || 0; // if pause, this.playFrom has some value, if stop we set it to 0
-		
+
 		//the code to loop through the whole song
-		if (this.audio.loop && this._positionsEqual(this.playFrom,this.playTo)){
-				this.playTo = this.songDuration;
-				this.playFrom = 0;
+		if (this.audio.loop && this._positionsEqual(this.playFrom, this.playTo)) {
+			this.playTo = this.songDuration;
+			this.playFrom = 0;
 		}
 		this.audio.play();
 		$.publish('PlayerModel-onplay');
@@ -109,7 +114,7 @@ define([
 	WaveModel.prototype.setLoop = function(loop) {
 		this.audio.loop = !!loop;
 		$.publish('PlayerModel-toggleLoop', this.audio.loop);
-		
+
 	};
 
 	WaveModel.prototype.toggleLoop = function() {
@@ -126,8 +131,8 @@ define([
 
 	/**
 	 * On this function we load both audioCtx and HTML audio tag.
-	 * @param  {[type]}   url       [description]
-	 * @param  {[type]}   audioData [description]
+	 * @param  {String}   url       Url of audio that user want to load
+	 * @param  {Object}   audioData HTML5 audiodata
 	 * @param  {float}   tempo     
 	 * @param  {Function} callback
 	 */
@@ -155,7 +160,7 @@ define([
 				checkLoad();
 				self.enable();
 				//source.start(0)
-				self.setPlayFromTo(0,null); // self.getDuration() is different than song duration as includes residual audio
+				self.setPlayFromTo(0, null); // self.getDuration() is different than song duration as includes residual audio
 			},
 			function(e) {
 				throw "Error with decoding audio data" + e.err;
@@ -164,7 +169,7 @@ define([
 
 		function checkLoad() {
 			if (HTMLTagIsLoaded && audioCtxIsLoaded) {
-				$.publish('PlayerModel-onload','audio');
+				$.publish('PlayerModel-onload', 'audio');
 				if (typeof callback !== "undefined") {
 					callback();
 				}
@@ -196,11 +201,10 @@ define([
 			// 	self.stop();
 			// }
 			//loops on audio
-			if (self.playTo !== undefined && self.audio.currentTime > self.playTo && self.audio.loop === true 
-				&& !self._positionsEqual(self.playFrom,self.playTo)) {
+			if (self.playTo !== undefined && self.audio.currentTime > self.playTo && self.audio.loop === true && !self._positionsEqual(self.playFrom, self.playTo)) {
 				self.play();
 			}
-			
+
 
 			//publish for playing bar
 			var totalDuration = self.getDuration();

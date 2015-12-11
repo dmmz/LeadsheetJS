@@ -1,6 +1,7 @@
 define(function() {
 	/**
 	 * AudioCommentsModel 
+	 * @exports AudioComments/AudioCommentsModel
 	 * @param {ServerAudioComments} serverAudioComments communicates with the server. Does not make really part of LeadsheetJS, it is provided by the server part, and it is hosted in it. In our case, in LSDB server. All methods work also without this Object, this way it works as an example without saving comment to a server part.
 	 */
 	function AudioCommentsModel(serverAudioComments, userSession) {

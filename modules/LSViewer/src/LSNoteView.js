@@ -1,5 +1,9 @@
 
 define(['vexflow', 'modules/converters/MusicCSLJson/src/NoteModel_CSLJson'], function(Vex, NoteModel_CSLJson) {
+	/**
+    * LSNoteView is a module called by LSViewer to draw notes
+    * @exports LSViewer/LSNoteView
+    */
 	function LSNoteView(note) {
 		this.vexflowNote = createVexflowNote(note);
 		this.note = note;

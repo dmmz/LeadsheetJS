@@ -1,6 +1,7 @@
 define(['modules/core/src/TimeSignatureModel'],function(TimeSignatureModel) {
 	/**
-	 * @param {SongModel}
+     * Iterator that allow to go through bars
+     * @exports core/SongBarsIterator
 	 */
 	function SongBarsIterator(song) {
 		this.song = song;

@@ -1,4 +1,8 @@
 define(['vexflow'], function(Vex) {
+	/**
+    * LSBarView is a module called by CanvasLayer to draw bars
+    * @exports LSViewer/LSBarView
+    */
 	function LSBarView(barDimensions) {
 		this.vexflowStave = new Vex.Flow.Stave(barDimensions.left, barDimensions.top, barDimensions.width);
 	}

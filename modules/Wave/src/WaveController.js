@@ -6,6 +6,7 @@ define(['modules/Wave/src/WaveModel',
 	'pubsub'
 ], function(WaveModel, WaveDrawer, BarTimesManager, SongBarsIterator, $, pubsub) {
 	/**
+	 * @exports Wave/WaveController
 	 * @param {SongModel} songModel
 	 * @param {cursorNotes} cursor     // notes cursor, it is updated when playing
 	 * @param {LSViewer} viewer
