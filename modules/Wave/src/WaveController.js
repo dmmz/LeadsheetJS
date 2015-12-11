@@ -33,7 +33,7 @@ define(['modules/Wave/src/WaveModel',
 		this.cursorNotes = cursor;
 		this.isLoaded = false;
 		this.viewer = viewer;
-		this.model = new WaveModel();
+		this.model = new WaveModel(songModel.getComponent('notes').getTotalDuration());
 		this.file = params.file;
 		this.tempo = params.tempo;
 		var paramsDrawer = {
@@ -133,18 +133,15 @@ define(['modules/Wave/src/WaveModel',
 		if (!this.model.audio.paused) {
 			this.pause();
 		} else {
-			this.play();
+			this.play(); 
 		}
 	};
-
 	WaveController.prototype.play = function() {
 		if (this.isLoaded) {
 			this.isPause = false;
-			// this.restartAnimationLoop(); // now we use playing event
-			var playTo = this.drawer.cursor.getPos()[0];
-			var playFrom = this.drawer.cursor.getPos()[1];
-			
-			this.model.play(playTo, playFrom);
+			var playFrom = this.drawer.cursor.getPos()[0];
+			var playTo = this.drawer.cursor.getPos()[1];
+			this.model.play(playFrom, playTo);
 		}
 	};
 
@@ -152,7 +149,6 @@ define(['modules/Wave/src/WaveModel',
 		if (this.isLoaded) {
 			var timeSec = this.model.getDuration() * percent;
 			this.isPause = false;
-			// this.restartAnimationLoop(); // now we use playing event
 			this.model.play(timeSec);
 		}
 	};
