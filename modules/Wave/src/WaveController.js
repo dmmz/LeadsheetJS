@@ -139,9 +139,13 @@ define(['modules/Wave/src/WaveModel',
 	WaveController.prototype.play = function() {
 		if (this.isLoaded) {
 			this.isPause = false;
-			var playFrom = this.drawer.cursor.getPos()[0];
-			var playTo = this.drawer.cursor.getPos()[1];
-			this.model.play(playFrom, playTo);
+			var curPos = this.drawer.cursor.getPos();
+			
+			if (curPos[0] || curPos[1]) // when no cursor, position is [0,0], in that case we don't set positions
+			{ 
+				this.model.setPlayFromTo(curPos[0], curPos[1]);
+			}
+			this.model.play();
 		}
 	};
 
@@ -163,6 +167,8 @@ define(['modules/Wave/src/WaveModel',
 	WaveController.prototype.stop = function() {
 		this.isPause = true;
 		this.model.stop();
+		this.drawer.updateCursorPlaying(0);
+		this.drawer.viewer.canvasLayer.refresh();
 	};
 	WaveController.prototype.onVolumeChange = function(volume) {
 		this.model.setVolume(volume);

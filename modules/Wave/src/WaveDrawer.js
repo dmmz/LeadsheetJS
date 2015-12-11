@@ -103,9 +103,7 @@ define([
 			var pos1 = this._getAudioTimeFromPos(x1, cursorBars[0]);
 			var pos2 = this._getAudioTimeFromPos(x2, cursorBars[1]);
 			this.cursor.setPos([pos1, pos2]);
-			
 			this.updateCursorPlaying(pos1, cursorBars[0]);
-
 
 		}
 		if (mouseUp) {
