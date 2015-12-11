@@ -56,6 +56,7 @@ define([
 	 * @return {Object}          e.g. { x: 12, y: 23, w:5, h:5}
 	 */
 	WaveDrawer.prototype._getAudioPosFromTime = function(time, barIndex) {
+		barIndex = barIndex || this.waveMng.barTimesMng.getBarIndexByTime(time);
 		var timeBoundaries = this.waveMng.barTimesMng.getTimeLimits(barIndex);
 		var timeDist = timeBoundaries.end - timeBoundaries.start;
 		var dim = this.waveBarDimensions[barIndex].getArea();
@@ -81,18 +82,7 @@ define([
 
 		return percentPos * timeDist + timeBoundaries.start;
 	};
-	/**
-	 *
-	 * @param  {Float} time     in seconds (e.g. 1.23)
-	 * @param  {Integer} barIndex number of bar in which the cursor is (should be previously calculated)
-	 *                            if not specfied, it will take current bar number from barTimesMng (this is used for example, when playing)
-	 * @return {Object}          e.g. { x: 12, y: 23, w:5, h:5}
-	 */
-	WaveDrawer.prototype._getCursorDims = function(time, barIndex) {
-		barIndex = barIndex || this.waveMng.barTimesMng.index;
-		return this._getAudioPosFromTime(time, barIndex);
 
-	};
 	/**
 	 * @interface
 	 * @param  {Object} coords
@@ -101,6 +91,8 @@ define([
 		var self = this;
 		var cursorBars = this.elemMng.getElemsInPath(this.waveBarDimensions, coords, ini, end, this.getYs(coords));
 		var ys = this.getYs(coords);
+
+		end = end || ini;
 
 		if (cursorBars[0] != null && cursorBars[1] != null) {
 			var x1, x2;
@@ -115,6 +107,8 @@ define([
 			var pos1 = this._getAudioTimeFromPos(x1, cursorBars[0]);
 			var pos2 = this._getAudioTimeFromPos(x2, cursorBars[1]);
 			this.cursor.setPos([pos1, pos2]);
+			this.updateCursorPlaying(pos1, cursorBars[0]);
+
 		}
 		if (mouseUp) {
 			var posCursor = this.cursor.getPos();
@@ -193,17 +187,18 @@ define([
 			this.cursor.setEditable(bool);
 		}
 	};
-	WaveDrawer.prototype.updateCursorPlaying = function(time) {
-		this.cursorPos = this._getCursorDims(time);
+	
+	WaveDrawer.prototype.updateCursorPlaying = function(time, barIndex) {
+		this.cursorPos = this._getAudioPosFromTime(time, barIndex);
 	};
 
 	WaveDrawer.prototype.getAreasFromTimeInterval = function(startTime, endTime) {
 		var barTimesMng = this.waveMng.barTimesMng;
-		var startBar = barTimesMng.getIndexByTime(startTime);
-		var endBar = barTimesMng.getIndexByTime(endTime);
+		var startBar = barTimesMng.getBarIndexByTime(startTime);
+		var endBar = barTimesMng.getBarIndexByTime(endTime);
 		var areas = this.elemMng.getElementsAreaFromCursor(this.waveBarDimensions, [startBar, endBar]);
-		var cursor1 = this._getCursorDims(startTime, startBar);
-		var cursor2 = this._getCursorDims(endTime, endBar);
+		var cursor1 = this._getAudioPosFromTime(startTime, startBar);
+		var cursor2 = this._getAudioPosFromTime(endTime, endBar);
 		if (cursor1.x != cursor2.x) {
 			if (cursor1.x > areas[0].x && cursor1.x < areas[0].x + areas[0].w) {
 				var space = cursor1.x - areas[0].x;

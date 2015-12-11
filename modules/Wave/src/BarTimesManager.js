@@ -5,7 +5,6 @@ define(['modules/core/src/SongBarsIterator'],
 	 * @exports Wave/BarTimesManager
 	 */
 	function BarTimesManager() {
-		this.index = 0;
 		this.barTimes = [];
 	}
 
@@ -32,20 +31,18 @@ define(['modules/core/src/SongBarsIterator'],
 			}
 			this.barTimes = calculateBarTimes(song,audio);
 		},
-		reset: function(){
-			this.index = 0;
-		},
 		getLength: function(){
 			return this.barTimes.length;
 		},
-		updateCurrBarByTime: function(time, index){
-			while (this.index < this.barTimes.length && this.barTimes[this.index] < time) {
-				this.index++;
+		getBarIndexByTime: function(time, barIndex){
+			barIndex = barIndex || 0;
+			while (barIndex < this.barTimes.length && this.barTimes[barIndex] < time) {
+				barIndex++;
 			}
-			return this.index; //to inform the value of index after being updated
+			return barIndex; //to inform the value of index after being updated
 		},
 		getTimeLimits: function(index){
-			if (typeof index === "undefined") throw "BarTimesManager - error: index not defined";
+			if (index === undefined) throw "BarTimesManager - error: index not defined";
 			return {
 				start: (index === 0) ? 0 : this.barTimes[index - 1],
 				end: this.barTimes[index]
@@ -54,12 +51,6 @@ define(['modules/core/src/SongBarsIterator'],
 		getCurrBarTime: function(index){
 			var limits = this.getTimeLimits(index);
 			return limits.end - limits.start;
-		},
-		getIndexByTime: function(time){
-			for (var i = 0; i < this.barTimes.length; i++) {
-				if (time < this.barTimes[i]) break;
-			}
-			return i;
 		}
 	};
 
