@@ -3,6 +3,10 @@ define(['utils/NoteUtils',
 	'jquery',
 	'pubsub'
 ], function(NoteUtils, $, pubsub) {
+	/**
+	 * KeyboardManager allows to interact with keyboard using pubsub events
+	 * @exports Edition/KeyboardManager
+	 */
 	function KeyboardManager(test) {
 
 		function stopEvent(evt) {

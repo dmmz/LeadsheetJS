@@ -2,6 +2,7 @@ define(['modules/core/src/SongBarsIterator'],
 	function(SongBarsIterator) {
 	/**
 	 * We save the time in which each bar finishes
+	 * @exports Wave/BarTimesManager
 	 */
 	function BarTimesManager() {
 		this.index = 0;

@@ -6,6 +6,7 @@ define([
 ], function(pubsub, $, AudioCommentsModel, AudioCommentsView) {
 	/**
 	 * Audio comments controller
+	 * @exports AudioComments/AudioCommentsController
 	 * @param {WaveController} waveMng        
 	 * @param {LSViewer} viewer         
 	 * @param {SongModel} songModel      

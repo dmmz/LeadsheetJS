@@ -1,7 +1,10 @@
 define(['modules/Edition/src/ElementView'], function(ElementView) {
 	/**
+	 * NoteSpaceView allow note to be selected
+	 * This object is created by NoteSpaceManager
 	 * @param {Object} position {x:439.25, y:33,w:10,h:10} //position
-	 * @param {[type]} viewer   [description]
+	 * @param {Scaler} viewerScaler   Scaler object
+	 * @exports NoteEdition/NoteSpaceView
 	 */
 	function NoteSpaceView(position, viewerScaler) {
 		this.position = position;

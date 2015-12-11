@@ -5,6 +5,10 @@ define([
 	'modules/core/src/TimeSignatureModel',
 	'modules/core/src/SongBarsIterator'
 ], function(NoteManager, BarManager, ChordManager, TimeSignatureModel, SongBarsIterator) {
+	/**
+     * SongModel is the main model to represent song, it contains notes, chords and bars components, also contain section, composer name etc.
+     * @exports core/SongModel
+	 */
 	function SongModel(param) {
 		this.init(param);
 	}
@@ -206,7 +210,7 @@ define([
 	/**
 	 * gets component (either chords or notes)
 	 * @param  {String} componentTitle must be "chords" or "notes" or "bars"
-	 * @return {NoteManager or ChordManager}
+	 * @return {NoteManager | ChordManager}
 	 */
 	SongModel.prototype.getComponent = function(componentTitle) {
 		if (this.components.hasOwnProperty(componentTitle))
@@ -448,8 +452,8 @@ define([
 
 	/**
 	 * gets divisions between beats depending on bars. Useful when filling gaps with silences in noteManager within several bars
-	 * @param  {Number} startBeat 
-	 * @param  {Number} endBeat   
+	 * @param  {Integer} startBeat 
+	 * @param  {Integer} endBeat   
 	 * @return {Array}           returns duration of each division (check usage in testSongModel)
 	 */
 	SongModel.prototype.getBarDivisionsBetweenBeats = function(startBeat, endBeat) {

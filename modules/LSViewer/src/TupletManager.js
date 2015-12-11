@@ -1,4 +1,8 @@
 define(['vexflow'], function(Vex) {
+	/**
+	 * LSBarView is a module called by LSViewer to draw tuplet notes
+	 * @exports LSViewer/TupletManager
+	 */
 	function TupletManager() {
 		this.tuplets = [];
 		this.numTuplets = 0;

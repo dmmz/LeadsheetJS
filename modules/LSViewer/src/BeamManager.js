@@ -1,4 +1,8 @@
 define(['vexflow'], function(Vex) {
+	/**
+    * 
+    * @exports LSViewer/BeamManager
+    */
 	function BeamManager() {
 		this.beams = []; //array of arrays of vexflow notes, each array of vxfNotes represents a beam group
 		this.counter = 0;

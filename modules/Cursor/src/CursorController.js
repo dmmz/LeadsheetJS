@@ -2,7 +2,10 @@ define([
 	"jquery",
 	'pubsub',
 ], function($, pubsub) {
-
+	/**
+	 * Cursor manages all cursor edition function
+	 * @exports Cursor/CursorController
+	 */
 	function CursorController(model, view) {
 		this.model = model || new CursorModel();
 		this.view = view;

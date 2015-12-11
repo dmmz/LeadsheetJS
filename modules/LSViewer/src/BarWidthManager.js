@@ -1,4 +1,8 @@
 define(['modules/core/src/SongBarsIterator', 'modules/core/src/SectionBarsIterator'], function(SongBarsIterator, SectionBarsIterator) {
+	/**
+    * 
+    * @exports LSViewer/BarWidthManager
+    */
 	function BarWidthManager(lineHeight, lineWidth, noteWidth, barsPerLine, marginTop, lastBarWidthRatio) {
 		if (!lineHeight) throw "BarWidthManager - lineHeight not defined";
 		if (!lineWidth) throw "BarWidthManager - lineWidth not defined";
@@ -87,7 +91,7 @@ define(['modules/core/src/SongBarsIterator', 'modules/core/src/SectionBarsIterat
 	/**
 	 * decides which bars go into which line depending on the width, constraints are: can't be wider than lineWidth
 	 * @param  {Array} minWidthList  minimum width for each bar. e.g.: [200,200,500,500, 300,100,100,100]
-	 * @return {Array 2-dimenensions}	matrix in which each line represents a line on the score,
+	 * @return {Array}	Array 2-dimensions, matrix in which each line represents a line on the score,
 	 * and the width for each bar fitting in the line. e.g. (being the line width 1160) [	[200,200,500],		( sum of widths is < 1160)
 	 *																						[500,300,100,100,100]	(< 1160)
 	 */

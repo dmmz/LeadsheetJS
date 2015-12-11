@@ -5,7 +5,10 @@ define([
 	'jquery',
 	'pubsub',
 ], function(Mustache, SongBarsIterator, UserLog, $, pubsub) {
-
+	/**
+	 * ChordEditionController manages all chords edition function
+	 * @exports ChordEdition/ChordEditionController
+	 */
 	function ChordEditionController(songModel, cursor, chordSpaceMng) {
 		if (!songModel || !cursor || !chordSpaceMng) {
 			throw "ChordEditionController params are wrong";

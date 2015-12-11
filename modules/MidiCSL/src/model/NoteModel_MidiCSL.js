@@ -1,5 +1,8 @@
 define([], function() {
-
+	/**
+	 * NoteModel_MidiCSL represent a note that is ready to be readed by midi player
+	 * @exports MidiCSL/NoteModel_MidiCSL
+	 */
 	function NoteModel_MidiCSL(option) {
 		this.currentTime = (typeof option !== "undefined" && typeof(option.currentTime) !== "undefined") ? option.currentTime : 0.0; // currentTime in beat
 		this.duration = (typeof option !== "undefined" && typeof(option.duration) !== "undefined") ? option.duration : 0.0; // duration in beat

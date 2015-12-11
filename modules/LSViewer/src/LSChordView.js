@@ -1,4 +1,8 @@
 define(['vexflow'], function(Vex) {
+	/**
+    * LSChordView is a module called by LSViewer to draw chords
+    * @exports LSViewer/LSChordView
+    */
 	function LSChordView(chord, color) {
 		this.color = color || "#000";
 		this.chord = chord;

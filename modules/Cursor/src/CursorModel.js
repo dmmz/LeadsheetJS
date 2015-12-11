@@ -5,6 +5,7 @@ define([
 
 	/**
 	 * Cursor consists of a pos array that contains index start and index end of position
+	 * @exports Cursor/CursorModel
 	 * @param {Int|Array|Object} listElements allows to get size of a list, must be an int, or an array, or an object, if it's an object then getTotal function will be called to get list length
 	 * @param {Array} optCursor gets a cursor as an array of two positions [start,end]
 	 */

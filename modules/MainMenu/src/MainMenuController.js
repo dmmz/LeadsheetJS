@@ -5,7 +5,8 @@ define([
 	'mustache'
 ], function(MainMenuModel, $, pubsub, Mustache) {
 	/**
-	 * MainMenuController is the model containing a set of menu, each menu contain at least a title
+	 * MainMenuController manages all chords edition function
+	 * @exports MainMenu/MainMenuController
 	 */
 	function MainMenuController(model) {
 		this.model = model || new MainMenuModel();

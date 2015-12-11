@@ -5,7 +5,10 @@ define([
 	'text!modules/AudioComments/src/SpeechBubbleTpl.html',
 	'text!modules/AudioComments/src/NewCommentTpl.html'
 ], function(Mustache, $, CommentSpaceManager, SpeechBubbleTpl, NewCommentTpl) {
-
+	/**
+	 * 
+	 * @exports AudioComments/AudioCommentsView
+	 */
 	function AudioCommentsView(viewer) {
 		this.viewer = viewer;
 		this.COLOR = "#FFBF00";
@@ -65,7 +68,7 @@ define([
 	AudioCommentsView.prototype._htmlIdExists = function(id) {
 		return $("#" + id).length !== 0;
 	};
-	
+
 	/**
 	 * called by AudioCommentsController
 	 * draws comment marker (with the picture and the name)
@@ -214,7 +217,7 @@ define([
 
 	/**
 	 * When click on 'edit' in a comment, what we do is hide the actual comment and show 'new comment' bubble with the text of the current comment
-	 * @param  {JQuery Element}		bubbleEl    
+	 * @param  {Object}		bubbleEl    jquery Element
 	 * @param  {String}				commentText text of current comment
 	 * @param  {String}				commentId   
 	 */
@@ -276,7 +279,7 @@ define([
 	 * If there is no prefix, we add it
 	 */
 	AudioCommentsView.prototype.hideBubble = function(bubbleId) {
-		if (bubbleId.indexOf(this.bubblePreId)==-1){
+		if (bubbleId.indexOf(this.bubblePreId) == -1) {
 			bubbleId = this.bubblePreId + bubbleId;
 		}
 		$("#" + bubbleId).hide();

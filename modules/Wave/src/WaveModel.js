@@ -2,6 +2,10 @@ define([
 	'jquery',
 	'pubsub',
 ], function($, pubsub) {
+	/**
+	 * Model for audio wave, it control audio html tag, it also interact with audio data to compute peaks
+	 * @exports Wave/WaveModel
+	 */
 	function WaveModel(option) {
 		/* option contain
 			volume				// Float Main volume for all instruments it vary between 0 and 1
@@ -122,8 +126,8 @@ define([
 
 	/**
 	 * On this function we load both audioCtx and HTML audio tag.
-	 * @param  {[type]}   url       [description]
-	 * @param  {[type]}   audioData [description]
+	 * @param  {String}   url       Url of audio that user want to load
+	 * @param  {Object}   audioData HTML5 audiodata
 	 * @param  {float}   tempo     
 	 * @param  {Function} callback
 	 */
@@ -158,7 +162,7 @@ define([
 
 		function checkLoad() {
 			if (HTMLTagIsLoaded && audioCtxIsLoaded) {
-				$.publish('PlayerModel-onload','audio');
+				$.publish('PlayerModel-onload', 'audio');
 				if (typeof callback !== "undefined") {
 					callback();
 				}

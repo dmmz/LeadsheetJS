@@ -1,4 +1,8 @@
 define(function() {
+	/**
+     * Section fundamental model
+     * @exports core/SectionModel
+	 */
 	function SectionModel(params) {
 		params = params || {};
 

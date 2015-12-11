@@ -1,4 +1,8 @@
 define(['modules/core/src/BarModel'], function(BarModel) {
+	/**
+    * A module representing a list of bars
+    * @exports core/BarManager
+    */
 	function BarManager() {
 		this.bars = [];
 	}
@@ -13,7 +17,11 @@ define(['modules/core/src/BarModel'], function(BarModel) {
 	BarManager.prototype.setBars = function(bars) {
 		this.bars = bars;
 	};
-
+	
+	/**
+	 * Retrieve bar defined by index
+	 * @param  {Integer} index 
+	 */
 	BarManager.prototype.getBar = function(index) {
 		if (isNaN(index) || index < 0) {
 			throw "BarManager - getBar - invalid index :" + index;
@@ -31,6 +39,7 @@ define(['modules/core/src/BarModel'], function(BarModel) {
 		this.bars.push(bar);
 		return bar;
 	};
+
 	/**
 	 * 
 	 * @param  {BarModel} bar   

@@ -1,7 +1,8 @@
 define(function() {
 	/**
 	 * Scaler helps decoupling from LSViewer all classes that have to scale
-	 * @param {[type]} scale [description]
+	 * @exports LSViewer/Scaler
+	 * @param {Float} scaler that will be multiplied by all positions
 	 */
 	function Scaler(scale) {
 		if (scale) {
@@ -14,7 +15,7 @@ define(function() {
 	/**
 	 * function to scale plain objects, normally they will be positions
 	 * @param  {Object} obj normally in the form of {x: 23, y:130, xe: 33, ye: 23}
-	 * @return {[type]}     [description]
+	 * @return {Object} in the form of {x: 23, y:130, xe: 33, ye: 23}
 	 */
 	Scaler.prototype.getScaledObj = function(obj) {
 		if (obj instanceof Object) {

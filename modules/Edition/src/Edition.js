@@ -6,7 +6,10 @@ define([
 	"modules/StructureEdition/src/StructureEdition",
 	"modules/TextEdition/src/TextElementManager"
 ], function(KeyboardManager, Cursor, NoteEdition, ChordEdition, StructureEdition, TextElementManager) {
-
+	/**
+	 * Edition constructor
+	 * @exports Edition
+	 */
 	function Edition(viewer, songModel, menuModel, params) {
 		if (!params) {
 			throw "Edition - need params";
