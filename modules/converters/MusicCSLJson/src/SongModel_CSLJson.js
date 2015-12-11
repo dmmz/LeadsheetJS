@@ -142,12 +142,14 @@ define(function(require) {
 
 			notesBarDur += notes[i].getDuration();
 			if (notesBarDur > currentBarNumBeats){
-				console.warn("note exceeds bar duration (index "+ i +")");
+				console.warn("note exceeds bar duration (index "+ i +") bar "+songIt.getBarIndex());
 			}
 			else if (roundBeat(notesBarDur) == currentBarNumBeats ){
-				currentBarNumBeats = songIt.getBarTimeSignature().getQuarterBeats();
 				notesBarDur = 0;
 				songIt.next();	
+				if (songIt.hasNext()){
+					currentBarNumBeats = songIt.getBarTimeSignature().getQuarterBeats();	
+				}
 			}
 			i++;
 			
