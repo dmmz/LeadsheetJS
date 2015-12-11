@@ -82,7 +82,7 @@ module.exports = function(grunt) {
 		},
 		watch: {
 			scripts: {
-				files: ['modules/**/*.js', 'modules/**/*.html', '!modules/core/src/SongModel.old.js', 'utils/**/*.js', '*.js'],
+				files: ['Gruntfile.js', 'LJS.js', 'modules/**/*.js', 'modules/**/*.html', 'utils/**/*.js', '*.js'],
 				tasks: 'default',
 				options: {
 					spawn: false,
@@ -101,6 +101,14 @@ module.exports = function(grunt) {
 					globalAlias: 'LJS', // optional, changes the name of the global variable
 				}
 			}
+		},
+		jsdoc: {
+			dist: {
+				src: ['modules/**/*.js', 'utils/**/*.js'],
+				options: {
+					destination: 'doc'
+				}
+			}
 		}
 	});
 
@@ -108,6 +116,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-requirejs');
 	grunt.loadNpmTasks('grunt-contrib-qunit');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
+	grunt.loadNpmTasks('grunt-jsdoc');
 	grunt.loadNpmTasks('grunt-umd');
 
 	// Default task(s).

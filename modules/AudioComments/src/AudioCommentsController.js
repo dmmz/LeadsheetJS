@@ -5,13 +5,13 @@ define([
 	'modules/AudioComments/src/AudioCommentsView'
 ], function(pubsub, $, AudioCommentsModel, AudioCommentsView) {
 	/**
-	 * [AudioCommentsController description]
+	 * Audio comments controller
 	 * @param {WaveController} waveMng        
 	 * @param {LSViewer} viewer         
 	 * @param {SongModel} songModel      
 	 * @param {Object} userSession    with fields {'name': "Jon", id:'4abcgf4435', pathImg: 'path/to/img'}
 	 * 
-	 * @param {[type]} serverAudioComments [description]
+	 * @param {Object} serverAudioComments is an external objects that can allow to save comment to a server
 	 */
 	function AudioCommentsController(waveMng, viewer, songModel, userSession, serverAudioComments) {
 
@@ -91,7 +91,7 @@ define([
 	 * calls view showBubble, and saves the information needed to remember that comment is being shown
 	 * @param  {String} commentId    
 	 * @param  {String} orderedIndex    
-	 * @param  {Integer or String} orderedIndex 
+	 * @param  {Integer|String} orderedIndex 
 	 */
 	AudioCommentsController.prototype.showComment = function(commentId, orderedIndex) {
 		orderedIndex = orderedIndex || this.model.getOrderedIndexByCommentId(commentId);
@@ -112,7 +112,7 @@ define([
 
 	/**
 	 * this function is only used in test examples, to load comments directly (when there is no database to load comments from)
-	 * @param {[type]} comment [description]
+	 * @param {String} comment
 	 */
 	AudioCommentsController.prototype.addComment = function(comment) {
 		this.model.addComment(comment);
