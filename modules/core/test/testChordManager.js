@@ -99,10 +99,21 @@ define(function(require) {
 				assert.deepEqual(chordMng.getBeatIntervalByIndexes(song, 0, 3),[1,29]);
 
 				
-				console.log(chordMng.getChordsRelativeToBeat(song, 1, 30));
-				console.log(chordMng.getChordsRelativeToBeat(song, 5, 20));
-				//assert.deepEqual();
+				var songTimeSig = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.leadSheetTimeSigChanges);
+				chordMng = songTimeSig.getComponent('chords');
+				assert.deepEqual(chordMng.getBeatsBasedChordIndexes(songTimeSig), [1, 3, 5, 7, 8, 11, 13, 17, 21, 25, 29, 32, 35, 36.5, 38, 40, 42], 'getBeatsBasedChordIndexes');
+				
+				var selectedChords = chordMng.getChordsRelativeToBeat(songTimeSig, 1, 9);
+				assert.deepEqual(selectedChords[0],{beat:0,index:0});
+				assert.deepEqual(selectedChords[4],{beat:7,index:4});
+				
+				selectedChords = chordMng.getChordsRelativeToBeat(songTimeSig, 28, 35);
+				assert.deepEqual(selectedChords[0],{beat:1,index:10});
+				assert.deepEqual(selectedChords[1],{beat:4,index:11});
 
+				assert.deepEqual(chordMng.getBarNumAndBeatFromBeat(songTimeSig,32),{beatNumber:1,barNumber:9, notExactBeat: false});				
+				assert.deepEqual(chordMng.getBarNumAndBeatFromBeat(songTimeSig,36.5),{beatNumber:1,barNumber:11, notExactBeat: false});
+				assert.deepEqual(chordMng.getBarNumAndBeatFromBeat(songTimeSig,1.5),{beatNumber:2,barNumber:0, notExactBeat: true});
 
 			});
 		}

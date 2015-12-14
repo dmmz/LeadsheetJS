@@ -70,21 +70,18 @@ define([
 
 	ChordEditionController.prototype.copyChords = function() {
 		this.buffer = this.getSelectedChordsBeats();
-
-		//console.log(this.buffer);
-		// var indexes = this.getSelectedChordsIndexes();
-		// var chordManager = this.songModel.getComponent('chords');
-		// this.buffer = chordManager.cloneElems(indexes[0], indexes[indexes.length - 1] + 1);
+		//this.buffer now equals to [startBeat, endBeat]
 	};
 
 	ChordEditionController.prototype.pasteChords = function() {
-		if (typeof this.buffer === "undefined" || this.buffer.length === 0) {
+		if (!this.buffer || this.buffer.length === 0) {
 			return;
 		}
 		var chordMng = this.songModel.getComponent('chords');
 		var arrBeatChords = chordMng.getBeatsBasedChordIndexes(this.songModel);
 		var indexesBeats = chordMng.getChordsRelativeToBeat(this.songModel,this.buffer[0], this.buffer[1], arrBeatChords);
-		
+		// indexesBeat is an array of objects {index: 1, beat: 2} (with the index of the chord, and the beat differents to start beat of selected sections)
+
 		if (indexesBeats.length === 0){
 			//no chords selected
 			return;
@@ -97,33 +94,29 @@ define([
 		var startPasteBeat = this.getSelectedChordsBeats()[0];
 		var endPasteBeat = startPasteBeat + this.buffer[1] - this.buffer[0] - 1;
 
-
+		// remove chords in affected chordspaces
 		var firstChordSpace = chordMng.getBarNumAndBeatFromBeat(this.songModel,startPasteBeat);
 		var lastChordSpace = chordMng.getBarNumAndBeatFromBeat(this.songModel,endPasteBeat);
 		chordMng.removeChordsBetweenPositions(firstChordSpace.barNumber, firstChordSpace.beatNumber, lastChordSpace.barNumber, lastChordSpace.beatNumber);
 
+		//we copy chords
 		var pasteBeat, numBarAndBeat;
 		for (var i = 0; i < indexesBeats.length; i++) {
-
 			pasteBeat = indexesBeats[i].beat + startPasteBeat;
 			barNumAndBeat = chordMng.getBarNumAndBeatFromBeat(this.songModel,pasteBeat);
-			copiedChords[i].setBarNumber(barNumAndBeat.barNumber);
-			copiedChords[i].setBeat(barNumAndBeat.beatNumber);
-			chordMng.addChord(copiedChords[i]);			
+			if (!barNumAndBeat.notExactBeat){
+				copiedChords[i].setBarNumber(barNumAndBeat.barNumber);
+				copiedChords[i].setBeat(barNumAndBeat.beatNumber);
+				chordMng.addChord(copiedChords[i]);			
+			}
 		}
-
-		// var firstChordSpace = this.chordSpaceMng.chordSpace[this.cursor.getStart()];
-		// var decalBarNumber = firstChordSpace.barNumber - this.buffer[0].getBarNumber();
-		// var decalBeat = firstChordSpace.beatNumber - this.buffer[0].getBeat();
-
-		// var lastChord = this.buffer[this.buffer.length - 1];
-
-		// chordManager.removeChordsBetweenPositions(firstChordSpace.barNumber, firstChordSpace.beatNumber, lastChord.getBarNumber() + decalBarNumber, lastChord.getBeat() + decalBeat);
-		// for (var i = 0, c = this.buffer.length; i < c; i++) {
-		// 	this.buffer[i].setBarNumber(this.buffer[i].getBarNumber() + decalBarNumber);
-		// 	this.buffer[i].setBeat(this.buffer[i].getBeat() + decalBeat);
-		// 	chordManager.addChord(this.buffer[i]);
-		// }
+		
+		var ch;
+		for (var i = 0; i < chordMng.getChords().length; i++) {
+			ch = chordMng.getChords()[i]
+			str=ch.toString()+" "+ch.getBarNumber()+ " ..  " +ch.getBeat() ;
+		}
+		
 		$.publish('ToHistory-add', 'Paste chord');
 	};
 

@@ -42,7 +42,9 @@ define(['modules/core/src/ChordModel',
 				csmTsc.cursor.setPos([51,54]);
 				assert.deepEqual(cecTsc.getSelectedChordsBeats(),[43,46],'last measure');
 
-				//copu / paste / delete
+
+
+				//copy / paste / delete
 				var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
 				
 				var cM = new CursorModel(songModel.getSongTotalBeats());
@@ -80,7 +82,7 @@ define(['modules/core/src/ChordModel',
 				assert.deepEqual(cec2.getSelectedChordsIndexes(), [0, 1], 'getSelectedChordsIndexes');
 
 				cec2.copyChords();
-				assert.deepEqual(cec2.buffer, [chordManager2.getChord(0), chordManager2.getChord(1)], 'copy chords buffer is fulled');
+				assert.deepEqual(cec2.buffer, [1,10], 'copy chords buffer, chord spaces go from 0 to 8, so from beat 1 to 9, 9 included, so beatStart is 1 and beatEnd is 10');
 
 				// Paste chords
 				csm2.cursor.setPos([8, 10]);
