@@ -1,7 +1,7 @@
 define([], function() {
-
 	/**
-	 * [TagSpaceView description]
+	 * Allow tags to be selected
+	 * @exports Tag/TagSpaceView
 	 * @param {Array} position : array of objects like {x:10,y:10,w:20,h:20} (this is because an area can inlcude several lines)
 	 * @param {String} name     the tag name
 	 */

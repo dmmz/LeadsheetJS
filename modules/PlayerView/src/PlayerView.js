@@ -5,7 +5,13 @@ define([
 	'pubsub',
 	'text!modules/PlayerView/src/PlayerTemplate.html',
 ], function($, Mustache, UserLog, pubsub, PlayerTemplate) {
-
+	/**
+	 * PlayerView creates player template
+	 * @exports PlayerView
+	 * @param {HTMLDOMElement} parentHTML html in which template will be inserted
+	 * @param {String} imgPath    url where player will look for pictures
+	 * @param {Object} options    player options : Boolean displayMetronome, displayLoop, displayTempo, progressBar and Integer tempo
+	 */
 	function PlayerView(parentHTML, imgPath, options) {
 		options = options || {};
 		//PlayerView can be playing Midi, audio or both at the same time
@@ -168,7 +174,7 @@ define([
 		} else { //type === 'audio'
 			this.audioPlayer = false;
 		}
-	}
+	};
 
 	PlayerView.prototype.initKeyboard = function() {
 		var self = this;

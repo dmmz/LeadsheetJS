@@ -1,7 +1,10 @@
 define(['modules/Edition/src/ElementView'], function(ElementView) {
 	/**
+	 * CommentSpaceView allow comments to be clickable
+	 * This object is created by CommentSpaceManager
+	 * @exports AudioComments/CommentSpaceView
 	 * @param {Object} position {x:439.25, y:33,w:10,h:10} //position
-	 * @param {[type]} viewer   [description]
+	 * @param {Scaler} viewerScaler
 	 */
 	function CommentSpaceView(position, viewerScaler) {
 		this.position = position;

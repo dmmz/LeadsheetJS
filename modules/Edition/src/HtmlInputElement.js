@@ -1,6 +1,7 @@
 define(['jquery'], function($) {
 	/**
 	 * Class for creating html inputs and deleting them
+	 * @exports Edition/HtmlInputElement
 	 * @param {LSViewer} viewer
 	 * @param {String} className
 	 * @param {Object} position    e.g.{x:23, y:23, w:10, h:10º}

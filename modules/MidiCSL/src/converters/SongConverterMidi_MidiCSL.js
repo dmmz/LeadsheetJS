@@ -17,7 +17,11 @@ define([
 		AjaxUtils
 	) {
 		var SongConverterMidi_MidiCSL = {};
-
+		/**
+		 * SongConverterMidi_MidiCSL convert a song to a list of note that can be read by midi player
+		 * It creates ChordConverterMidi_MidiCSL to retrieve midi informations about every chords and directly do the jobs for notes
+		 * @exports MidiCSL/SongConverterMidi_MidiCSL
+		 */
 		SongConverterMidi_MidiCSL.exportToMidiCSL = function(songModel, useServlet, callback) {
 			if (!songModel instanceof SongModel) {
 				throw 'SongConverterMidi_MidiCSL - exportToMusicCSLJSON - songModel parameters must be an instanceof SongModel';

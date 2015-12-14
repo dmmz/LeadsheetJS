@@ -1,27 +1,28 @@
 define(function() {
 	/**
 	 * Abstraction class, used by NoteSpaceManager and ChordSpaceManager (by composition rather than heritage)
+	 * @exports Edition/ElementManager
 	 */
 	function ElementManager() {}
 
 	/*
 	 * @param  {Array} ini Array of two numbers representing x and y ([x,y]), represents the initial position (where user clicked initially on selection)
-	 * @param  {[type]} end  Exactly the same as ini, but represents the end position (where user did mousup after dragging on selection),
+	 * @param  {Array} end  Exactly the same as ini, but represents the end position (where user did mousup after dragging on selection),
 	 * @return {Boolean}     
 	 */
-	ElementManager.prototype.fromLeftBottom2TopRight = function(ini,end) {
+	ElementManager.prototype.fromLeftBottom2TopRight = function(ini, end) {
 		return ini[0] < end[0] && ini[1] > end[1];
 	};
 
 	/*
 	 * @param  {Array} ini Array of two numbers representing x and y ([x,y]), represents the initial position (where user clicked initially on selection)
-	 * @param  {[type]} end  Exactly the same as ini, but represents the end position (where user did mousup after dragging on selection),
+	 * @param  {Array} end  Exactly the same as ini, but represents the end position (where user did mousup after dragging on selection),
 	 * @return {Boolean}     
 	 */
-	ElementManager.prototype.fromTopRight2BottomLeft = function(ini,end) {
+	ElementManager.prototype.fromTopRight2BottomLeft = function(ini, end) {
 		return ini[0] > end[0] && ini[1] < end[1];
 	};
-	
+
 	/**
 	 * [includesMultipleLines description]
 	 * @param  {Object} ys Has ys delimiting selection. e.g.:{bottomY: 12, topY: 24}
@@ -72,7 +73,7 @@ define(function() {
 	 * instead of selecting elements specified by an area, gets for the very first line, and the last one, those not including getArea
 	 * @param  {Array} elems  array of elements; e.g. 'NoteSpaceView'
 	 * @param  {Object} coords e.g. {x:23, y:34, xe: 153, ye: 45}
-	 * @return {[type]}        [description]
+	 * @return {}        
 	 */
 	ElementManager.prototype.getInvertedElemsInPath = function(elems, coords) {
 
@@ -113,7 +114,7 @@ define(function() {
 				});
 			}
 		}
-		return getFirstAndLast(inPathElems)
+		return getFirstAndLast(inPathElems);
 	};
 
 	/**
@@ -156,9 +157,9 @@ define(function() {
 
 	/**
 	 * @param  {Array} elems      [description]
-	 * @param  {[Integer, Integer]} cursor     [description]
+	 * @param  {Array} cursor     [Integer, Integer]
 	 * @param  {Object} cursorDims
-	 * @return {Array of Objects}    Object in this form: {area.x, area.y, area.xe, area.ye}
+	 * @return {Array}    Array of Objects in this form: {area.x, area.y, area.xe, area.ye}
 	 */
 	ElementManager.prototype.getElementsAreaFromCursor = function(elems, cursor, cursorDims) {
 

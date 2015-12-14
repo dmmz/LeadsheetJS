@@ -6,7 +6,10 @@ define([
 	'pubsub',
 	'text!modules/ChordEdition/src/ChordEditionTemplate.html',
 ], function($, Mustache, SongModel, UserLog, pubsub, ChordEditionTemplate) {
-
+	/**
+	 * ChordEditionView creates chord edition template and link event from html to controller
+	 * @exports ChordEdition/ChordEditionView
+	 */
 	function ChordEditionView(cursor, imgPath) {
 		this.cursor = cursor;
 		this.el = undefined;

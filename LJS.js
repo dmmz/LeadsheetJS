@@ -4,7 +4,6 @@ define([
 	'modules/chordSequence/src/SongView_chordSequence',
 	"modules/converters/MusicCSLJson/src/main",
 	"modules/converters/MusicXML/src/main",
-	'modules/Constraint/src/Constraint',
 	"modules/core/src/main", // most important module
 	'modules/Cursor/src/Cursor',
 	'modules/Edition/src/Edition',
@@ -29,7 +28,6 @@ define([
 	chordSequence,
 	convertersMusicCSLJson,
 	convertersMusicXML,
-	Constraint,
 	core,
 	Cursor,
 	Edition,
@@ -53,7 +51,6 @@ define([
 		"AudioComments": AudioComments,
 		"ChordEdition": ChordEdition,
 		"chordSequence": chordSequence,
-		"Constraint": Constraint,
 		"converters": {
 			"MusicCSLJson": convertersMusicCSLJson,
 			"MusicXML": convertersMusicXML

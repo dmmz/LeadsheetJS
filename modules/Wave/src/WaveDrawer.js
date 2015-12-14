@@ -6,6 +6,10 @@ define([
 	'modules/Wave/src/WaveBarView',
 	'pubsub'
 ], function($, SongBarsIterator, CursorModel, ElementManager, WaveBarView, pubsub) {
+	/**
+	 * 
+	 * @exports Wave/WaveDrawer
+	 */
 	function WaveDrawer(viewer, params, waveMng) {
 		params = params || {};
 		if (!params.pixelRatio) {
@@ -103,9 +107,7 @@ define([
 			var pos1 = this._getAudioTimeFromPos(x1, cursorBars[0]);
 			var pos2 = this._getAudioTimeFromPos(x2, cursorBars[1]);
 			this.cursor.setPos([pos1, pos2]);
-			
 			this.updateCursorPlaying(pos1, cursorBars[0]);
-
 
 		}
 		if (mouseUp) {
@@ -146,8 +148,8 @@ define([
 
 	/**
 	 * @interface
-	 * @param  {[type]} ctx [description]
-	 * @return {[type]}     [description]
+	 * @param  {Object} ctx Object that usually contain mouse position
+	 * @return {Boolean}     Boolean indicates if coords position is on wave or not
 	 */
 	WaveDrawer.prototype.inPath = function(coords) {
 		return !!this.elemMng.getElemsInPath(this.waveBarDimensions, coords);

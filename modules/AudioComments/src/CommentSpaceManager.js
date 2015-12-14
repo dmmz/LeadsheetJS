@@ -2,6 +2,10 @@ define(['modules/Edition/src/ElementManager',
 	'modules/AudioComments/src/CommentSpaceView',
 	'jquery'
 ], function(ElementManager, CommentSpaceView, $) {
+	/**
+	 * CommentSpaceManager creates and manages an array of comment space
+	 * @exports AudioComments/CommentSpaceManager
+	 */
 	function CommentSpaceManager(viewer) {
 		this.commentSpaces = [];
 		this.viewer = viewer;

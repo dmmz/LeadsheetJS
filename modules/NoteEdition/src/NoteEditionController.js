@@ -8,7 +8,10 @@ define([
 	'jquery',
 	'pubsub',
 ], function(Mustache, SongModel, NoteManager, CursorModel, NoteUtils, UserLog, $, pubsub) {
-
+	/**
+	 * NoteEditionController manages all notes edition function
+	 * @exports NoteEdition/NoteEditionController
+	 */
 	function NoteEditionController(songModel, cursor, noteSpaceMng) {
 		if (!songModel || !cursor) {
 			throw "NoteEditionController params are wrong";
@@ -611,8 +614,7 @@ define([
 
 	/**
 	 * This is the only function not called by 'NoteEditionView' event, (see NoteEditionController.initSubscribe)
-	 * @param  {[type]} inc [description]
-	 * @return {[type]}     [description]
+	 * @param  {Integer} inc is a number that will be added to current barNumber, it can be negative, usually it's 1 or -1
 	 */
 	NoteEditionController.prototype.moveCursorByBar = function(inc) {
 		if (this.cursor.getEditable() === false) {

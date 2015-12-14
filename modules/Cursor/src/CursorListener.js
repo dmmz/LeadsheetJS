@@ -2,7 +2,10 @@ define([
 	'jquery',
 	'pubsub',
 ], function($, pubsub) {
-
+	/**
+	 * CursorListener creates link events from html to controller
+	 * @exports Cursor/CursorListener
+	 */
 	function CursorListener(id, keyToNext) {
 		if (!id) {
 			throw "CursorListener needs id";

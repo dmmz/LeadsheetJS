@@ -9,7 +9,10 @@ define([
 	'jquery',
 	'pubsub'
 ], function(SongModel, ChordModel, ChordSpaceView, CursorModel, ChordModel_CSLJson, UserLog, ElementManager, $, pubsub) {
-
+	/**
+	 * ChordSpaceManager creates and manages an array of chord space which is represented as a rectangle on each beat on top of bars
+	 * @exports ChordEdition/ChordSpaceManager
+	 */
 	function ChordSpaceManager(songModel, cursor, viewer) {
 		if (!songModel || !cursor) {
 			throw "ChordSpaceManager missing params";
@@ -50,7 +53,7 @@ define([
 		$.subscribe('Cursor-moveCursorByElement-chords', function(el, inc) {
 			self.moveCursorByBar(inc);
 		});
-		$.subscribe('ctrl-a',function(){
+		$.subscribe('ctrl-a', function() {
 			self.enable();
 			self.cursor.selectAll();
 			self.viewer.canvasLayer.refresh();
@@ -61,8 +64,8 @@ define([
 	};
 	/**
 	 * Function return several areas to indicate which notes are selected, usefull for cursor or selection
-	 * @param  {[Integer, Integer] } Array with initial position and end position
-	 * @return {Array of Objects}, Object in this form: {area.x, area.y, area.xe, area.ye}
+	 * @param  {Array} Array with initial position and end position as integer
+	 * @return {Array}, return array of object in this form: {area.x, area.y, area.xe, area.ye}
 	 */
 	ChordSpaceManager.prototype.createChordSpace = function(viewer) {
 		var chordSpace = [];
@@ -191,16 +194,16 @@ define([
 		var chordMng = this.songModel.getComponent('chords');
 		chordJson.beat = chordSpace.beatNumber;
 		chordJson.barNumber = chordSpace.barNumber;
-		
+
 		if (chordModel === undefined) { //adding new chord
 			var chordModel = ChordModel_CSLJson.importFromMusicCSLJSON(chordJson);
 			chordMng.addChord(chordModel);
-		}else if(chordJson.empty){
+		} else if (chordJson.empty) {
 			chordMng.removeChord(chordModel);
-		}else{
+		} else {
 			var i = chordMng.getChordIndex(chordModel);
 			chordModel = ChordModel_CSLJson.importFromMusicCSLJSON(chordJson);
-			chordMng.setChord(chordModel,i);
+			chordMng.setChord(chordModel, i);
 		}
 		$.publish('ToHistory-add', 'Update Chords ' + chordModel.toString());
 

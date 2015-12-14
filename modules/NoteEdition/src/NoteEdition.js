@@ -3,7 +3,10 @@ define([
 	"modules/NoteEdition/src/NoteEditionView",
 	"modules/NoteEdition/src/NoteSpaceManager"
 ], function(NoteEditionController, NoteEditionView, NoteSpaceManager) {
-
+	/**
+	 * NoteEdition constructor
+	 * @exports NoteEdition
+	 */
 	function NoteEdition(songModel, cursorModel, viewer, imgPath) {
 		this.noteSpaceMng = new NoteSpaceManager(cursorModel, viewer);
 		new NoteEditionController(songModel, cursorModel, this.noteSpaceMng);

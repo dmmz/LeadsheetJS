@@ -16,7 +16,8 @@ define([
 	],
 	function(Vex, LSNoteView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator, CanvasLayer, Scaler, $, pubsub) {
 		/**
-		 * LSViewer Constructor
+		 * LSViewer module manage interaction between canvas, core model and vexflow, it's the main module that allow drawing
+		 * @exports LSViewer/LSViewer
 		 * @param {domObject} jQuery divContainer ; e.g.: $("#divContainerId");
 		 * @param {Object} params, possible params:
 		 *
@@ -59,8 +60,8 @@ define([
 			this.LAST_BAR_WIDTH_RATIO = 0.75; //in case of this.shortenLastBar = true (rendering audio), we make the last bar more compressed so that we left space for recordings longer than piece
 			this.FONT_CHORDS = "18px Verdana";
 			//next three fields are set as vars and not constants because they change (e.g. when visualizing audio)
-			this.lineMarginTop = this.INITIAL_LINE_MARGIN_TOP; 
-			this.marginTop  = this.INITIAL_MARGIN_TOP;
+			this.lineMarginTop = this.INITIAL_LINE_MARGIN_TOP;
+			this.marginTop = this.INITIAL_MARGIN_TOP;
 			this.lineHeight = this.INITIAL_LINE_HEIGHT;
 
 			this.shortenLastBar = false;
@@ -137,7 +138,7 @@ define([
 			//if (viewerWidth < this.LINE_WIDTH){
 			this.LINE_WIDTH = viewerWidth;
 			//}
-		};	
+		};
 
 		LSViewer.prototype.scale = function(ctx) {
 			ctx = ctx || this.ctx;
@@ -236,8 +237,8 @@ define([
 		};
 		LSViewer.prototype.resetLinesHeight = function() {
 			this.lineHeight = this.INITIAL_LINE_HEIGHT;
-			this.marginTop  = this.INITIAL_MARGIN_TOP;
-			this.lineMarginTop  = this.INITIAL_LINE_MARGIN_TOP;
+			this.marginTop = this.INITIAL_MARGIN_TOP;
+			this.lineMarginTop = this.INITIAL_LINE_MARGIN_TOP;
 		};
 
 		LSViewer.prototype.setHeight = function(song, barWidthMng) {
@@ -394,12 +395,12 @@ define([
 				this._displayTitle(song.getTitle());
 			}
 			this.resetScale();
-			
+
 			// if constructor was supposed to have a layer and either canvasLayer is not created, either we are forcing to recreate it (e.g. on resize)
 			if (this.layer && (this.forceNewCanvasLayer || !this.canvasLayer)) {
 				this.forceNewCanvasLayer = false;
-				if (this.canvasLayer){
-					this.canvasLayer.destroy();//to remove html listeners
+				if (this.canvasLayer) {
+					this.canvasLayer.destroy(); //to remove html listeners
 				}
 				this.canvasLayer = new CanvasLayer(this, this.detectEventOnAllDocument); //the canvasLayer needs to be created after the score has been drawn
 			}

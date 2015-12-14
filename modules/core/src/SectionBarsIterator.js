@@ -1,4 +1,8 @@
 define(function() {
+	/**
+     * Iterator that allow to go through sections
+     * @exports core/SectionBarsIterator
+	 */
 	function SectionBarsIterator (section) {
 		this.section = section;
 		this.index = 0;

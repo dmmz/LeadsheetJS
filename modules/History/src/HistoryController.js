@@ -6,7 +6,10 @@ define([
 	'jquery',
 	'pubsub',
 ], function(SongModel, SongModel_CSLJson, Mustache, UserLog, $, pubsub) {
-
+	/**
+	 * History constroller
+	 * @exports History/HistoryController
+	 */
 	function HistoryController(model, songModel) {
 		this.model = model || new HistoryModel();
 		this.songModel = songModel || new SongModel();
@@ -46,7 +49,7 @@ define([
 		this.model.setCurrentPosition(currentHistory);
 		if (this.songModel) {
 			var retrievedLeadsheet = this.model.getCurrentState();
-			if (retrievedLeadsheet){
+			if (retrievedLeadsheet) {
 				SongModel_CSLJson.importFromMusicCSLJSON(retrievedLeadsheet, this.songModel);
 				$.publish('ToLayers-removeLayer');
 				$.publish('ToViewer-draw', this.songModel);

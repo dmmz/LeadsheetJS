@@ -12,7 +12,10 @@ define([
 	'jsPDF',
 	'jquery'
 ], function(Mustache, SongModel, SongModel_CSLJson, SongModel_MusicXML, WaveManager, LSViewer, pubsub, UserLog, ComposerServlet, AjaxUtils, jsPDF, $) {
-
+	/**
+	 * FileEditionController manages all file interaction like save, import, export
+	 * @exports FileEdition/FileEditionController
+	 */
 	function FileEditionController(songModel, viewer, saveFunction, waveManager) {
 		if (viewer) {
 			this.viewer = viewer;

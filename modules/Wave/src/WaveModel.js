@@ -2,10 +2,12 @@ define([
 	'jquery',
 	'pubsub',
 ], function($, pubsub) {
-	function WaveModel(option) {
-		/* option contain
-			volume				// Float Main volume for all instruments it vary between 0 and 1
-		*/
+
+	/**
+	 * Model for audio wave, it control audio html tag, it also interact with audio data to compute peaks
+	 * @exports Wave/WaveModel
+	 */
+	function WaveModel(songNumBeats, volume) {
 		this.audio = new Audio();
 		document.body.appendChild(this.audio);
 		this.audioCtx = new(window.AudioContext || window.webkitAudioContext)();
@@ -14,30 +16,41 @@ define([
 		this.isPlayingEnabled = false; //this is initialized on load
 		this.isDrawingEnabled = false;
 		this.initModelEvents();
-
+		this.songNumBeats = songNumBeats;
 		var initVolume;
-		if (option && option.volume !== undefined) {
+		if (volume !== undefined) {
 			// case that developper explicitly declared volume
-			initVolume = option.volume;
+			initVolume = volume;
 		} else {
 			// natural case (it use storage item to get last user volume)
 			initVolume = this.initVolume(0.7);
 		}
 		this.setVolume(initVolume);
+
 	}
 
-	WaveModel.prototype.play = function(playFrom, playTo) {
-		if (this.isPlayingEnabled === false) {
-			return;
-		}
-		if (playFrom !== undefined) {
-			this.audio.currentTime = playFrom;
-		}
-		if (playTo !== undefined) {
-			this.playTo = playTo;
-			this.playFrom = playFrom;
-		} else {
-			this.playTo = undefined;
+	/**
+	 * As they are time positions, we use this function to let an offset in between
+	 * @param  {Number} pos1 
+	 * @param  {Number} pos2 
+	 * @return {Boolean}      
+	 */
+	WaveModel.prototype._positionsEqual = function(pos1, pos2) {
+		return Math.abs(pos1 - pos2) < 0.1;
+	};
+
+	WaveModel.prototype.setPlayFromTo = function(playFrom, playTo) {
+		this.playFrom = playFrom;
+		this.playTo = playTo;
+	};
+
+	WaveModel.prototype.play = function() {
+		this.audio.currentTime = this.playFrom || 0; // if pause, this.playFrom has some value, if stop we set it to 0
+
+		//the code to loop through the whole song
+		if (this.audio.loop && this._positionsEqual(this.playFrom, this.playTo)) {
+			this.playTo = this.songDuration;
+			this.playFrom = 0;
 		}
 		this.audio.play();
 		$.publish('PlayerModel-onplay');
@@ -47,6 +60,8 @@ define([
 		if (this.isPlayingEnabled === false) {
 			return;
 		}
+		this.playFrom = this.audio.currentTime;
+
 		this.audio.pause();
 		$.publish('PlayerModel-onpause');
 	};
@@ -56,7 +71,8 @@ define([
 			return;
 		}
 		this.audio.pause();
-		this.audio.currentTime = 0.0;
+		this.playFrom = 0;
+		this.playTo = 0;
 		$.publish('PlayerModel-onstop');
 	};
 
@@ -96,16 +112,9 @@ define([
 	};
 
 	WaveModel.prototype.setLoop = function(loop) {
-		if (this.isPlayingEnabled === false) {
-			return;
-		}
-		if (typeof loop !== "undefined") {
-			this.audio.loop = !!loop;
-			$.publish('PlayerModel-toggleLoop', this.audio.loop);
-			return true;
-		} else {
-			return false;
-		}
+		this.audio.loop = !!loop;
+		$.publish('PlayerModel-toggleLoop', this.audio.loop);
+
 	};
 
 	WaveModel.prototype.toggleLoop = function() {
@@ -122,8 +131,8 @@ define([
 
 	/**
 	 * On this function we load both audioCtx and HTML audio tag.
-	 * @param  {[type]}   url       [description]
-	 * @param  {[type]}   audioData [description]
+	 * @param  {String}   url       Url of audio that user want to load
+	 * @param  {Object}   audioData HTML5 audiodata
 	 * @param  {float}   tempo     
 	 * @param  {Function} callback
 	 */
@@ -142,6 +151,7 @@ define([
 				self.buffer = buffer;
 				self.tempo = tempo;
 				self.beatDuration = 60 / tempo;
+				self.songDuration = self.beatDuration * self.songNumBeats; //song duration until last beat (without residual audio)
 				self.source = self.audioCtx.createBufferSource();
 				self.source.buffer = self.buffer;
 				//source.playbackRate.value = playbackControl.value;
@@ -150,6 +160,7 @@ define([
 				checkLoad();
 				self.enable();
 				//source.start(0)
+				self.setPlayFromTo(0, null); // self.getDuration() is different than song duration as includes residual audio
 			},
 			function(e) {
 				throw "Error with decoding audio data" + e.err;
@@ -158,7 +169,7 @@ define([
 
 		function checkLoad() {
 			if (HTMLTagIsLoaded && audioCtxIsLoaded) {
-				$.publish('PlayerModel-onload','audio');
+				$.publish('PlayerModel-onload', 'audio');
 				if (typeof callback !== "undefined") {
 					callback();
 				}
@@ -181,18 +192,26 @@ define([
 			$.publish('PlayerModel-playing');
 		});
 		$(this.audio).on('timeupdate', function() {
+
 			if (self.isPlayingEnabled === false) {
 				return;
 			}
+			// code to stop on selection, commented because it gives problems when selecting one note
+			// if (self.playTo && self.playTo != self.playFrom  && self.audio.currentTime > self.playTo){
+			// 	self.stop();
+			// }
 			//loops on audio
-			if (self.playTo !== undefined && self.audio.currentTime > self.playTo && self.audio.loop === true) {
-				self.play(self.playFrom, self.playTo);
+			if (self.playTo !== undefined && self.audio.currentTime > self.playTo && self.audio.loop === true && !self._positionsEqual(self.playFrom, self.playTo)) {
+				self.play();
 			}
-			var songDuration = self.getDuration();
-			var positionInPercent = self.audio.currentTime / songDuration;
+
+
+			//publish for playing bar
+			var totalDuration = self.getDuration();
+			var positionInPercent = self.audio.currentTime / totalDuration;
 			$.publish('PlayerModel-onPosition', {
 				'positionInPercent': positionInPercent,
-				'songDuration': songDuration * 1000
+				'songDuration': totalDuration * 1000
 			});
 		});
 	};
@@ -262,7 +281,6 @@ define([
 					if (max > absMax) absMax = max;
 				}
 			}
-			//console.log(absMax);
 		}
 		return mergedPeaks;
 	};

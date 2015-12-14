@@ -5,8 +5,10 @@ define([
 	'pubsub',
 	'JsonDelta'
 ], function(Mustache, $, UserLog, pubsub, JSON_delta) {
+
 	/**
 	 * HistoryModel is an array of state, it allow a high level management of Historys
+	 * @exports History/HistoryModel
 	 * @param {object} options
 	 */
 	var HistoryModel = function(options) {

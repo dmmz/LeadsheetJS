@@ -6,6 +6,7 @@ define(['modules/Wave/src/WaveModel',
 	'pubsub'
 ], function(WaveModel, WaveDrawer, BarTimesManager, SongBarsIterator, $, pubsub) {
 	/**
+	 * @exports Wave/WaveController
 	 * @param {SongModel} songModel
 	 * @param {cursorNotes} cursor     // notes cursor, it is updated when playing
 	 * @param {LSViewer} viewer
@@ -33,7 +34,7 @@ define(['modules/Wave/src/WaveModel',
 		this.cursorNotes = cursor;
 		this.isLoaded = false;
 		this.viewer = viewer;
-		this.model = new WaveModel();
+		this.model = new WaveModel(songModel.getComponent('notes').getTotalDuration());
 		this.file = params.file;
 		this.tempo = params.tempo;
 		var paramsDrawer = {
@@ -133,18 +134,19 @@ define(['modules/Wave/src/WaveModel',
 		if (!this.model.audio.paused) {
 			this.pause();
 		} else {
-			this.play();
+			this.play(); 
 		}
 	};
-
 	WaveController.prototype.play = function() {
 		if (this.isLoaded) {
 			this.isPause = false;
-			// this.restartAnimationLoop(); // now we use playing event
-			var playTo = this.drawer.cursor.getPos()[0];
-			var playFrom = this.drawer.cursor.getPos()[1];
+			var curPos = this.drawer.cursor.getPos();
 			
-			this.model.play(playTo, playFrom);
+			if (curPos[0] || curPos[1]) // when no cursor, position is [0,0], in that case we don't set positions
+			{ 
+				this.model.setPlayFromTo(curPos[0], curPos[1]);
+			}
+			this.model.play();
 		}
 	};
 
@@ -152,7 +154,6 @@ define(['modules/Wave/src/WaveModel',
 		if (this.isLoaded) {
 			var timeSec = this.model.getDuration() * percent;
 			this.isPause = false;
-			// this.restartAnimationLoop(); // now we use playing event
 			this.model.play(timeSec);
 		}
 	};
@@ -167,6 +168,8 @@ define(['modules/Wave/src/WaveModel',
 	WaveController.prototype.stop = function() {
 		this.isPause = true;
 		this.model.stop();
+		this.drawer.updateCursorPlaying(0);
+		this.drawer.viewer.canvasLayer.refresh();
 	};
 	WaveController.prototype.onVolumeChange = function(volume) {
 		this.model.setVolume(volume);

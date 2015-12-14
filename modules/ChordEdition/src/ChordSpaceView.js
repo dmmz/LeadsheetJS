@@ -7,7 +7,11 @@ define([
 	'modules/Edition/src/ElementView',
 	'modules/Edition/src/HtmlInputElement'
 ], function(ChordUtils, UserLog, $, pubsub, jquery_autocomplete, ElementView, HtmlInputElement) {
-
+	/**
+	 * ChordSpaceView is represented as a rectangle on each beat on top of bars, it create an input where user can select a chord label
+	 * This object is created by ChordSpaceManager
+	 * @exports ChordEdition/ChordSpaceView
+	 */
 	function ChordSpaceView(viewer, position, barNumber, beatNumber, viewerScaler) {
 		this.viewer = viewer;
 		this.position = position;
@@ -166,7 +170,7 @@ define([
 		var addingNewChord = (!chordJson.empty && currentChord === undefined);
 
 		if (chordJson.error) {
-			UserLog.logAutoFade('error','Chord "' + newChordString + '" not well formated');
+			UserLog.logAutoFade('error', 'Chord "' + newChordString + '" not well formated');
 		} else if (!noUpdateToEmptyChord && (removingChord || addingNewChord || !currentChord.equalsTo(chordJson))) {
 			//last condition refers to when we are modifying existing chord
 			$.publish('ChordSpaceView-updateChord', [chordJson, currentChord, this]);
@@ -202,7 +206,7 @@ define([
 		// on blur event we change the value, blur is launched when we enter and click somewhere else
 		input.on('blur', function() {
 			self.onChange(songModel, $(this).val())
-			// input.devbridgeAutocomplete('dispose');
+				// input.devbridgeAutocomplete('dispose');
 		});
 		// on tab call (tab doesn't trigger blur event)
 		input.keydown(function(e) {

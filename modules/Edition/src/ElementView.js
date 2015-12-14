@@ -3,6 +3,7 @@ define(function() {
 
 
 	/**
+	 * @exports Edition/ElementView
 	 * @param  {Object}  area    area can be in two forms :
 	 *                           {x: 10, y: 10, xe: 20, ye: 20} / xe and ye are absolute positions (not relative to x and y)
 	 *                           {x: 10, y:10}
@@ -19,11 +20,11 @@ define(function() {
 		return (area.x < posXe && area.xe > pos.x) && (area.y < posYe && area.ye > pos.y);
 	};
 	/**
-	 * [isBetweenYs description]
+	 * isBetweenYs description
 	 * @param  {Array}  ys       [yMin, yMax]
-	 * @param  {[type]}  position [description]
-	 * @param  {[type]}  scaler   [description]
-	 * @return {Boolean}          [description]
+	 * @param  {Object} position obj normally in the form of {x: 23, y:130, xe: 33, ye: 23}
+	 * @param  {Scaler}  scaler   LSviewer scaler
+	 * @return {Boolean}
 	 */
 	ElementView.isBetweenYs = function(ys, position, scaler) {
 		var pos = scaler.getScaledObj(position),

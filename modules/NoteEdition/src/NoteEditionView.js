@@ -7,7 +7,10 @@ define([
 	'pubsub',
 	'text!modules/NoteEdition/src/NoteEditionTemplate.html',
 ], function($, Mustache, SongModel, UserLog, NoteUtils, pubsub, NoteEditionTemplate) {
-
+	/**
+	 * NoteEditionView creates notes edition template and link event from html to controller
+	 * @exports NoteEdition/NoteEditionView
+	 */
 	function NoteEditionView(imgPath) {
 		this.el = undefined;
 		this.imgPath = imgPath;
@@ -39,7 +42,7 @@ define([
 		});
 		$.subscribe('shift-accidental-key', function(el, acc) {
 			fn = 'addAccidental';
-			$.publish('NoteEditionView', [fn, acc+acc]);
+			$.publish('NoteEditionView', [fn, acc + acc]);
 		});
 		$.subscribe('number-key', function(el, key) {
 			fn = 'setCurrDuration';

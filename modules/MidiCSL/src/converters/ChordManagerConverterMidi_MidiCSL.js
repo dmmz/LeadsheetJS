@@ -1,5 +1,11 @@
 define(['modules/core/src/SongModel', 'modules/core/src/ChordManager', 'modules/MidiCSL/src/converters/ChordConverterMidi_MidiCSL', 'modules/MidiCSL/src/model/NoteModel_midiCSL'],
 	function(SongModel, ChordManager, ChordConverterMidi_MidiCSL, NoteModel_midiCSL) {
+		/**
+		 * ChordManagerConverterMidi_MidiCSL convert chords to a list of note that can be read by midi player
+		 * It creates ChordConverterMidi_MidiCSL to retrieve midi informations about every chords
+		 * Object is created by SongConverterMidi_MidiCSL
+		 * @exports MidiCSL/ChordManagerConverterMidi_MidiCSL
+		 */
 		var ChordManagerConverterMidi_MidiCSL = {};
 
 		ChordManagerConverterMidi_MidiCSL.exportToMidiCSL = function(songModel) {

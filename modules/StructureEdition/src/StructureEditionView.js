@@ -6,7 +6,10 @@ define([
 	'pubsub',
 	'text!modules/StructureEdition/src/StructureEditionTemplate.html',
 ], function(Mustache, SongModel, UserLog, $, pubsub, StructureEditionTemplate) {
-
+	/**
+	 * StructureEditionView creates structure edition template and link event from html to controller
+	 * @exports StructureEdition/StructureEditionView
+	 */
 	function StructureEditionView(imgPath) {
 		this.el = undefined;
 		this.imgPath = imgPath;

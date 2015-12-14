@@ -3,6 +3,11 @@
  * @param {LSViewer} viewer
  */
 define(['jquery', 'pubsub'], function($, pubsub) {
+	/**
+    * Canvas layer module manages fast drawn interaction, 
+    * it creates an hover canvas that is fast and repetively drawn, it's usefull to draw cursor or selection for eg
+    * @exports LSViewer/CanvasLayer
+    */
 	function CanvasLayer(viewer, detectEventOnAllDocument) {
 		if (!viewer.canvas) {
 			throw "LSViewer cannot create layer because canvas does not exist";

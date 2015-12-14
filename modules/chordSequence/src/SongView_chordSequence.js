@@ -1,5 +1,10 @@
 define(['jquery', 'modules/core/src/SongModel', 'modules/core/src/SectionModel', 'modules/core/src/BarManager', 'modules/core/src/BarModel', 'modules/core/src/ChordManager', 'modules/core/src/ChordModel'],
 	function($, SongModel, SectionModel, BarManager, BarModel, ChordManager, ChordModel) {
+		/**
+		 * SongView_chordSequence is a text view created from SongModel that display mainly chords.
+		 * This view is usefull for musicians who use only a chord grid to play.
+		 * @exports ChordSequence
+		 */
 		function SongView_chordSequence(parentHTML, songModel, option) {
 			option = option || {};
 			this.el = parentHTML;

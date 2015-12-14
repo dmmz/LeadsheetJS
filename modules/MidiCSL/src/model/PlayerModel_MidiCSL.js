@@ -28,7 +28,13 @@ define([
 		SongModel_MidiCSL,
 		MIDI,
 		pubsub) {
-		/* option contain
+		
+		/**
+		 * PlayerModel_MidiCSL is the main midi player class, it creates and reads a SongModel_MidiCSL object from a SongModel
+		 * @exports MidiCSL/PlayerModel_MidiCSL
+		 * @param {SongModel} songModel     Songmodel that will be read by the midi player
+		 * @param {String} soundfontPath url to sond fount
+		 * @param {Object} option        contain
 			editor				// Score Editor Object, it is use mainly for viewer to display cursor
 			chordsInstrument
 			melodyInstrument
@@ -334,7 +340,7 @@ define([
 						var cursorPosition = self.cursorModel.getPos();
 						playFrom = 0;
 						// should check here if cursor is enabled
-						if ( cursorPosition[0] !== 0) {
+						if (cursorPosition[0] !== 0) {
 							if (typeof midiSongModel.getMelodySoundModelFromIndex(cursorPosition[0]) !== "undefined") {
 								playFrom = midiSongModel.getMelodySoundModelFromIndex(cursorPosition[0]).getCurrentTime() * beatDuration;
 							} else {

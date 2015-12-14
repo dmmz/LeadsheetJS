@@ -7,7 +7,10 @@ define([
 	'jquery',
 	'pubsub',
 ], function(NoteModel, NoteSpaceView, CursorModel, UserLog, ElementManager, $, pubsub) {
-
+	/**
+	 * NoteSpaceManager creates and manages an array of notes represented by their positions
+	 * @exports NoteEdition/NoteSpaceManager
+	 */
 	function NoteSpaceManager(cursor, viewer) {
 
 		if (!cursor) {
@@ -51,10 +54,10 @@ define([
 
 		});
 
-		$.subscribe('ToNoteSpaceManager-enable',function(){
+		$.subscribe('ToNoteSpaceManager-enable', function() {
 			self.enable();
 		})
-		$.subscribe('ctrl-a',function(){
+		$.subscribe('ctrl-a', function() {
 			self.enable();
 			self.cursor.selectAll();
 			self.viewer.canvasLayer.refresh();
@@ -102,7 +105,7 @@ define([
 	NoteSpaceManager.prototype.onSelected = function(coords, ini, end) {
 		var notes;
 		var coordsTop, coordsBottom;
-		
+
 		notes = this.elemMng.getElemsInPath(this.noteSpace, coords, ini, end, this.getYs(coords));
 
 		if (notes) {

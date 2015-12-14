@@ -13,7 +13,10 @@ define([
 	'utils/UserLog',
 	'pubsub',
 ], function($, Mustache, CursorModel, SongModel, SectionModel, NoteManager, NoteModel, SongBarsIterator, TimeSignatureModel, SongConverterMidi_MidiCSL, NoteUtils, UserLog, pubsub) {
-
+	/**
+	 * StructureEditionController manages all structure edition function
+	 * @exports StructureEdition/StructureEditionController
+	 */
 	function StructureEditionController(songModel, cursor, structEditionModel) {
 		this.songModel = songModel || new SongModel();
 		this.cursor = cursor || new CursorModel();
