@@ -101,7 +101,7 @@ define([
 			}
 		});
 		$('input[type=radio][name=typeSwitch]').on('change', function() {
-
+			$.publish('ToPlayer-stop');
 			if ($(this).val() == 'midi') {
 				$.publish('ToAudioPlayer-disable');
 				$.publish('ToMidiPlayer-enable');

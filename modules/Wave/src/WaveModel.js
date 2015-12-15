@@ -45,6 +45,9 @@ define([
 	};
 
 	WaveModel.prototype.play = function() {
+		if (this.isPlayingEnabled === false) {
+			return;
+		}
 		this.audio.currentTime = this.playFrom || 0; // if pause, this.playFrom has some value, if stop we set it to 0
 
 		//the code to loop through the whole song
