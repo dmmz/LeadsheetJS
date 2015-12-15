@@ -100,18 +100,18 @@ define([
 		chordMng.removeChordsBetweenPositions(firstChordSpace.barNumber, firstChordSpace.beatNumber, lastChordSpace.barNumber, lastChordSpace.beatNumber);
 
 		//we copy chords
-		var pasteBeat, numBarAndBeat;
+		var pasteBeat, numBarAndBeat, barNumAndBeat;
 		for (var i = 0; i < indexesBeats.length; i++) {
 			pasteBeat = indexesBeats[i].beat + startPasteBeat;
 			barNumAndBeat = chordMng.getBarNumAndBeatFromBeat(this.songModel,pasteBeat);
 			if (!barNumAndBeat.notExactBeat){
 				copiedChords[i].setBarNumber(barNumAndBeat.barNumber);
 				copiedChords[i].setBeat(barNumAndBeat.beatNumber);
-				chordMng.addChord(copiedChords[i]);			
+				chordMng.addChord(copiedChords[i]);
 			}
 		}
 		
-		var ch;
+		var ch, str;
 		for (var i = 0; i < chordMng.getChords().length; i++) {
 			ch = chordMng.getChords()[i]
 			str=ch.toString()+" "+ch.getBarNumber()+ " ..  " +ch.getBeat() ;
