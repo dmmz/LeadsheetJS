@@ -26,6 +26,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		this._listenEvents(canvasLayer);
 		this.elems = {}; //elements to be added (can be CLICKABLE or CURSOR)
 		this.order = []; //we keep trace of order in which elements are added, to decide which should be prioritized on click
+		this.ctrlPressed = false;
 	}
 
 	CanvasLayer.prototype._createLayer = function(viewer) {
@@ -165,7 +166,9 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		 */
 		function selection(clicked, mouseUp) {
 			var cursorPos;
-			resetElems();
+			if (!self.ctrlPressed){
+				resetElems();
+			}
 			var activElems;
 			if (clicked) {
 				activElems = getOneActiveElement(self.coords);
@@ -174,8 +177,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			}
 
 			for (var i in activElems) {
-				
-				activElems[i].onSelected(self.coords, self.mouseCoordsIni, self.mouseCoordsEnd, clicked, mouseUp);			
+				activElems[i].onSelected(self.coords, self.mouseCoordsIni, self.mouseCoordsEnd, clicked, mouseUp, self.ctrlPressed);			
 				if (activElems[i].getType() == 'CURSOR') {
 					activElems[i].setCursorEditable(true);
 				}
@@ -277,7 +279,12 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			setPointerIfInPath(xy);
 
 		});
-
+		$.subscribe('ctrlPressed', function(el){
+			self.ctrlPressed = true;
+		});
+		$.subscribe('ctrlUnpressed', function(el){
+			self.ctrlPressed = false;
+		});
 		$.subscribe('CanvasLayer-refresh', function(el) {
 			self.refresh();
 		});
@@ -367,7 +374,9 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		$('html').off('mousedown');
 		$('html').off('mouseup');
 		$('html').off('mousemove');
-			// Mouseup on canvas is usefull to allow unselect
+		$.unsubscribe('ctrlPressed');
+		$.unsubscribe('ctrlUnpressed');
+		$.unsubscribe('CanvasLayer-refresh');
 	};
 	return CanvasLayer;
 });

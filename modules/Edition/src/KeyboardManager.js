@@ -129,8 +129,15 @@ define(['utils/NoteUtils',
 				} else {
 					publish('end', evt);
 				}
+			} else if (keyCode == 17){ //ctrl
+					publish('ctrlPressed',evt);
 			}
-
+		});
+		$(document).keyup(function(evt) {
+			var keyCode = (evt === null) ? event.keyCode : evt.keyCode;
+			if (keyCode == 17){ //ctrl
+				publish('ctrlUnpressed',evt);
+			}
 		});
 	}
 	return KeyboardManager;

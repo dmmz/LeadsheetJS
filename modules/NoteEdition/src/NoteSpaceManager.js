@@ -90,7 +90,7 @@ define([
 	};
 
 	/**
-	 * @inteface
+	 * @interface
 	 * @param  {Object} coords
 	 * @return {Object} e.g: {topY:44, bottomY: 23}
 	 */
@@ -100,16 +100,23 @@ define([
 
 	/**
 	 * @interface
-	 * @param  {Object} coords
+	 * @param  {Object} coords      
+	 * @param  {Integer} ini         
+	 * @param  {Integer} end         
+	 * @param  {Boolean} clicked     
+	 * @param  {Boolean} mouseUp     
+	 * @param  {Boolean} ctrlPressed 
 	 */
-	NoteSpaceManager.prototype.onSelected = function(coords, ini, end) {
-		var notes;
+	NoteSpaceManager.prototype.onSelected = function(coords, ini, end, clicked, mouseUp, ctrlPressed) {
+		var posCursor;
 		var coordsTop, coordsBottom;
+		posCursor = this.elemMng.getElemsInPath(this.noteSpace, coords, ini, end, this.getYs(coords));
+		if (ctrlPressed){
+			posCursor = this.elemMng.getMergedCursors(posCursor, this.cursor.getPos());
+		}
 
-		notes = this.elemMng.getElemsInPath(this.noteSpace, coords, ini, end, this.getYs(coords));
-
-		if (notes) {
-			this.cursor.setPos(notes);
+		if (posCursor) {
+			this.cursor.setPos(posCursor);
 			//when clicking on a note, if there is an audio player, cursor should be updated
 			$.publish('ToWave-setCursor', this.cursor.getPos()); // getPos() returns array, of two elements, each element will be one parameter
 		}
@@ -138,21 +145,14 @@ define([
 		var areas = [];
 		var self = this;
 
-		function scrollWindow(ctx, areas) {
+		/*function scrollWindow(ctx, areas) {
 			var iSafe = 0;
 			var posLastCursorBottom = areas[areas.length - 1].y + areas[areas.length - 1].h;
 			var posLastCursorTop = areas[areas.length - 1].y;
 			var canvasOffset = $(ctx.canvas).offset().top;
 			var viewportHeight = $(window).height();
 			var scrollTop = $(window).scrollTop();
-			/*
-			console.log('---');
-			console.log(viewportHeight);
-			console.log(posLastCursorBottom);
-			console.log(canvasOffset);
-			console.log(scrollTop);
-			console.log((canvasOffset + posLastCursorBottom), (viewportHeight - 100));
-			*/
+
 			while ((canvasOffset + posLastCursorBottom - scrollTop) > (viewportHeight - 90) && iSafe < 15) {
 				posLastCursorBottom = areas[areas.length - 1].y + areas[areas.length - 1].h;
 				canvasOffset = $(ctx.canvas).offset().top;
@@ -173,7 +173,7 @@ define([
 					iSafe++;
 				}
 			}
-		}
+		}*/
 
 		if (position[0] !== null) {
 			if (position[0] === position[1]) {
@@ -202,9 +202,9 @@ define([
 			}
 			ctx.fillStyle = saveFillColor;
 			ctx.globalAlpha = 1;
-			if (areas.length === 1) {
-				// scrollWindow(ctx, areas);
-			}
+			// if (areas.length === 1) {
+			// 	// scrollWindow(ctx, areas);
+			// }
 		}
 
 	};

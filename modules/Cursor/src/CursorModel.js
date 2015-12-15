@@ -145,6 +145,9 @@ define([
 	};
 
 	CursorModel.prototype.setEditable = function(isEditable) {
+		if (!isEditable){
+			this.setPos(null);
+		}
 		this.isEditable = !!isEditable;
 	};
 

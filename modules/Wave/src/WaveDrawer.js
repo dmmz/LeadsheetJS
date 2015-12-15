@@ -25,7 +25,7 @@ define([
 		this.heightAudio = params.heightAudio || 100;
 		this.color = ["#55F", "#99F"];
 		this.waveBarDimensions = [];
-		this.enabled = true;
+		this.enabled = false;
 		this.viewer = viewer;
 		this.waveMng = waveMng;
 		this.elemMng = new ElementManager();
@@ -84,8 +84,12 @@ define([
 	};
 
 	/**
-	 * @interface
-	 * @param  {Object} coords
+	 * 
+	 * @param  {Object} coords  
+	 * @param  {Integer} ini  initial cursor position
+	 * @param  {Integer} end  end cursor position
+	 * @param  {Boolean} clicked is not used (it is just to respect the parameter order, as this function is called on other objects)
+	 * @param  {Boolean} mouseUp
 	 */
 	WaveDrawer.prototype.onSelected = function(coords, ini, end, clicked, mouseUp) {
 		var self = this;
@@ -108,7 +112,6 @@ define([
 			var pos2 = this._getAudioTimeFromPos(x2, cursorBars[1]);
 			this.cursor.setPos([pos1, pos2]);
 			this.updateCursorPlaying(pos1, cursorBars[0]);
-
 		}
 		if (mouseUp) {
 			var posCursor = this.cursor.getPos();

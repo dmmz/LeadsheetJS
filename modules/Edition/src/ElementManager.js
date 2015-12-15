@@ -217,5 +217,27 @@ define(function() {
 		}
 		return areas;
 	};
+	/**
+	 * merges two cursors, used on cumulated section (using mouse + ctrl), 
+	 * We manage the case in which one of those cursors has position null, which arrives when the cursor was disabled, 
+	 * but not the case where both are null, which should never array
+	 * 
+	 * @param  {Array} cursor1 [start, end]
+	 * @param  {Array} cursor2 [start, end]
+	 * @return {Array}         [start, end]
+	 */
+	ElementManager.prototype.getMergedCursors = function(cursor1, cursor2) {
+		var mergedCursor = [];
+
+		if (cursor1[0] == null && cursor1[1] == null){
+			cursor1 = cursor2;
+		}else if(cursor2[0] == null && cursor2[1] == null){
+			cursor2 = cursor1;
+		}
+		mergedCursor[0] = cursor1[0] < cursor2[0] ? cursor1[0] : cursor2[0];
+		mergedCursor[1] = cursor1[1] > cursor2[1] ? cursor1[1] : cursor2[1];
+		return mergedCursor;
+	};
+
 	return ElementManager;
 });

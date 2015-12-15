@@ -103,21 +103,27 @@ define([
 
 	/**
 	 * @interface
-	 *
-	 * @param  {Object} coords
-	 * @param  {Booelan} mouseUp
+	 * @param  {Object} coords  
+	 * @param  {Integer} ini     
+	 * @param  {Integer} end     
+	 * @param  {Boolean} clicked 
+	 * @param  {Boolean} mouseUp, (never used but needed to keep parameter order)
+	 * @param  {Boolean} ctrlPressed 
 	 */
-	ChordSpaceManager.prototype.onSelected = function(coords, ini, fin, mouseUp) {
-
+	ChordSpaceManager.prototype.onSelected = function(coords, ini, end, clicked, mouseUp, ctrlPressed) {
 		this.undrawEditableChord();
 
-		var posCursor = this.elemMng.getElemsInPath(this.chordSpace, coords, ini, fin, this.getYs(coords));
+		var posCursor = this.elemMng.getElemsInPath(this.chordSpace, coords, ini, end, this.getYs(coords));
+
+		if (ctrlPressed){
+			posCursor = this.elemMng.getMergedCursors(posCursor, this.cursor.getPos());
+		}
 
 		if (posCursor[0] !== null) {
 			this.cursor.setPos(posCursor);
 		}
-		// if event was mouseUp and we just selected one chord, we draw the pull down
-		if (posCursor[0] == posCursor[1] && mouseUp) {
+		// if event was clicked and we just selected one chord, we draw the pull down
+		if (posCursor[0] == posCursor[1] && clicked) {
 			this.drawEditableChord();
 		}
 	};

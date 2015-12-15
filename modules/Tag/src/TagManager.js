@@ -68,7 +68,8 @@ define([
 		return this.isActive;
 	};
 
-	TagManager.prototype.onSelected = function(coords, clicked) {
+	TagManager.prototype.onSelected = function(coords) {
+		console.log("kak");
 		var indexTagClicked = this.inPathPosition(coords);
 		// console.log(indexTagClicked);
 		var self = this;
@@ -116,10 +117,13 @@ define([
 	};
 
 	TagManager.prototype.inPath = function(coords) {
-		if (this.inPathPosition(coords) === false) {
-			return false;
-		}
-		return true;
+		return false;
+		//for the moment, tagManager is not clickable. We return false so that CanvasLayer's getOneActiveElement function returns noteManager as active element, and not tagManager
+	
+		// if (this.inPathPosition(coords) === false) {
+		// 	return false;
+		// }
+		// return true;
 	};
 
 	/**
