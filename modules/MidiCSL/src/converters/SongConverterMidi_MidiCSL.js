@@ -22,12 +22,12 @@ define([
 		 * It creates ChordConverterMidi_MidiCSL to retrieve midi informations about every chords and directly do the jobs for notes
 		 * @exports MidiCSL/SongConverterMidi_MidiCSL
 		 */
-		SongConverterMidi_MidiCSL.exportToMidiCSL = function(songModel, useServlet, callback) {
+		SongConverterMidi_MidiCSL.exportToMidiCSL = function(songModel, unfold, callback) {
 			if (!songModel instanceof SongModel) {
 				throw 'SongConverterMidi_MidiCSL - exportToMusicCSLJSON - songModel parameters must be an instanceof SongModel';
 			}
 			var song = [];
-			if (useServlet === true) {
+			if (unfold === true) {
 				SongConverterMidi_MidiCSL.unfoldUsingServlet(songModel, function(newSongModel) {
 					if (typeof newSongModel.error !== "undefined") {
 						newSongModel = songModel.clone();

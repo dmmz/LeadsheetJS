@@ -233,13 +233,12 @@ define([
 
 	/**
 	 * Function has to be called inside an iteration, it checks if there is a timesignature change in current bar
-	 * if not, it returns the currentBeats (calculated previously and sent as parameter		)
+	 * if not, it returns the currentBeats (calculated previously and sent as parameter)
 	 * @param  {Number} index
 	 * @param  {Number}
 	 * @return {Number}
 	 */
 	SongModel.prototype.getBarNumBeats = function(numBar, currentBeats) {
-		//console.log(currentBeats, numBar, this.getComponent("bars").getTotal());
 		var barTimeSig = this.getComponent("bars").getBar(numBar).getTimeSignatureChange();
 
 		if (numBar === 0 && !barTimeSig) {
