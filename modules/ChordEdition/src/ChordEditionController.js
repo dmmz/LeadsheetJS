@@ -39,9 +39,7 @@ define([
 		var chordMng = this.songModel.getComponent('chords');
 		var self = this;
 		var firstChordSpace = chordMng.getBarNumAndBeatFromBeat(this.songModel,beats[0]);
-		var lastChordSpace = chordMng.getBarNumAndBeatFromBeat(this.songModel,beats[1]);
-
-
+		var lastChordSpace = chordMng.getBarNumAndBeatFromBeat(this.songModel,beats[1] - 1);
 		if (lastChordSpace.exceedsSongLength){ //when we are removing last positions, we just set lastChordSpace greater than last position
 			var lastChordSpaceView = this.chordSpaceMng.chordSpace[this.chordSpaceMng.chordSpace.length - 1];
 			lastChordSpace.barNumber = lastChordSpaceView.barNumber + 1;
