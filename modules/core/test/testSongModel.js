@@ -11,6 +11,13 @@ define([
 				function unfold() {
 
 					var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
+					assert.equal(song.canBeUnfold(), true, "test if song can be easily unfold (detect presence of coda, segno etc.");
+					
+					var simpleLeadSheet = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
+					assert.equal(simpleLeadSheet.canBeUnfold(), true, "test if song can be easily unfold (detect presence of coda, segno etc.");
+
+					var afoxe = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.afoxe);
+					assert.equal(afoxe.canBeUnfold(), false, "test if song can be easily unfold (detect presence of coda, segno etc.");
 
 					// getUnfoldedSongComponents
 					var unfoldedBars = song.getUnfoldedSongComponents("notes");
