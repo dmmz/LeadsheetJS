@@ -86,10 +86,12 @@ define(function(require) {
 				assert.equal(cm.getChords().toString(), "G7,FM7,Cm");
 				cm.removeChordsBetweenPositions(2, 1, 3, 3);
 				assert.equal(cm.getChords().toString(), "G7,Cm");
-				
-
+								
 				assert.deepEqual(cm.getContextOfSelectedChords([0,0], 1), [[],[1]], "context selection");
 				assert.deepEqual(cm.getContextOfSelectedChords([1,1], 1), [[0],[]], "context selection");
+
+				cm.removeChordsBetweenPositions(0, 1, 1000, 1000);
+				assert.equal(cm.getChords().length, 0);
 
 				var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
 				var chordMng = song.getComponent('chords');
@@ -114,6 +116,7 @@ define(function(require) {
 				assert.deepEqual(chordMng.getBarNumAndBeatFromBeat(songTimeSig,32),{beatNumber:1,barNumber:9, notExactBeat: false});				
 				assert.deepEqual(chordMng.getBarNumAndBeatFromBeat(songTimeSig,36.5),{beatNumber:1,barNumber:11, notExactBeat: false});
 				assert.deepEqual(chordMng.getBarNumAndBeatFromBeat(songTimeSig,1.5),{beatNumber:2,barNumber:0, notExactBeat: true});
+				assert.deepEqual(chordMng.getBarNumAndBeatFromBeat(songTimeSig,1000),{exceedsSongLength:true});
 
 			});
 		}

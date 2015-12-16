@@ -68,6 +68,8 @@ define(['modules/core/src/ChordModel',
 				cec.deleteChords();
 				assert.deepEqual(cec.getSelectedChordsIndexes(), [], 'delete chords');
 
+
+
 				// Copy chords
 				var songModel2 = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
 				var cM2 = new CursorModel(songModel2.getSongTotalBeats());
@@ -90,7 +92,56 @@ define(['modules/core/src/ChordModel',
 				assert.deepEqual(chordManager2.getChords().toString(), "AM7,B7,Em,F7", 'Chords Name at start');
 				cec2.pasteChords();
 				assert.deepEqual(chordManager2.getChords().toString(), "AM7,AM7,B7,F7", 'Paste chords');
+
+				var song22 = SongModel_CSLJson.importFromMusicCSLJSON(
+				{
+					composer: "Random Composer",
+					title: "song22",
+						time: "2/2",
+						changes: [{
+							id: 0,
+							name: "A",
+							bars: [{
+								chords: [{
+									p: "A",
+									ch: "M7",
+									beat: 1
+								},
+								{
+									p: "F",
+									ch: "m",
+									beat: 1.5
+								},
+								{
+									p: "G",
+									ch: "",
+									beat: 2
+								},
+								{
+									p: "C",
+									ch: "m",
+									beat: 2.5
+								}],
+								melody: [{
+									keys: ["a/4"],
+									duration: "w"
+								}]
+							}]
+						}]
+				});
+				var cursor22 = new CursorModel(song22.getSongTotalBeats());
+				var chordSpaceMng22 = new ChordSpaceManager(song22, cursor22);
+				chordsEditionController22 = new ChordEditionController(song22, cursor22, chordSpaceMng22);
+				chordSpaceMng22.cursor.setPos([0, 1]);
+				viewer.draw(song22); //we need to draw to create chordspaces
+				
+				chordsEditionController22.deleteChords();
+				assert.equal(song22.getComponent('chords').getTotal(),0)
+				
+				
+
 			});
+
 		}
 	};
 });

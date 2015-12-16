@@ -134,6 +134,10 @@
 				songIt.next();
 				startBeat = endBeat;
 			}
+			return {
+				exceedsSongLength: true
+			};
+
 		};
 		//not needed
 		/*ChordManager.prototype.getBeatFromBarNumAndBeat = function(song, barNumAndBeat) {

@@ -32,31 +32,23 @@ define([
 			}
 		});
 	};
-
+	
 	ChordEditionController.prototype.deleteChords = function() {
-		// console.log('deleteChords');
-		/**
-		 * @param  {positon} argument
-		 * @return {Object}          position as {numBar: valBar, numBeat: valBeat}
-		 */
 
+		var beats = this.getSelectedChordsBeats();
 		var chordMng = this.songModel.getComponent('chords');
 		var self = this;
+		var firstChordSpace = chordMng.getBarNumAndBeatFromBeat(this.songModel,beats[0]);
+		var lastChordSpace = chordMng.getBarNumAndBeatFromBeat(this.songModel,beats[1]);
 
-		function removeChordIfExists(cursorIndex) {
-			var chordSpace = self.chordSpaceMng.chordSpace[cursorIndex];
-			var pos = {
-				numBeat: chordSpace.beatNumber,
-				numBar: chordSpace.barNumber
-			};
-			var r = chordMng.getChordIndexByPosition(pos);
-			if (r.exact) {
-				chordMng.removeChordByIndex(r.index);
-			}
+
+		if (lastChordSpace.exceedsSongLength){ //when we are removing last positions, we just set lastChordSpace greater than last position
+			var lastChordSpaceView = this.chordSpaceMng.chordSpace[this.chordSpaceMng.chordSpace.length - 1];
+			lastChordSpace.barNumber = lastChordSpaceView.barNumber + 1;
+			lastChordSpace.beatNumber = lastChordSpaceView.beatNumber + 1;
 		}
-		for (var i = this.cursor.getStart(); i <= this.cursor.getEnd(); i++) {
-			removeChordIfExists(i);
-		}
+		chordMng.removeChordsBetweenPositions(firstChordSpace.barNumber, firstChordSpace.beatNumber, lastChordSpace.barNumber, lastChordSpace.beatNumber);
+		
 		$.publish('ToHistory-add', 'Remove chord');
 	};
 
@@ -97,6 +89,9 @@ define([
 		// remove chords in affected chordspaces
 		var firstChordSpace = chordMng.getBarNumAndBeatFromBeat(this.songModel,startPasteBeat);
 		var lastChordSpace = chordMng.getBarNumAndBeatFromBeat(this.songModel,endPasteBeat);
+		if (firstChordSpace.exceedsSongLength || lastChordSpace.exceedsSongLength){
+			throw "ChordEdition error exceedsSongLength";
+		}
 		chordMng.removeChordsBetweenPositions(firstChordSpace.barNumber, firstChordSpace.beatNumber, lastChordSpace.barNumber, lastChordSpace.beatNumber);
 
 		//we copy chords
