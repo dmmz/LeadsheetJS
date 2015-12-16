@@ -8,7 +8,7 @@ define(['modules/core/src/ChordModel'], function(ChordModel) {
 		chordModel.setParenthesis(JSONChord.parenthesis);
 		chordModel.setBeat(JSONChord.beat);
 		if (JSONChord.hasOwnProperty('bp') && JSONChord.bp.length !== 0) {
-			chordModelBase = new ChordModel();
+			var chordModelBase = new ChordModel();
 			chordModelBase.setNote(JSONChord.bp);
 			chordModelBase.setChordType(JSONChord.bch);
 			chordModel.setBase(chordModelBase);

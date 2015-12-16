@@ -28,28 +28,48 @@ define([
 			}
 			var song = [];
 			if (unfold === true) {
-				SongConverterMidi_MidiCSL.unfoldUsingServlet(songModel, function(newSongModel) {
-					if (typeof newSongModel.error !== "undefined") {
-						newSongModel = songModel.clone();
-						newSongModel.unfold();
-						song = SongConverterMidi_MidiCSL.exportElementsToMidiCSL(newSongModel);
-					} else {
-						song = SongConverterMidi_MidiCSL.exportElementsToMidiCSL(newSongModel);
-					}
+				this.unfold(songModel, function(newSongModel) {
+					song = SongConverterMidi_MidiCSL.exportElementsToMidiCSL(newSongModel);
 					if (typeof callback !== "undefined") {
 						callback(song);
 					}
 					return song;
 				});
+			} else {
+				song = SongConverterMidi_MidiCSL.exportElementsToMidiCSL(songModel);
+				if (typeof callback !== "undefined") {
+					callback(song);
+				}
+				return song;
 			}
-			return song;
 		};
 
 		SongConverterMidi_MidiCSL.unfold = function(songModel, callback) {
-			song = SongConverterMidi_MidiCSL.exportElementsToMidiCSL(songModel);
-			if (typeof callback !== "undefined") {
-				callback(song);
+			var self = this;
+			var newSongModel;
+			if (songModel.canBeUnfold() === true) { // replace by test if segno or code
+				newSongModel = this.unfoldDirectly(songModel);
+				if (typeof callback !== "undefined") {
+					callback(newSongModel);
+				}
+				return newSongModel;
+			} else {
+				SongConverterMidi_MidiCSL.unfoldUsingServlet(songModel, function(newSongModel) {
+					if (typeof newSongModel.error !== "undefined") {
+						newSongModel = self.unfoldDirectly(songModel);
+						return newSongModel;
+					} else if (typeof callback !== "undefined") {
+						callback(newSongModel);
+					}
+					return newSongModel;
+				});
 			}
+		};
+
+		SongConverterMidi_MidiCSL.unfoldDirectly = function(songModel) {
+			var newSongModel = songModel.clone();
+			newSongModel.unfold();
+			return newSongModel;
 		};
 
 		SongConverterMidi_MidiCSL.unfoldUsingServlet = function(songModel, callback) {

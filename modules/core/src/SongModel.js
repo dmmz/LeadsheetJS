@@ -6,8 +6,8 @@ define([
 	'modules/core/src/SongBarsIterator'
 ], function(NoteManager, BarManager, ChordManager, TimeSignatureModel, SongBarsIterator) {
 	/**
-     * SongModel is the main model to represent song, it contains notes, chords and bars components, also contain section, composer name etc.
-     * @exports core/SongModel
+	 * SongModel is the main model to represent song, it contains notes, chords and bars components, also contain section, composer name etc.
+	 * @exports core/SongModel
 	 */
 	function SongModel(param) {
 		this.init(param);
@@ -504,6 +504,31 @@ define([
 		return songModelCloned;
 	};
 
+	/**
+	 * Function test if unfolding system can be call
+	 * @return {[type]} [description]
+	 */
+	SongModel.prototype.canBeUnfold = function() {
+		var bm = this.getComponent("bars");
+		var barNumber = bm.getTotal();
+		var currentBar;
+		for (var i = 0; i < barNumber; i++) {
+			currentBar = bm.getBar(i);
+			var currentLabel = currentBar.getLabel();
+			var currentSublabel = currentBar.getSublabel();
+			if ((typeof currentLabel !== "undefined" && currentLabel !== "") || (typeof currentSublabel !== "undefined" && currentSublabel !== "")) {
+				return false;
+			}
+		}
+		return true;
+	};
+
+	/**
+	 * Unfold the current songModel and return it
+	 * Be carefull, segno and coda are not yet supported, you can call canBeUnfold function to test if songModel is supported
+	 * If you need a new version of the song unfolded use songModel.clone before
+	 * @return {SongModel} current unfolded songmodel
+	 */
 	SongModel.prototype.unfold = function() {
 
 		function getUnfoldedNotes(oldSong) {
