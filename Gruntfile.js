@@ -11,6 +11,7 @@ module.exports = function(grunt) {
 				},
 			},
 		},
+		// Not working for the moment
 		umd: {
 			all: {
 				options: {
@@ -63,20 +64,12 @@ module.exports = function(grunt) {
 						*/
 
 					},
-					//cjsTranslate: true,
+					cjsTranslate: true,
 					//findNestedDependencies: true,
 					optimize: "none", // "uglify2", "none"
-					/*wrap: {
-						startFile: 'build/start.frag',
-						endFile: 'build/end.frag'
-					},*/
-					/*wrap: {
-						start: "(function() {",
-						end: "}());"
-					},*/
 					/*modules: [
 					{
-						name: 'leadhseet',
+						name: 'leadsheet',
 						include: ['modules/main']
 					},
 					{
