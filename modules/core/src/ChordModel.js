@@ -3,7 +3,7 @@ define([
 ], function(ChordUtils) {
 	/**
 	 * Chord Model is a core model representing a leadsheet chord
-     * @exports core/ChordModel
+	 * @exports core/ChordModel
 	 * @param {} param is an object of parameters
 	 * param accept : {
 	 *		note: "C",				// note is a string indicating the root pitch of chord, it also can be % or %% (for repeat) or NC for No Chords
@@ -17,7 +17,12 @@ define([
 	function ChordModel(param) {
 		this.note = (param && param.note) ? param.note : "";
 		this.chordType = (param && param.chordType) ? param.chordType : "";
-		this.base = (param && param.base) ? param.base : {};
+		//this.base = (param && param.base) ? param.base : {};
+		if (param && param.base) {
+			this.setBase(param.base);
+		} else {
+			this.base = {};
+		}
 		this.parenthesis = (param && typeof param.parenthesis !== "undefined") ? param.parenthesis : false;
 		this.beat = (param && typeof param.beat !== "undefined") ? param.beat : 1;
 		this.barNumber = (param && typeof param.barNumber !== "undefined") ? param.barNumber : 0;
@@ -74,7 +79,12 @@ define([
 	};
 
 	ChordModel.prototype.setBase = function(chordBase) {
-		if ((typeof chordBase === "undefined" || !(chordBase instanceof ChordModel)) && chordBase !== "") {
+		if (typeof chordBase === "string" && chordBase !== "") {
+			var newChord = new ChordModel();
+			newChord.setChordFromString(chordBase);
+			this.base = newChord;
+			return;
+		} else if ((typeof chordBase === "undefined" || !(chordBase instanceof ChordModel)) && chordBase !== "") {
 			throw "Base don't have the correct ChordModel type";
 		}
 		this.base = chordBase;

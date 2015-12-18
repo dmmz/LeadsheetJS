@@ -160,6 +160,15 @@ define(['modules/core/src/ChordModel'], function(ChordModel) {
 				});
 				assert.equal(newChord.getNote(), "G");
 
+				var newChordWithBase = new ChordModel({
+					note: 'G',
+					base: 'Bb'
+				});
+				var baseOnly = new ChordModel({
+					note: 'Bb'
+				});
+				assert.deepEqual(newChordWithBase.getBase(), baseOnly, 'Check base model is an object strictly equal to Get Base');
+
 				assert.ok(newChord.equalsTo({
 					p: 'G',
 					ch: 'm7'
