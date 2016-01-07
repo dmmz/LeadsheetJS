@@ -69,6 +69,7 @@ define(function(require) {
   var testNoteModel_midiCSL = require('modules/MidiCSL/test/model/testNoteModel_midiCSL');
   var testPlayerModel_MidiCSL = require('modules/MidiCSL/test/model/testPlayerModel_MidiCSL');
   var testSongConverterMidi_MidiCSL = require('modules/MidiCSL/test/converters/testSongConverterMidi_MidiCSL');
+  var testChordManagerConverterMidi_MidiCSL = require('modules/MidiCSL/test/converters/testChordManagerConverterMidi_MidiCSL');
 
   var testHistoryModel = require('modules/History/test/testHistoryModel');
   var testHistoryController = require('modules/History/test/testHistoryController');
@@ -140,6 +141,7 @@ define(function(require) {
   testNoteModel_midiCSL.run();
 
   testSongConverterMidi_MidiCSL.run();
+  testChordManagerConverterMidi_MidiCSL.run();
 
 
   testHistoryModel.run();
