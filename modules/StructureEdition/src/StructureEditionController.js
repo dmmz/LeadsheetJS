@@ -11,8 +11,9 @@ define([
 	'modules/MidiCSL/src/converters/SongConverterMidi_MidiCSL',
 	'utils/NoteUtils',
 	'utils/UserLog',
+	'modules/MidiCSL/utils/MidiHelper',
 	'pubsub',
-], function($, Mustache, CursorModel, SongModel, SectionModel, NoteManager, NoteModel, SongBarsIterator, TimeSignatureModel, SongConverterMidi_MidiCSL, NoteUtils, UserLog, pubsub) {
+], function($, Mustache, CursorModel, SongModel, SectionModel, NoteManager, NoteModel, SongBarsIterator, TimeSignatureModel, SongConverterMidi_MidiCSL, NoteUtils, UserLog, Midi, pubsub) {
 	/**
 	 * StructureEditionController manages all structure edition function
 	 * @exports StructureEdition/StructureEditionController
