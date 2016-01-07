@@ -506,7 +506,7 @@ define([
 
 	/**
 	 * Function test if unfolding system can be call
-	 * @return {[type]} [description]
+	 * @return {Boolean} indicate if it can be unfolded or not
 	 */
 	SongModel.prototype.canBeUnfold = function() {
 		var bm = this.getComponent("bars");

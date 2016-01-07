@@ -1,7 +1,7 @@
 {
   "name": "LeadsheetJS",
   "version": "0.1.0",
-  "description": "Helps you to create a Leadsheet",
+  "description": "Library for editing lead sheets",
   "main": "",
   "directories": {
     "test": "tests"
