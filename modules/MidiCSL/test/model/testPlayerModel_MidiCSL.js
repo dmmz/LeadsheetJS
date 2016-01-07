@@ -3,27 +3,38 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/model/PlayerModel_Mid
 		return {
 			run: function() {
 				test("PlayerModel_MidiCSL", function(assert) {
-					var emptyPlayer = new PlayerModel_MidiCSL();
+					
+					var emptyPlayer = new PlayerModel_MidiCSL(null, '/external-libs/Midijs/soundfont/');
 					assert.ok(!emptyPlayer.getReady());
 					assert.ok(!emptyPlayer.doLoop());
-					assert.throws(function() {
-						emptyPlayer.play();
-					});
-					//assert.equal(player.getPosition(), 0);
-
-					// Create a song from testSong
+					
+					// // Create a song from testSong
 					var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
-
-					// Convert songmodel to a readable model that we can insert in SongModel_MidiCSL
+					//Convert songmodel to a readable model that we can insert in SongModel_MidiCSL
 					var midiSong = SongConverterMidi_MidiCSL.exportToMidiCSL(songModel, false);
 					var midiSongModel = new SongModel_MidiCSL({
 						'song': midiSong
 					});
 
-					/*$.subscribe('PlayerModel-onload', function(e) {
-						// console.log('play');
-						// player.play(midiSongModel, 120);
-					});*/
+					var songWithNoChords = {
+						composer: "Random Composer",
+						title: "No Chords",
+						time: "4/4",
+						changes: [{
+							id: 0,
+							name: "A",
+							bars: [
+							{
+								melody: [{
+									keys: ["B/4"],
+									duration: "wr"
+								}]
+							}]
+						}]
+					};
+					new SongModel_MidiCSL({
+						'song': SongConverterMidi_MidiCSL.exportToMidiCSL(SongModel_CSLJson.importFromMusicCSLJSON(songWithNoChords, new SongModel()), false)
+					});
 				});
 			}
 		};

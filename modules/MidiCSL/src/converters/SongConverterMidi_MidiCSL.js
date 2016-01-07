@@ -26,21 +26,21 @@ define([
 			if (!songModel instanceof SongModel) {
 				throw 'SongConverterMidi_MidiCSL - exportToMusicCSLJSON - songModel parameters must be an instanceof SongModel';
 			}
-			var song = [];
-			if (unfold === true) {
-				this.unfold(songModel, function(newSongModel) {
-					song = SongConverterMidi_MidiCSL.exportElementsToMidiCSL(newSongModel);
+			
+			function runExport(songModel, callback){
+				song = SongConverterMidi_MidiCSL.exportElementsToMidiCSL(songModel);
 					if (typeof callback !== "undefined") {
 						callback(song);
 					}
-					return song;
+				return song;
+			}
+			var song = [];
+			if (unfold === true) {
+				this.unfold(songModel, function(newSongModel) {
+					return runExport(newSongModel, callback);
 				});
 			} else {
-				song = SongConverterMidi_MidiCSL.exportElementsToMidiCSL(songModel);
-				if (typeof callback !== "undefined") {
-					callback(song);
-				}
-				return song;
+				return runExport(songModel, callback);
 			}
 		};
 

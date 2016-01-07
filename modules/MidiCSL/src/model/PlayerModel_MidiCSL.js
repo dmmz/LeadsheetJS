@@ -48,7 +48,7 @@ define([
 			this.playState = false; // playState indicate if the player is currently playing or not, (paused player will return false)
 			this.songModel = songModel;
 			this.isEnabled = true; //this is initialized on load
-			if (typeof songModel !== "undefined") {
+			if (songModel) {
 				this.tempo = songModel.getTempo();
 			}
 			this.soundfontPath = soundfontPath;

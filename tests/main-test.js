@@ -135,7 +135,7 @@ define(function(require) {
   testBarWidthManager.run();
 
   // Midi sound model Module
-  // testPlayerModel_MidiCSL.run();
+  testPlayerModel_MidiCSL.run();
   testSongModel_midiCSL.run();
   testNoteModel_midiCSL.run();
 

@@ -358,8 +358,8 @@
 		};
 
 		/**
-		 * Return the duration of a chord in beat in one bar,
-		 * if the chord last less than one bar, function is the same as getChordDuration otherwise it truncate
+		 * Returns the duration of a chord in beat in one bar,
+		 * if the chord lasts less than one bar, function is the same as getChordDuration otherwise it truncate
 		 * @param  {songModel} current songModel in which the chord is
 		 * @param  {int} index of chord in this.chords
 		 * @return {int} number of beat the chord last
