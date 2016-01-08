@@ -67,22 +67,33 @@ define([
 						chords.push(msm);
 					}
 				} else {
-					//if there are we add them to the chords array 
-					for (var i = 0, c = chordsInBar.length; i < c; i++) {
+					//if there are chords we add them to the chords array 
+					var durations = [];
+					var totalDurationChords = 0;
+					var i;
+					//first we get the durations, because we need totalDurationChords to get the offset of first chord in case it does not start in 1st beat
+					for (i = 0; i < chordsInBar.length; i++) {
 						chordIndex = chordManager.getChordIndex(chordsInBar[i]);
 						duration = chordManager.getChordDurationFromBarNumber(songModel, chordIndex, barNum) * songModel.timeSignature.getBeatUnitQuarter();
+						//we save durations in an array so we don't have to calculate it later in next loop
+						durations.push(duration);
+						totalDurationChords += duration;
+					}
+					//here we actually add the chords
+					for (i = 0; i < chordsInBar.length; i++) {
+						chordIndex = chordManager.getChordIndex(chordsInBar[i]);
 						midiNotes = ChordConverterMidi_MidiCSL.exportToMidiCSL(chordsInBar[i]);
-						//if first bar chord is not in first beat, we update currentTime, adding the difference between 'chord duration in bar' (var duration) and 'total bar duration'
+						//if first bar chord is not in first beat, we update currentTime, adding the difference between totalDurationChords and 'total bar duration'
 						if (i === 0 && chordsInBar[0].beat != 1 ){
-							currentTime += songModel.getTimeSignatureAt(barNum).getBeats() - duration;
+							currentTime += songModel.getTimeSignatureAt(barNum).getBeats() - totalDurationChords;
 						}
 						var msm = new NoteModel_midiCSL({
 							'currentTime': currentTime,
-							'duration': duration,
+							'duration': durations[i],
 							'midiNote': midiNotes,
 							'type': 'chord'
 						});
-						currentTime += duration;
+						currentTime += durations[i];
 						chords.push(msm);
 					}
 				}

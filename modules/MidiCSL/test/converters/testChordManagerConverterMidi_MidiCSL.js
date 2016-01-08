@@ -14,7 +14,7 @@ define([
 
 				// Create a song from testSong
 				
-			/*	var midiSong = ChordManagerConverterMidi_MidiCSL.exportToMidiCSL(
+			var midiSong = ChordManagerConverterMidi_MidiCSL.exportToMidiCSL(
 					SongModel_CSLJson.importFromMusicCSLJSON(
 						{
 							title: "song",
@@ -54,9 +54,9 @@ define([
 							}]
 						}
 					)
-				);*/
+				);
 				
-				var midiSong = ChordManagerConverterMidi_MidiCSL.exportToMidiCSL(
+				midiSong = ChordManagerConverterMidi_MidiCSL.exportToMidiCSL(
 					SongModel_CSLJson.importFromMusicCSLJSON(
 						{
 							title: "song",
@@ -109,6 +109,7 @@ define([
 									},{
 										//bar 4
 										//currentTime 16
+										//chord 2
 										chords: [{
 											p: "A",
 											ch: "m7",
@@ -121,11 +122,28 @@ define([
 									},{
 										//bar 5
 										//currentTime 20
+										// (chord 3), previous chord is added automatically as there is no chord in bar
 										melody:[{
 											keys: ["b/4"],
 											duration: "w"
 										}]
-									}
+									},{
+										//bar 6
+										//currentTime 24
+										chords: [
+										//chord 4
+										{
+											p: "A",
+											ch: "m7",
+											beat: 2
+										},
+										//chord 5
+										{
+											p: "A",
+											ch: "m7",
+											beat: 4
+										}]
+									},
 
 								],
 							}]
@@ -133,42 +151,13 @@ define([
 					)
 				);
 
-				assert.equal(midiSong[0].currentTime, 8, 'song with first chord in second bar');
-				assert.equal(midiSong[1].currentTime, 12, 'second chord is in 3rd bar');
-				assert.equal(midiSong[2].currentTime, 18, 'song with first chord in second bar');
-				assert.equal(midiSong[3].currentTime, 20);
+				assert.equal(midiSong[0].currentTime, 8, 'song with chord 0 in second bar');
+				assert.equal(midiSong[1].currentTime, 12, 'chord 1 is in 3rd bar');
+				assert.equal(midiSong[2].currentTime, 18, 'testing when chord does not start in first beat, starts in beat 3 (beat 1 -> 16, beat 2 -> 17, beat 3 -> 18)');
+				assert.equal(midiSong[3].currentTime, 20 , 'chord 3 is added automatically');
+				assert.equal(midiSong[4].currentTime, 25, 'when chord does not start in first and there are more than one chord');
+				assert.equal(midiSong[5].currentTime, 27, 'the other chord in the bar is in 4th beat of bar 6');
 
-
-				
-			
-
-
-			// 	var done = assert.async();
-			// 	// Convert songmodel to a readable model that we can insert in SongModel_midiCSL
-			// 	ChordManagerConverterMidi_MidiCSL.exportToMidiCSL(songModel, false, function(midiSong) {
-			// 		var midiSongModel = new SongModel_midiCSL({'song': midiSong});
-
-			// 		var fakeSong = [];
-			// 		fakeSong.push(new NoteModel_midiCSL({currentTime:0, duration:4, midiNote:[69,73,76,80], type:'chord'}));
-			// 		fakeSong.push(new NoteModel_midiCSL({currentTime:4, duration:4, midiNote:[69,73,76,80], type:'chord'}));
-			// 		fakeSong.push(new NoteModel_midiCSL({currentTime:8, duration:4, midiNote:[71,75,78,81], type:'chord'}));
-			// 		fakeSong.push(new NoteModel_midiCSL({currentTime:12, duration:4, midiNote:[71,75,78,81], type:'chord'}));
-			// 		fakeSong.push(new NoteModel_midiCSL({currentTime:16, duration:4, midiNote:[64,67,71], type:'chord'}));
-			// 		fakeSong.push(new NoteModel_midiCSL({currentTime:20, duration:4, midiNote:[64,67,71], type:'chord'}));
-			// 		fakeSong.push(new NoteModel_midiCSL({currentTime:24, duration:4, midiNote:[65,69,72,75], type:'chord'}));
-			// 		fakeSong.push(new NoteModel_midiCSL({currentTime:28, duration:4, midiNote:[65,69,72,75], type:'chord'}));
-			// 		assert.deepEqual(midiSongModel.getFromType('chord'), fakeSong);
-
-			// 		var fakeNote = new NoteModel_midiCSL({currentTime:0, duration:1, midiNote:[69], type:'melody', 'noteIndex':0});
-			// 		assert.deepEqual(midiSongModel.getFromType('melody')[0], fakeNote);
-
-			// 		fakeNote = new NoteModel_midiCSL({currentTime:7, duration:1, midiNote:[64], type:'melody', 'noteIndex':8});
-			// 		assert.deepEqual(midiSongModel.getFromType('melody')[8], fakeNote);
-
-			// 		fakeNote = new NoteModel_midiCSL({currentTime:2, duration:1, midiNote:[65], type:'melody', 'noteIndex':3});
-			// 		assert.deepEqual(midiSongModel.getMelodySoundModelFromIndex(3), fakeNote, 'getmidiSongModel melody from index');
-			// 		done();
-			// 	});
 			});
 		}
 	};

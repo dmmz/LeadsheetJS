@@ -131,7 +131,7 @@ define(['modules/core/src/ChordModel',
 				});
 				var cursor22 = new CursorModel(song22.getSongTotalBeats());
 				var chordSpaceMng22 = new ChordSpaceManager(song22, cursor22);
-				chordsEditionController22 = new ChordEditionController(song22, cursor22, chordSpaceMng22);
+				var chordsEditionController22 = new ChordEditionController(song22, cursor22, chordSpaceMng22);
 				chordSpaceMng22.cursor.setPos([0, 1]);
 				viewer.draw(song22); //we need to draw to create chordspaces
 				
