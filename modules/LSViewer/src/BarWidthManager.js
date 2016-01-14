@@ -12,7 +12,7 @@ define(['modules/core/src/SongBarsIterator', 'modules/core/src/SectionBarsIterat
 
 		this.lastBarWidthRatio = lastBarWidthRatio || 1;
 
-		this.WIDTH_FACTOR = 1.6; // factor by whitch we multiply the minimum width so that notes are not so crammed (always > 1)
+		this.WIDTH_FACTOR = 1.6; // factor by which we multiply the minimum width so that notes are not so crammed (always > 1)
 		this.barsStruct = [];
 
 		this.lineHeight = Number(lineHeight);

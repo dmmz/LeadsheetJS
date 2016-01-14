@@ -40,25 +40,35 @@ define([
 		LSViewer.prototype._init = function(divContainer, params) {
 			params = params || {};
 			this.DEFAULT_HEIGHT = 1000;
-			this.scaler = new Scaler(); //object that scales objects. User in NoteSpaceView and ChordSpaceView
-			this.SCALE = null; //scale from 0 to
+			this.scaler = new Scaler(); //object that scales objects. Used in NoteSpaceView and ChordSpaceView
+			this.SCALE = null; //scale from 0 to 1 
 			//0.999  fixes vexflow bug that doesn't draw last pixel on end bar
 			this.SCALE_FIX = 0.995;
 
 			this.CANVAS_DIV_WIDTH_PROPORTION = 0.9; //width proportion between canvas created and divContainer (space between canvas border and divContainer border)
 			this.NOTE_WIDTH = 20; // estimated note width in order to be more flexible
-			this.INITIAL_LINE_HEIGHT = 150;
 			this.LINE_WIDTH = 1550;
 			this.BARS_PER_LINE = 4;
 			this.ENDINGS_Y = 20; //0 -> thisChordsPosY==40, the greater the closer to stave 
 			this.LABELS_Y = 0; //like this.ENDINGS_Y
-			this.INITIAL_MARGIN_TOP = 100;
-			this.CHORDS_DISTANCE_STAVE = 20; //distance from stave
-			this.DISPLAY_TITLE = (params.displayTitle != undefined) ? params.displayTitle : true;
-			this.DISPLAY_COMPOSER = (params.displayComposer != undefined) ? params.displayComposer : true;
+			this.CHORDS_DISTANCE_STAVE = params.chordDistanceStave || 20; //distance from stave (if negative, will be insied stave)
+			this.DISPLAY_TITLE = params.displayTitle != undefined ? params.displayTitle : true;
+			this.DISPLAY_COMPOSER = params.displayComposer != undefined ? params.displayComposer : true;
+			// constant with INITIAL prefix refer to inital values, as they can be changed when visualizing audio
+			this.INITIAL_LINE_HEIGHT = params.initialLineHeight || 150;
+			this.INITIAL_MARGIN_TOP = 100; 
 			this.INITIAL_LINE_MARGIN_TOP = 0;
 			this.LAST_BAR_WIDTH_RATIO = 0.75; //in case of this.shortenLastBar = true (rendering audio), we make the last bar more compressed so that we left space for recordings longer than piece
-			this.FONT_CHORDS = "18px Verdana";
+			this.FONT_CHORDS = params.fontChords || "18px Verdana";
+			this.PADDING_LEFT_CHORDS = params.paddingLeftChords || 0;
+			
+			this.DRAW_STAVE_NUMBERS = params.drawStaveNumbers;
+			this.ONLY_CHORDS = !!params.onlyChords;
+			this.DRAW_CLEF = !params.onlyChords;
+			this.DRAW_KEY_SIGNATURE = !params.onlyChords;
+			this.DRAW_STAVE_LINES = params.drawStaveLines === undefined ? true : params.drawStaveLines;
+			this.TEXT_CLOSER_TO_STAVE = !!params.onlyChords;
+
 			//next three fields are set as vars and not constants because they change (e.g. when visualizing audio)
 			this.lineMarginTop = this.INITIAL_LINE_MARGIN_TOP;
 			this.marginTop = this.INITIAL_MARGIN_TOP;
@@ -112,6 +122,7 @@ define([
 				}
 				self.draw(songModel);
 			});
+
 			$.subscribe('ToViewer-resize', function(el, songModel) {
 				if (!songModel) {
 					throw "Need songModel to draw";
@@ -321,35 +332,41 @@ define([
 					beamMng = new BeamManager();
 					tupletMng = new TupletManager();
 					bar = [];
-					//console.time('getNotes');
-					barNotes = nm.getNotesAtBarNumber(songIt.getBarIndex(), song);
-					//console.timeEnd('getNotes');
+					
+					if (!self.ONLY_CHORDS){
+						barNotes = nm.getNotesAtBarNumber(songIt.getBarIndex(), song);					
+						for (j = 0, v = barNotes.length; j < v; j++) {
+							tieMng.checkTie(barNotes[j], iNote);
+							tupletMng.checkTuplet(barNotes[j], iNote);
+							noteView = new LSNoteView(barNotes[j]);
+							beamMng.checkBeam(nm, iNote, noteView);
 
-					//console.time('drawNotes');
-					// for each note of bar
-					for (j = 0, v = barNotes.length; j < v; j++) {
-						tieMng.checkTie(barNotes[j], iNote);
-						tupletMng.checkTuplet(barNotes[j], iNote);
-						noteView = new LSNoteView(barNotes[j]);
-						beamMng.checkBeam(nm, iNote, noteView);
-
-						bar.push(noteView.getVexflowNote());
-						noteViews.push(noteView);
-						iNote++;
+							bar.push(noteView.getVexflowNote());
+							noteViews.push(noteView);
+							iNote++;
+						}
 					}
-					//console.timeEnd('drawNotes');
-
+					//BARS
 					barDimensions = self.barWidthMng.getDimensions(songIt.getBarIndex());
+					var barViewParams = {
+						draw_clef: self.DRAW_CLEF, 
+						draw_key_signature: self.DRAW_KEY_SIGNATURE,
+						draw_stave_numbers: self.DRAW_STAVE_NUMBERS
+					};
+					if (!self.DRAW_STAVE_LINES){
+						barViewParams.fill_style = "#FFF"; //we assume background is white
+					}
+					if (self.TEXT_CLOSER_TO_STAVE){ //this way, endings and text such as coda, segno, section names are 
+						barViewParams.top_text_position = 0;
+					}
 
-					barView = new LSBarView(barDimensions);
-
-					//console.time('drawBars');
+					barView = new LSBarView(barDimensions, barViewParams);
 					barView.draw(self.ctx, songIt, sectionIt, self.ENDINGS_Y, self.LABELS_Y);
-					//console.timeEnd('drawBars');
+
 
 					vxfBars.push({
-						'barDimensions': barDimensions,
-						'timeSignature': songIt.getBarTimeSignature(),
+						barDimensions: barDimensions,
+						timeSignature: songIt.getBarTimeSignature(),
 					});
 
 					//console.time('getChords');
@@ -360,23 +377,19 @@ define([
 							barDimensions,
 							songIt.getBarTimeSignature(),
 							self.CHORDS_DISTANCE_STAVE,
-							self.FONT_CHORDS
+							self.FONT_CHORDS,
+							self.PADDING_LEFT_CHORDS
 						);
 					}
-					//console.timeEnd('getChords');
-					//console.time('beams');
 					vxfBeams = beamMng.getVexflowBeams(); // we need to do getVexflowBeams before drawing notes
-					//console.timeEnd('beams');
-					//console.time('stave');
-					Vex.Flow.Formatter.FormatAndDraw(self.ctx, barView.getVexflowStave(), bar, {
-						autobeam: false
-					});
-					//console.timeEnd('stave');
-					//console.time('draw');
-					beamMng.draw(self.ctx, vxfBeams); // and draw beams needs to be done after drawing notes
-					tupletMng.draw(self.ctx, noteViews);
-					//console.timeEnd('draw');
 
+					if (!self.ONLY_CHORDS){
+						Vex.Flow.Formatter.FormatAndDraw(self.ctx, barView.getVexflowStave(), bar, {
+						 	autobeam: false
+						});
+						beamMng.draw(self.ctx, vxfBeams); // and draw beams needs to be done after drawing notes
+						tupletMng.draw(self.ctx, noteViews);
+					}
 					songIt.next();
 					sectionIt.next();
 					//console.timeEnd('whole bar');
