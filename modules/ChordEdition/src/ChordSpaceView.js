@@ -87,9 +87,9 @@ define([
 			chordTypeList = ChordUtils.getAllChords();
 		}
 		this.createAutocomplete(input, songModel, chordTypeList, inputVal);
+		input.select(); // we select text so that is easier to edit
 
-
-		// TRAINING CODE FOR ALEX SERVLET
+		// TRAINING CODE FOR SERVLET
 		/*var chordList = this._getChordList(songModel);
 		//console.log(JSON.stringify(chordList));
 		this.getPredictionChords(chordList, function(chordsPrediction) {
