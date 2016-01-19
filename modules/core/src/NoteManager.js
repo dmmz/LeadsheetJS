@@ -1,4 +1,8 @@
-define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, NoteUtils) {
+define([
+	'modules/core/src/NoteModel', 
+	'utils/NoteUtils', 
+	'modules/core/src/SongBarsIterator'
+	], function(NoteModel, NoteUtils, SongBarsIterator) {
 	/**
     * Note manager represents list of notes, it's a component of SongModel
     * @exports core/NoteManager
@@ -176,44 +180,50 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		return this.getNotes(indexes[0], indexes[1]);
 	};
 
+	/**
+	 * @param  {SongBarsIterator} songIt iterator, contains info about which is the current bar
+	 * @return {Array}        of NoteModels
+	 */
+	NoteManager.prototype.getNotesAtCurrentBar = function(songIt) {
+		var beatIntervals = songIt.getStartEndBeats();
+		var idxs = this.getIndexesStartingBetweenBeatInterval(beatIntervals[0],beatIntervals[1]);
+		return this.getNotes(idxs[0],idxs[1]);
+	};
+	/**
+	 * @param  {Number} barNumber 
+	 * @param  {SongModel} song      
+	 * @return {Array}  of NoteModels
+	 */
 	NoteManager.prototype.getNotesAtBarNumber = function(barNumber, song) {
 		if (!song) {
 			throw "NoteManager - getNotesAtBarNumber - incorrect song parameter";
 		}
-
-		var startBeat = 1,
-			endBeat;
-		startBeat = song.getStartBeatFromBarNumber(barNumber);
-		endBeat = startBeat + song.getTimeSignatureAt(barNumber).getQuarterBeats();
-		//console.log(this.getTotalDuration() + 1, endBeat, startBeat, song.getTimeSignatureAt(barNumber).getQuarterBeats());
-		if (this.getTotalDuration() + 1 < endBeat) {
-			console.warn("NoteManager - getNotesAtBarNumber - notes on bar " + barNumber + " do not fill the total bar duration" + (this.getTotalDuration() + 1) + ' ' + endBeat);
-			//throw "NoteManager - getNotesAtBarNumber - notes on bar " + barNumber + " do not fill the total bar duration" + (this.getTotalDuration() + 1) + ' ' + endBeat;
-		}
-
-		return this.getNotes(
-			this.getNextIndexNoteByBeat(startBeat),
-			this.getNextIndexNoteByBeat(endBeat)
-		);
+		var songIt = new SongBarsIterator(song);
+		songIt.setBarIndex(barNumber);
+		return this.getNotesAtCurrentBar(songIt);
 	};
 
+	/**
+	 * @param  {Number} index 
+	 * @param  {SongModel} song  
+	 * @return {Number}       
+	 */
 	NoteManager.prototype.getNoteBarNumber = function(index, song) {
 		if (isNaN(index) || index < 0 || typeof song === "undefined") {
 			throw "NoteManager - getNoteBarNumber - attributes are not what expected, song: " + song + ", index: " + index;
 		}
-		var numBar = 0,
-			duration = 0;
-
-		var barNumBeats = song.getBarNumBeats(numBar, null);
+		var duration = 0;
+		var songIt = new SongBarsIterator(song);
+			
+		var barNumBeats = songIt.getStartEndBeats();
 		for (var i = 0; i <= index; i++) {
-			if (NoteUtils.roundBeat(duration) == barNumBeats) {
-				numBar++;
-				duration = 0;
-				barNumBeats = song.getBarNumBeats(numBar, barNumBeats);
+			if (NoteUtils.roundBeat(duration) == barNumBeats[1] - 1) {
+				songIt.next();
+				barNumBeats = songIt.getStartEndBeats();
 			}
 			duration += this.notes[i].getDuration();
 		}
-		return numBar;
+		return songIt.getBarIndex();
 	};
 
 	/**
@@ -251,7 +261,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 				// throw 'NoteManager - _getIndexAndCurBeat - Note not found (possibly beat is greater than last note beat)';
 				return {
 					index: undefined,
-					curBeat: curBeat
+					curBeat: NoteUtils.roundBeat(curBeat)
 				};
 			}
 			curBeat += curNote.getDuration();
@@ -259,7 +269,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		}
 		return {
 			index: i,
-			curBeat: curBeat
+			curBeat: NoteUtils.roundBeat(curBeat)
 		};
 	};
 	/**
@@ -291,7 +301,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 		}
 		var r = this._getIndexAndCurBeat(beat);
 		var index;
-		if (r.curBeat === beat) {
+		if (r.curBeat === beat) { //returned r.curBeat is already rounded (so 40.0000003 is -> 40)
 			index = ifExactExclude ? r.index - 1 : r.index;
 		} else {
 			index = r.index - 1;

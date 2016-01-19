@@ -431,7 +431,7 @@ define([
 		var components = [];
 
 		if (!componentTitle || !this.components.hasOwnProperty(componentTitle)) {
-			throw 'the item is matching no known type in getComponentsAtBarNumber';
+			throw 'the item is matching not known type in getComponentsAtBarNumber';
 		}
 
 		var modelManager = this.components[componentTitle];

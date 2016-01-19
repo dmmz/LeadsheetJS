@@ -293,6 +293,7 @@ define([
 				stave,
 				vxfBeams,
 				noteViews = [],
+				barNoteViews,
 				vxfBars = [],
 				barDimensions,
 				tieMng = new TieManager();
@@ -316,25 +317,26 @@ define([
 				sectionIt = new SectionBarsIterator(section);
 				while (sectionIt.hasNext()) {
 					//console.time('whole bar');
-					//console.log(sectionIt.getBarIndex());
+					barNoteViews = [];
 
 					beamMng = new BeamManager();
 					tupletMng = new TupletManager();
 					bar = [];
 					//console.time('getNotes');
-					barNotes = nm.getNotesAtBarNumber(songIt.getBarIndex(), song);
+					barNotes = nm.getNotesAtCurrentBar(songIt);
+					
 					//console.timeEnd('getNotes');
 
 					//console.time('drawNotes');
 					// for each note of bar
 					for (j = 0, v = barNotes.length; j < v; j++) {
 						tieMng.checkTie(barNotes[j], iNote);
-						tupletMng.checkTuplet(barNotes[j], iNote);
+						tupletMng.checkTuplet(barNotes[j], j);
 						noteView = new LSNoteView(barNotes[j]);
 						beamMng.checkBeam(nm, iNote, noteView);
 
 						bar.push(noteView.getVexflowNote());
-						noteViews.push(noteView);
+						barNoteViews.push(noteView);
 						iNote++;
 					}
 					//console.timeEnd('drawNotes');
@@ -374,9 +376,9 @@ define([
 					//console.timeEnd('stave');
 					//console.time('draw');
 					beamMng.draw(self.ctx, vxfBeams); // and draw beams needs to be done after drawing notes
-					tupletMng.draw(self.ctx, noteViews);
+					tupletMng.draw(self.ctx, barNoteViews);
 					//console.timeEnd('draw');
-
+					noteViews = noteViews.concat(barNoteViews);
 					songIt.next();
 					sectionIt.next();
 					//console.timeEnd('whole bar');
