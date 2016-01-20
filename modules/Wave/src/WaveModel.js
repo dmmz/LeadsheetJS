@@ -26,7 +26,7 @@ define([
 			initVolume = this.initVolume(0.7);
 		}
 		this.setVolume(initVolume);
-
+		this.onPlaySetInterval = null;
 	}
 
 	/**
@@ -55,6 +55,9 @@ define([
 			this.playTo = this.songDuration;
 			this.playFrom = 0;
 		}
+		if (!this.onPlaySetInterval){
+			this.onPlaySetInterval = this.onPlay(15);
+		}
 		this.audio.play();
 		$.publish('PlayerModel-onplay');
 	};
@@ -65,6 +68,7 @@ define([
 		}
 		this.playFrom = this.audio.currentTime;
 
+		this.stopOnPlay();
 		this.audio.pause();
 		$.publish('PlayerModel-onpause');
 	};
@@ -73,6 +77,7 @@ define([
 		if (this.isPlayingEnabled === false || this.audio.readyState === 0) {
 			return;
 		}
+		this.stopOnPlay();
 		this.audio.pause();
 		this.playFrom = 0;
 		this.playTo = 0;
@@ -179,13 +184,41 @@ define([
 			}
 		}
 	};
+	/**
+	 * This function works just like the one on 'timeupdate' event. But here we can precise the resolution (in ms), so it's better for events 
+	 * that require  more precision like loops
+	 * 
+	 * @param  {Integer} milliseconds 
+	 * @return {setIntervalFunction}              
+	 */
+	WaveModel.prototype.onPlay = function(milliseconds) {
+		var self = this;
+		return window.setInterval(function(){
+			//loops on audio
+			if (self.playTo !== undefined && self.audio.currentTime > self.playTo && 
+				self.audio.loop === true && !self._positionsEqual(self.playFrom, self.playTo)) {
+					self.play();
+			}
+
+			},milliseconds);
+	};
+	/**
+	 * removes setInterval created by onPlay
+	 */
+	WaveModel.prototype.stopOnPlay = function() {
+		window.clearInterval(this.onPlaySetInterval);
+		this.onPlaySetInterval = null;
+	};
 
 	WaveModel.prototype.initModelEvents = function() {
 		var self = this;
+		var onPlaySetInterval;
+
 		$(this.audio).on('ended', function() {
 			if (self.isPlayingEnabled === false) {
 				return;
 			}
+			self.stopOnPlay();
 			$.publish('PlayerModel-onfinish');
 		});
 		$(this.audio).on('playing', function() {
@@ -193,28 +226,19 @@ define([
 				return;
 			}
 			$.publish('PlayerModel-playing');
-		});
+		});	
+
 		$(this.audio).on('timeupdate', function() {
 
 			if (self.isPlayingEnabled === false) {
 				return;
 			}
-			// code to stop on selection, commented because it gives problems when selecting one note
-			// if (self.playTo && self.playTo != self.playFrom  && self.audio.currentTime > self.playTo){
-			// 	self.stop();
-			// }
-			//loops on audio
-			if (self.playTo !== undefined && self.audio.currentTime > self.playTo && self.audio.loop === true && !self._positionsEqual(self.playFrom, self.playTo)) {
-				self.play();
-			}
-
-
-			//publish for playing bar
+						//publish for playing bar
 			var totalDuration = self.getDuration();
 			var positionInPercent = self.audio.currentTime / totalDuration;
 			$.publish('PlayerModel-onPosition', {
-				'positionInPercent': positionInPercent,
-				'songDuration': totalDuration * 1000
+				positionInPercent: positionInPercent,
+				songDuration: totalDuration * 1000
 			});
 		});
 	};

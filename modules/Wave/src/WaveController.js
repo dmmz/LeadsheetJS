@@ -62,12 +62,17 @@ define(['modules/Wave/src/WaveModel',
 				self.load(self.file, self.tempo);
 			}
 		});
+		/**
+		 * function subscribe to setting notes cursor event, we synchronise here the audio cursor with it
+		 * @param  {Element} el          not used, required bu subscribe funciot
+		 * @param  {Integer} cursorStart start position of cursor
+		 * @param  {Integer} cursorEnd
+		 */
 		$.subscribe("ToWave-setCursor", function (el, cursorStart, cursorEnd) {
 				var beats = self.songModel.getComponent('notes').getBeatIntervalByIndexes(cursorStart, cursorEnd);
 				var startTime = self.model.beatDuration * (beats[0] - 1);
-				var endTime = self.model.beatDuration * (beats[1] - 1);
 				if (self.drawer.cursor){	
-					self.drawer.cursor.setPos([startTime,endTime]);	
+					self.drawer.cursor.setPos([startTime,startTime]);	//we equal cursor start and end cursor, because this way the player won't loop
 					self.drawer.updateCursorPlaying(startTime);
 				}
 		});
