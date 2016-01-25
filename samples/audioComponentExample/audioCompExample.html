@@ -7,6 +7,31 @@
 	<div id="main-container" class="container-fluid">
 		<div id="audioExample"></div>
 	</div>
+	<div>
+		<ol>
+			<li>Play twice: (second time should do nothing)</li>
+			<li>Pause twice: (second time should do nothing)</li>
+			<li>Play again: should resume</li>
+			<li>Stop, then play: should start from the begining</li>
+			<li>Play, pause then stop: should start from the begining</li>
+			<li>Play, pause then stop: should start from the begining</li>
+			<li>Let song finish and check it stopped correctly by pressing Play. Should start from the beginning</li>
+			<li>Loop: click 'loop on' before play, should loop. Check getCurrentTime() in console.log, should loop as well.</li>
+			<li>Click 'loop off' while playing. Should disable the loop. TO DO: fix getCurrentTime() </li>
+			<li>Click 'loop on' while playing, should start loop.</li>
+			<li>Click 'loop off' after playing, click 'play' to check if loop was disabled.</li>
+			<li>Click 'loop on whole song', check if works.</li>
+
+		</ol>
+	</div>
+	<div>
+		<a href="#" id="play">Play</a> |
+		<a href="#" id="pause">Pause</a> |
+		<a href="#" id="stop">Stop</a> |
+		<a href="#" id="loopOn">loop on</a> |
+		<a href="#" id="loopOff">loop off</a> |
+		<a href="#" id="loopOnWholeSong">loop on whole song</a> |
+	</div>
 	<script data-main="audioComponentExample.js" src="../../external-libs/require.js"></script>
 </body>
 </html>

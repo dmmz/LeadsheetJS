@@ -87,6 +87,8 @@ define(function(require) {
 
   var testCursorModel = require('modules/Cursor/test/testCursorModel');
 
+  var testAudioController = require('modules/Audio/test/testAudioController');
+
   // Utils
   testUserLog.run();
   testAjaxUtils.run();
@@ -151,6 +153,8 @@ define(function(require) {
   testMainMenuController.run();
 
   testCursorModel.run();
+
+  testAudioController.run();
 
   QUnit.load();
   QUnit.start();
