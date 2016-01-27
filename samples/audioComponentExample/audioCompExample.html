@@ -23,7 +23,7 @@
 			<li>Selection on audio should show purple</li>
 			<li>Single click should update cursor</li>
 			<li>Player should move cursor and also notes cursor</li>
-			<li></li>
+			<li>Note cursor follows audio cursor when playing (even in loops)</li>
 		</ol>
 	</div>
 	<div>
@@ -43,11 +43,22 @@
 			<li>Play, pause then stop: should start from the begining</li>
 			<li>Play, pause then stop: should start from the begining</li>
 			<li>Let song finish and check it stopped correctly by pressing Play. Should start from the beginning</li>
-			<li>Loop: click 'loop on' before play, should loop. Check getCurrentTime() in console.log, should loop as well.</li>
-			<li>Click 'loop off' while playing. Should disable the loop. TO DO: fix getCurrentTime() </li>
-			<li>Click 'loop on' while playing, should start loop.</li>
-			<li>Click 'loop off' after playing, click 'play' to check if loop was disabled.</li>
-			<li>Click 'loop on whole song', check if works.</li>
+			<li>Loop: in all these action getCurrentTime() should work. Can be verified by the cursor.
+			<ul>
+				<li>Loop: click 'loop on' before play, should loop. </li>
+				<li>Click 'loop off' while playing. Should disable the loop.</li>
+				<li>Click 'loop on' while playing, should start loop.</li>
+				<li>Stop and click 'loop off' after playing, click 'play' to check if loop was disabled.</li>
+				<li>Click 'loop on whole song', check if works.</li>
+				<li>Enabling loop while playing (check getCurrentTime()) and disabling</li>
+				<ul>
+					<li>'Loop on' before current time arrives to loop start point. Then loop off</li>
+					<li>'Loop on' while current time is inside loop start and end points. Then loop off</li>
+					<li>'Loop on' while current time is after end loop point. Then loop off</li>
+				</ul>
+			</ul>
+
+			</li>
 
 		</ol>
 	</div>

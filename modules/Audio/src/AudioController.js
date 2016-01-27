@@ -103,6 +103,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		var now = this.isPlaying ? this._getCurrentPlayingTime() : this.pausedAt;
 		return now / 1000;
 	};
+	
 	AudioController.prototype._stopPlaying = function() {
 		this.source.stop(0);
 		this.isPlaying = false;
@@ -121,7 +122,9 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		this.pausedAt = 0;
 	};
 
+
 	AudioController.prototype.loop = function(from, to) {
+		
 		from = from || 0;
 		to = to || this.timeEndSong;
 		this.offsetLoopOn = 0;
@@ -129,6 +132,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			this.source.loop = true;
 			this.source.loopStart = from;
 			this.source.loopEnd = to;
+			// this.offsetLoopOn is needed tu get correct current time
 			var now = (Date.now() - this.startedAt) / 1000;
 			if (now > to ){ // cursor was after loop we set offsetLoopOn, which is
 				this.offsetLoopOn = now - from;
@@ -143,7 +147,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 	};
 
 	AudioController.prototype.disableLoop = function() {
-		this.startedAt = Date.now() - this._getCurrentPlayingTime();
+		this.startedAt = Date.now() - this._getCurrentPlayingTime(); // we update startedAt like if we had made play from here
 		this.source.loop = false;
 		this.presetLoop = null;
 		

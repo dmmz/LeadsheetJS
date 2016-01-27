@@ -222,38 +222,23 @@ define([
 		}
 		return areas;
 	};
-	AudioCursor.prototype._updateNoteCursor = function(currTime, timeStep, minBeatStep, beatDuration, prevINote) {
-
-		if (currTime >= timeStep + minBeatStep) {
-
+	AudioCursor.prototype._updateNoteCursor = function(currTime, beatDuration, prevINote) {
 			//we update note cursor
-			iNote = this.noteMng.getPrevIndexNoteByBeat(currTime / beatDuration + 1);
-
-			if (iNote != prevINote && iNote < this.cursorNotes.getListLength()) { //if cursorNotes is not defined (or null) we don't use it (so audioPlayer works and is not dependent on cursor)
-				this.cursorNotes.setPos(iNote);
-				prevINote = iNote;
-			}
-			timeStep += minBeatStep;
-
+		var iNote = this.noteMng.getPrevIndexNoteByBeat(currTime / beatDuration + 1);
+		if (iNote != prevINote && iNote < this.cursorNotes.getListLength()) { //if cursorNotes is not defined (or null) we don't use it (so audioPlayer works and is not dependent on cursor)
+			this.cursorNotes.setPos(iNote);
+			prevINote = iNote;
 		}
-		return {
-			timeStep: timeStep,
-			prevINote: prevINote
-		};
+		return prevINote;
 	};
 	AudioCursor.prototype.restartAnimationLoop = function(audio) {
 
 		var self = this;
-		//var noteMng = this.songModel.getComponent('notes');
-		// var iNote = 0,
 		var prevINote = 0;
 		// 	time;
 		var beatDuration = this.audioDrawer.audioLjs.beatDuration;
-		var minBeatStep = beatDuration / 32; //we don't want to update notes cursor as often as we update audio cursor, to optimize we only update note cursor every 1/32 beats
 		var requestFrame = window.requestAnimationFrame ||
 			window.webkitRequestAnimationFrame;
-		//this.startTime = this.model.audio.currentTime;
-		var timeStep = 0;
 		var barIndex = 0;
 		var currTime, r;
 
@@ -262,14 +247,8 @@ define([
 			//we don't pass barIndex as 2nd param (which would optimize function), becuase it only works forward, not backwards (which is the case if we set loop dinamically)
 			barIndex = self.audioDrawer.barTimesMng.getBarIndexByTime(currTime); 
 			if (self.noteMng) {
-				// console.log(currTime);
-				// console.log(barIndex);
-				r = self._updateNoteCursor(currTime, timeStep, minBeatStep, beatDuration, prevINote);
-				timeStep = r.timeStep;
-				prevINote = r.prevINote;
+				prevINote = self._updateNoteCursor(currTime, beatDuration, prevINote);
 			}
-
-
 			// To avoid problems when finishing audio, we play while barIndex is in barTimesMng, if not, we pause
 			if (barIndex < self.audioDrawer.barTimesMng.getLength()) {
 				self.updateCursorPlaying(currTime, barIndex);
