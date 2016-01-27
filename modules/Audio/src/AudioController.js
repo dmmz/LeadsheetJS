@@ -40,6 +40,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 
 	AudioController.prototype.play = function() {
 		if (this.isPlaying) return;
+		$.publish('Audio-play', this);
 
 		this.source = this.audioCtx.createBufferSource(); // creates a sound source
 		this.source.buffer = this.buffer; // tell the source which sound to play
@@ -73,6 +74,8 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 	AudioController.prototype._calcTime = function(now, loopStart, loopEnd) {
 		loopStart *= 1000; //loop boundaries in ms
 		loopEnd *= 1000;
+		now = now - this.offsetLoopOn * 1000; //we saved bookmark loopOn, and we substract it 
+
 		if (now < loopStart){
 			return now;
 		}else{
@@ -82,7 +85,6 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 	};
 
 	/**
-	 
 	 * @return {Number} Time in ms (e.g. 1532.4)
 	 */
 	AudioController.prototype._getCurrentPlayingTime = function() {
@@ -101,19 +103,20 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		var now = this.isPlaying ? this._getCurrentPlayingTime() : this.pausedAt;
 		return now / 1000;
 	};
-
+	AudioController.prototype._stopPlaying = function() {
+		this.source.stop(0);
+		this.isPlaying = false;
+		$.publish('Audio-stop', this);
+	};
 
 	AudioController.prototype.pause = function() {
 		if (!this.isPlaying) return;
-		this.source.stop(0)
-		this.isPlaying = false;
-
+		this._stopPlaying();
 		this.pausedAt = this._getCurrentPlayingTime();
 	};
 	AudioController.prototype.stop = function() {
 		if (this.isPlaying){
-			this.source.stop(0)
-			this.isPlaying = false;
+			this._stopPlaying();
 		}
 		this.pausedAt = 0;
 	};
@@ -121,23 +124,31 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 	AudioController.prototype.loop = function(from, to) {
 		from = from || 0;
 		to = to || this.timeEndSong;
-
+		this.offsetLoopOn = 0;
 		if (this.isPlaying){
 			this.source.loop = true;
 			this.source.loopStart = from;
 			this.source.loopEnd = to;
+			var now = (Date.now() - this.startedAt) / 1000;
+			if (now > to ){ // cursor was after loop we set offsetLoopOn, which is
+				this.offsetLoopOn = now - from;
+			}
 		}else{
 			this.presetLoop = {
 				from: from,
 				to: to
 			}
 		}
+		
 	};
 
 	AudioController.prototype.disableLoop = function() {
+		this.startedAt = Date.now() - this._getCurrentPlayingTime();
 		this.source.loop = false;
 		this.presetLoop = null;
+		
 	};
+
 	AudioController.prototype.getPeaks = function(length, startPoint, endPoint) {
 		startPoint = startPoint || 0;
 		endPoint = endPoint || 1;

@@ -31,19 +31,22 @@ require.config({
 define(function(require) {
         var Audio = require('modules/Audio/src/AudioController');
         var AudioDrawer = require('modules/Audio/src/AudioDrawer');
+        var AudioCursor = require('modules/Audio/src/AudioCursor');
+        var Cursor = require('modules/Cursor/src/Cursor');
 
-        var LSViewer = require('modules/LSViewer/src/LSViewer'),
+        var LSViewer = require('modules/LSViewer/src/main'),
           SongModel_CSLJson = require('modules/converters/MusicCSLJson/src/SongModel_CSLJson'),
           Solar  = require('tests/songs/Solar'),
           CursorModel = require('modules/Cursor/src/CursorModel'),
           NoteEditionController = require('modules/NoteEdition/src/NoteEditionController'),
           NoteSpaceManager = require('modules/NoteEdition/src/NoteSpaceManager');
 
-        var viewer = new LSViewer($("#audioExample")[0],{heightOverflow:'resizeDiv',layer:true});
         var song = SongModel_CSLJson.importFromMusicCSLJSON(Solar);
         var cM = new CursorModel(song.getComponent('notes'));
+        var viewer = new LSViewer.LSViewer($("#audioExample")[0],{heightOverflow:'resizeDiv',layer:true});
         var noteSpaceManager = new NoteSpaceManager(cM, viewer);
-        viewer.draw(song);
+        LSViewer.OnWindowResizer(song);
+
         
         // var neC = new NoteEditionController(song, cM);
         // var params = {
@@ -54,8 +57,16 @@ define(function(require) {
         //   marginCursor: 20*/
         // };
         var audio = new Audio(16.941);
-
-        var audioDrawer = new AudioDrawer(song, viewer, 170);
+        
+        
+        var params = {
+          showHalfWave: true,
+          //drawMargins: true,
+          topAudio: -120,
+          heightAudio: 75,
+        };
+        var audioDrawer = new AudioDrawer(song, viewer, 170, params);
+        var audioCursor = new AudioCursor(audioDrawer, viewer,  song.getComponent('notes'), cM);
         
         //noteSpaceManager.refresh();
         audio.load('/tests/audio/solar.wav');
@@ -90,9 +101,5 @@ define(function(require) {
         setInterval(function(){
           console.log(audio.getCurrentTime());
         },500);
-        // var wmv = new WaveManagerView($("#main-container")[0]),
-        // wmc = new WaveManagerController(waveMng);
-
-        //wmv.render();
 
 });

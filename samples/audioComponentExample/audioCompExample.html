@@ -7,7 +7,34 @@
 	<div id="main-container" class="container-fluid">
 		<div id="audioExample"></div>
 	</div>
+	
 	<div>
+		<a href="#" id="play">Play</a> |
+		<a href="#" id="pause">Pause</a> |
+		<a href="#" id="stop">Stop</a> |
+		<a href="#" id="loopOn">loop on</a> |
+		<a href="#" id="loopOff">loop off</a> |
+		<a href="#" id="loopOnWholeSong">loop on whole song</a> |
+	</div>
+	<div>
+		<h2>AudioCursor</h2>
+		<ol>
+			<li>Draw cursor on load</li>
+			<li>Selection on audio should show purple</li>
+			<li>Single click should update cursor</li>
+			<li>Player should move cursor and also notes cursor</li>
+			<li></li>
+		</ol>
+	</div>
+	<div>
+		<h2>AudioDrawer</h2>
+		<ol>
+			<li>Draw (should shorten last bar and show well)</li>
+			<li>Resize (should be redrawn)</li>
+		</ol>
+	</div>
+	<div>
+		<h2>AudioController</h2>
 		<ol>
 			<li>Play twice: (second time should do nothing)</li>
 			<li>Pause twice: (second time should do nothing)</li>
@@ -23,14 +50,6 @@
 			<li>Click 'loop on whole song', check if works.</li>
 
 		</ol>
-	</div>
-	<div>
-		<a href="#" id="play">Play</a> |
-		<a href="#" id="pause">Pause</a> |
-		<a href="#" id="stop">Stop</a> |
-		<a href="#" id="loopOn">loop on</a> |
-		<a href="#" id="loopOff">loop off</a> |
-		<a href="#" id="loopOnWholeSong">loop on whole song</a> |
 	</div>
 	<script data-main="audioComponentExample.js" src="../../external-libs/require.js"></script>
 </body>
