@@ -12,11 +12,22 @@
 		<a href="#" id="play">Play</a> |
 		<a href="#" id="pause">Pause</a> |
 		<a href="#" id="stop">Stop</a> |
-		<a href="#" id="loopOn">loop on</a> |
+		<a href="#" id="loopOn">loop on (between 1s and 3s)</a> |
 		<a href="#" id="loopOff">loop off</a> |
 		<a href="#" id="loopOnWholeSong">loop on whole song</a> |
+		<a href="#" id="currentTime">console.log current Time</a> | &nbsp;&nbsp;&nbsp;
+		<a href="#" id="switchAudio">Switch audio</a> |
 	</div>
 	<div>
+		<h2>AudioPlayer</h2>
+		<ol>
+			<li>Click on a random position (set cursor). Then play, should start from that position</li>
+			<li>Click pause and play. Should start from paused position.</li>
+			<li>Click on a random position (set cursor). Set play then stop. Click play, should start now from the begining</li>
+			<li>Selection: should start and enable loop</li>
+			<li>Click on wave while playing, should disable loop</li>
+		</ol>
+	</div><div>
 		<h2>AudioCursor</h2>
 		<ol>
 			<li>Draw cursor on load</li>
@@ -24,6 +35,7 @@
 			<li>Single click should update cursor</li>
 			<li>Player should move cursor and also notes cursor</li>
 			<li>Note cursor follows audio cursor when playing (even in loops)</li>
+			<li><span style="color:#F00">TODO: when clicking, cursor notes is disabled</span></li>
 		</ol>
 	</div>
 	<div>
@@ -57,9 +69,7 @@
 					<li>'Loop on' while current time is after end loop point. Then loop off</li>
 				</ul>
 			</ul>
-
 			</li>
-
 		</ol>
 	</div>
 	<script data-main="audioComponentExample.js" src="../../external-libs/require.js"></script>

@@ -1,17 +1,17 @@
-define([ 'modules/Wave/src/BarTimesManager',
-		'modules/core/src/SongBarsIterator',
-		'modules/Audio/src/AudioLJSAdapter',
-		'modules/Wave/src/WaveBarView',
-		'jquery',
-		'pubsub'
-	], function (BarTimesManager, SongBarsIterator, AudioLJSAdapter, WaveBarView, $, pubsub){
+define(['modules/Wave/src/BarTimesManager',
+	'modules/core/src/SongBarsIterator',
+	'modules/Audio/src/AudioLJSAdapter',
+	'modules/Wave/src/WaveBarView',
+	'jquery',
+	'pubsub'
+], function(BarTimesManager, SongBarsIterator, AudioLJSAdapter, WaveBarView, $, pubsub) {
 
-	function AudioDrawer(songModel, viewer, tempo, params){
+	function AudioDrawer(songModel, viewer, params) {
 		params = params || {};
 
 		this.songModel = songModel;
 		this.viewer = viewer;
-		this.tempo = tempo;
+		this.tempo; // value filled onload
 		this.barTimesMng = new BarTimesManager();
 		this.audio = null;
 		this.color = ["#55F", "#99F"];
@@ -22,15 +22,16 @@ define([ 'modules/Wave/src/BarTimesManager',
 		this.pixelRatio = params.pixelRatio || window.devicePixelRatio;
 		this.drawMargins = !!params.drawMargins; //for debugging
 		this.marginCursor = params.marginCursor || 0;
-		
+
 		this.adaptViewer();
 		this._initSubscribe();
 	};
 
 	AudioDrawer.prototype._initSubscribe = function() {
 		var self = this;
-		$.subscribe('Audio-Loaded', function(el, audio){
+		$.subscribe('Audio-Loaded', function(el, audio, tempo) {
 			self.audio = audio;
+			self.tempo = tempo;
 			self.audioLjs = new AudioLJSAdapter(self.songModel, audio, self.tempo);
 			self.barTimesMng.setBarTimes(self.songModel, self.audioLjs);
 			self.viewer.setShortenLastBar(true);
@@ -38,23 +39,23 @@ define([ 'modules/Wave/src/BarTimesManager',
 			self.draw(self.barTimesMng, self.tempo, self.audioLjs.getDuration())
 		});
 		$.subscribe('LSViewer-drawEnd', function() {
-			if (self.audio.isLoaded){
+			if (self.audio.isLoaded) {
 				self.draw(self.barTimesMng, self.tempo, self.audioLjs.getDuration());
 			}
 		});
 	};
-	AudioDrawer.prototype._drawPeaks = function(peaks, area, color, viewer) {
 
+	AudioDrawer.prototype._drawPeaks = function(peaks, area, color, viewer) {
 		var ctx = viewer.ctx;
 		var self = this;
-		
-		function normalize (peaks) {
+
+		function normalize(peaks) {
 			var NORM_FACTOR = 0.8; //if 1, maximum will draw until the very top of the audio space
 			var max = 0;
 			for (var i = 0; i < peaks.length; i++) {
 				if (peaks[i] > max) max = peaks[i];
 			}
-			if (max !== 0){
+			if (max !== 0) {
 				for (var i = 0; i < peaks.length; i++) {
 					peaks[i] /= max / NORM_FACTOR;
 				}
@@ -74,7 +75,7 @@ define([ 'modules/Wave/src/BarTimesManager',
 			var i, h, maxH;
 
 			peaks = normalize(peaks);
-			
+
 			// if (self.params.fillParent && width != length) {
 			//     scale = width / length;
 			// }
@@ -111,6 +112,7 @@ define([ 'modules/Wave/src/BarTimesManager',
 		});
 
 	};
+
 	AudioDrawer.prototype._drawMargins = function(area, ctx) {
 		ctx.beginPath();
 		ctx.moveTo(area.x, area.y);
@@ -122,6 +124,10 @@ define([ 'modules/Wave/src/BarTimesManager',
 		ctx.stroke();
 		ctx.closePath();
 	};
+
+	/**
+	 * LSViewer's params are modified so that audio fits (bigger margin between lines)
+	 */
 	AudioDrawer.prototype.adaptViewer = function() {
 		if (this.topAudio > 0) { // if audio is greater than 0 it means audio will be on top of score line
 			this.viewer.setLineMarginTop(this.topAudio);
@@ -129,13 +135,13 @@ define([ 'modules/Wave/src/BarTimesManager',
 			distance = (this.heightAudio - this.topAudio) - this.viewer.lineHeight;
 			if (distance > 0) {
 				this.viewer.setLineMarginTop(distance, true);
-				
+
 			}
 		}
 	};
 	AudioDrawer.prototype.draw = function(barTimesMng, tempo, duration) {
 		if (!tempo || !duration) {
-			throw "WaveDrawer - missing parameters, tempo : " + tempo + ", duration:" + duration;
+			throw "AudioDrawer - missing parameters, tempo : " + tempo + ", duration:" + duration;
 		}
 		this.waveBarDimensions = [];
 		var numBars = barTimesMng.getLength();
@@ -161,7 +167,7 @@ define([ 'modules/Wave/src/BarTimesManager',
 				w: dim.width,
 				h: this.heightAudio
 			}, this.viewer.scaler);
-			
+
 			this.waveBarDimensions.push(waveBarView);
 			area = waveBarView.getArea();
 			peaks = this.audio.getPeaks(area.w, start, start + sliceSong);
@@ -169,7 +175,7 @@ define([ 'modules/Wave/src/BarTimesManager',
 			toggleColor = (toggleColor + 1) % 2;
 			start += sliceSong;
 		}
-		$.publish('WaveDrawer-audioDrawn', this);
+		$.publish('AudioDrawer-audioDrawn', this);
 	};
 	return AudioDrawer;
 });

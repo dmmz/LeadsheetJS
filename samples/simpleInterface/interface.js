@@ -72,7 +72,9 @@ define(function(require) {
 			progressBar: true
 		},
 		audio:{
-			audioFile: '/tests/audio/solar.wav',
+			//audioFile: '/tests/audio/solar.wav',
+			//tempo: 170
+			audioFile: '/tests/audio/Solar_120_bpm.335',
 			tempo: 120
 		},
 		midi:{
@@ -127,7 +129,8 @@ define(function(require) {
 
 	// var myLeadsheet1 = LJS.easyBuild('viewer', testSongs.simpleLeadSheet, viewerHTML, viewerOptions);
 	// var myLeadsheet2 = LJS.easyBuild('player', testSongs.simpleLeadSheet, playerHTML, playerOptions);
-	var myLeadsheet = LJS.init(testSongs.simpleLeadSheet, params);
+	var solar = require('tests/songs/Solar');
+	var myLeadsheet = LJS.init(solar, params);
 	//console.log(myLeadsheet);
 	/*if (typeof myLeadsheet.audioComments !== "undefined") {
 		addComments(myLeadsheet.audioComments);

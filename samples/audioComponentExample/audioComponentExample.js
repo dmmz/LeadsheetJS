@@ -32,6 +32,7 @@ define(function(require) {
         var Audio = require('modules/Audio/src/AudioController');
         var AudioDrawer = require('modules/Audio/src/AudioDrawer');
         var AudioCursor = require('modules/Audio/src/AudioCursor');
+        var AudioPlayer = require('modules/Audio/src/AudioPlayer');
         var Cursor = require('modules/Cursor/src/Cursor');
 
         var LSViewer = require('modules/LSViewer/src/main'),
@@ -65,41 +66,80 @@ define(function(require) {
           topAudio: -120,
           heightAudio: 75,
         };
-        var audioDrawer = new AudioDrawer(song, viewer, 170, params);
+        var audioDrawer = new AudioDrawer(song, viewer, params);
         var audioCursor = new AudioCursor(audioDrawer, viewer,  song.getComponent('notes'), cM);
+        var audioPlayer = new AudioPlayer(audio);
         
         //noteSpaceManager.refresh();
-        audio.load('/tests/audio/solar.wav');
+        audio.load('/tests/audio/solar.wav', 170);
 
 
         $('#play').click(function(e){
             e.preventDefault();
-            audio.play();
+            console.log("play");
+            $.publish('ToPlayer-play');
         });
-        
         $('#pause').click(function(e){
             e.preventDefault();
-            audio.pause();
+            console.log("pause");
+            $.publish('ToPlayer-pause');
+        });
+        $('#stop').click(function(e){
+            e.preventDefault();
+            console.log("stop");
+            $.publish('ToPlayer-stop');
         });
         $('#loopOn').click(function(e){
             e.preventDefault();
+            console.log("loopOn");
             audio.loop(1,3);
         });
         $('#loopOff').click(function(e){
             e.preventDefault();
+            console.log("loopOff");
             audio.disableLoop();
         });
         $('#loopOnWholeSong').click(function(e){
             e.preventDefault();
+            console.log("loopOnWholeSong");
             audio.loop();
         });
+        (function(){
+            var active = false;
+            var idSetInterval;
+            $("#currentTime").click(function(e){
+                e.preventDefault();
+                active = !active;
+                if (active){
+                    console.log("console.log currentTime On");
+                    idSetInterval = setInterval(function(){
+                        console.log(audio.getCurrentTime());
+                    },500);
+                    $(this).css({fontWeight:'bold'});
+                }else{
+                    console.log("console.log currentTime Off");
+                    clearInterval(idSetInterval);
+                    $(this).css({fontWeight:'normal'});
+                }
+            })
+        })();
 
-        $('#stop').click(function(e){
-            e.preventDefault();
-            audio.stop();
-        });
-        setInterval(function(){
-          console.log(audio.getCurrentTime());
-        },500);
+        (function(){
 
+          var audios = [
+          {
+            file:'/tests/audio/Solar_120_bpm.335.mp3',
+            tempo: 120
+          },{
+            file:'/tests/audio/solar.wav',
+            tempo: 170
+          }];
+          var indexAudio = 0;
+
+          $("#switchAudio").click(function(){
+            var currAudio = audios[indexAudio];
+            audio.load(currAudio.file,currAudio.tempo);
+            indexAudio = (indexAudio + 1) % audios.length;
+          });
+        })();
 });

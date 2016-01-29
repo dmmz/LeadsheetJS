@@ -22,7 +22,7 @@ define([
 
 	AudioCursor.prototype._initSubscribe = function() {
 		var self = this;
-		$.subscribe('WaveDrawer-audioDrawn', function() {
+		$.subscribe('AudioDrawer-audioDrawn', function() {
 			self.cursor = new CursorModel(self.audioDrawer.audioLjs.getDuration());
 			//if there is no canvasLayer we don't paint cursor
 			if (self.viewer.canvasLayer) {
@@ -84,7 +84,9 @@ define([
 		if (mouseUp) {
 			var posCursor = this.cursor.getPos();
 			if (posCursor[0] != posCursor[1]) { //if there is something selected
-				$.publish('WaveDrawer-selectedAudio', posCursor);
+				$.publish('AudioCursor-selectedAudio', posCursor);
+			}else{
+				$.publish('AudioCursor-clickedAudio', posCursor);
 			}
 		}
 	};
