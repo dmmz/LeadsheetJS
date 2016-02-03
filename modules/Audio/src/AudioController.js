@@ -3,24 +3,33 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 	 * Low level audio treating 
 	 * @param {Number} timeEndSong given in seconds 
 	 */
-	function AudioController(timeEndSong) {
-		this.timeEndSong = timeEndSong;
+	function AudioController(song) {
+		this.song = song;
 		this.audioCtx = new(window.AudioContext || window.webkitAudioContext)();
 		this.source = this.audioCtx.createBufferSource();
-		this.isLoaded = false; //accessed publicly
+		this.isEnabled = false; //accessed publicly
 		this.startedAt;
+		this.startMargin;
 		this.pausedAt = 0;
 		this.tempo;
 		this.file;
 		this.isPlaying = false;
 		this.pos = 0;
 		this.presetLoop; //will be an object
+		this.songNumBeats;
+		this.beatDuration;
+		this.timeEndSong;
 	}
 
+	AudioController.prototype._setParams = function(tempo) {
+		this.songNumBeats =  this.song.getComponent('notes').getTotalDuration();
+		this.beatDuration = 60 / tempo;
+		this.timeEndSong = this.beatDuration * this.songNumBeats; //song duration until last beat (without residual audi
+	};
 	/**
 	 * @param  {String} url source of audi file
 	 */
-	AudioController.prototype.load = function(url, tempo) {
+	AudioController.prototype.load = function(url, tempo, startMargin, callback) {
 		if (!tempo){
 			throw "AudioController load missing tempo";
 		}
@@ -33,24 +42,44 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		xhr.onload = function() {
 			var audioData = xhr.response;
 			self.audioCtx.decodeAudioData(audioData, function(buffer) {
-					self.buffer = buffer;
-					self._setIsLoaded(tempo);
-				},
-				function(e) {
-					throw "Error with decoding audio data" + e.err;
-				});
+				self.buffer = buffer;
+				self._setParams(tempo);
+				self.startMargin = startMargin || 0;
+				self.isEnabled = true;
+				$.publish('PlayerModel-onload', 'audio');
+				$.publish('Audio-Loaded', [self, tempo] );
+				if (callback){
+					callback();
+				}
+			},
+			function(e) {
+				throw "Error with decoding audio data" + e.err;
+			});
 		};
 		xhr.send();
 	};
 
-	AudioController.prototype._setIsLoaded = function(tempo) {
-		this.isLoaded = true;
-		$.publish('PlayerModel-onload', 'audio');
-		$.publish('Audio-Loaded', [this, tempo] );
+	/**
+	 * it is called after audio is loaded
+	 * @return {[type]} [description]
+	 */
+	AudioController.prototype.enable = function(dontEnableDrawer) {
+		this.isEnabled = true;
+		if (!dontEnableDrawer){
+			$.publish('AudioDrawer-enable');	
+		}
+		
+	};
+	AudioController.prototype.disable = function(dontDisableDrawer) {
+		this.stop();
+		this.isEnabled = false;
+		if (!dontDisableDrawer){
+			$.publish('ToLayers-removeLayer');	
+		}
 	};
 
 	AudioController.prototype.play = function(pos) {
-		if (this.isPlaying) return;
+		if (this.isPlaying || !this.isEnabled) return;
 		$.publish('Audio-play', this);
 		if (pos) {
 			this.pausedAt = pos * 1000;
@@ -80,9 +109,13 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 				self.stop();
 			}
 		}
+		$.publish('PlayerModel-onplay');
 	};
 	AudioController.prototype.getDuration = function() {
 		return this.buffer.duration;
+	};
+	AudioController.prototype.getBeatDuration = function() {
+		return this.beatDuration;
 	};
 
 	/**
@@ -95,7 +128,8 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 	AudioController.prototype._calcTime = function(now, loopStart, loopEnd) {
 		loopStart *= 1000; //loop boundaries in ms
 		loopEnd *= 1000;
-		now = now - this.offsetLoopOn * 1000; //we saved bookmark loopOn, and we substract it 
+		var offsetLoopOn = this.offsetLoopOn || 0;
+		now = now - offsetLoopOn * 1000; //we saved bookmark loopOn, and we substract it 
 
 		if (now < loopStart) {
 			return now;
@@ -125,7 +159,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		return now / 1000;
 	};
 
-	AudioController.prototype._stopPlaying = function() {
+	AudioController.prototype._stopPlaying = function() {	
 		this.source.stop(0);
 		this.isPlaying = false;
 		this.pos = 0;
@@ -136,18 +170,24 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		if (!this.isPlaying) return;
 		this._stopPlaying();
 		this.pausedAt = this._getCurrentPlayingTime();
+		$.publish('PlayerModel-onpause');
 	};
 	AudioController.prototype.stop = function() {
 		if (this.isPlaying) {
 			this._stopPlaying();
 		}
 		this.pausedAt = 0;
+		$.publish('PlayerModel-onstop');
 	};
 
+	/**
+	 * sets loop
+	 * @param  {Number} from time start loop (in seconds)
+	 * @param  {Number} to   time end loop (in seconds)
+	 */
 	AudioController.prototype.loop = function(from, to) {
-		from = from || 0;
-		to = to || this.timeEndSong;
-		this.offsetLoopOn = 0;
+		from = from || this.startMargin;
+		to = to || this.timeEndSong + this.startMargin;
 		if (this.isPlaying) {
 			this.source.loop = true;
 			this.source.loopStart = from;
@@ -157,18 +197,42 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			if (now > to) { // if cursor was after loop, we set offsetLoopOn
 				this.offsetLoopOn = now - from;
 			}
-		} else {
-			this.presetLoop = {
-				from: from,
-				to: to
-			}
+		}
+		this.presetLoop = {
+			from: from,
+			to: to
 		}
 	};
 
 	AudioController.prototype.disableLoop = function() {
-		this.startedAt = Date.now() - this._getCurrentPlayingTime(); // we update startedAt like if we had made play from here	
-		this.source.loop = false;
-		this.presetLoop = null;
+		if (!this.loopSong){
+			this.startedAt = Date.now() - this._getCurrentPlayingTime(); // we update startedAt like if we had made play from here	
+			this.source.loop = false;
+			this.presetLoop = null;
+		}
+	};
+
+	/**
+	 * Enables whole loop song, can only be done if is not playing
+	 * @return {[type]} [description]
+	 */
+	AudioController.prototype.enableLoopSong = function() {
+		if (!this.loopSong && !this.isPlaying){
+			this.loop(this.startMargin, this.timeEndSong + this.startMargin);
+			this.loopSong = true;
+			return true;
+		}
+	};
+	/**
+	 * Disables whole loop song, can only be done if is not playing
+	 * @return {Boolean} returns true if action could be done, otherwise returns undefined (== falsy)
+	 */
+	AudioController.prototype.disableLoopSong = function() {
+		if (this.loopSong && !this.isPlaying){
+			this.loopSong = false;
+			this.disableLoop();
+			return true;
+		}
 	};
 
 	/**

@@ -12,10 +12,8 @@ define([
 		if (!!this.noteMng && !this.cursorNotes || !this.noteMng && !!this.cursorNotes) {
 			throw "AudioCursor: notesMng and cursorNotes must be both defined or both undefined";
 		}
-
 		this.noteMng = noteMng;
 		this.cursorNotes = cursorNotes;
-
 		this._initSubscribe();
 	};
 
@@ -23,7 +21,8 @@ define([
 	AudioCursor.prototype._initSubscribe = function() {
 		var self = this;
 		$.subscribe('AudioDrawer-audioDrawn', function() {
-			self.cursor = new CursorModel(self.audioDrawer.audioLjs.getDuration());
+			//if (!self.enabled) return;
+			self.cursor = new CursorModel(self.audioDrawer.audio.getDuration());
 			//if there is no canvasLayer we don't paint cursor
 			if (self.viewer.canvasLayer) {
 				self.viewer.canvasLayer.addElement(self);
@@ -34,11 +33,12 @@ define([
 		});
 		$.subscribe("ToWave-setCursor", function(el, cursorStart, cursorEnd) {
 			var beats = self.audioDrawer.songModel.getComponent('notes').getBeatIntervalByIndexes(cursorStart, cursorEnd);
-			var startTime = self.audioDrawer.audioLjs.beatDuration * (beats[0] - 1);
+			var startTime = self.audioDrawer.audio.beatDuration * (beats[0] - 1);
 			if (self.cursor) {
 				self.cursor.setPos([startTime, startTime]); //we equal cursor start and end cursor, because this way the player won't loop
 				self.updateCursorPlaying(startTime);
 			}
+			$.publish('AudioCursor-clickedAudio', startTime);
 		});
 
 		$.subscribe('Audio-play', function(el, audio) {
@@ -238,7 +238,7 @@ define([
 		var self = this;
 		var prevINote = 0;
 		// 	time;
-		var beatDuration = this.audioDrawer.audioLjs.beatDuration;
+		var beatDuration = this.audioDrawer.audio.beatDuration;
 		var requestFrame = window.requestAnimationFrame ||
 			window.webkitRequestAnimationFrame;
 		var barIndex = 0;

@@ -6,14 +6,13 @@ define([
 			test("AudioController", function(assert) {
 				
 				var audio = new AudioController();
-				console.log(audio);
-				assert.equal(audio._calcTime(1.5, 2, 4), 1.5);
-				assert.equal(audio._calcTime(2,   2, 4), 2);
-				assert.equal(audio._calcTime(3.5, 2, 4), 3.5);
-				assert.equal(audio._calcTime(4,	  2, 4), 2);
-				assert.equal(audio._calcTime(4.5, 2, 4), 2.5);
-				assert.equal(audio._calcTime(5.5, 2, 4), 3.5);
-				assert.equal(audio._calcTime(6.5, 2, 4), 2.5);
+				assert.equal(audio._calcTime(1500, 2, 4), 1500);
+				assert.equal(audio._calcTime(2000,   2, 4), 2000);
+				assert.equal(audio._calcTime(3500, 2, 4), 3500);
+				assert.equal(audio._calcTime(4000,	  2, 4), 2000);
+				assert.equal(audio._calcTime(4500, 2, 4), 2500);
+				assert.equal(audio._calcTime(5500, 2, 4), 3500);
+				assert.equal(audio._calcTime(6500, 2, 4), 2500);
 
 
 			});

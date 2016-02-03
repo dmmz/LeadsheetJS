@@ -1,12 +1,12 @@
-define(['modules/Wave/src/BarTimesManager',
+define(['modules/Audio/src/BarTimesManager',
 	'modules/core/src/SongBarsIterator',
-	'modules/Audio/src/AudioLJSAdapter',
-	'modules/Wave/src/WaveBarView',
+	'modules/Audio/src/WaveBarView',
+	'modules/Audio/src/AudioCursor',
 	'jquery',
 	'pubsub'
-], function(BarTimesManager, SongBarsIterator, AudioLJSAdapter, WaveBarView, $, pubsub) {
+], function(BarTimesManager, SongBarsIterator, WaveBarView, AudioCursor, $, pubsub) {
 
-	function AudioDrawer(songModel, viewer, params) {
+	function AudioDrawer(songModel, viewer, notesCursor, params) {
 		params = params || {};
 
 		this.songModel = songModel;
@@ -22,8 +22,7 @@ define(['modules/Wave/src/BarTimesManager',
 		this.pixelRatio = params.pixelRatio || window.devicePixelRatio;
 		this.drawMargins = !!params.drawMargins; //for debugging
 		this.marginCursor = params.marginCursor || 0;
-
-		this.adaptViewer();
+		this.notesCursor = notesCursor;
 		this._initSubscribe();
 	};
 
@@ -32,16 +31,29 @@ define(['modules/Wave/src/BarTimesManager',
 		$.subscribe('Audio-Loaded', function(el, audio, tempo) {
 			self.audio = audio;
 			self.tempo = tempo;
-			self.audioLjs = new AudioLJSAdapter(self.songModel, audio, self.tempo);
-			self.barTimesMng.setBarTimes(self.songModel, self.audioLjs);
+			self.isEnabled = true;
+			self.barTimesMng.setBarTimes(self.songModel, self.audio);
 			self.viewer.setShortenLastBar(true);
+			self.adaptViewer();
+			self.viewer.forceNewCanvasLayer = true;
 			self.viewer.draw(self.songModel);
-			self.draw(self.barTimesMng, self.tempo, self.audioLjs.getDuration())
+			// audio draw is done after viewer draw (event LSViewer-drawEnd)
+
 		});
 		$.subscribe('LSViewer-drawEnd', function() {
-			if (self.audio.isLoaded) {
-				self.draw(self.barTimesMng, self.tempo, self.audioLjs.getDuration());
+			if (self.audio && self.audio.isEnabled && self.isEnabled) {
+				//we initialize cursor before draw, so that we can capture subscribed events
+				if (self.notesCursor){
+					self.audioCursor = new AudioCursor(self, self.viewer,  self.songModel.getComponent('notes'), self.notesCursor);
+				}
+				self.draw(self.barTimesMng, self.tempo, self.audio.getDuration());
 			}
+		});
+		$.subscribe('ToLayers-removeLayer', function(){
+			self.disable();
+		});
+		$.subscribe('AudioDrawer-enable', function(){
+			self.enable();
 		});
 	};
 
@@ -139,6 +151,27 @@ define(['modules/Wave/src/BarTimesManager',
 			}
 		}
 	};
+
+	AudioDrawer.prototype.disable = function() {
+		if (!this.isEnabled) return;
+
+		this.isEnabled = false;
+		this.audioCursor.disable();
+		this.viewer.setShortenLastBar(false);
+		this.viewer.resetLinesHeight();
+		this.viewer.forceNewCanvasLayer = true; // force new canvas when redrawing
+		this.viewer.draw(this.songModel); 
+	};	
+
+	AudioDrawer.prototype.enable = function() {
+		this.isEnabled = true;
+		this.audioCursor.enable();
+		this.viewer.setShortenLastBar(true);
+		this.adaptViewer();
+		this.viewer.forceNewCanvasLayer = true; // force new canvas when redrawing
+		this.viewer.draw(this.songModel); 
+	};
+
 	AudioDrawer.prototype.draw = function(barTimesMng, tempo, duration) {
 		if (!tempo || !duration) {
 			throw "AudioDrawer - missing parameters, tempo : " + tempo + ", duration:" + duration;

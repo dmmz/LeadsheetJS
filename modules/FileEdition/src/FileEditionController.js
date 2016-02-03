@@ -3,7 +3,6 @@ define([
 	'modules/core/src/SongModel',
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
 	'modules/converters/MusicXML/src/SongModel_MusicXML',
-	'modules/Wave/src/WaveController',
 	'modules/LSViewer/src/LSViewer',
 	'pubsub',
 	'utils/UserLog',
@@ -11,12 +10,12 @@ define([
 	'utils/AjaxUtils',
 	'jsPDF',
 	'jquery'
-], function(Mustache, SongModel, SongModel_CSLJson, SongModel_MusicXML, WaveManager, LSViewer, pubsub, UserLog, ComposerServlet, AjaxUtils, jsPDF, $) {
+], function(Mustache, SongModel, SongModel_CSLJson, SongModel_MusicXML,LSViewer, pubsub, UserLog, ComposerServlet, AjaxUtils, jsPDF, $) {
 	/**
 	 * FileEditionController manages all file interaction like save, import, export
 	 * @exports FileEdition/FileEditionController
 	 */
-	function FileEditionController(songModel, viewer, saveFunction, waveManager) {
+	function FileEditionController(songModel, viewer, saveFunction) {
 		if (viewer) {
 			this.viewer = viewer;
 			if (viewer.canvas) {
@@ -24,7 +23,6 @@ define([
 			}
 		}
 		this.songModel = songModel || new SongModel();
-		this.waveManager = waveManager;
 		this.initSubscribe();
 		if (saveFunction) {
 			this.saveFn = saveFunction;
@@ -96,57 +94,6 @@ define([
 		export_link.remove();
 	};
 
-	FileEditionController.prototype.loadWaveDisplay = function(path) {
-		if (!this.waveManager instanceof WaveManager) {
-			throw "FileEditionController -- this.waveManager is incorrect";
-		}
-		this.waveManager.load(path);
-	};
-
-	FileEditionController.prototype.exportAudioFile = function(JSONSong, tempo, exportType, chord, tick, style) {
-		var self = this;
-		var idLog = UserLog.log('info', 'Computing...');
-		var request = ComposerServlet.getRequestForSimpleAudio(JSONSong, tempo, chord, tick, style);
-		AjaxUtils.servletRequest('flow', 'composer', request, function(data) {
-			UserLog.removeLog(idLog);
-			if (typeof data !== "undefined") {
-				if (typeof data.file === "undefined") {
-					var message = 'Error while trying to build audio from Leadsheet';
-					if (typeof data.error !== "undefined") {
-						message = data.error;
-					} else if (typeof data.message !== "undefined") {
-						message = data.message;
-					}
-					UserLog.logAutoFade('error', message);
-				} else {
-					self.loadWaveDisplay(data.file);
-					// self.promptFile(self.songModel.getTitle() + '.' + exportType, data.file);
-				}
-			}
-		});
-	};
-
-	FileEditionController.prototype.exportMidiFile = function(JSONSong, tempo, chord, tick) {
-		var self = this;
-		var idLog = UserLog.log('info', 'Computing...');
-		var request = ComposerServlet.getRequestForSimpleMidi(JSONSong, tempo, chord, tick);
-		AjaxUtils.servletRequest('flow', 'composer', request, function(data) {
-			UserLog.removeLog(idLog);
-			if (typeof data !== "undefined") {
-				if (typeof data.file === "undefined") {
-					var message = 'Error while trying to build midi from Leadsheet';
-					if (typeof data.error !== "undefined") {
-						message = data.error;
-					} else if (typeof data.message !== "undefined") {
-						message = data.message;
-					}
-					UserLog.logAutoFade('error', message);
-				} else {
-					self.promptFile(self.songModel.getTitle() + '.mid', data.file);
-				}
-			}
-		});
-	};
 
 	FileEditionController.prototype.exportPNG = function() {
 		var resolutionRatio = 3; // don't go over 3-4 because then toDataUrl is getting too big on long leadsheet and export doesn't work

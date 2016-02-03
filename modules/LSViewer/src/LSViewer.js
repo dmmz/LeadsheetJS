@@ -268,8 +268,8 @@ define([
 			this.shortenLastBar = bool;
 		};
 
-		LSViewer.prototype.draw = function(song, params) {
-			params = params || {};
+		LSViewer.prototype.draw = function(song) {
+			
 			if (typeof song === "undefined") {
 				console.warn('song is empty'); // only for debug, remove after 1 week safe
 				return;

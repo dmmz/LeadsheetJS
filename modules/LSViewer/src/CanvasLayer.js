@@ -348,10 +348,10 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		for (var name in this.elems) {
 			elem = this.elems[name];
 			if (elem.isEnabled() && elem.getType() == 'CURSOR') {
-				//drawing cursor for notesManager, chordsManager and WaveManager (selection cursor)
+				//drawing cursor for notesManager, chordsManager and AudioCursor (selection cursor)
 				elem.drawCursor(this.ctx);
 			}
-			//TODO refactor, drawCursor only exists in WaveManager to draw playing cursor
+			//TODO refactor, drawCursor only exists in AudioCursor to draw playing cursor
 			if (typeof elem.drawPlayingCursor === 'function') {
 				elem.drawPlayingCursor(this.ctx);
 			}

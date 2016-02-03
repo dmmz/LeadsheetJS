@@ -29,10 +29,7 @@ require.config({
 });
 
 define(function(require) {
-        var Audio = require('modules/Audio/src/AudioController');
-        var AudioDrawer = require('modules/Audio/src/AudioDrawer');
-        var AudioCursor = require('modules/Audio/src/AudioCursor');
-        var AudioPlayer = require('modules/Audio/src/AudioPlayer');
+        var AudioModule = require('modules/Audio/src/AudioModule');
         var Cursor = require('modules/Cursor/src/Cursor');
 
         var LSViewer = require('modules/LSViewer/src/main'),
@@ -49,29 +46,38 @@ define(function(require) {
         LSViewer.OnWindowResizer(song);
 
         
-        // var neC = new NoteEditionController(song, cM);
-        // var params = {
-        //   showHalfWave: true,
-        //   //drawMargins: true,
-        //   topAudio: -100,
-        //   heightAudio: 75/*,
-        //   marginCursor: 20*/
-        // };
-        var audio = new Audio(16.941);
         
-        
+             
         var params = {
-          showHalfWave: true,
-          //drawMargins: true,
-          topAudio: -120,
-          heightAudio: 75,
+          draw: {
+            viewer: viewer//,
+            //drawParams: null
+            ,
+            notesCursor: cM
+            
+          }
         };
-        var audioDrawer = new AudioDrawer(song, viewer, params);
-        var audioCursor = new AudioCursor(audioDrawer, viewer,  song.getComponent('notes'), cM);
-        var audioPlayer = new AudioPlayer(audio);
+        var audio = new AudioModule(song, params);
         
-        //noteSpaceManager.refresh();
-        audio.load('/tests/audio/solar.wav', 170);
+        // var audio = new AudioModule(song);
+        viewer.draw(song);
+               
+        
+        //audio.load('/tests/audio/solar.wav', 170);
+
+        //Audio Module
+        $("#loadSound").click(function(e){
+          $.publish('ToLayers-removeLayer');
+          e.preventDefault();
+          audio.load('/tests/audio/solar.wav', 170);
+        });
+
+        $("#loadAnotherSound").click(function(e){
+          $.publish('ToLayers-removeLayer');
+          e.preventDefault();
+          audio.load('/tests/audio/Solar_120_bpm.335.mp3', 120);
+        });
+
 
 
         $('#play').click(function(e){
@@ -104,6 +110,16 @@ define(function(require) {
             console.log("loopOnWholeSong");
             audio.loop();
         });
+        $("#disable").click(function(e){
+          e.preventDefault();
+          audio.disable();
+          
+        });
+        $("#enable").click(function(e){
+          e.preventDefault();
+          audio.enable();
+        });
+
         (function(){
             var active = false;
             var idSetInterval;
@@ -138,7 +154,7 @@ define(function(require) {
 
           $("#switchAudio").click(function(){
             var currAudio = audios[indexAudio];
-            audio.load(currAudio.file,currAudio.tempo);
+            audio.load(currAudio.file,currAudio.tempo, false);
             indexAudio = (indexAudio + 1) % audios.length;
           });
         })();

@@ -20,7 +20,7 @@ define([
 	'modules/StructureEdition/src/StructureEdition',
 	'modules/Tag/src/TagManager',
 	'utils/main',
-	'modules/Wave/src/WaveController',
+	'modules/Audio/src/AudioModule',
 	'jquery'
 ], function(
 	AudioComments,
@@ -44,7 +44,7 @@ define([
 	StructureEdition,
 	TagManager,
 	utils,
-	Wave,
+	AudioModule,
 	$
 ) {
 	var LJS = {
@@ -66,7 +66,7 @@ define([
 		"NoteEdition": NoteEdition,
 		"StructureEdition": StructureEdition,
 		"Tag": TagManager,
-		"Wave": Wave,
+		//"Wave": Wave,
 		"utils": utils
 	};
 
@@ -219,12 +219,11 @@ define([
 			if (useAudio) {
 				$.publish('ToMidiPlayer-disable');
 
-				var wave = LJS._loadAudioPlayer(Wave, songModel, viewer, cursorNoteModel); // audio player is use to get audio wave, it's why it needs viewer
+				var audioModule = LJS._loadAudioPlayer(AudioModule, songModel, viewer, cursorNoteModel); // audio player is use to get audio wave, it's why it needs viewer
 				if (params.player.audio.audioFile) {
-					wave.load(params.player.audio.audioFile, params.player.audio.tempo, true);
+					audioModule.load(params.player.audio.audioFile, params.player.audio.tempo);
 				}
-
-				loadedModules.audioPlayer = wave;
+				loadedModules.audioPlayer = audioModule;
 			}
 
 		}
@@ -346,18 +345,16 @@ define([
 		return player;
 	};
 
-	LJS._loadAudioPlayer = function(Wave, songModel, viewer, cursorModel) {
-		var params = {
-			showHalfWave: true,
-			//drawMargins: true,
-			topAudio: -120,
-			heightAudio: 75,
-			//file: '/tests/audio/solar.wav',
-			//tempo: 170
-		};
-		var waveMng = new Wave(songModel, viewer, cursorModel, params);
+	LJS._loadAudioPlayer = function(AudioModule, songModel, viewer, cursorModel) {
+		
+		return new AudioModule(songModel, 
+			{
+				draw: {
+					viewer: viewer,
+					notesCursor: cursorModel
+				}
+			});
 		//$.publish('ToPlayer-disableAll');
-		return waveMng;
 	};
 
 
@@ -368,15 +365,15 @@ define([
 		}
 	};
 
-	LJS._loadComments = function(waveMng, viewer, songModel) {
-		var userSession = {
-			name: 'Dani',
-			id: '323324422',
-			img: '/tests/img/dani-profile.jpg'
-		};
-		var audioComments = new AudioComments(waveMng, viewer, songModel, userSession);
-		return audioComments;
-	};
+	// LJS._loadComments = function(waveMng, viewer, songModel) {
+	// 	var userSession = {
+	// 		name: 'Dani',
+	// 		id: '323324422',
+	// 		img: '/tests/img/dani-profile.jpg'
+	// 	};
+	// 	var audioComments = new AudioComments(waveMng, viewer, songModel, userSession);
+	// 	return audioComments;
+	// };
 
 	// LJS._generateUuid = function() {
 	// 	// Creating uniq id
