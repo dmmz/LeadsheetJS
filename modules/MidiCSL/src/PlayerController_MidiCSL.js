@@ -70,7 +70,7 @@ define([
 			self.initView();
 		});
 
-		// Enable midi player when we remove all layers, it means that song have changed
+		// Enable midi player when we remove all layers, it means that song has changed
 		$.subscribe("ToLayers-removeLayer", function() {
 			self.enable();
 		});

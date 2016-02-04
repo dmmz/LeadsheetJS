@@ -136,6 +136,9 @@ define([
 		};
 
 		PlayerModel_MidiCSL.prototype.setLoop = function(loop) {
+			if (!this.isEnabled){
+				return;
+			}
 			if (typeof loop !== "undefined") {
 				this.loop = !!loop;
 				$.publish('PlayerModel-toggleLoop', loop);

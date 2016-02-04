@@ -80,10 +80,8 @@ define([
 
 	ChordModel.prototype.setBase = function(chordBase) {
 		if (typeof chordBase === "string" && chordBase !== "") {
-			var newChord = new ChordModel();
-			newChord.setChordFromString(chordBase);
-			this.base = newChord;
-			return;
+			this.base = new ChordModel();
+             this.base.setChordFromString(chordBase);
 		} else if ((typeof chordBase === "undefined" || !(chordBase instanceof ChordModel)) && chordBase !== "") {
 			throw "Base don't have the correct ChordModel type";
 		}

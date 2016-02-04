@@ -52,7 +52,7 @@ define(['modules/core/src/SongBarsIterator', 'modules/core/src/SectionBarsIterat
 			sectionIt = new SectionBarsIterator(section);
 			while (sectionIt.hasNext()) {
 				//get minimum notes width
-				barNotes = noteMng.getNotesAtBarNumber(songIt.getBarIndex(), song);
+				barNotes = noteMng.getNotesAtCurrentBar(songIt);
 				width = (barNotes.length * self.noteWidth) * self.WIDTH_FACTOR;
 
 				//get minimum chords width. strategy: we check if any chords of bar are longer than the space assigned for them, 

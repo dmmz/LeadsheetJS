@@ -3,6 +3,7 @@ define(['modules/core/src/TimeSignatureModel'],function(TimeSignatureModel) {
      * Iterator that allow to go through bars
      * @exports core/SongBarsIterator
 	 */
+
 	function SongBarsIterator(song) {
 		this.song = song;
 		this.bm = this.song.getComponent('bars');
@@ -15,14 +16,10 @@ define(['modules/core/src/TimeSignatureModel'],function(TimeSignatureModel) {
 				return barSigChange;
 			}else{
 				var sectionTimeSig;
+			 	//if we are at a new section, we add a time signature change
 				if (this.isFirstSectionBar){
 					sectionTimeSig = this.song.getSection(this.iSection).getTimeSignature();
-				}
-				if (sectionTimeSig){
-					return new TimeSignatureModel(sectionTimeSig);	
-				}
-				else{
-					return undefined;
+					return sectionTimeSig ? new TimeSignatureModel(sectionTimeSig) : null;
 				}
 				
 			}
@@ -36,6 +33,8 @@ define(['modules/core/src/TimeSignatureModel'],function(TimeSignatureModel) {
 			this.prevTimeSig = null;
 			this.prevKeySig = null;
 			this.endingState = null;
+			this.ending = null;
+			this.beats = 1;
 		},
 		/**
 		 *	if true, it means we are at the last iteration, should be used like this
@@ -70,9 +69,11 @@ define(['modules/core/src/TimeSignatureModel'],function(TimeSignatureModel) {
 		 * @return {Boolean}
 		 */
 		next: function() {
-
+			
 			this.prevKeySig = this.getBarKeySignature();
-			this.prevTimeSig = this.getBarTimeSignature();
+			var timeSig = this.getBarTimeSignature();
+			this.prevTimeSig = timeSig;
+			this.beats += timeSig.getQuarterBeats();
 
 			// section
 			var sectionNumBars = this.song.getSection(this.iSection).getNumberOfBars();
@@ -83,7 +84,14 @@ define(['modules/core/src/TimeSignatureModel'],function(TimeSignatureModel) {
 			} else {
 				this.isFirstSectionBar = false;
 			}
-
+			
+			var ending = this.getEnding(this.isFirstSectionBar); ;
+			
+			this.prevEnding = ending;
+			//we calculate always timeSig before endings, except if it is ending 1, because we will retrieve it after ending one
+			if (ending != 1){
+				this.beforeEndingTimeSig = timeSig;
+			}
 			this.index++;
 			return this.hasNext();
 		},
@@ -117,14 +125,35 @@ define(['modules/core/src/TimeSignatureModel'],function(TimeSignatureModel) {
 			return (!!timeSig && timeSig != this.prevTimeSig);
 		},
 		getBarTimeSignature: function() {
+
 			var timeSig = this._getTimeSignatureChange();
 			if (timeSig) {
 				return timeSig;
+			}				
+			else if (this.prevEnding == 1 && this.getEnding(this.isFirstSectionBar) == 2) { // is important to use == instead of === as we are comparing sometimes string to numbers
+				// when we are in the bar just after ending 1, we return bar time signature we had before ending 1, 
+				//so that signature changes to ending 1 are not anymore taken into account
+				return this.beforeEndingTimeSig;
 			} else {
+				//case we are in first bar
 				return (this.index === 0) ? this.song.getTimeSignature() : this.prevTimeSig;
 			}
 			//return this.getBar().getTimeSignature() || (this.index == 0) ? this.song.getTimeSignature() : this.prevTimeSig;
 		},
+		getStartEndBeats: function(){
+			return [this.beats, this.beats + this.getBarTimeSignature().getQuarterBeats()];
+		},
+		getEnding: function(isFirstSectionBar){
+			if (isFirstSectionBar){
+				return this.getBar().getEnding();
+			}
+			else{
+				return this.getBar().getEnding() || this.prevEnding;
+			}
+		},
+		/**
+		 * getEndingState and setEndingState are functions used when drawing the ending boxes. The values can be 'BEGIN', 'MID', 'BEGIN_END', 'END'
+		 */
 		getEndingState: function() {
 			return this.endingState;
 		},

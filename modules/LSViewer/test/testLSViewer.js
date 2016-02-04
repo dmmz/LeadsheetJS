@@ -2,14 +2,14 @@ define(['tests/DisplayTester',
 	'modules/LSViewer/src/LSViewer',
 	'modules/core/src/SongModel',
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
-	'modules/Wave/src/WaveController',
 	'modules/NoteEdition/src/NoteSpaceManager',
 	'modules/Cursor/src/CursorModel',
 	'modules/Cursor/src/CursorController',
 	'modules/Cursor/src/CursorListener',
 	'modules/NoteEdition/src/NoteEditionController',
 	'modules/Tag/src/TagManager',
-	'modules/AudioComments/src/AudioCommentsController',
+	'modules/Audio/src/AudioModule',
+	//'modules/AudioComments/src/AudioCommentsController',
 	'tests/songs/allRhythmicFigures',
 	'tests/songs/AloneTogether',
 	'tests/songs/Solar',
@@ -19,14 +19,14 @@ define(['tests/DisplayTester',
 	LSViewer,
 	SongModel,
 	SongModel_CSLJson,
-	WaveManager,
 	NoteSpaceManager,
 	CursorModel,
 	CursorController,
 	CursorView,
 	NoteEditionController,
 	TagManager,
-	AudioComments,
+	AudioModule,
+	//AudioComments,
 	allRhythmicFigures,
 	AloneTogether,
 	Solar,
@@ -50,11 +50,16 @@ define(['tests/DisplayTester',
 				var song = SongModel_CSLJson.importFromMusicCSLJSON(Solar);
 				var cM = new CursorModel(song.getComponent('notes'));
 			
-				var waveMng = new WaveManager(song, viewer, cM); //last parameter is called params and is not used here, so it's the default config
+				var audioModule = new AudioModule(song,{draw:
+													{
+														viewer: viewer,
+														cursorNotes: cM
+													}
+												});
 				var noteSpaceManager = new NoteSpaceManager(cM, viewer);
 				var userSession = {name:'Dani', id:'323324422',img:'/tests/img/dani-profile.jpg'};
-				var audioComments = new AudioComments(waveMng,viewer,song,userSession);
-				audioComments.addComment({
+				//var audioComments = new AudioComments(waveMng,viewer,song,userSession);
+				/*audioComments.addComment({
 					userName: 'Dani',
 					img: '/tests/img/dani-profile.jpg',
 					text: 'I am hungry',
@@ -68,11 +73,11 @@ define(['tests/DisplayTester',
 					text: 'I am hungry',
 					timeInterval: [3.3, 10.1],
 					color: '#0F0'
-				});
+				});*/
 
 				viewer.draw(song);
 				//not used because is not interactive, but draws the score cursor
-				waveMng.load('/tests/audio/solar.wav',170,true);
+				audioModule.load('/tests/audio/solar.wav',170);
 				//audioComments.draw();
 
 			},{width:1200,height:1000}, "Painting audio");

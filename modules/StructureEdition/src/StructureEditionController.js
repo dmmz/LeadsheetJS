@@ -108,13 +108,7 @@ define([
 		//var notes;
 		// console.log(sectionNumber, startBar, numberOfBars);
 		for (var i = 0; i < numberOfBars; i++) {
-			//notes = noteManager.getNotesAtBarNumber(startBar, this.songModel);
-			//for (var j = notes.length - 1; j >= 0; j--) {
-			//	noteManager.deleteNote(noteManager.getNoteIndex(notes[j]));
-			//}
 			this._removeBar(startBar);
-			//barManager.removeBar(startBar); // each time we remove index move so we don't need to sum startBar with i
-
 		}
 		// check if cursor not outside
 		var indexLastNote = noteManager.getTotal() - 1;

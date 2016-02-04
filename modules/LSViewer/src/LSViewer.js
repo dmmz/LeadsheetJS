@@ -279,8 +279,8 @@ define([
 			this.shortenLastBar = bool;
 		};
 
-		LSViewer.prototype.draw = function(song, params) {
-			params = params || {};
+		LSViewer.prototype.draw = function(song) {
+			
 			if (typeof song === "undefined") {
 				console.warn('song is empty'); // only for debug, remove after 1 week safe
 				return;
@@ -304,6 +304,7 @@ define([
 				stave,
 				vxfBeams,
 				noteViews = [],
+				barNoteViews,
 				vxfBars = [],
 				barDimensions,
 				tieMng = new TieManager();
@@ -327,22 +328,22 @@ define([
 				sectionIt = new SectionBarsIterator(section);
 				while (sectionIt.hasNext()) {
 					//console.time('whole bar');
-					//console.log(sectionIt.getBarIndex());
+					barNoteViews = [];
 
 					beamMng = new BeamManager();
 					tupletMng = new TupletManager();
 					bar = [];
 					
 					if (!self.ONLY_CHORDS){
-						barNotes = nm.getNotesAtBarNumber(songIt.getBarIndex(), song);					
+						barNotes = nm.getNotesAtCurrentBar(songIt);
 						for (j = 0, v = barNotes.length; j < v; j++) {
 							tieMng.checkTie(barNotes[j], iNote);
-							tupletMng.checkTuplet(barNotes[j], iNote);
+							tupletMng.checkTuplet(barNotes[j], j);
 							noteView = new LSNoteView(barNotes[j]);
 							beamMng.checkBeam(nm, iNote, noteView);
 
 							bar.push(noteView.getVexflowNote());
-							noteViews.push(noteView);
+							barNoteViews.push(noteView);
 							iNote++;
 						}
 					}
@@ -356,7 +357,7 @@ define([
 					if (!self.DRAW_STAVE_LINES){
 						barViewParams.fill_style = "#FFF"; //we assume background is white
 					}
-					if (self.TEXT_CLOSER_TO_STAVE){ //this way, endings and text such as coda, segno, section names are 
+					if (self.TEXT_CLOSER_TO_STAVE){ //this way, endings and text such as coda, segno, section names are closer
 						barViewParams.top_text_position = 0;
 					}
 
@@ -369,7 +370,6 @@ define([
 						timeSignature: songIt.getBarTimeSignature(),
 					});
 
-					//console.time('getChords');
 					barChords = cm.getChordsByBarNumber(songIt.getBarIndex());
 					for (i = 0, c = barChords.length; i < c; i++) {
 						chordView = new LSChordView(barChords[i]).draw(
@@ -385,14 +385,14 @@ define([
 
 					if (!self.ONLY_CHORDS){
 						Vex.Flow.Formatter.FormatAndDraw(self.ctx, barView.getVexflowStave(), bar, {
-						 	autobeam: false
+							autobeam: false
 						});
 						beamMng.draw(self.ctx, vxfBeams); // and draw beams needs to be done after drawing notes
-						tupletMng.draw(self.ctx, noteViews);
+						tupletMng.draw(self.ctx, barNoteViews);
+						noteViews = noteViews.concat(barNoteViews);
 					}
 					songIt.next();
 					sectionIt.next();
-					//console.timeEnd('whole bar');
 				}
 				numSection++;
 			});

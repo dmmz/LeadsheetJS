@@ -73,6 +73,83 @@ define([
 					}
 					barsIt.next();
 				}
+
+				var songTimeSigChangeInEnding = {
+					composer: "Random Composer",
+					title: "Whatever song",
+					time: "4/4",
+					changes: [
+						{
+							name: "A",
+							bars: 
+							[{
+								//barNum: 0 
+								chords: [{p: "A",ch: "M7",beat: 1}],
+								melody: [
+									{keys: ["b/4"],duration: "wr"}
+								],
+							},{
+								//barNum: 1 
+								chords: [{p: "B",ch: "m7",beat: 1}],
+								melody: [
+									{keys: ["b/4"],duration: "wr"}
+								],
+								ending:1
+
+							},{
+								//barNum: 2
+								timeSignature: "6/4",
+								chords: [{p: "A",ch: "M7",beat: 1}],
+								melody: [
+									{keys: ["b/4"],duration: "wr"}
+								],
+							},{
+								//barNum: 3 
+								chords: [{p: "A",ch: "M7",beat: 1}],
+								melody: [
+									{keys: ["b/4"],duration: "wr"}
+								],
+								ending:2
+							},{
+								chords: [{p: "A",ch: "M7",beat: 1}],
+								melody: [
+									{keys: ["b/4"],duration: "wr"}
+								],
+							}]
+						},
+						{
+							name:"B",
+							bars:
+							[{
+								chords: [{p: "A",ch: "M7",beat: 1}],
+								melody: [
+									{keys: ["b/4"],duration: "wr"}
+								]
+							}]
+						}
+					]
+				};
+				var songChangeEnding = SongModel_CSLJson.importFromMusicCSLJSON(songTimeSigChangeInEnding);
+				barsIt = new SongBarsIterator(songChangeEnding);
+
+				while (barsIt.hasNext()){
+					switch (barsIt.getBarIndex()){
+						case 0,1:
+							assert.equal(barsIt.getBarTimeSignature().toString(),"4/4", "4/4 at start");
+							break;
+						case 2:
+						//case 2:
+							assert.equal(barsIt.getBarTimeSignature().toString(),"6/4", "6/4 in ending 1");
+							break;
+						case 3:
+						case 4:
+						case 5:
+							assert.equal(barsIt.getBarTimeSignature().toString(),"4/4", "back to 4/4 from ending 2 to the end");
+							break;
+					}
+					barsIt.next();
+				}
+
 			});
 		}
 	};
