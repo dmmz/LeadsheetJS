@@ -20,12 +20,6 @@ require.config({
 		// },
 		vexflow: {
 			exports: 'Vex'
-		},
-		Midijs: {
-			exports: 'MIDI'
-		},
-		JsonDelta: {
-			exports: 'JSON_delta'
 		}
 	}
 });
@@ -33,18 +27,24 @@ require.config({
 define(function(require) {
 	//var $ = require('jquery');
 	//var LJS = require('LJS');
-	var chordsSong = require('/samples/chordsSequence/solar-chords');
+	var chordsSong = {"title":"Solar","composer":"Miles Davis","time":"4\/4","style":"Jazz","source":"511385b758e3381874000000","changes":[{"id":"0","name":"Melody\/Solos","numBars":"12","repeat":"0","endingNumBars":"0","timeSignature":"","style":"","bars":[{"chords":[{"p":"C","ch":"m","beat":1}]},{"chords":[{"p":"C","ch":"m","beat":1}]},{"chords":[{"p":"G","ch":"m7","beat":1}]},{"chords":[{"p":"C","ch":"7","beat":1}]},{"chords":[{"p":"F","ch":"M7","beat":1}]},{"chords":[{"p":"F","ch":"M7","beat":1}]},{"chords":[{"p":"F","ch":"m7","beat":1}]},{"chords":[{"p":"Bb","ch":"7","beat":1}]},{"chords":[{"p":"Eb","ch":"M7","beat":1}]},{"chords":[{"p":"Eb","ch":"m7","beat":1},{"p":"Ab","ch":"7","beat":3}]},{"chords":[{"p":"Db","ch":"M7","beat":1}]},{"chords":[{"p":"D","ch":"halfdim7","beat":1},{"p":"G","ch":"7b9","beat":3}]}]}],"keySignature":"C","tempo":120};
 	//var chordsSong = require('tests/songs/AloneTogether');
 	var SongModel_CSLJson = require('modules/converters/MusicCSLJson/src/SongModel_CSLJson');
 	
 	var LSChordSequenceViewer = require('modules/LSViewer/src/LSChordSequenceViewer');
 	var OnWindowResizer = require('modules/LSViewer/src/OnWindowResizer');
+	var AudioModule = require('modules/Audio/src/AudioModule');
 	
-	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(chordsSong);
 
-	var viewer = new LSChordSequenceViewer($("#canvas_container")[0]);
+	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(chordsSong);
+	var viewer = new LSChordSequenceViewer($("#canvas_container")[0], {displayTitle:false, displayComposer:false});
 	OnWindowResizer(songModel);
 
+	var audio = new AudioModule(songModel);
+	audio.load('/tests/audio/Solar_120_bpm.335.mp3', 120, 0, function(){
+		//audio.play();	
+	});
+	
 	viewer.draw(songModel);
 
 	// console.log(LJS);

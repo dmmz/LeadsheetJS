@@ -4,11 +4,11 @@ define(['modules/core/src/SongBarsIterator', 'modules/core/src/SectionBarsIterat
     * @exports LSViewer/BarWidthManager
     */
 	function BarWidthManager(lineHeight, lineWidth, noteWidth, barsPerLine, marginTop, lastBarWidthRatio) {
-		if (!lineHeight) throw "BarWidthManager - lineHeight not defined";
-		if (!lineWidth) throw "BarWidthManager - lineWidth not defined";
-		if (!noteWidth) throw "BarWidthManager - noteWidth not defined";
-		if (!barsPerLine) throw "BarWidthManager - barsPerLine not defined";
-		if (!marginTop) throw "BarWidthManager - marginTop not defined";
+		if (lineHeight === undefined) throw "BarWidthManager - lineHeight not defined";
+		if (lineWidth === undefined) throw "BarWidthManager - lineWidth not defined";
+		if (noteWidth === undefined) throw "BarWidthManager - noteWidth not defined";
+		if (barsPerLine === undefined) throw "BarWidthManager - barsPerLine not defined";
+		if (marginTop === undefined) throw "BarWidthManager - marginTop not defined";
 
 		this.lastBarWidthRatio = lastBarWidthRatio || 1;
 

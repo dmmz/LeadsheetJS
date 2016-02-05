@@ -74,6 +74,9 @@ define([
 			this.marginTop = this.INITIAL_MARGIN_TOP;
 			this.lineHeight = this.INITIAL_LINE_HEIGHT;
 
+			if (!this.DISPLAY_TITLE) 	this.marginTop -= 70;
+			if (!this.DISPLAY_COMPOSER) this.marginTop -= 30;
+
 			this.shortenLastBar = false;
 
 			this.heightOverflow = params.heightOverflow || "auto";
@@ -308,7 +311,7 @@ define([
 				vxfBars = [],
 				barDimensions,
 				tieMng = new TieManager();
-
+			
 			var lastBarWidthRatio = this.shortenLastBar ? this.LAST_BAR_WIDTH_RATIO : 1;
 			this.barWidthMng = new BarWidthManager(this.lineHeight, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE, this.marginTop, lastBarWidthRatio);
 			this.barWidthMng.calculateBarsStructure(song, nm, cm, this.ctx, this.FONT_CHORDS);
