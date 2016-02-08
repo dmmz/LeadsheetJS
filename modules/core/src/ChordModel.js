@@ -82,10 +82,11 @@ define([
 		if (typeof chordBase === "string" && chordBase !== "") {
 			this.base = new ChordModel();
              this.base.setChordFromString(chordBase);
-		} else if ((typeof chordBase === "undefined" || !(chordBase instanceof ChordModel)) && chordBase !== "") {
+        } else if ((chordBase === undefined || !(chordBase instanceof ChordModel)) && chordBase !== "") {
 			throw "Base don't have the correct ChordModel type";
+		} else { // if chord is a chordModel or an empty string (case empty string we are removing base)
+			this.base = chordBase;
 		}
-		this.base = chordBase;
 	};
 
 	ChordModel.prototype.getParenthesis = function() {

@@ -159,16 +159,6 @@ define(['modules/core/src/ChordModel'], function(ChordModel) {
 					beat: 3
 				});
 				assert.equal(newChord.getNote(), "G");
-
-				var newChordWithBase = new ChordModel({
-					note: 'G',
-					base: 'Bb'
-				});
-				var baseOnly = new ChordModel({
-					note: 'Bb'
-				});
-				assert.deepEqual(newChordWithBase.getBase(), baseOnly, 'Check base model is an object strictly equal to Get Base');
-
 				assert.ok(newChord.equalsTo({
 					p: 'G',
 					ch: 'm7'
@@ -176,6 +166,22 @@ define(['modules/core/src/ChordModel'], function(ChordModel) {
 
 				var clonedChord = newChord.clone();
 				assert.deepEqual(clonedChord, newChord);
+
+				//Chords with base
+				var newChordWithBase = new ChordModel({
+					note: 'G',
+					base: 'Bb'
+				});
+				var baseOnly = new ChordModel({
+					note: 'Bb'
+				});
+				console.log(baseOnly);
+				console.log(newChordWithBase.getBase());
+				assert.deepEqual(newChordWithBase.getBase(), baseOnly, 'Check base model is an object strictly equal to Get Base');
+
+				var clonedChordWithBase = newChordWithBase.clone();
+				assert.deepEqual(newChordWithBase, clonedChordWithBase, 'cloning chords with base');
+
 			});
 		}
 	};
