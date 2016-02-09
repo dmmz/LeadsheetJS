@@ -32,28 +32,29 @@ define(function(require) {
         var AudioModule = require('modules/Audio/src/AudioModule');
         var Cursor = require('modules/Cursor/src/Cursor');
 
-        var LSViewer = require('modules/LSViewer/src/main'),
+        var LSViewer = require('modules/LSViewer/src/LSViewer'),
+          OnWindowResizer = require('modules/LSViewer/src/OnWindowResizer'),
           SongModel_CSLJson = require('modules/converters/MusicCSLJson/src/SongModel_CSLJson'),
           Solar  = require('tests/songs/Solar'),
           CursorModel = require('modules/Cursor/src/CursorModel'),
           NoteEditionController = require('modules/NoteEdition/src/NoteEditionController'),
           NoteSpaceManager = require('modules/NoteEdition/src/NoteSpaceManager');
+          //ChordSpaceManager = require('modules/ChordEdition/src/ChordSpaceManager');
 
         var song = SongModel_CSLJson.importFromMusicCSLJSON(Solar);
-        var cM = new CursorModel(song.getComponent('notes'));
-        var viewer = new LSViewer.LSViewer($("#audioExample")[0],{heightOverflow:'resizeDiv',layer:true});
-        var noteSpaceManager = new NoteSpaceManager(cM, viewer);
-        LSViewer.OnWindowResizer(song);
-
-        
-        
-             
+        var notesC = new CursorModel(song.getComponent('notes'));
+        var chordsC = new CursorModel(song.getComponent('chords'));
+        var viewer = new LSViewer($("#audioExample")[0],{heightOverflow:'resizeDiv',layer:true});
+        var noteSpaceManager = new NoteSpaceManager(notesC, viewer);
+        //var chordSpaceManager = new ChordSpaceManager(song, chordsC, viewer);
+        OnWindowResizer(song);
+            
         var params = {
           draw: {
-            viewer: viewer//,
+            viewer: viewer,
             //drawParams: null
-            ,
-            notesCursor: cM
+            audioCursor: true,
+            notesCursor: notesC
             
           }
         };
