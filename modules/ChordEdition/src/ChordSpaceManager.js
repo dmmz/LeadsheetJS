@@ -2,19 +2,18 @@ define([
 	'modules/core/src/SongModel',
 	'modules/core/src/ChordModel',
 	'modules/ChordEdition/src/ChordSpaceView',
-	'modules/ChordEdition/src/ChordSpaceEdition',
 	'modules/Cursor/src/CursorModel',
 	'modules/converters/MusicCSLJson/src/ChordModel_CSLJson',
 	'utils/UserLog',
 	'modules/Edition/src/ElementManager',
 	'jquery',
 	'pubsub'
-], function(SongModel, ChordModel, ChordSpaceView, ChordSpaceEdition, CursorModel, ChordModel_CSLJson, UserLog, ElementManager, $, pubsub) {
+], function(SongModel, ChordModel, ChordSpaceView, CursorModel, ChordModel_CSLJson, UserLog, ElementManager, $, pubsub) {
 	/**
 	 * ChordSpaceManager creates and manages an array of chord space which is represented as a rectangle on each beat on top of bars
 	 * @exports ChordEdition/ChordSpaceManager
 	 */
-	function ChordSpaceManager(songModel, cursor, viewer, isEnabled, editable) {
+	function ChordSpaceManager(songModel, cursor, viewer, isEnabled, chordSpaceEdition) {
 		if (!songModel || !cursor) {
 			throw "ChordSpaceManager missing params";
 		}
@@ -29,8 +28,9 @@ define([
 		this.MARGIN_TOP = 5;
 		this.MARGIN_RIGHT = 5;
 		this.viewer = viewer;
-		if (editable) {
-			this.chordSpaceEdition = new ChordSpaceEdition(songModel, viewer, this.MARGIN_TOP, this.MARGIN_RIGHT);
+		if (chordSpaceEdition) {
+			this.chordSpaceEdition = chordSpaceEdition;
+			this.chordSpaceEdition.setMargins(this.MARGIN_RIGHT, this.MARGIN_TOP);
 		}
 	}
 

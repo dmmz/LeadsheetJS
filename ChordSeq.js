@@ -3,6 +3,8 @@ define([
 	'modules/LSViewer/src/LSChordSequenceViewer',
 	'modules/LSViewer/src/OnWindowResizer',
 	'modules/Audio/src/AudioModule',
+	'modules/ChordEdition/src/ChordSpaceManager',
+	'modules/Cursor/src/CursorModel',
 	'utils/AjaxUtils',
 	'jquery'
 ], function(
@@ -10,6 +12,8 @@ define([
 	LSChordSequenceViewer,
 	OnWindowResizer,
 	AudioModule,
+	ChordSpaceManager,
+	CursorModel,
 	AjaxUtils,
 	$
 ) {
@@ -23,6 +27,8 @@ define([
 		}
 		// On second Part we use options to initialize modules
 		var songModel = SongModel_CSLJson.importFromMusicCSLJSON(MusicCSLJSON);
+		var chordsCursor = new CursorModel(songModel.getComponent('chords'));
+		new ChordSpaceManager(songModel, chordsCursor, viewer, true);
 		var viewer = new LSChordSequenceViewer($("#canvas_container")[0],{displayTitle: false, displayComposer: false});
 		OnWindowResizer(songModel);
 

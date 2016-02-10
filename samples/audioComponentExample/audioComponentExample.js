@@ -40,6 +40,7 @@ define(function(require) {
           NoteEditionController = require('modules/NoteEdition/src/NoteEditionController'),
           NoteSpaceManager = require('modules/NoteEdition/src/NoteSpaceManager');
           ChordSpaceManager = require('modules/ChordEdition/src/ChordSpaceManager');
+          ChordSpaceEdition = require('modules/ChordEdition/src/ChordSpaceEdition');
 
 
         var song = SongModel_CSLJson.importFromMusicCSLJSON(Solar);
@@ -49,7 +50,9 @@ define(function(require) {
         var viewer = new LSViewer($("#audioExample")[0],{heightOverflow:'resizeDiv',layer:true});
         //construct noteSpaceManager
         new NoteSpaceManager(notesCursor, viewer);
-        new ChordSpaceManager(song, chordsCursor, viewer, true, true);
+        
+        var chordSpaceEdition =new ChordSpaceEdition(song, viewer);
+        new ChordSpaceManager(song, chordsCursor, viewer, true, chordSpaceEdition);
         OnWindowResizer(song);
         
         var params = {

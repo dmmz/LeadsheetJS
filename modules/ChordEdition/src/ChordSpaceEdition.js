@@ -6,12 +6,14 @@ define([
 	'modules/Edition/src/HtmlInputElement',
 	'utils/ChordUtils'
 ], function($, pubsub, jquery_autocomplete, UserLog, HtmlInputElement, ChordUtils) {
-	function ChordSpaceEdition(songModel, viewer, marginTop, marginRight) {
+	function ChordSpaceEdition(songModel, viewer) {
 		this.songModel = songModel;
 		this.viewer = viewer;
+	};
+	
+	ChordSpaceEdition.prototype.setMargins = function(marginRight, marginTop) {
 		this.marginRight = marginRight;
 		this.marginTop = marginTop;
-
 	};
 
 	ChordSpaceEdition.prototype.drawEditableChord = function(chordSpaceView, cursor) {
