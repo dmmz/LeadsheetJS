@@ -8,8 +8,8 @@ require.config({
     vexflow: 'external-libs/vexflow-min',
     Midijs: 'external-libs/Midijs/midijs.min',
     pubsub: 'external-libs/tiny-pubsub.min',
-    mustache: 'external-libs/mustache'
-
+    mustache: 'external-libs/mustache',
+    jquery_autocomplete: 'external-libs/jquery.autocomplete.min'
   },
   shim: {
     'qunit': {
@@ -32,37 +32,38 @@ define(function(require) {
         var AudioModule = require('modules/Audio/src/AudioModule');
         var Cursor = require('modules/Cursor/src/Cursor');
 
-        var LSViewer = require('modules/LSViewer/src/main'),
+        var LSViewer = require('modules/LSViewer/src/LSViewer'),
+          OnWindowResizer = require('modules/LSViewer/src/OnWindowResizer'),
           SongModel_CSLJson = require('modules/converters/MusicCSLJson/src/SongModel_CSLJson'),
           Solar  = require('tests/songs/Solar'),
           CursorModel = require('modules/Cursor/src/CursorModel'),
           NoteEditionController = require('modules/NoteEdition/src/NoteEditionController'),
           NoteSpaceManager = require('modules/NoteEdition/src/NoteSpaceManager');
+          ChordSpaceManager = require('modules/ChordEdition/src/ChordSpaceManager');
+
 
         var song = SongModel_CSLJson.importFromMusicCSLJSON(Solar);
-        var cM = new CursorModel(song.getComponent('notes'));
-        var viewer = new LSViewer.LSViewer($("#audioExample")[0],{heightOverflow:'resizeDiv',layer:true});
-        var noteSpaceManager = new NoteSpaceManager(cM, viewer);
-        LSViewer.OnWindowResizer(song);
+        var notesCursor = new CursorModel(song.getComponent('notes'));
+        var chordsCursor = new CursorModel(song.getComponent('chords'));
 
+        var viewer = new LSViewer($("#audioExample")[0],{heightOverflow:'resizeDiv',layer:true});
+        //construct noteSpaceManager
+        new NoteSpaceManager(notesCursor, viewer);
+        new ChordSpaceManager(song, chordsCursor, viewer, true, true);
+        OnWindowResizer(song);
         
-        
-             
         var params = {
           draw: {
-            viewer: viewer//,
-            //drawParams: null
-            ,
-            notesCursor: cM
-            
+            viewer: viewer,
+            audioCursor: true,
+            notesCursor: notesCursor,
+            chordsCursor: chordsCursor
           }
         };
         var audio = new AudioModule(song, params);
         
         // var audio = new AudioModule(song);
         viewer.draw(song);
-               
-        
         //audio.load('/tests/audio/solar.wav', 170);
 
         //Audio Module

@@ -6,7 +6,7 @@ define(['modules/Audio/src/BarTimesManager',
 	'pubsub'
 ], function(BarTimesManager, SongBarsIterator, WaveBarView, AudioCursor, $, pubsub) {
 
-	function AudioDrawer(songModel, viewer, notesCursor, params) {
+	function AudioDrawer(songModel, viewer, useAudioCursor, audioAnimation, params) {
 		params = params || {};
 
 		this.songModel = songModel;
@@ -22,7 +22,11 @@ define(['modules/Audio/src/BarTimesManager',
 		this.pixelRatio = params.pixelRatio || window.devicePixelRatio;
 		this.drawMargins = !!params.drawMargins; //for debugging
 		this.marginCursor = params.marginCursor || 0;
-		this.notesCursor = notesCursor;
+		this.useAudioCursor = useAudioCursor;
+		if (this.useAudioCursor)
+		{
+			this.audioAnimation = audioAnimation;
+		}
 		this._initSubscribe();
 	};
 
@@ -43,8 +47,8 @@ define(['modules/Audio/src/BarTimesManager',
 		$.subscribe('LSViewer-drawEnd', function() {
 			if (self.audio && self.audio.isEnabled && self.isEnabled) {
 				//we initialize cursor before draw, so that we can capture subscribed events
-				if (self.notesCursor){
-					self.audioCursor = new AudioCursor(self, self.viewer,  self.songModel.getComponent('notes'), self.notesCursor);
+				if (self.useAudioCursor){
+					self.audioCursor = new AudioCursor(self, self.viewer, self.audioAnimation);
 				}
 				self.draw(self.barTimesMng, self.tempo, self.audio.getDuration());
 			}

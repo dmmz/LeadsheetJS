@@ -3,11 +3,15 @@ define(['vexflow'], function(Vex) {
     * LSBarView is a module called by CanvasLayer to draw bars
     * @exports LSViewer/LSBarView
     */
-	function LSBarView(barDimensions) {
-		this.vexflowStave = new Vex.Flow.Stave(barDimensions.left, barDimensions.top, barDimensions.width);
+	function LSBarView(barDimensions, options) {
+		this.vexflowStave = new Vex.Flow.Stave(barDimensions.left, barDimensions.top, barDimensions.width, options);
+		this.drawClef = !!options.draw_clef;
+		this.drawKeySignature = !!options.draw_key_signature;
+		this.dawStaveNumbers = options.draw_stave_numbers === undefined ? true : !!options.draw_stave_numbers;
 	}
+
 	LSBarView.prototype.draw = function(ctx, songIt, sectionIt, endingsY, labelsY) {
-		if (songIt.getBarIndex() === 0) {
+		if (songIt.getBarIndex() === 0 && this.drawClef) {
 			this.vexflowStave.addClef("treble").setContext(ctx).draw();
 		}
 		//name section
@@ -24,8 +28,7 @@ define(['vexflow'], function(Vex) {
 		}
 
 		//Bar number
-		var drawStavesNumber = true;
-		if (drawStavesNumber === true) {
+		if (this.drawStaveNumbers === true) {
 			ctx.font = "10px Verdana"; // font for staves number
 			ctx.fillStyle = "#900";
 			var position = this.getVexflowStave();
@@ -35,7 +38,7 @@ define(['vexflow'], function(Vex) {
 		}
 
 		var keySignature = songIt.getBarKeySignature();
-		if (keySignature != songIt.prevKeySig) {
+		if (keySignature != songIt.prevKeySig && this.drawKeySignature) {
 			this.vexflowStave.addKeySignature(keySignature);
 		}
 
@@ -85,6 +88,7 @@ define(['vexflow'], function(Vex) {
 			this.vexflowStave.setEndBarType(Vex.Flow.Barline.type.END);
 		}
 		this.vexflowStave.setContext(ctx).draw();
+
 	};
 	LSBarView.prototype.getKeySignature = function() {
 		return this.keySignature;

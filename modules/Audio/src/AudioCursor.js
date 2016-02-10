@@ -2,18 +2,13 @@ define([
 	'modules/Edition/src/ElementManager',
 	'modules/Cursor/src/CursorModel'
 ], function(ElementManager, CursorModel) {
-	function AudioCursor(audioDrawer, viewer, noteMng, cursorNotes) {
+	function AudioCursor(audioDrawer, viewer, audioAnimation) {
 		this.CL_TYPE = 'CURSOR';
 		this.CL_NAME = 'audioCursor';
 		this.audioDrawer = audioDrawer;
 		this.viewer = viewer;
 		this.elemMng = new ElementManager();
-		//if we update note cursor, we'll need both, if only one is passed, fail
-		if (!!this.noteMng && !this.cursorNotes || !this.noteMng && !!this.cursorNotes) {
-			throw "AudioCursor: notesMng and cursorNotes must be both defined or both undefined";
-		}
-		this.noteMng = noteMng;
-		this.cursorNotes = cursorNotes;
+		this.audioAnimation = audioAnimation;
 		this._initSubscribe();
 	};
 
@@ -26,6 +21,9 @@ define([
 			//if there is no canvasLayer we don't paint cursor
 			if (self.viewer.canvasLayer) {
 				self.viewer.canvasLayer.addElement(self);
+				if (self.audioAnimation){
+					self.audioAnimation.addCursor(self);
+				}				
 				self.updateCursorPlaying(0);
 				self.viewer.canvasLayer.refresh();
 			}
@@ -41,15 +39,6 @@ define([
 			$.publish('AudioCursor-clickedAudio', startTime);
 		});
 
-		$.subscribe('Audio-play', function(el, audio) {
-			self.restartAnimationLoop(audio);
-		});
-		$.subscribe('Audio-stop', function(el, audio) {
-			if (self.animationId) {
-				window.cancelAnimationFrame(self.animationId);
-				self.animationId = null;
-			}
-		});
 	};
 
 	/**
@@ -224,42 +213,17 @@ define([
 		}
 		return areas;
 	};
-	AudioCursor.prototype._updateNoteCursor = function(currTime, beatDuration, prevINote) {
-			//we update note cursor
-		var iNote = this.noteMng.getPrevIndexNoteByBeat(currTime / beatDuration + 1);
-		if (iNote != prevINote && iNote < this.cursorNotes.getListLength()) { //if cursorNotes is not defined (or null) we don't use it (so audioPlayer works and is not dependent on cursor)
-			this.cursorNotes.setPos(iNote);
-			prevINote = iNote;
+	/**
+	 * Interface function for AudioAnimation
+	 * @param  {AudioController} audio 
+	 */
+	AudioCursor.prototype.update = function(audio) {
+		var currTime = audio.getCurrentTime();
+		var barIndex = this.audioDrawer.barTimesMng.getBarIndexByTime(currTime); 
+		if (barIndex < this.audioDrawer.barTimesMng.getLength()) {
+			this.updateCursorPlaying(currTime, barIndex);
 		}
-		return prevINote;
+
 	};
-	AudioCursor.prototype.restartAnimationLoop = function(audio) {
-
-		var self = this;
-		var prevINote = 0;
-		// 	time;
-		var beatDuration = this.audioDrawer.audio.beatDuration;
-		var requestFrame = window.requestAnimationFrame ||
-			window.webkitRequestAnimationFrame;
-		var barIndex = 0;
-		var currTime, r;
-
-		var frame = function() {
-			currTime = audio.getCurrentTime();
-			//we don't pass barIndex as 2nd param (which would optimize function), becuase it only works forward, not backwards (which is the case if we set loop dinamically)
-			barIndex = self.audioDrawer.barTimesMng.getBarIndexByTime(currTime); 
-			if (self.noteMng) {
-				prevINote = self._updateNoteCursor(currTime, beatDuration, prevINote);
-			}
-			// To avoid problems when finishing audio, we play while barIndex is in barTimesMng, if not, we pause
-			if (barIndex < self.audioDrawer.barTimesMng.getLength()) {
-				self.updateCursorPlaying(currTime, barIndex);
-				self.viewer.canvasLayer.refresh();
-				self.animationId = requestFrame(frame);
-			}
-		};
-		frame();
-	};
-
 	return AudioCursor;
 });

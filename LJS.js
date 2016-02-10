@@ -9,7 +9,8 @@ define([
 	'modules/Edition/src/Edition',
 	'modules/FileEdition/src/FileEdition',
 	'modules/History/src/HistoryC',
-	'modules/LSViewer/src/main',
+	'modules/LSViewer/src/LSViewer',
+	'modules/LSViewer/src/OnWindowResizer',
 	'modules/MainMenu/src/MainMenu',
 	'modules/MidiCSL/src/main',
 	'modules/NoteEdition/src/NoteEdition',
@@ -34,6 +35,7 @@ define([
 	FileEdition,
 	HistoryC,
 	LSViewer,
+	OnWindowResizer,
 	MainMenu,
 	MidiCSL,
 	NoteEdition,
@@ -61,6 +63,7 @@ define([
 		"FileEdition": FileEdition,
 		"HistoryC": HistoryC,
 		"LSViewer": LSViewer,
+		"OnWindowResizer": OnWindowResizer,
 		"MainMenu": MainMenu,
 		"MidiCSL": MidiCSL,
 		"NoteEdition": NoteEdition,
@@ -269,8 +272,8 @@ define([
 	};
 
 	LJS._loadViewer = function(songModel, HTMLElement, viewerOptions) {
-		var viewer = new LSViewer.LSViewer(HTMLElement, viewerOptions);
-		LSViewer.OnWindowResizer(songModel);
+		var viewer = new LSViewer(HTMLElement, viewerOptions);
+		OnWindowResizer(songModel);
 		return viewer;
 	};
 

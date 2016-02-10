@@ -22,7 +22,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 	}
 
 	AudioController.prototype._setParams = function(tempo) {
-		this.songNumBeats =  this.song.getComponent('notes').getTotalDuration();
+		this.songNumBeats =  this.song.getSongTotalBeats();
 		this.beatDuration = 60 / tempo;
 		this.timeEndSong = this.beatDuration * this.songNumBeats; //song duration until last beat (without residual audi
 	};

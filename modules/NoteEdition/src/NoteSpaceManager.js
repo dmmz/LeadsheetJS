@@ -1,12 +1,11 @@
 define([
-	'modules/core/src/NoteModel',
 	'modules/NoteEdition/src/NoteSpaceView',
 	'modules/Cursor/src/CursorModel',
 	'utils/UserLog',
 	'modules/Edition/src/ElementManager',
 	'jquery',
 	'pubsub',
-], function(NoteModel, NoteSpaceView, CursorModel, UserLog, ElementManager, $, pubsub) {
+], function(NoteSpaceView, CursorModel, UserLog, ElementManager, $, pubsub) {
 	/**
 	 * NoteSpaceManager creates and manages an array of notes represented by their positions
 	 * @exports NoteEdition/NoteSpaceManager
@@ -32,7 +31,6 @@ define([
 		this.CURSOR_MARGIN_TOP = 20;
 		this.CURSOR_MARGIN_LEFT = 6;
 		this.CURSOR_MARGIN_RIGHT = 9;
-
 	}
 
 	/**
