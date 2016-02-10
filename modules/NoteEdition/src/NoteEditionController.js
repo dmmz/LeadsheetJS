@@ -80,7 +80,9 @@ define([
 			if (self.noteSpaceMng.isEnabled()) {
 
 				self[fn].call(self, param);
-
+				if (fn == 'addNote'){ // we increment cursor
+					self.cursor.increment();
+				}
 				if (fn !== 'copyNotes') { //copyNotes is the only function that we don't save in history 
 					addToHistory(fn);
 				}
@@ -586,6 +588,7 @@ define([
 
 
 	NoteEditionController.prototype.addNote = function() {
+		var self = this;
 		this._runDurationFn(function(tmpNm) {
 			var cloned = tmpNm.getNotes()[0].clone(false);
 			tmpNm.addNote(cloned, 0);
