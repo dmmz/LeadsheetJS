@@ -8,8 +8,8 @@ require.config({
     vexflow: 'external-libs/vexflow-min',
     Midijs: 'external-libs/Midijs/midijs.min',
     pubsub: 'external-libs/tiny-pubsub.min',
-    mustache: 'external-libs/mustache'
-
+    mustache: 'external-libs/mustache',
+    jquery_autocomplete: 'external-libs/jquery.autocomplete.min'
   },
   shim: {
     'qunit': {
@@ -39,31 +39,31 @@ define(function(require) {
           CursorModel = require('modules/Cursor/src/CursorModel'),
           NoteEditionController = require('modules/NoteEdition/src/NoteEditionController'),
           NoteSpaceManager = require('modules/NoteEdition/src/NoteSpaceManager');
-          //ChordSpaceManager = require('modules/ChordEdition/src/ChordSpaceManager');
+          ChordSpaceManager = require('modules/ChordEdition/src/ChordSpaceManager');
+
 
         var song = SongModel_CSLJson.importFromMusicCSLJSON(Solar);
-        var notesC = new CursorModel(song.getComponent('notes'));
-        var chordsC = new CursorModel(song.getComponent('chords'));
+        var notesCursor = new CursorModel(song.getComponent('notes'));
+        var chordsCursor = new CursorModel(song.getComponent('chords'));
+
         var viewer = new LSViewer($("#audioExample")[0],{heightOverflow:'resizeDiv',layer:true});
-        var noteSpaceManager = new NoteSpaceManager(notesC, viewer);
-        //var chordSpaceManager = new ChordSpaceManager(song, chordsC, viewer);
+        //construct noteSpaceManager
+        new NoteSpaceManager(notesCursor, viewer);
+        new ChordSpaceManager(song, chordsCursor, viewer, true, true);
         OnWindowResizer(song);
-            
+        
         var params = {
           draw: {
             viewer: viewer,
-            //drawParams: null
             audioCursor: true,
-            notesCursor: notesC
-            
+            notesCursor: notesCursor,
+            chordsCursor: chordsCursor
           }
         };
         var audio = new AudioModule(song, params);
         
         // var audio = new AudioModule(song);
         viewer.draw(song);
-               
-        
         //audio.load('/tests/audio/solar.wav', 170);
 
         //Audio Module

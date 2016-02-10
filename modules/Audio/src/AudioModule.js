@@ -4,8 +4,9 @@ define([
     'modules/Audio/src/AudioCursor',
     'modules/Audio/src/AudioPlayer',
     'modules/Audio/src/AudioAnimation',
-    'modules/Audio/src/NotesCursorUpdater'
-],function(AudioController, AudioDrawer, AudioCursor, AudioPlayer, AudioAnimation, NotesCursorUpdater){
+    'modules/Audio/src/NotesCursorUpdater',
+    'modules/Audio/src/ChordsCursorUpdater'
+],function(AudioController, AudioDrawer, AudioCursor, AudioPlayer, AudioAnimation, NotesCursorUpdater, ChordsCursorUpdater){
 	function AudioModule(song, params){
 		params = params || {};
 		var audio = new AudioController(song);
@@ -23,11 +24,16 @@ define([
     	    var audioAnimation = null;
 			if (useAudioCursor || params.draw.notesCursor){
 				var notesCursor = params.draw.notesCursor;
+				var chordsCursor = params.draw.chordsCursor;
     	    	audioAnimation = new AudioAnimation();
 
 	    	    if (notesCursor){
 	    	    	var notesCursorUpdater = new NotesCursorUpdater(song.getComponent('notes'), notesCursor);
 	    	    	audioAnimation.addCursor(notesCursorUpdater);
+	    	    }
+	    	    if (chordsCursor){
+	    	    	var chordsCursorUpdater = new ChordsCursorUpdater(song, chordsCursor);
+	    	    	audioAnimation.addCursor(chordsCursorUpdater);	
 	    	    }
 	   	    }
 	    	var audioDrawer = new AudioDrawer(song, params.draw.viewer, useAudioCursor, audioAnimation, paramsDrawer);

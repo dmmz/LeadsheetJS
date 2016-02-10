@@ -2,18 +2,19 @@ define([
 	'modules/core/src/SongModel',
 	'modules/core/src/ChordModel',
 	'modules/ChordEdition/src/ChordSpaceView',
+	'modules/ChordEdition/src/ChordSpaceEdition',
 	'modules/Cursor/src/CursorModel',
 	'modules/converters/MusicCSLJson/src/ChordModel_CSLJson',
 	'utils/UserLog',
 	'modules/Edition/src/ElementManager',
 	'jquery',
 	'pubsub'
-], function(SongModel, ChordModel, ChordSpaceView, CursorModel, ChordModel_CSLJson, UserLog, ElementManager, $, pubsub) {
+], function(SongModel, ChordModel, ChordSpaceView, ChordSpaceEdition, CursorModel, ChordModel_CSLJson, UserLog, ElementManager, $, pubsub) {
 	/**
 	 * ChordSpaceManager creates and manages an array of chord space which is represented as a rectangle on each beat on top of bars
 	 * @exports ChordEdition/ChordSpaceManager
 	 */
-	function ChordSpaceManager(songModel, cursor, viewer) {
+	function ChordSpaceManager(songModel, cursor, viewer, isEnabled, editable) {
 		if (!songModel || !cursor) {
 			throw "ChordSpaceManager missing params";
 		}
@@ -24,10 +25,13 @@ define([
 		this.chordSpace = [];
 		this.elemMng = new ElementManager();
 		this.initSubscribe();
-		this.enabled = false;
+		this.enabled = !!isEnabled;
 		this.MARGIN_TOP = 5;
 		this.MARGIN_RIGHT = 5;
 		this.viewer = viewer;
+		if (editable) {
+			this.chordSpaceEdition = new ChordSpaceEdition(songModel, viewer, this.MARGIN_TOP, this.MARGIN_RIGHT);
+		}
 	}
 
 	/**
@@ -115,7 +119,7 @@ define([
 
 		var posCursor = this.elemMng.getElemsInPath(this.chordSpace, coords, ini, end, this.getYs(coords));
 
-		if (ctrlPressed){
+		if (ctrlPressed) {
 			posCursor = this.elemMng.getMergedCursors(posCursor, this.cursor.getPos());
 		}
 
@@ -124,7 +128,12 @@ define([
 		}
 		// if event was clicked and we just selected one chord, we draw the pull down
 		if (posCursor[0] == posCursor[1] && clicked) {
-			this.drawEditableChord();
+			var position = this.cursor.getPos();
+			position = position[0];
+			if (this.chordSpaceEdition) {
+				this.chordSpaceEdition.drawEditableChord(this.chordSpace[position], this.cursor);
+			}
+
 		}
 	};
 
@@ -155,6 +164,7 @@ define([
 				this.chordSpace[i].draw(ctx, self.MARGIN_TOP, self.MARGIN_RIGHT);
 			}
 		}
+
 		drawChordSpaceBorders(ctx);
 	};
 	/**
@@ -177,7 +187,9 @@ define([
 	 * @interface
 	 */
 	ChordSpaceManager.prototype.disable = function() {
-		this.undrawEditableChord();
+		if (this.chordSpaceEdition) {
+			this.chordSpaceEdition.undrawEditableChord();
+		}
 		this.enabled = false;
 	};
 

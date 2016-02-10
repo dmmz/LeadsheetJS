@@ -31,7 +31,6 @@ define([
 		this.CURSOR_MARGIN_TOP = 20;
 		this.CURSOR_MARGIN_LEFT = 6;
 		this.CURSOR_MARGIN_RIGHT = 9;
-
 	}
 
 	/**
