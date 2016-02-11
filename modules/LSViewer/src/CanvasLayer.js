@@ -8,7 +8,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
     * it creates an hover canvas that is fast and repetively drawn, it's usefull to draw cursor or selection for eg
     * @exports LSViewer/CanvasLayer
     */
-	function CanvasLayer(viewer, detectEventOnAllDocument) {
+	function CanvasLayer(viewer, detectEventOnAllDocument, interactiveCanvasLayer) {
 		if (!viewer.canvas) {
 			throw "LSViewer cannot create layer because canvas does not exist";
 		}
@@ -23,7 +23,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		this.coords = {};
 		this.mouseDown = false;
 		this.detectEventOnAllDocument = (detectEventOnAllDocument !== undefined) ? detectEventOnAllDocument : false;
-		this._listenEvents(canvasLayer);
+		if (interactiveCanvasLayer) this._listenEvents(canvasLayer);
 		this.elems = {}; //elements to be added (can be CLICKABLE or CURSOR)
 		this.order = []; //we keep trace of order in which elements are added, to decide which should be prioritized on click
 		this.ctrlPressed = false;

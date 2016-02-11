@@ -352,10 +352,8 @@ define([
 		
 		return new AudioModule(songModel, 
 			{
-				draw: {
-					viewer: viewer,
-					notesCursor: cursorModel
-				}
+				viewer: viewer,
+				notesCursor: cursorModel
 			});
 		//$.publish('ToPlayer-disableAll');
 	};

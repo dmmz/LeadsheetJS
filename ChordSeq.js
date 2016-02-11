@@ -28,13 +28,18 @@ define([
 		// On second Part we use options to initialize modules
 		var songModel = SongModel_CSLJson.importFromMusicCSLJSON(MusicCSLJSON);
 		var chordsCursor = new CursorModel(songModel.getComponent('chords'));
-		new ChordSpaceManager(songModel, chordsCursor, viewer, true);
-		var viewer = new LSChordSequenceViewer($("#canvas_container")[0],{displayTitle: false, displayComposer: false});
+		var chordSpaceMngType = 'ONLY_CHORDS';
+
+		new ChordSpaceManager(songModel, chordsCursor, viewer, true, null, chordSpaceMngType);
+		var viewer = new LSChordSequenceViewer($("#canvas_container")[0],{displayTitle: false, displayComposer: false, saveChords: true, interactiveCanvasLayer: false});
 		OnWindowResizer(songModel);
 
-		viewer.draw(songModel);
-		this.audio = new AudioModule(songModel);
+		this.audio = new AudioModule(songModel, {
+			chordsCursor: chordsCursor,
+			chordSpaceManagerType: chordSpaceMngType
+		});
 		this.id = songModel._id;
+		viewer.draw(songModel);
 	}
 	return ChordSeq;
 });

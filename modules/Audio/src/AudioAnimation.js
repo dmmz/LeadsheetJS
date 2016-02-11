@@ -25,6 +25,9 @@ define(function(){
 	};
 	AudioAnimation.prototype.restartAnimationLoop = function(audio) {
 		var self = this;
+		if (!self.canvasLayer){
+			throw "AudioAnimation.canvasLayer is undefined: probably event LSViewer-drawEnd was published before AudioAnimation was constructed";
+		}
 		var requestFrame = window.requestAnimationFrame ||
 			window.webkitRequestAnimationFrame;
 

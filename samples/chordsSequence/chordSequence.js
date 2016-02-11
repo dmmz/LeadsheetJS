@@ -3,16 +3,8 @@ require.config({
 	baseUrl: "../../",
 	paths: {
 		jquery: 'external-libs/jquery-2.1.0.min',
-		// jquery_autocomplete: 'external-libs/jquery.autocomplete.min',
 		vexflow: 'external-libs/vexflow-min',
-		// Midijs: 'external-libs/Midijs/midijs.min',
 		pubsub: 'external-libs/tiny-pubsub.min',
-		// mustache: 'external-libs/mustache',
-		// text: 'external-libs/require-text',
-		// bootstrap: 'external-libs/bootstrap/bootstrap.min',
-		// jsPDF: 'external-libs/jspdf/jspdf.min',
-		// JsonDelta: 'external-libs/json_delta_1.1.3_minified',
-		//bootstrap: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min',
 	},
 	shim: {
 		// 'LeadsheetJS': {
@@ -34,17 +26,21 @@ define(function(require) {
 	var LSChordSequenceViewer = require('modules/LSViewer/src/LSChordSequenceViewer');
 	var OnWindowResizer = require('modules/LSViewer/src/OnWindowResizer');
 	var AudioModule = require('modules/Audio/src/AudioModule');
-	
+	var ChordSpaceManager = require('modules/ChordEdition/src/ChordSpaceManager');
+	var CursorModel = require('modules/Cursor/src/CursorModel');
 
 	var songModel = SongModel_CSLJson.importFromMusicCSLJSON(chordsSong);
-	var viewer = new LSChordSequenceViewer($("#canvas_container")[0], {displayTitle:false, displayComposer:false});
+	var viewer = new LSChordSequenceViewer($("#canvas_container")[0], {displayTitle:false, displayComposer:false, saveChords:true, interactiveCanvasLayer: false});
+	var chordsCursor = new CursorModel(songModel.getComponent('chords'));
+
 	OnWindowResizer(songModel);
 
 	var audio = new AudioModule(songModel);
 	audio.load('/tests/audio/Solar_120_bpm.335.mp3', 120, 0, function(){
 		//audio.play();	
 	});
-	
+
+	new ChordSpaceManager(songModel, chordsCursor, viewer, true, null, 'ONLY_CHORDS');
 	viewer.draw(songModel);
 
 	// console.log(LJS);

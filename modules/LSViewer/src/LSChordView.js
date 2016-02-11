@@ -7,7 +7,18 @@ define(['vexflow'], function(Vex) {
 		this.color = color || "#000";
 		this.chord = chord;
 	}
-	LSChordView.prototype.draw = function(ctx, barDimensions, timeSig, chordsY, fontChords, marginLeft) {
+	/**
+	 * [draw description]
+	 * @param  {CanvasContext} ctx           
+	 * @param  {Object} barDimensions e.g. {x:1, y:1, w:2, h:2}
+	 * @param  {TimeSignatureModel} timeSig       
+	 * @param  {Number} chordsY       
+	 * @param  {String} fontChords    
+	 * @param  {Number} marginLeft    
+	 * @param  {Function} boundingBoxFn returns bounding box of drawed chord, i.e. an object like {x:1, y:1, w:2, h:2}
+	 * @return {Object}               returns bounding box if function is sent (i.e. when LSViewer.SAVE_CHORDS === true)
+	 */
+	LSChordView.prototype.draw = function(ctx, barDimensions, timeSig, chordsY, fontChords, marginLeft, boundingBoxFn) {
 		if (!fontChords){
 			throw "LSChordView - missing params";
 		}
@@ -22,8 +33,12 @@ define(['vexflow'], function(Vex) {
 		ctx.fillStyle = this.color;
 		var chordX = getChordX(this.chord.getBeat(), barDimensions, beatWidth)
 		ctx.fillText(this.chord.toString(), chordX, barDimensions.top - chordsY);
+
 		ctx.fillStyle = "black";
 		ctx.textBaseline = "alphabetic"; // font for chords
+		if (boundingBoxFn){
+			return boundingBoxFn(ctx, this.chord.toString(), chordX, barDimensions.top - chordsY);
+		}
 	};
 
 	return LSChordView;

@@ -12,7 +12,7 @@ define([
 		var audio = new AudioController(song);
 		new AudioPlayer(audio);
 
-		if (params.draw){
+		if (params){
 			var paramsDrawer = {
 	          showHalfWave: true,
 	          //drawMargins: true,
@@ -20,11 +20,11 @@ define([
 	          heightAudio: 75,
     	    };
     	    // useAudioCursor unless it is explicitly set to false (default is true)
-    	    var useAudioCursor = params.draw.audioCursor === undefined || params.draw.audioCursor === true; 
+    	    var useAudioCursor = params.audioCursor === undefined || params.audioCursor === true; 
     	    var audioAnimation = null;
-			if (useAudioCursor || params.draw.notesCursor){
-				var notesCursor = params.draw.notesCursor;
-				var chordsCursor = params.draw.chordsCursor;
+			if (useAudioCursor || params.notesCursor){
+				var notesCursor = params.notesCursor;
+				var chordsCursor = params.chordsCursor;
     	    	audioAnimation = new AudioAnimation();
 
 	    	    if (notesCursor){
@@ -32,11 +32,13 @@ define([
 	    	    	audioAnimation.addCursor(notesCursorUpdater);
 	    	    }
 	    	    if (chordsCursor){
-	    	    	var chordsCursorUpdater = new ChordsCursorUpdater(song, chordsCursor);
+	    	    	var chordsCursorUpdater = new ChordsCursorUpdater(song, chordsCursor, params.chordSpaceManagerType);
 	    	    	audioAnimation.addCursor(chordsCursorUpdater);	
 	    	    }
 	   	    }
-	    	var audioDrawer = new AudioDrawer(song, params.draw.viewer, useAudioCursor, audioAnimation, paramsDrawer);
+	   	    if (params.viewer){
+	    		var audioDrawer = new AudioDrawer(song, params.viewer, useAudioCursor, audioAnimation, paramsDrawer);
+	   	    }
 		}
 
 		return audio;

@@ -11,9 +11,17 @@ define([
 ], function(SongModel, ChordModel, ChordSpaceView, CursorModel, ChordModel_CSLJson, UserLog, ElementManager, $, pubsub) {
 	/**
 	 * ChordSpaceManager creates and manages an array of chord space which is represented as a rectangle on each beat on top of bars
+	 * @param {SongModel}  songModel         
+	 * @param {CursorModel}  cursor            
+	 * @param {LSViewer}  viewer            
+	 * @param {Boolean} isEnabled         boolean that tells if it is initially enabled
+	 * @param {ChordSpaceEdition}  chordSpaceEdition object enables edition of chords
+	 * @param {String}  mode              values: 
+	 *                                    	ALL_CHORD_SPACES creates a chord space on each beat of the song (some chord space will be empty, others will have a chord)
+	 *                                    	ONLY_CHORDS 	 creates chord spaces only in beats in which there are chords
 	 * @exports ChordEdition/ChordSpaceManager
 	 */
-	function ChordSpaceManager(songModel, cursor, viewer, isEnabled, chordSpaceEdition) {
+	function ChordSpaceManager(songModel, cursor, viewer, isEnabled, chordSpaceEdition, mode) {
 		if (!songModel || !cursor) {
 			throw "ChordSpaceManager missing params";
 		}
@@ -21,14 +29,23 @@ define([
 		this.CL_TYPE = 'CURSOR';
 		this.songModel = songModel;
 		this.cursor = cursor;
-		this.chordSpace = [];
+		this.chordSpaces = [];
 		this.elemMng = new ElementManager();
 		this.initSubscribe();
 		this.enabled = !!isEnabled;
-		this.MARGIN_TOP = 5;
-		this.MARGIN_RIGHT = 5;
 		this.viewer = viewer;
+		this.mode = mode || 'ALL_CHORD_SPACES';
+		if (this.mode === 'ALL_CHORD_SPACES'){
+			this.MARGIN_TOP = 5;
+			this.MARGIN_RIGHT = 5;
+		}else{
+			this.MARGIN_TOP = 3;
+			this.MARGIN_RIGHT = -2;
+		}
 		if (chordSpaceEdition) {
+			if (mode === 'ONLY_CHORDS'){
+				throw "ChordSpaceManager: edition in ONLY_CHORDS mode not implemented yet (change mode or do not send ChordSpaceEdition object)";
+			}
 			this.chordSpaceEdition = chordSpaceEdition;
 			this.chordSpaceEdition.setMargins(this.MARGIN_RIGHT, this.MARGIN_TOP);
 		}
@@ -44,8 +61,12 @@ define([
 				return;
 			}
 			viewer.canvasLayer.addElement(self);
-			self.chordSpace = self.createChordSpace(viewer);
-			self.cursor.setListElements(self.chordSpace.length);
+
+			self.chordSpaces = (self.mode === 'ONLY_CHORDS') ? self.createFilledChordSpaces(viewer) : self.createAllChordSpaces(viewer);
+			if (self.chordSpaces.length === 0){
+				throw "chordSpace could not be created, probably ChordSpaceManager is on mode ONLY_CHORDS, and LSViewer.SAVE_CHORDS is false";
+			}
+			self.cursor.setListElements(self.chordSpaces.length);
 			viewer.canvasLayer.refresh();
 		});
 
@@ -71,7 +92,7 @@ define([
 	 * @param  {Array} Array with initial position and end position as integer
 	 * @return {Array}, return array of object in this form: {area.x, area.y, area.xe, area.ye}
 	 */
-	ChordSpaceManager.prototype.createChordSpace = function(viewer) {
+	ChordSpaceManager.prototype.createAllChordSpaces = function(viewer) {
 		var chordSpace = [];
 		if (typeof viewer.vxfBars === "undefined") {
 			return;
@@ -96,13 +117,21 @@ define([
 		}
 		return chordSpace;
 	};
+
+	ChordSpaceManager.prototype.createFilledChordSpaces = function(viewer) {
+		var chordSpace = [];
+		for (var i = 0; i < viewer.chordViews.length; i++) {
+			chordSpace.push(new ChordSpaceView(viewer, viewer.chordViews[i], i, i, viewer.scaler));
+		}
+		return chordSpace;
+	};
 	/**
 	 * @interface
 	 *
 	 * @param  {Object} coords [description]
 	 */
 	ChordSpaceManager.prototype.getYs = function(coords) {
-		return this.elemMng.getYs(this.chordSpace, coords);
+		return this.elemMng.getYs(this.chordSpaces, coords);
 	};
 
 	/**
@@ -115,9 +144,7 @@ define([
 	 * @param  {Boolean} ctrlPressed 
 	 */
 	ChordSpaceManager.prototype.onSelected = function(coords, ini, end, clicked, mouseUp, ctrlPressed) {
-		this.undrawEditableChord();
-
-		var posCursor = this.elemMng.getElemsInPath(this.chordSpace, coords, ini, end, this.getYs(coords));
+		var posCursor = this.elemMng.getElemsInPath(this.chordSpaces, coords, ini, end, this.getYs(coords));
 
 		if (ctrlPressed) {
 			posCursor = this.elemMng.getMergedCursors(posCursor, this.cursor.getPos());
@@ -131,9 +158,8 @@ define([
 			var position = this.cursor.getPos();
 			position = position[0];
 			if (this.chordSpaceEdition) {
-				this.chordSpaceEdition.drawEditableChord(this.chordSpace[position], this.cursor);
+				this.chordSpaceEdition.drawEditableChord(this.chordSpaces[position], this.cursor);
 			}
-
 		}
 	};
 
@@ -146,8 +172,8 @@ define([
 		var self = this;
 
 		function drawChordSpaceBorders(ctx) {
-			for (var j = 0; j < self.chordSpace.length; j++) {
-				var position = self.chordSpace[j].getArea();
+			for (var j = 0; j < self.chordSpaces.length; j++) {
+				var position = self.chordSpaces[j].getArea();
 
 				ctx.strokeStyle = "#999999";
 				ctx.strokeRect(
@@ -161,11 +187,12 @@ define([
 		var pos = this.cursor.getPos();
 		if (pos[0] !== false) {
 			for (var i = pos[0]; i <= pos[1]; i++) {
-				this.chordSpace[i].draw(ctx, self.MARGIN_TOP, self.MARGIN_RIGHT);
+				this.chordSpaces[i].draw(ctx, self.MARGIN_TOP, self.MARGIN_RIGHT);
 			}
 		}
-
-		drawChordSpaceBorders(ctx);
+		if (this.mode === 'ALL_CHORD_SPACES'){
+			drawChordSpaceBorders(ctx);
+		}	
 	};
 	/**
 	 * @interface
@@ -228,11 +255,11 @@ define([
 	};
 
 	ChordSpaceManager.prototype.getChordsInPath = function(coords) {
-		return this.elemMng.getElemsInPath(this.chordSpace, coords);
+		return this.elemMng.getElemsInPath(this.chordSpaces, coords);
 	};
 
 	ChordSpaceManager.prototype.moveCursorByBar = function(inc) {
-		var barNum = this.chordSpace[this.cursor.getPos()[0]].barNumber;
+		var barNum = this.chordSpaces[this.cursor.getPos()[0]].barNumber;
 		var startBeat = this.songModel.getStartBeatFromBarNumber(barNum + inc) - 1;
 
 		if (barNum === 0 && inc === -1) {
@@ -243,26 +270,6 @@ define([
 		}
 	};
 
-
-
-	ChordSpaceManager.prototype.undrawEditableChord = function() {
-		if (this.htmlInput) {
-			this.htmlInput.input.devbridgeAutocomplete('dispose');
-			this.htmlInput.remove();
-		}
-	};
-	/**
-	 * draws the pulldown or the inputs in chords
-	 */
-	ChordSpaceManager.prototype.drawEditableChord = function() {
-		var position = this.cursor.getPos();
-
-		this.undrawEditableChord();
-		// position[0] === position[1] always
-		position = position[0];
-
-		this.htmlInput = this.chordSpace[position].drawEditableChord(this.songModel, this.MARGIN_TOP, this.MARGIN_RIGHT);
-	};
 
 	return ChordSpaceManager;
 });

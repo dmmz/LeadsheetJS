@@ -52,20 +52,19 @@ define(function(require) {
         new NoteSpaceManager(notesCursor, viewer);
         
         var chordSpaceEdition =new ChordSpaceEdition(song, viewer);
-        new ChordSpaceManager(song, chordsCursor, viewer, true, chordSpaceEdition);
+        var chordSpaceManagerType = 'ALL_CHORD_SPACES'; //ONLY_CHORDS
+        new ChordSpaceManager(song, chordsCursor, viewer, true, chordSpaceEdition, chordSpaceManagerType);
         OnWindowResizer(song);
         
         var params = {
-          draw: {
             viewer: viewer,
             audioCursor: true,
             notesCursor: notesCursor,
-            chordsCursor: chordsCursor
-          }
+            chordsCursor: chordsCursor,
+            chordSpaceManagerType: chordSpaceManagerType
         };
         var audio = new AudioModule(song, params);
         
-        // var audio = new AudioModule(song);
         viewer.draw(song);
         //audio.load('/tests/audio/solar.wav', 170);
 

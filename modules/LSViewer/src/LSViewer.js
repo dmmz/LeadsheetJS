@@ -56,25 +56,32 @@ define([
 			this.DISPLAY_COMPOSER = params.displayComposer != undefined ? params.displayComposer : true;
 			// constant with INITIAL prefix refer to inital values, as they can be changed when visualizing audio
 			this.INITIAL_LINE_HEIGHT = params.initialLineHeight || 150;
-			this.INITIAL_MARGIN_TOP = 100; 
+			this.INITIAL_MARGIN_TOP = 100;
 			this.INITIAL_LINE_MARGIN_TOP = 0;
 			this.LAST_BAR_WIDTH_RATIO = 0.75; //in case of this.shortenLastBar = true (rendering audio), we make the last bar more compressed so that we left space for recordings longer than piece
 			this.FONT_CHORDS = params.fontChords || "18px Verdana";
 			this.PADDING_LEFT_CHORDS = params.paddingLeftChords || 0;
-			
+
 			this.DRAW_STAVE_NUMBERS = params.drawStaveNumbers;
 			this.ONLY_CHORDS = !!params.onlyChords;
 			this.DRAW_CLEF = !params.onlyChords;
 			this.DRAW_KEY_SIGNATURE = !params.onlyChords;
 			this.DRAW_STAVE_LINES = params.drawStaveLines === undefined ? true : params.drawStaveLines;
 			this.TEXT_CLOSER_TO_STAVE = !!params.onlyChords;
+			
+			//by default false, needed when ChordSpaceManager is in mode 'ONLY_CHORDS' (nothing to do with LSViewer.ONLY_CHORDS )
+			//SAVE_CHORDS will save coordenates of drawed chords in an array (so there more memory needed)
+			this.SAVE_CHORDS = params.saveChords === undefined  ? false : params.saveChords; 
+			
+			// for edition CanvasLayer should be interactive, but if we only want to play we need canvasLayer to update cursor, but we may not want interaction
+			this.INTERACTIVE_CANVAS_LAYER = params.interactiveCanvasLayer === undefined ? true : params.interactiveCanvasLayer;
 
 			//next three fields are set as vars and not constants because they change (e.g. when visualizing audio)
 			this.lineMarginTop = this.INITIAL_LINE_MARGIN_TOP;
 			this.marginTop = this.INITIAL_MARGIN_TOP;
 			this.lineHeight = this.INITIAL_LINE_HEIGHT;
 
-			if (!this.DISPLAY_TITLE) 	this.marginTop -= 70;
+			if (!this.DISPLAY_TITLE) this.marginTop -= 70;
 			if (!this.DISPLAY_COMPOSER) this.marginTop -= 30;
 
 			this.shortenLastBar = false;
@@ -89,6 +96,7 @@ define([
 			this.canvas = this._createCanvas(this.canvasId, width, this.DEFAULT_HEIGHT);
 			var renderer = new Vex.Flow.Renderer(this.canvas, Vex.Flow.Renderer.Backends.CANVAS);
 			this.ctx = renderer.getContext("2d");
+			
 
 			this.typeResize = params.typeResize || "fluid";
 			this._resize(width);
@@ -177,25 +185,29 @@ define([
 		 */
 		LSViewer.prototype._getTextBoundingBox = function(ctx, value, x, y) {
 			var metrics = ctx.measureText(value);
-			var calcHalfX = (ctx.textAlign === 'center'); //textAlign is 
-			var boundingBox;
-			if (typeof metrics.actualBoundingBoxAscent !== "undefined") {
-				// case bounding box is supported (for the moment only Chrome supports it)
-				boundingBox = {
-					x: calcHalfX ? x - metrics.actualBoundingBoxRight / 2 : x - metrics.actualBoundingBoxRight,
-					y: y - metrics.actualBoundingBoxAscent,
-					w: metrics.actualBoundingBoxRight,
-					h: metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent
-				};
+			var width, substractY, height, substractX;
+			// new browsers should 
+			if (metrics.actualBoundingBoxAscent !== undefined) {
+				width = metrics.actualBoundingBoxRight;
+				substractY = metrics.actualBoundingBoxAscent;
+				height = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
 			} else {
-				//if not supported, it's a worse solution, as height is arbitrary, passed as parameter
-				var height = Number(ctx.font.substr(0, ctx.font.indexOf("px")));
-				boundingBox = {
-					x: calcHalfX ? x - metrics.width / 2 : x - metrics.width,
-					y: y - height,
-					w: metrics.width,
-					h: height
-				};
+				substractY = Number(ctx.font.substr(0, ctx.font.indexOf("px")));
+				width = metrics.width;
+				height = substractY;
+			}
+			//if not top, hanging nor middle, other values are bottom, alpabetic, ideographic (we do not make difference)
+			substractY = ctx.textBaseline === 'middle' ? substractY / 2 : 
+				ctx.textBaseline !== 'top' || ctx.textBaseline !== 'hanging' ? 0 :  ctx. substractY;
+			//we assume end and left are the same, for the moment, only support for ltr (occidental) language
+			substractX = ctx.textAlign === 'center' ? width / 2 :
+				ctx.textAlign === 'end' || ctx.textAlign === 'left' ? width : 0;
+
+			var boundingBox = {
+				x: x - substractX,
+				y: y - substractY,
+				w: width,
+				h: height
 			}
 			return boundingBox;
 		};
@@ -274,8 +286,6 @@ define([
 				} else {
 					$(this.divContainer).height(this.canvas.height);
 				}
-				this.forceNewCanvasLayer = true;
-				//this.canvasLayer = new CanvasLayer(this); //the canvasLayer needs to be created after the score has been drawn
 			}
 		};
 		LSViewer.prototype.setShortenLastBar = function(bool) {
@@ -283,7 +293,7 @@ define([
 		};
 
 		LSViewer.prototype.draw = function(song) {
-			
+
 			if (typeof song === "undefined") {
 				console.warn('song is empty'); // only for debug, remove after 1 week safe
 				return;
@@ -307,11 +317,12 @@ define([
 				stave,
 				vxfBeams,
 				noteViews = [],
+				chordViews = [],
 				barNoteViews,
 				vxfBars = [],
 				barDimensions,
 				tieMng = new TieManager();
-			
+
 			var lastBarWidthRatio = this.shortenLastBar ? this.LAST_BAR_WIDTH_RATIO : 1;
 			this.barWidthMng = new BarWidthManager(this.lineHeight, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE, this.marginTop, lastBarWidthRatio);
 			this.barWidthMng.calculateBarsStructure(song, nm, cm, this.ctx, this.FONT_CHORDS);
@@ -336,8 +347,8 @@ define([
 					beamMng = new BeamManager();
 					tupletMng = new TupletManager();
 					bar = [];
-					
-					if (!self.ONLY_CHORDS){
+
+					if (!self.ONLY_CHORDS) {
 						barNotes = nm.getNotesAtCurrentBar(songIt);
 						for (j = 0, v = barNotes.length; j < v; j++) {
 							tieMng.checkTie(barNotes[j], iNote);
@@ -353,14 +364,14 @@ define([
 					//BARS
 					barDimensions = self.barWidthMng.getDimensions(songIt.getBarIndex());
 					var barViewParams = {
-						draw_clef: self.DRAW_CLEF, 
+						draw_clef: self.DRAW_CLEF,
 						draw_key_signature: self.DRAW_KEY_SIGNATURE,
 						draw_stave_numbers: self.DRAW_STAVE_NUMBERS
 					};
-					if (!self.DRAW_STAVE_LINES){
+					if (!self.DRAW_STAVE_LINES) {
 						barViewParams.fill_style = "#FFF"; //we assume background is white
 					}
-					if (self.TEXT_CLOSER_TO_STAVE){ //this way, endings and text such as coda, segno, section names are closer
+					if (self.TEXT_CLOSER_TO_STAVE) { //this way, endings and text such as coda, segno, section names are closer
 						barViewParams.top_text_position = 0;
 					}
 
@@ -375,18 +386,21 @@ define([
 
 					barChords = cm.getChordsByBarNumber(songIt.getBarIndex());
 					for (i = 0, c = barChords.length; i < c; i++) {
+					
 						chordView = new LSChordView(barChords[i]).draw(
 							self.ctx,
 							barDimensions,
 							songIt.getBarTimeSignature(),
 							self.CHORDS_DISTANCE_STAVE,
 							self.FONT_CHORDS,
-							self.PADDING_LEFT_CHORDS
+							self.PADDING_LEFT_CHORDS,
+							self.SAVE_CHORDS ? self._getTextBoundingBox : null
 						);
+						if (self.SAVE_CHORDS) chordViews.push(chordView);
 					}
 					vxfBeams = beamMng.getVexflowBeams(); // we need to do getVexflowBeams before drawing notes
 
-					if (!self.ONLY_CHORDS){
+					if (!self.ONLY_CHORDS) {
 						Vex.Flow.Formatter.FormatAndDraw(self.ctx, barView.getVexflowStave(), bar, {
 							autobeam: false
 						});
@@ -401,6 +415,8 @@ define([
 			});
 			tieMng.draw(this.ctx, noteViews, nm, this.barWidthMng, song);
 			this.noteViews = noteViews;
+
+			this.chordViews = chordViews;
 			this.vxfBars = vxfBars;
 			this.ctx.fillStyle = "black";
 			this.ctx.strokeStyle = "black";
@@ -410,6 +426,7 @@ define([
 			if (this.DISPLAY_TITLE) {
 				this._displayTitle(song.getTitle());
 			}
+			this.ctx.globalAlpha = 1;
 			this.resetScale();
 
 			// if constructor was supposed to have a layer and either canvasLayer is not created, either we are forcing to recreate it (e.g. on resize)
@@ -418,7 +435,7 @@ define([
 				if (this.canvasLayer) {
 					this.canvasLayer.destroy(); //to remove html listeners
 				}
-				this.canvasLayer = new CanvasLayer(this, this.detectEventOnAllDocument); //the canvasLayer needs to be created after the score has been drawn
+				this.canvasLayer = new CanvasLayer(this, this.detectEventOnAllDocument, this.INTERACTIVE_CANVAS_LAYER); //the canvasLayer needs to be created after the score has been drawn
 			}
 			$.publish('LSViewer-drawEnd', this);
 		};
