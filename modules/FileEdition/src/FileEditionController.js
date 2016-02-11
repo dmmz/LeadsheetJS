@@ -172,7 +172,7 @@ define([
 
 	FileEditionController.prototype.save = function(newLeadsheet) {
 		var songId;
-		if (typeof newLeadsheet === "undefined" || newLeadsheet === false) {
+		if (!newLeadsheet) {
 			if (typeof this.songModel._id !== "undefined") {
 				songId = this.songModel._id;
 			}
@@ -181,7 +181,11 @@ define([
 		this.songModel._id = undefined; // we need to clean songModel id otherwise update doesn't work
 		var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel);
 
-		if (typeof this.saveFn !== "undefined") {
+		if (this.saveFn !== undefined) {
+			var doSave = confirm("Are you sure you want to save the changes in "+this.songModel.getTitle()+"?")
+			if (!doSave){
+				return;
+			}
 			var self = this;
 			var idLog = UserLog.log('info', 'Saving...');
 			this.saveFn(JSONSong, songId, function(data) {
