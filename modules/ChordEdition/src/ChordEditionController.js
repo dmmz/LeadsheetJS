@@ -41,7 +41,7 @@ define([
 		var firstChordSpace = chordMng.getBarNumAndBeatFromBeat(this.songModel,beats[0]);
 		var lastChordSpace = chordMng.getBarNumAndBeatFromBeat(this.songModel,beats[1] - 1);
 		if (lastChordSpace.exceedsSongLength){ //when we are removing last positions, we just set lastChordSpace greater than last position
-			var lastChordSpaceView = this.chordSpaceMng.chordSpace[this.chordSpaceMng.chordSpace.length - 1];
+			var lastChordSpaceView = this.chordSpaceMng.chordSpaces[this.chordSpaceMng.chordSpaces.length - 1];
 			lastChordSpace.barNumber = lastChordSpaceView.barNumber + 1;
 			lastChordSpace.beatNumber = lastChordSpaceView.beatNumber + 1;
 		}
@@ -123,7 +123,7 @@ define([
 	 */
 	ChordEditionController.prototype.getSelectedChordsBeats = function() {
 		var songIt = new SongBarsIterator(this.songModel);
-		var startChordSpace = this.chordSpaceMng.chordSpace[this.cursor.getStart()];
+		var startChordSpace = this.chordSpaceMng.chordSpaces[this.cursor.getStart()];
 		var startBarNum = startChordSpace.barNumber;
 
 		songIt.setBarIndex(startBarNum);
@@ -150,7 +150,7 @@ define([
 		var chordManager = this.songModel.getComponent('chords');
 		var selectedChords = [];
 		for (var cursorIndex = this.cursor.getStart(); cursorIndex <= this.cursor.getEnd(); cursorIndex++) {
-			var chordSpace = this.chordSpaceMng.chordSpace[cursorIndex];
+			var chordSpace = this.chordSpaceMng.chordSpaces[cursorIndex];
 			var pos = {
 				numBeat: chordSpace.beatNumber,
 				numBar: chordSpace.barNumber
