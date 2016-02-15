@@ -3,7 +3,7 @@ define([
 ], function(Mustache) {
 
 	/**
-	 * Create a popin view, it can contain directly content or it can be a link to a template
+	 * Creates a popin view, it can contain directly content or it can be a link to a template
 	 * @param {String}  title
 	 * @param {String}  content    Can be the content or the link to a template to load (in case it's a template set istemplate to true)
 	 * @param {Boolean} isTemplate If true, the url will be loaded as a template, otherwise content will be directly included
@@ -12,18 +12,18 @@ define([
 		this.title = title;
 		this.content = content;
 
-		options = (typeof options !== "undefined") ? options : {};
-		this.classTitle = (typeof options.classTitle !== "undefined") ? options.classTitle : '';
-		this.footerButtonTitle = (typeof options.footerButtonTitle !== "undefined") ? options.footerButtonTitle : 'Ok';
-		if (typeof options.isTemplate !== "undefined" && options.isTemplate === true) {
+		options = options || {};
+		this.classTitle = (options.classTitle !== undefined) ? options.classTitle : '';
+		this.footerButtonTitle = (options.footerButtonTitle !== undefined) ? options.footerButtonTitle : 'Ok';
+		if (options.isTemplate !== undefined && options.isTemplate === true) {
 			this.isTemplate = true;
 			this.template = content;
 		} else {
 			this.isTemplate = false;
 			this.content = content;
 		}
-		this.onSubmitFunction = (typeof options.onSubmit !== "undefined") ? options.onSubmit : undefined;
-		this.onCloseFunction = (typeof options.onClose !== "undefined") ? options.onClose : undefined; // close function is launched on hiding popin AND on submit
+		this.onSubmitFunction = options.onSubmit;
+		this.onCloseFunction = options.onClose; // close function is launched on hiding popin AND on submit
 		this.backgroundOpacity = 0.5;
 	}
 

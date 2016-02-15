@@ -170,20 +170,20 @@ define([
 		export_link.remove();
 	};
 
-	FileEditionController.prototype.save = function(newLeadsheet) {
+	FileEditionController.prototype.save = function(newLeadsheet, showConfirm) {
+		
+		showConfirm = showConfirm !== undefined ? showConfirm : true;
+
 		var songId;
-		if (!newLeadsheet) {
-			if (typeof this.songModel._id !== "undefined") {
-				songId = this.songModel._id;
-			}
+		if (!newLeadsheet && this.songModel._id !== undefined) {
+			songId = this.songModel._id;
 		}
 
 		this.songModel._id = undefined; // we need to clean songModel id otherwise update doesn't work
 		var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel);
 
 		if (this.saveFn !== undefined) {
-			var doSave = confirm("Are you sure you want to save the changes in "+this.songModel.getTitle()+"?")
-			if (!doSave){
+			if (showConfirm && !confirm("Are you sure you want to save the changes in "+this.songModel.getTitle()+"?")){
 				return;
 			}
 			var self = this;
