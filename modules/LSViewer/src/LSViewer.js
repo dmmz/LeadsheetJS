@@ -1,6 +1,7 @@
 define([
 		'vexflow',
 		'modules/LSViewer/src/LSNoteView',
+		'modules/NoteEdition/src/NoteSpaceView',
 		'modules/LSViewer/src/LSChordView',
 		'modules/LSViewer/src/LSBarView',
 		'modules/LSViewer/src/BeamManager',
@@ -14,7 +15,7 @@ define([
 		'jquery',
 		'pubsub'
 	],
-	function(Vex, LSNoteView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator, CanvasLayer, Scaler, $, pubsub) {
+	function(Vex, LSNoteView, NoteSpaceView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator, CanvasLayer, Scaler, $, pubsub) {
 		/**
 		 * LSViewer module manage interaction between canvas, core model and vexflow, it's the main module that allow drawing
 		 * @exports LSViewer/LSViewer
@@ -422,7 +423,8 @@ define([
 				numSection++;
 			});
 			tieMng.draw(this.ctx, noteViews, nm, this.barWidthMng, song);
-			this.noteViews = noteViews;
+			
+			
 
 			this.chordViews = chordViews;
 			this.vxfBars = vxfBars;
@@ -445,8 +447,17 @@ define([
 				}
 				this.canvasLayer = new CanvasLayer(this, this.detectEventOnAllDocument, this.INTERACTIVE_CANVAS_LAYER); //the canvasLayer needs to be created after the score has been drawn
 			}
+			this.noteViews = this._getNoteViewsArea(noteViews);
 			$.publish('LSViewer-drawEnd', this);
 		};
+
+		LSViewer.prototype._getNoteViewsArea = function(noteViews) {
+			var noteSpaceViews = [];
+			for (var i = 0; i < noteViews.length; i++) {
+				noteSpaceViews.push(new NoteSpaceView(noteViews[i].getArea(), this.scaler));
+			}
+			return noteSpaceViews;
+		}
 		/**
 		 * When drawing an element from another module, it has to use this function
 		 * @param  {Function} drawFunc function that draws the element

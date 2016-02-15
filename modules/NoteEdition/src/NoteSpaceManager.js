@@ -1,11 +1,10 @@
 define([
-	'modules/NoteEdition/src/NoteSpaceView',
 	'modules/Cursor/src/CursorModel',
 	'utils/UserLog',
 	'modules/Edition/src/ElementManager',
 	'jquery',
 	'pubsub',
-], function(NoteSpaceView, CursorModel, UserLog, ElementManager, $, pubsub) {
+], function(CursorModel, UserLog, ElementManager, $, pubsub) {
 	/**
 	 * NoteSpaceManager creates and manages an array of notes represented by their positions
 	 * @exports NoteEdition/NoteSpaceManager
@@ -27,10 +26,10 @@ define([
 		this.initSubscribe();
 		this.enabled = true;
 
-		this.CURSOR_HEIGHT = 80;
-		this.CURSOR_MARGIN_TOP = 20;
-		this.CURSOR_MARGIN_LEFT = 6;
-		this.CURSOR_MARGIN_RIGHT = 9;
+		this.HEIGHT = 80;
+		this.MARGIN_TOP = 20;
+		this.MARGIN_LEFT = 6;
+		this.MARGIN_RIGHT = 9;
 	}
 
 	/**
@@ -68,17 +67,14 @@ define([
 		if (typeof viewer.vxfBars === "undefined") {
 			return;
 		}
-		var area;
+		noteSpace = viewer.noteViews;
+		for (var i = 0; i < noteSpace.length; i++) {
+	
+			noteSpace[i].position.x -= this.MARGIN_LEFT;
+			noteSpace[i].position.y += this.MARGIN_TOP;
+			noteSpace[i].position.w += this.MARGIN_LEFT + this.MARGIN_RIGHT;
+			noteSpace[i].position.h = this.HEIGHT;
 
-		for (var i = 0, c = viewer.noteViews.length; i < c; i++) {
-			currentNote = viewer.noteViews[i];
-			area = currentNote.getArea();
-			//apply cursor margin changes
-			area.x -= this.CURSOR_MARGIN_LEFT;
-			area.y += this.CURSOR_MARGIN_TOP;
-			area.w += this.CURSOR_MARGIN_LEFT + this.CURSOR_MARGIN_RIGHT;
-			area.h = this.CURSOR_HEIGHT;
-			noteSpace.push(new NoteSpaceView(area, viewer.scaler));
 		}
 		return noteSpace;
 	};
@@ -108,6 +104,7 @@ define([
 	NoteSpaceManager.prototype.onSelected = function(coords, ini, end, clicked, mouseUp, ctrlPressed) {
 		var posCursor;
 		var coordsTop, coordsBottom;
+
 		posCursor = this.elemMng.getElemsInPath(this.noteSpace, coords, ini, end, this.getYs(coords));
 		if (ctrlPressed){
 			posCursor = this.elemMng.getMergedCursors(posCursor, this.cursor.getPos());
@@ -143,36 +140,6 @@ define([
 		var areas = [];
 		var self = this;
 
-		/*function scrollWindow(ctx, areas) {
-			var iSafe = 0;
-			var posLastCursorBottom = areas[areas.length - 1].y + areas[areas.length - 1].h;
-			var posLastCursorTop = areas[areas.length - 1].y;
-			var canvasOffset = $(ctx.canvas).offset().top;
-			var viewportHeight = $(window).height();
-			var scrollTop = $(window).scrollTop();
-
-			while ((canvasOffset + posLastCursorBottom - scrollTop) > (viewportHeight - 90) && iSafe < 15) {
-				posLastCursorBottom = areas[areas.length - 1].y + areas[areas.length - 1].h;
-				canvasOffset = $(ctx.canvas).offset().top;
-				viewportHeight = $(window).height();
-				scrollTop = $(window).scrollTop();
-				//console.log('down');
-				$(window).scrollTop($(window).scrollTop() + self.viewer.lineHeight);
-				iSafe++;
-			}
-			if (iSafe === 0) {
-				while (((canvasOffset + posLastCursorTop) < scrollTop) && iSafe < 15) {
-					//console.log('up');
-					posLastCursorTop = areas[areas.length - 1].y + areas[areas.length - 1].h;
-					canvasOffset = $(ctx.canvas).offset().top;
-					viewportHeight = $(window).height();
-					scrollTop = $(window).scrollTop();
-					$(window).scrollTop($(window).scrollTop() - self.viewer.lineHeight);
-					iSafe++;
-				}
-			}
-		}*/
-
 		if (position[0] !== null) {
 			if (position[0] === position[1]) {
 				areas.push({
@@ -183,10 +150,10 @@ define([
 				});
 			} else {
 				var cursorDims = {
-					right: this.CURSOR_MARGIN_RIGHT,
-					left: this.CURSOR_MARGIN_LEFT,
+					right: this.MARGIN_RIGHT,
+					left: this.MARGIN_LEFT,
 					top: 0,
-					height: this.CURSOR_HEIGHT
+					height: this.HEIGHT
 				};
 				areas = this.elemMng.getElementsAreaFromCursor(this.noteSpace, position, cursorDims);
 			}
@@ -200,9 +167,6 @@ define([
 			}
 			ctx.fillStyle = saveFillColor;
 			ctx.globalAlpha = 1;
-			// if (areas.length === 1) {
-			// 	// scrollWindow(ctx, areas);
-			// }
 		}
 
 	};
