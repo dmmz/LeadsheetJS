@@ -183,6 +183,14 @@ define([
 		 * @param  {Integer} height  
 		 * @return {Object}   with properties x,y,w,h
 		 */
+		/**
+		 * returns getBoundingBox
+		 * @param  {Context} ctx          
+		 * @param  {String} value        
+		 * @param  {Number} x            
+		 * @param  {Number} y            
+		 * @return {Object}              {x:, y:, w:, h:}
+		 */
 		LSViewer.prototype._getTextBoundingBox = function(ctx, value, x, y) {
 			var metrics = ctx.measureText(value);
 			var width, substractY, height, substractX;
@@ -196,12 +204,12 @@ define([
 				width = metrics.width;
 				height = substractY;
 			}
-			//if not top, hanging nor middle, other values are bottom, alpabetic, ideographic (we do not make difference)
+				//if not top, hanging nor middle, other values are bottom, alpabetic, ideographic (we do not make difference)
 			substractY = ctx.textBaseline === 'middle' ? substractY / 2 : 
-				ctx.textBaseline !== 'top' || ctx.textBaseline !== 'hanging' ? 0 :  ctx. substractY;
-			//we assume end and left are the same, for the moment, only support for ltr (occidental) language
+				ctx.textBaseline === 'top' && ctx.textBaseline === 'hanging' ? 0 : substractY ;
+			//we assume start and left are the same, for the moment, only support for ltr (occidental) language
 			substractX = ctx.textAlign === 'center' ? width / 2 :
-				ctx.textAlign === 'end' || ctx.textAlign === 'left' ? width : 0;
+				ctx.textAlign === 'start' || ctx.textAlign === 'left' ? 0 : width;
 
 			var boundingBox = {
 				x: x - substractX,
