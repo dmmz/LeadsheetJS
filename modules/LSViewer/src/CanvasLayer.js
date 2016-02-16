@@ -75,7 +75,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 	 *
 	 * CLICKABLE elements will be enabled always, but 'disable' function is useful for example to simulate event 'onBlur' when unfocusing element
 	 * 
-	 * CL_TYPE can be 'CURSOR' or 'CLICKABLE'
+	 * CL_TYPE can be 'CURSOR' or 'CLICKABLE' or 'NOT_INTERACTIVE'
 	 * if it's CURSOR, it needs to have also this methods:
 	 *		getYs
 	 *		name
@@ -141,10 +141,11 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		 * @return {Object}        class of active element (ChordSpaceManager, NoteSpaceManager, WaveDrawer. TextElementManager...etc.)
 		 */
 		function getOneActiveElement(coords) {
-			var name;
+			var name, elem;
 			for (var i = self.order.length - 1; i >= 0; i--) {
 				name = self.order[i];
-				if (self.elems[name].inPath(coords)) {
+				elem = self.elems[name]; 
+				if (elem.getType() !== 'NOT_INTERACTIVE' && elem.inPath(coords)) {
 					return [self.elems[name]];
 				}
 			}
@@ -175,7 +176,6 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			} else {
 				activElems = getElemsByYs(self.coords);
 			}
-
 			for (var i in activElems) {
 				activElems[i].onSelected(self.coords, self.mouseCoordsIni, self.mouseCoordsEnd, clicked, mouseUp, self.ctrlPressed);			
 				if (activElems[i].getType() == 'CURSOR') {
@@ -347,7 +347,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		var elem;
 		for (var name in this.elems) {
 			elem = this.elems[name];
-			if (elem.isEnabled() && elem.getType() == 'CURSOR') {
+			if (elem.isEnabled() && (elem.getType() === 'CURSOR' || elem.getType() === 'NOT_INTERACTIVE')) {
 				//drawing cursor for notesManager, chordsManager and AudioCursor (selection cursor)
 				elem.drawCursor(this.ctx);
 			}

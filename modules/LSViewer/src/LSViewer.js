@@ -69,7 +69,12 @@ define([
 			this.DRAW_KEY_SIGNATURE = !params.onlyChords;
 			this.DRAW_STAVE_LINES = params.drawStaveLines === undefined ? true : params.drawStaveLines;
 			this.TEXT_CLOSER_TO_STAVE = !!params.onlyChords;
-			
+
+			this.CURSOR_MARGIN_LEFT = 6;
+			this.CURSOR_MARGIN_TOP = 20;
+			this.CURSOR_MARGIN_RIGHT = 9;
+			this.CURSOR_HEIGHT = 80;
+						
 			//by default false, needed when ChordSpaceManager is in mode 'ONLY_CHORDS' (nothing to do with LSViewer.ONLY_CHORDS )
 			//SAVE_CHORDS will save coordenates of drawed chords in an array (so there more memory needed)
 			this.SAVE_CHORDS = params.saveChords === undefined  ? false : params.saveChords; 
@@ -452,9 +457,15 @@ define([
 		};
 
 		LSViewer.prototype._getNoteViewsArea = function(noteViews) {
-			var noteSpaceViews = [];
+			var noteSpaceViews = [], area;
+
 			for (var i = 0; i < noteViews.length; i++) {
-				noteSpaceViews.push(new NoteSpaceView(noteViews[i].getArea(), this.scaler));
+				area = noteViews[i].getArea();
+				area.x -= this.CURSOR_MARGIN_LEFT;;
+				area.y += this.CURSOR_MARGIN_TOP;
+				area.w += this.CURSOR_MARGIN_LEFT + this.CURSOR_MARGIN_RIGHT;
+				area.h = this.CURSOR_HEIGHT;
+				noteSpaceViews.push(new NoteSpaceView(area, this.scaler));
 			}
 			return noteSpaceViews;
 		}

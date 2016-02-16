@@ -8,8 +8,15 @@ define([
 	/**
 	 * NoteSpaceManager creates and manages an array of notes represented by their positions
 	 * @exports NoteEdition/NoteSpaceManager
+	 * 
+	 * @param {CursorModel} cursor      
+	 * @param {LSViewer} viewer      
+	 * @param {String} name        name as CanvasLayer listener
+	 * @param {String} color       RGB color. e. g.: "#FF0000"
+	 * @param {Boolean} interactive if true, can be selected (e.g. cursor to edit notes will be interactive, player cursor will not)
+	 * @param {Boolean} enabled     if true, it will be initially enabled (e.g. notes editing cursor), on the other hand, player cursor will be enabled on 'play'
 	 */
-	function NoteSpaceManager(cursor, viewer) {
+	function NoteSpaceManager(cursor, viewer, name, color, interactive, enabled) {
 
 		if (!cursor) {
 			throw "NoteSpaceManager - missing cursor";
@@ -17,19 +24,16 @@ define([
 		if (!viewer) {
 			throw "NoteSpaceManager - missing viewer";
 		}
-		this.CL_TYPE = 'CURSOR';
-		this.CL_NAME = 'NotesCursor';
+		this.interactive = interactive === undefined ? true : interactive;
+		this.CL_TYPE = this.interactive ? 'CURSOR' : 'NOT_INTERACTIVE';
+		this.CL_NAME = name || 'NotesCursor';
 		this.cursor = cursor;
 		this.viewer = viewer;
 		this.elemMng = new ElementManager();
 		this.noteSpace = [];
 		this.initSubscribe();
-		this.enabled = true;
-
-		this.HEIGHT = 80;
-		this.MARGIN_TOP = 20;
-		this.MARGIN_LEFT = 6;
-		this.MARGIN_RIGHT = 9;
+		this.enabled = enabled === undefined ? true : enabled;
+		this.COLOR = color || "#0099FF";
 	}
 
 	/**
@@ -43,7 +47,6 @@ define([
 				throw "NoteSpaceManager needs CanvasLayer";
 			}
 
-			//if (self.cursor.getEditable()) {
 			self.noteSpace = self.createNoteSpace(self.viewer);
 			self.cursor.setListElements(self.noteSpace.length);
 			self.viewer.canvasLayer.addElement(self);
@@ -55,6 +58,7 @@ define([
 			self.enable();
 		})
 		$.subscribe('ctrl-a', function() {
+			if (!self.interactive) return;
 			self.enable();
 			self.cursor.selectAll();
 			self.viewer.canvasLayer.refresh();
@@ -64,18 +68,10 @@ define([
 
 	NoteSpaceManager.prototype.createNoteSpace = function(viewer) {
 		var noteSpace = [];
-		if (typeof viewer.vxfBars === "undefined") {
+		if (viewer.vxfBars === undefined) {
 			return;
 		}
 		noteSpace = viewer.noteViews;
-		for (var i = 0; i < noteSpace.length; i++) {
-	
-			noteSpace[i].position.x -= this.MARGIN_LEFT;
-			noteSpace[i].position.y += this.MARGIN_TOP;
-			noteSpace[i].position.w += this.MARGIN_LEFT + this.MARGIN_RIGHT;
-			noteSpace[i].position.h = this.HEIGHT;
-
-		}
 		return noteSpace;
 	};
 
@@ -102,6 +98,7 @@ define([
 	 * @param  {Boolean} ctrlPressed 
 	 */
 	NoteSpaceManager.prototype.onSelected = function(coords, ini, end, clicked, mouseUp, ctrlPressed) {
+		if (!this.interactive)	return;
 		var posCursor;
 		var coordsTop, coordsBottom;
 
@@ -109,7 +106,6 @@ define([
 		if (ctrlPressed){
 			posCursor = this.elemMng.getMergedCursors(posCursor, this.cursor.getPos());
 		}
-
 		if (posCursor) {
 			this.cursor.setPos(posCursor);
 			//when clicking on a note, if there is an audio player, cursor should be updated
@@ -132,32 +128,16 @@ define([
 	 */
 	NoteSpaceManager.prototype.drawCursor = function(ctx) {
 		if (this.noteSpace.length === 0) return;
-		var position = this.cursor.getPos();
-		var saveFillColor = ctx.fillStyle;
-		ctx.fillStyle = "#0099FF";
+		var position = this.cursor.getPos(),
+			saveFillColor = ctx.fillStyle,
+		 	areas = [];
+		
+		ctx.fillStyle = this.COLOR;
 		ctx.globalAlpha = 0.2;
-		var currentNoteSpace;
-		var areas = [];
-		var self = this;
 
 		if (position[0] !== null) {
-			if (position[0] === position[1]) {
-				areas.push({
-					x: this.noteSpace[position[0]].position.x,
-					y: this.noteSpace[position[0]].position.y,
-					w: this.noteSpace[position[0]].position.w,
-					h: this.noteSpace[position[0]].position.h
-				});
-			} else {
-				var cursorDims = {
-					right: this.MARGIN_RIGHT,
-					left: this.MARGIN_LEFT,
-					top: 0,
-					height: this.HEIGHT
-				};
-				areas = this.elemMng.getElementsAreaFromCursor(this.noteSpace, position, cursorDims);
-			}
-			for (i = 0, c = areas.length; i < c; i++) {
+			areas = this.elemMng.getElementsAreaFromCursor(this.noteSpace, position);
+			for (i = 0; i < areas.length; i++) {
 				ctx.fillRect(
 					areas[i].x,
 					areas[i].y,
@@ -168,7 +148,6 @@ define([
 			ctx.fillStyle = saveFillColor;
 			ctx.globalAlpha = 1;
 		}
-
 	};
 
 	/**
