@@ -33,10 +33,9 @@ define([
 		var fn;
 		// All functions related with note edition go here
 		$.subscribe('StructureEditionView', function(el, fn, param) {
-			//if (self.noteSpaceMng.isEnabled()) {
 			self[fn].call(self, param);
-			$.publish('ToViewer-draw', self.songModel);
-			//}
+			var forceNewCanvasLayer = (fn === 'addBar' || fn === 'addSection');
+			$.publish('ToViewer-draw', [self.songModel, forceNewCanvasLayer]);
 		});
 		$.subscribe('CursorModel-setPos', function(el) {
 			self.setCurrentElementFromCursor();

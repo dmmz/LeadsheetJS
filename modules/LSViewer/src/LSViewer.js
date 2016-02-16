@@ -133,10 +133,11 @@ define([
 
 		LSViewer.prototype._initSubscribe = function() {
 			var self = this;
-			$.subscribe('ToViewer-draw', function(el, songModel) {
+			$.subscribe('ToViewer-draw', function(el, songModel, forceNewCanvasLayer) {
 				if (!songModel) {
 					throw "Need songModel to draw";
 				}
+				self.forceNewCanvasLayer = forceNewCanvasLayer;
 				self.draw(songModel);
 			});
 
@@ -284,14 +285,7 @@ define([
 		LSViewer.prototype.setHeight = function(song, barWidthMng) {
 			var totalNumBars = song.getComponent("bars").getTotal();
 			this.canvas.height = (barWidthMng.getDimensions(totalNumBars - 1).top + this.lineHeight) * this.SCALE;
-			/*if (this.canvas.height > $(this.divContainer).height() && this.heightOverflow == 'scroll') {
-				$(this.divContainer).css({
-					overflowY: "scroll"
-				});
-			} else {
-				$(this.divContainer).height(this.canvas.height);
-			}*/
-
+			
 			if (this.canvas.height != $(this.divContainer).height()) {
 				if (this.heightOverflow == 'scroll') {
 					$(this.divContainer).css({
