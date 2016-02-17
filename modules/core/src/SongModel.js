@@ -196,9 +196,17 @@ define([
 	SongModel.prototype.getSections = function() {
 		return this.sections;
 	};
-
-	SongModel.prototype.addSection = function(sectionsItem) {
-		this.sections.push(sectionsItem);
+	/**
+	 * addSection can be used on constructing a song (e.g. importing from MusicCSLJson)
+	 * @param {[type]} sectionsItem [description]
+	 * @param {[type]} index        [description]
+	 */
+	SongModel.prototype.addSection = function(sectionsItem, index) {
+		if (index === undefined){
+			this.sections.push(sectionsItem);
+		}else{
+			this.sections.splice(index, 0, sectionsItem);
+		}
 	};
 	SongModel.prototype.removeSection = function(sectionIndex) {
 		if (typeof sectionIndex === "undefined" || isNaN(sectionIndex) || sectionIndex < 0) {
@@ -352,22 +360,20 @@ define([
 	};
 
 	/**
-	 * Function return the section number in which the bar is
+	 * Returns the section number in which the bar is
 	 * @param  {int} barNumber
 	 * @return {int} section number (index) start at 0
 	 */
 	SongModel.prototype.getSectionNumberFromBarNumber = function(barNumber) {
-		if (typeof barNumber === "undefined" || isNaN(barNumber) || barNumber < 0) {
+		if (barNumber === undefined || isNaN(barNumber) || barNumber < 0) {
 			throw "SongModel - getSectionNumberFromBarNumber - barNumber is not a number: " + barNumber;
 		}
 		var sections = this.getSections();
 		var sumBar = 0;
-		for (var i = 0, c = sections.length; i < c; i++) {
-			if (typeof sections[i] !== "undefined") {
-				sumBar += sections[i].getNumberOfBars();
-				if (sumBar > barNumber) {
-					return i;
-				}
+		for (var i = 0; i < sections.length; i++) {
+			sumBar += sections[i].getNumberOfBars();
+			if (sumBar > barNumber) {
+				return i;
 			}
 		}
 		return undefined;

@@ -12,6 +12,7 @@ define(function() {
 					ch: "M7",
 					beat: 1
 				}],
+				//note 0
 				melody: [{
 					keys: ["a/4"],
 					duration: "q"
@@ -29,6 +30,7 @@ define(function() {
 					duration: "q"
 				}]
 			}, {
+				//note 5
 				melody: [{
 					keys: ["a/4"],
 					duration: "q"
@@ -48,6 +50,7 @@ define(function() {
 					ch: "7",
 					beat: 1
 				}],
+				//note 9
 				melody: [{
 					keys: ["a/4"],
 					duration: "q"
@@ -62,6 +65,7 @@ define(function() {
 					duration: "q"
 				}]
 			}, {
+				//note 13
 				melody: [{
 					keys: ["a/4"],
 					duration: "q"
@@ -81,6 +85,7 @@ define(function() {
 					ch: "m",
 					beat: 1
 				}],
+				//note 17
 				melody: [{
 					keys: ["a/4"],
 					duration: "q"
@@ -95,6 +100,7 @@ define(function() {
 					duration: "q"
 				}]
 			}, {
+				//21
 				melody: [{
 					keys: ["a/4"],
 					duration: "q"

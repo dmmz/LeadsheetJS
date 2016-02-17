@@ -9,43 +9,84 @@ define(['modules/StructureEdition/src/StructureEditionController',
 			test("Structures Edition Controller", function(assert) {
 
 				function basicFunctionalities () {
-					var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
-					var cM = new CursorModel(songModel.getComponent('notes'));
-					var sec = new StructureEditionController(songModel, cM);
-					var nm = songModel.getComponent('notes');
-					var bm = songModel.getComponent('bars');
+					var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
+					var cM = new CursorModel(song.getComponent('notes'));
+					var sec = new StructureEditionController(song, cM);
+					var nm = song.getComponent('notes');
+					var bm = song.getComponent('bars');
 
 					// Sections
-					var numberOfSections = songModel.getSections().length;
-					sec.addSection();
-					assert.equal(songModel.getSections().length, numberOfSections + 1, "add section");
+					var sections = song.getSections();
+
+
+					assert.equal(sections.length, 1, "initially there is one section");
+					assert.equal(sections[0].getNumberOfBars(), 8, 'initially 8 bars');
 					cM.setPos(0);
+					assert.equal(sec.addSection(), false, 'cannot create section if it is in first bar');
 
-					sec.removeSection();
-					assert.equal(songModel.getSections().length, numberOfSections, "remove section");
-
-					sec.setSectionName('ok é !');
-					assert.equal(songModel.getSection(0).getName(), 'ok é !', "Section Name");
-
-					sec.removeSection();
-					assert.equal(songModel.getSections().length, numberOfSections, "remove last section should not change section length");
-
-					//assert.equal(nm.getNotesAtBarNumber(2, songModel).toString(), "", "we check there are no notes on bar 2 (which will cause a warning on NoteManager - getNotesAtBarNumber )");
+					cM.setPos(10); // we know 10th note is in measure 2 (starting from 0)
 					sec.addSection();
-					cM.setPos(0);
-					assert.equal(nm.getNotesAtBarNumber(2, songModel).toString(), "wr", "test bar has been created with only silences");
+					
+					sections = song.getSections();
+
+					assert.equal(sections.length, 2, "after adding section, there are two sections");
+					assert.equal(sections[0].getNumberOfBars(), 2, 'after adding new section in bars 2, old section has 2 bars');
+					assert.equal(sections[1].getNumberOfBars(), 6, 'and new section has 6 bars');
+
+					cM.setPos(21); // we know 18th note is in measure 5
+					sec.addSection();
+					sections = song.getSections();
+					sections.length = sections.length;
+
+					assert.equal(sections.length, 3, "added section");
+					assert.equal(sections[0].getNumberOfBars(), 2, 'after adding new section in bars 2, old section has 2 bars');
+					assert.equal(sections[1].getNumberOfBars(), 3);
+					assert.equal(sections[2].getNumberOfBars(), 3);
+
+					cM.setPos(5); // we know 5th note is in measure 1
+					sec.addSection();
+					sections = song.getSections();
+					
+
+					assert.equal(sections.length, 4, "added section");
+					assert.equal(sections[0].getNumberOfBars(), 1,'number of bars of each of the 4 sections correct');
+					assert.equal(sections[1].getNumberOfBars(), 1);
+					assert.equal(sections[2].getNumberOfBars(), 3);
+					assert.equal(sections[3].getNumberOfBars(), 3);
+
+					cM.setPos(10); // we go again to measure 2, (section 2)
 					sec.removeSection();
 
-					// Add bar
+					sections = song.getSections();
+					
+					assert.equal(sections.length, 3, "removed section: 3 sections");
+					assert.equal(sections[0].getNumberOfBars(), 1);
+					assert.equal(sections[1].getNumberOfBars(), 4);
+					assert.equal(sections[2].getNumberOfBars(), 3);	
+					
+					cM.setPos(21); // we go again to measure 5, (section 2)
+					sec.removeSection();
+
+					sections = song.getSections();
+					assert.equal(sections.length, 2, "removed section: 2 sections");
+					assert.equal(sections[0].getNumberOfBars(), 1);
+					assert.equal(sections[1].getNumberOfBars(), 7);
+	
+					cM.setPos(1); // we want to be in section 1
+					assert.equal(sec.removeSection(), false, 'cannot remove section 0');
+					
+
+					//Add bar
+					/*cM.setPos(0);
 					sec.addBar();
-					assert.equal(nm.getNotesAtBarNumber(0, songModel).toString(), "wr", "test bar has been created with E at start because it's first bar");
+					assert.equal(nm.getNotesAtBarNumber(0, song).toString(), "wr", "test bar has been created with E at start because it's first bar");*/
 					cM.setPos(4);
 					sec.addBar();
-					assert.equal(nm.getNotesAtBarNumber(1, songModel).toString(), "wr", "test bar has been created with only silences");
+					assert.equal(nm.getNotesAtBarNumber(1, song).toString(), "wr", "test bar has been created with only silences");
 
 					// Remove bar
 					sec.removeBar();
-					assert.equal(nm.getNotesAtBarNumber(0, songModel).toString(), "wr", "test remove bar");
+					assert.equal(nm.getNotesAtBarNumber(0, song).toString(), "wr", "test remove bar");
 
 
 					cM.setPos(0);

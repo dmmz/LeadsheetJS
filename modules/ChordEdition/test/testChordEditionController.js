@@ -55,7 +55,7 @@ define(['modules/core/src/ChordModel',
 				});
 				viewer.draw(songModel);
 
-				csm.createChordSpace(viewer);
+				csm.createAllChordSpaces(viewer);
 
 				 
 				// Delete chords

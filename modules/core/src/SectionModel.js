@@ -18,7 +18,7 @@ define(function() {
 	/////////////////////////
 
 	SectionModel.prototype.setName = function(name) {
-		/*using 'name !== undefined' instead of 'typeof "undefined"', because in this case (ternary if) everything is in same line, 
+		/*using 'name !== undefined' instead of 'typeof "undefined"', because then (ternary if) everything is in same line, 
 		and it is more readable like this*/
 		this.name = (name !== undefined) ? name : '';
 	};
