@@ -28,11 +28,21 @@ define(['vexflow'], function(Vex) {
 		}
 		var beatWidth = (barDimensions.width - marginLeft) / timeSig.getBeats();
 		
-		ctx.font = fontChords; // font for chords
+		var oldBaseline = ctx.textBaseline,
+			oldFillStyle = ctx.fillStyle,
+			oldFont = ctx.font;
+	
 		ctx.textBaseline = "top"; // font for chords
+		ctx.font = fontChords; 
 		ctx.fillStyle = this.color;
+
 		var chordX = getChordX(this.chord.getBeat(), barDimensions, beatWidth)
 		ctx.fillText(this.chord.toString(), chordX, barDimensions.top - chordsY);
+		
+		ctx.textBaseline = oldBaseline;
+		ctx.font = oldFont;
+		ctx.fillStyle = oldFillStyle;
+
 		if (boundingBoxFn){
 			return boundingBoxFn(ctx, this.chord.toString(), chordX, barDimensions.top - chordsY);
 		}

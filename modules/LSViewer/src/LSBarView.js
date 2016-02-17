@@ -7,7 +7,7 @@ define(['vexflow'], function(Vex) {
 		this.vexflowStave = new Vex.Flow.Stave(barDimensions.left, barDimensions.top, barDimensions.width, options);
 		this.drawClef = !!options.draw_clef;
 		this.drawKeySignature = !!options.draw_key_signature;
-		this.dawStaveNumbers = options.draw_stave_numbers === undefined ? true : !!options.draw_stave_numbers;
+		this.drawStaveNumbers = options.draw_stave_numbers === undefined ? true : !!options.draw_stave_numbers;
 	}
 
 	LSBarView.prototype.draw = function(ctx, songIt, sectionIt, endingsY, labelsY) {

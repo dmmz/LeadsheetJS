@@ -5,7 +5,7 @@ define(['modules/LSViewer/src/LSViewer'],function(LSViewer){
 		params.drawStaveNumbers = false;
 		params.drawStaveLines = false;
 		params.fontChords = "25px Verdana";
-		params.chordDistanceStave = -65;
+		params.chordDistanceStave = -45;
 		params.initialLineHeight = 90;
 		params.paddingLeftChords = 30;
 		params.layer = true;
