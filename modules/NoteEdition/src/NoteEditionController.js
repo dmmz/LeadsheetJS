@@ -347,7 +347,7 @@ define([
 	NoteEditionController.prototype.setPitch = function(decalOrNote) {
 		var selNotes = this._getSelectedNotes();
 		var note;
-		for (var i = 0, c = selNotes.length; i < c; i++) {
+		for (var i = 0; i < selNotes.length; i++) {
 			note = selNotes[i];
 			if (note.isRest) {
 				note.setRest(false);

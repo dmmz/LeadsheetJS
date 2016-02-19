@@ -197,9 +197,9 @@ define([
 		return this.sections;
 	};
 	/**
-	 * addSection can be used on constructing a song (e.g. importing from MusicCSLJson)
-	 * @param {[type]} sectionsItem [description]
-	 * @param {[type]} index        [description]
+	 * addSection can be used on constructing a song (e.g. importing from MusicCSLJson) 
+	 * @param {SectionModel} sectionsItem 
+	 * @param {Integer} index   
 	 */
 	SongModel.prototype.addSection = function(sectionsItem, index) {
 		if (index === undefined){

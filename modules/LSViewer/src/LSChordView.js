@@ -38,14 +38,14 @@ define(['vexflow'], function(Vex) {
 
 		var chordX = getChordX(this.chord.getBeat(), barDimensions, beatWidth)
 		ctx.fillText(this.chord.toString(), chordX, barDimensions.top - chordsY);
+		var	boundingBox = boundingBoxFn ? boundingBoxFn(ctx, this.chord.toString(), chordX, barDimensions.top - chordsY) : undefined;
 		
 		ctx.textBaseline = oldBaseline;
 		ctx.font = oldFont;
 		ctx.fillStyle = oldFillStyle;
 
-		if (boundingBoxFn){
-			return boundingBoxFn(ctx, this.chord.toString(), chordX, barDimensions.top - chordsY);
-		}
+		return boundingBox;	
+
 	};
 
 	return LSChordView;
