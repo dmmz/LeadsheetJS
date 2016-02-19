@@ -38,7 +38,7 @@ define(['utils/NoteUtils',
 			if (test) {
 				console.log("keyboard " + eventName);
 			}
-			$.publish(eventName, param);
+			$.publish(eventName, [param, evt]);
 			stopEvent(evt);
 		}
 		$(document).keydown(function(evt) {

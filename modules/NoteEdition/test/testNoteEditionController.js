@@ -10,9 +10,17 @@ define(['modules/core/src/NoteModel',
 
 				var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
 				var cM = new CursorModel(songModel.getComponent('notes'));
-
 				var nec = new NoteEditionController(songModel, cM);
+				
+				nec.setPitch(1, true);
+				cM.setPos([0,5]);
+				nec.setPitch(2, true);
 
+
+
+				nec.setPitch(-2);
+
+				cM.setPos(0);
 				assert.equal(nec._getSelectedNotes().toString(), "A/4-q");
 
 				// Pitch

@@ -28,21 +28,7 @@ define([
 	 * Function called by MainMenuView
 	 */
 	ChordEditionView.prototype.initController = function() {
-		// Chords
-		/*$('#chord-visibility').click(function() {
-			$.publish('ChordEditionView-toggleChordVisibility');
-		});
-		$('#delete_chord').click(function() {
-			$.publish('ChordEditionView-deleteChord');
-		});
-		$('#add_chord').click(function() {
-			$.publish('ChordEditionView-addChord');
-		});
-
-		// Selection
-		$('#edit_chord').click(function() {
-			$.publish('ChordEditionView-toggleEditChord');
-		});*/
+	
 		$('#copy_chord').click(function() {
 			fn = 'copyChords';
 			$.publish('ChordEditionView', fn);
@@ -54,6 +40,13 @@ define([
 	};
 
 	ChordEditionView.prototype.initKeyboard = function() {
+		$.subscribe('updown-arrows', function(el, inc, evt) {
+			fn = 'setChordPitch';
+			if (evt.shiftKey){
+				$.publish('ChordEditionView', [fn, inc]);	
+			}
+			
+		});
 		$.subscribe('enter-key', function(el) {
 			fn = 'toggleEditChord';
 			$.publish('ChordEditionView', fn);

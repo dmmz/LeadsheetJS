@@ -459,19 +459,18 @@ define([
 		if (isNaN(semiTons) || semiTons === 0) {
 			return;
 		}
-
 		// notes
 		// First we get all notes and all midi notes
 		var nm = this.songModel.getComponent('notes');
-		var notes = nm.getNotes();
-		var midiNotes = SongConverterMidi_MidiCSL.exportNoteToMidiCSL(this.songModel);
-
 		var midiNote, currentNote, pitchFormat;
+		var notes = nm.getNotes();
+
+		var midiNotes = SongConverterMidi_MidiCSL.exportNoteToMidiCSL(this.songModel);
 		var tonalityNote = SongConverterMidi_MidiCSL.convertTonality2AlteredNote(this.songModel.getTonality());
 		var accidentalMeasure = (JSON.parse(JSON.stringify(tonalityNote))); // clone object
 		var numMeasure = 0;
-		for (var i = 0, c = midiNotes.length; i < c; i++) {
-			if (typeof midiNotes[i].midiNote !== "undefined" && midiNotes[i].midiNote[0] !== false && midiNotes[i].midiNote !== false) { // exclude silence but not tie notes
+		for (var i = 0;  i < midiNotes.length; i++) {
+			if (midiNotes[i].midiNote && midiNotes[i].midiNote[0] !== false) { // exclude silence but not tie notes
 				// Build current tonality and accidental measure
 				if (nm.getNoteBarNumber(i, this.songModel) !== numMeasure) {
 					numMeasure = nm.getNoteBarNumber(i, this.songModel);

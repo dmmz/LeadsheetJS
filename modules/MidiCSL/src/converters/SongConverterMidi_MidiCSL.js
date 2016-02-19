@@ -275,9 +275,8 @@ define([
 
 				return [noteKey, accidentalMeasure];
 			}
-
-
 		};
+
 		SongConverterMidi_MidiCSL.convertTonality2AlteredNote = function(key) {
 			if (typeof key === "undefined") {
 				return;

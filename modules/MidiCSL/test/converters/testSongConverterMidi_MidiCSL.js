@@ -4,6 +4,46 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 		run: function() {
 			test("SongConverterMidi_MidiCSL", function(assert) {
 
+				assert.deepEqual(SongConverterMidi_MidiCSL.convertTonality2AlteredNote("D"),{	A: "A",
+																								B: "B",
+																								C: "C#",
+																								D: "D",
+																								E: "E",
+																								F: "F#",
+																								G: "G"});
+
+				assert.deepEqual(SongConverterMidi_MidiCSL.convertTonality2AlteredNote("E"),{	A: "A",
+																								B: "B",
+																								C: "C#",
+																								D: "D#",
+																								E: "E",
+																								F: "F#",
+																								G: "G#"});
+
+				assert.deepEqual(SongConverterMidi_MidiCSL.convertTonality2AlteredNote("F"),{	A: "A",
+																								B: "Bb",
+																								C: "C",
+																								D: "D",
+																								E: "E",
+																								F: "F",
+																								G: "G"});
+				
+				assert.deepEqual(SongConverterMidi_MidiCSL.convertTonality2AlteredNote("F#"),{	A: "A#",
+																								B: "B",
+																								C: "C#",
+																								D: "D#",
+																								E: "E#",
+																								F: "F#",
+																								G: "G#"});
+				
+				assert.deepEqual(SongConverterMidi_MidiCSL.convertTonality2AlteredNote("Gb"),{	A: "Ab",
+																								B: "Bb",
+																								C: "Cb",
+																								D: "Db",
+																								E: "Eb",
+																								F: "F",
+																								G: "Gb"});			
+
 				var msm = new SongModel_midiCSL();
 				assert.deepEqual(msm.getSong(), []);
 

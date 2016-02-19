@@ -28,9 +28,9 @@ define([
 	 * manages events that come from the keyboard
 	 */
 	NoteEditionView.prototype.initKeyboard = function() {
-		$.subscribe('updown-arrows', function(el, inc) {
+		$.subscribe('updown-arrows', function(el, inc, evt) {
 			fn = 'setPitch';
-			$.publish('NoteEditionView', [fn, inc]);
+			$.publish('NoteEditionView', [fn, inc, evt.shiftKey]);
 		});
 		$.subscribe('pitch-letter-key', function(el, key) {
 			fn = 'setPitch';

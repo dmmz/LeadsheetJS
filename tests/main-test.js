@@ -40,6 +40,7 @@ define(function(require) {
   var testUserLog = require('utils/test/testUserLog');
   var testAjaxUtils = require('utils/test/testAjaxUtils');
   var testChordUtils = require('utils/test/testChordUtils');
+  var testNoteUtils = require('utils/test/testNoteUtils');
 
   var testSongModel = require('modules/core/test/testSongModel');
   var testSectionModel = require('modules/core/test/testSectionModel');
@@ -93,7 +94,7 @@ define(function(require) {
   testUserLog.run();
   testAjaxUtils.run();
   testChordUtils.run();
-
+  testNoteUtils.run();
   // Core Module
   testNoteModel.run();
   testChordModel.run();

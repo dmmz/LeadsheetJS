@@ -76,10 +76,10 @@ define([
 			}
 		});
 		// All functions related with note edition go here
-		$.subscribe('NoteEditionView', function(el, fn, param) {
+		$.subscribe('NoteEditionView', function(el, fn, param, shiftKey) {
 			if (self.noteSpaceMng.isEnabled()) {
 
-				self[fn].call(self, param);
+				self[fn].call(self, param, shiftKey);
 				if (fn == 'addNote'){ // we increment cursor
 					self.cursor.increment();
 				}
@@ -344,12 +344,13 @@ define([
 	 * Set selected notes to a key
 	 * @param {int|letter} If decal is a int, than it will be a decal between current note and wanted note in semi tons, if decal is a letter then current note is the letter
 	 */
-	NoteEditionController.prototype.setPitch = function(decalOrNote) {
+	NoteEditionController.prototype.setPitch = function(decalOrNote, chromatic) {
 		var selNotes = this._getSelectedNotes();
 		var note;
+		var convertRestToNote = (selNotes.length == 1);
 		for (var i = 0; i < selNotes.length; i++) {
 			note = selNotes[i];
-			if (note.isRest) {
+			if (note.isRest && convertRestToNote) {
 				note.setRest(false);
 			}
 			var newKey;
@@ -358,8 +359,10 @@ define([
 				newKey = NoteUtils.getClosestKey(note.getPitch(), decalOrNote);
 				note.setNoteFromString(newKey);
 			} else {
-				newKey = NoteUtils.getKey(note.getPitch(), decalOrNote); // decalOrNote is 1 or -1
-				note.setNoteFromString(newKey);
+				if (!note.isRest){
+					newKey = chromatic ? NoteUtils.getNextChromaticKey(note.getPitch(), decalOrNote) : NoteUtils.getNextKey(note.getPitch(), decalOrNote); // decalOrNote is 1 or -1
+					note.setNoteFromString(newKey);
+				}
 			}
 		}
 	};

@@ -1,10 +1,11 @@
 define([
 	'mustache',
 	'modules/core/src/SongBarsIterator',
+	'utils/NoteUtils',
 	'utils/UserLog',
 	'jquery',
 	'pubsub',
-], function(Mustache, SongBarsIterator, UserLog, $, pubsub) {
+], function(Mustache, SongBarsIterator, NoteUtils, UserLog, $, pubsub) {
 	/**
 	 * ChordEditionController manages all chords edition function
 	 * @exports ChordEdition/ChordEditionController
@@ -31,6 +32,16 @@ define([
 				$.publish('ToViewer-draw', self.songModel);
 			}
 		});
+	};
+
+	ChordEditionController.prototype.setChordPitch = function(inc) {
+		var chordMng = this.songModel.getComponent('chords');
+		var indexes = this.getSelectedChordsIndexes();
+		var chord;
+		for (var i = 0; i < indexes.length; i++) {
+			chord = chordMng.getChord(indexes[i]);
+			chord.setNote(NoteUtils.getNextChromaticKey(chord.getNote(),inc, true));
+		}
 	};
 	
 	ChordEditionController.prototype.deleteChords = function() {
