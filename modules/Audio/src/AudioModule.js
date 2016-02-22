@@ -28,7 +28,7 @@ define([
     	    	audioAnimation = new AudioAnimation();
 
 	    	    if (notesCursor){
-	    	    	var notesCursorUpdater = new NotesCursorUpdater(song.getComponent('notes'), notesCursor);
+	    	    	var notesCursorUpdater = new NotesCursorUpdater(song, notesCursor);
 	    	    	audioAnimation.addCursor(notesCursorUpdater);
 	    	    }
 	    	    if (chordsCursor){

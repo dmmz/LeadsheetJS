@@ -158,24 +158,14 @@ define(function() {
 	/**
 	 * @param  {Array} elems      [description]
 	 * @param  {Array} cursor     [Integer, Integer]
-	 * @param  {Object} cursorDims
 	 * @return {Array}    Array of Objects in this form: {area.x, area.y, area.xe, area.ye}
 	 */
-	ElementManager.prototype.getElementsAreaFromCursor = function(elems, cursor, cursorDims) {
+	ElementManager.prototype.getElementsAreaFromCursor = function(elems, cursor) {
 
 		var areas = [],
 			area,
 			cInit = cursor[0],
 			cEnd = cursor[1];
-
-		if (!cursorDims) {
-			cursorDims = {
-				right: 0,
-				left: 0,
-				top: 0,
-				height: 0
-			};
-		}
 
 		if (typeof elems[cInit] === "undefined") {
 			return areas;
@@ -200,13 +190,13 @@ define(function() {
 			}
 			if (currElemY != nextElemY || cInit == cEnd) {
 				lastElemLine = currElem.getArea();
-				x = firstElemLine.getArea().x - cursorDims.left;
-				xe = lastElemLine.x - x + lastElemLine.w + cursorDims.right;
+				x = firstElemLine.getArea().x ;
+				xe = lastElemLine.x - x + lastElemLine.w;
 				area = {
 					x: x,
-					y: currElemY + cursorDims.top,
+					y: currElemY,
 					w: xe,
-					h: cursorDims.height || currElem.getArea().h
+					h: currElem.getArea().h
 				};
 				areas.push(area);
 				if (cInit != cEnd) {

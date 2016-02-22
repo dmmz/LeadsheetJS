@@ -65,7 +65,6 @@ define([
 				this.cursorModel = option.cursorModel;
 			}
 
-
 			this.chords = {
 				volume: initVolume,
 				tmpVolume: initVolume,
@@ -339,8 +338,9 @@ define([
 					var beatOfLastNoteOff = lastNote.getCurrentTime() + lastNote.getDuration();
 					var endTime = beatOfLastNoteOff * beatDuration + Date.now();
 					self.songDuration = beatOfLastNoteOff * beatDuration;
-					if (typeof playFrom === "undefined" || isNaN(playFrom)) {
+					if (playFrom === undefined || isNaN(playFrom)) {
 						var cursorPosition = self.cursorModel.getPos();
+						if (cursorPosition[0] == null) cursorPosition = [0, 0];
 						playFrom = 0;
 						// should check here if cursor is enabled
 						if (cursorPosition[0] !== 0) {

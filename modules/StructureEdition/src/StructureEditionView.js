@@ -30,9 +30,10 @@ define([
 	 */
 	StructureEditionView.prototype.initController = function() {
 		var fn;
+		var publishTarget = 'StructureEditionView';
 		$('#add-section').click(function() {
 			fn = 'addSection';
-			$.publish('StructureEditionView', fn);
+			$.publish(publishTarget, fn);
 		});
 		$('#rem-section').click(function() {
 			fn = 'removeSection';
@@ -83,12 +84,12 @@ define([
 			$.publish('StructureEditionView', [fn, ending]);
 		});
 
-		// Style change
-		$('#edit_each_style_container select').change(function() {
-			var style = $(this).val();
-			fn = 'style';
-			$.publish('StructureEditionView-', [fn, style]);
-		});
+		// // Style change
+		// $('#edit_each_style_container select').change(function() {
+		// 	var style = $(this).val();
+		// 	fn = 'style';
+		// 	$.publish('StructureEditionView-', [fn, style]);
+		// });
 
 		// Label change
 		$('#edit_each_label_container select').change(function() {

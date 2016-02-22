@@ -33,10 +33,9 @@ define([
 		var fn;
 		// All functions related with note edition go here
 		$.subscribe('StructureEditionView', function(el, fn, param) {
-			//if (self.noteSpaceMng.isEnabled()) {
 			self[fn].call(self, param);
-			$.publish('ToViewer-draw', self.songModel);
-			//}
+			var forceNewCanvasLayer = (fn === 'addBar' || fn === 'addSection');
+			$.publish('ToViewer-draw', [self.songModel, forceNewCanvasLayer]);
 		});
 		$.subscribe('CursorModel-setPos', function(el) {
 			self.setCurrentElementFromCursor();
@@ -57,67 +56,46 @@ define([
 	};
 
 	StructureEditionController.prototype.addSection = function() {
-		/*var selBars = this._getSelectedBars();
-		if (selBars.length !== 0) {
-			return;
-		}*/
+		var selBars = this._getSelectedBars();
+		var currentBar = selBars[0];
+		var sectionNumber = this.songModel.getSectionNumberFromBarNumber(currentBar);
+		var startBar = this.songModel.getStartBarNumberFromSectionNumber(sectionNumber);
 
-		// TODO add section after current section position
-		var numberOfBarsToCreate = 2;
-		var barManager = this.songModel.getComponent('bars');
-
-		// clone last bar
-		var indexLastBar = barManager.getTotal() - 1;
-
-		// now we add bars to this section and fill them with silences
-		var noteManager = this.songModel.getComponent('notes');
-		var indexLastNote = noteManager.getTotal() - 1;
-		var beatDuration = this.songModel.getTimeSignatureAt(indexLastBar).getQuarterBeats();
-
-		for (var i = 0; i < numberOfBarsToCreate; i++) {
-			barManager.addBar(barManager.getBar(indexLastBar).clone());
-			noteManager.fillGapWithRests(beatDuration);
+		if (startBar == selBars[0]){
+			UserLog.logAutoFade('error', "Cannot add new section in first bar of a Section");
+			return false;
 		}
+		
+		var section = this.songModel.getSection(sectionNumber);
+		var oldTotalBars = section.getNumberOfBars();
+
+		section.setNumberOfBars(currentBar - startBar);
 		var section = new SectionModel({
-			'numberOfBars': numberOfBarsToCreate
+			numberOfBars: startBar + oldTotalBars - currentBar
 		});
-		this.songModel.addSection(section);
+		this.songModel.addSection(section, sectionNumber + 1);
 
 		UserLog.logAutoFade('info', "Section has been added successfully");
 		$.publish('ToLayers-removeLayer');
 		$.publish('ToHistory-add', 'Add Section');
-		this.cursor.setPos(indexLastNote + 1);
+		//this.cursor.setPos(indexLastNote + 1);
 	};
 
 	StructureEditionController.prototype.removeSection = function() {
-		if (this.songModel.getSections().length === 1) {
-			UserLog.logAutoFade('error', "You can't delete last section");
-			return;
-		}
 		var selBars = this._getSelectedBars();
-		if (selBars.length === 0) {
-			return;
-		}
-		var sectionNumber = this.songModel.getSectionNumberFromBarNumber(selBars[0]);
-
-		var startBar = this.songModel.getStartBarNumberFromSectionNumber(sectionNumber);
-		var numberOfBars = this.songModel.getSection(sectionNumber).getNumberOfBars();
-
-		//var barManager = this.songModel.getComponent('bars');
-		var noteManager = this.songModel.getComponent('notes');
-		//var notes;
-		// console.log(sectionNumber, startBar, numberOfBars);
-		for (var i = 0; i < numberOfBars; i++) {
-			this._removeBar(startBar);
-		}
-		// check if cursor not outside
-		var indexLastNote = noteManager.getTotal() - 1;
-		if (this.cursor.getEnd() > indexLastNote) {
-			this.cursor.setPos(indexLastNote);
+		var currentBar = selBars[0];
+		var sectionNumber = this.songModel.getSectionNumberFromBarNumber(currentBar);
+		if (sectionNumber == 0){
+			UserLog.logAutoFade('error', "You can't delete last section");
+			return false;
 		}
 
-		// Remove section in songmodel is not needed because it's done when we remove last sections bar
-		//this.songModel.removeSection(sectionNumber);
+		var prevSection = this.songModel.getSection(sectionNumber - 1);
+		var currSection = this.songModel.getSection(sectionNumber);
+		
+		prevSection.setNumberOfBars(prevSection.getNumberOfBars() + currSection.getNumberOfBars());
+		this.songModel.removeSection(sectionNumber);
+		
 		UserLog.logAutoFade('info', "Section have been removed successfully");
 		$.publish('ToLayers-removeLayer');
 		$.publish('ToHistory-add', 'Remove Section');
@@ -450,9 +428,10 @@ define([
 	};
 
 	StructureEditionController.prototype._getSelectedBars = function() {
+		var noteMng = this.songModel.getComponent('notes');
 		var selectedBars = [];
-		selectedBars[0] = this.songModel.getComponent('notes').getNoteBarNumber(this.cursor.getStart(), this.songModel);
-		selectedBars[1] = this.songModel.getComponent('notes').getNoteBarNumber(this.cursor.getEnd(), this.songModel);
+		selectedBars[0] = noteMng.getNoteBarNumber(this.cursor.getStart(), this.songModel);
+		selectedBars[1] = noteMng.getNoteBarNumber(this.cursor.getEnd(), this.songModel);
 		if (selectedBars[1] === selectedBars[0]) {
 			selectedBars.pop();
 		}

@@ -1,6 +1,7 @@
 define([
 		'vexflow',
 		'modules/LSViewer/src/LSNoteView',
+		'modules/NoteEdition/src/NoteSpaceView',
 		'modules/LSViewer/src/LSChordView',
 		'modules/LSViewer/src/LSBarView',
 		'modules/LSViewer/src/BeamManager',
@@ -14,7 +15,7 @@ define([
 		'jquery',
 		'pubsub'
 	],
-	function(Vex, LSNoteView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator, CanvasLayer, Scaler, $, pubsub) {
+	function(Vex, LSNoteView, NoteSpaceView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator, CanvasLayer, Scaler, $, pubsub) {
 		/**
 		 * LSViewer module manage interaction between canvas, core model and vexflow, it's the main module that allow drawing
 		 * @exports LSViewer/LSViewer
@@ -62,13 +63,18 @@ define([
 			this.FONT_CHORDS = params.fontChords || "18px Verdana";
 			this.PADDING_LEFT_CHORDS = params.paddingLeftChords || 0;
 
-			this.DRAW_STAVE_NUMBERS = params.drawStaveNumbers;
+			this.DRAW_STAVE_NUMBERS = params.drawStaveNumbers === undefined ? true : params.drawStaveNumbers;
 			this.ONLY_CHORDS = !!params.onlyChords;
 			this.DRAW_CLEF = !params.onlyChords;
 			this.DRAW_KEY_SIGNATURE = !params.onlyChords;
 			this.DRAW_STAVE_LINES = params.drawStaveLines === undefined ? true : params.drawStaveLines;
 			this.TEXT_CLOSER_TO_STAVE = !!params.onlyChords;
-			
+
+			this.CURSOR_MARGIN_LEFT = 6;
+			this.CURSOR_MARGIN_TOP = 20;
+			this.CURSOR_MARGIN_RIGHT = 9;
+			this.CURSOR_HEIGHT = 80;
+						
 			//by default false, needed when ChordSpaceManager is in mode 'ONLY_CHORDS' (nothing to do with LSViewer.ONLY_CHORDS )
 			//SAVE_CHORDS will save coordenates of drawed chords in an array (so there more memory needed)
 			this.SAVE_CHORDS = params.saveChords === undefined  ? false : params.saveChords; 
@@ -127,10 +133,11 @@ define([
 
 		LSViewer.prototype._initSubscribe = function() {
 			var self = this;
-			$.subscribe('ToViewer-draw', function(el, songModel) {
+			$.subscribe('ToViewer-draw', function(el, songModel, forceNewCanvasLayer) {
 				if (!songModel) {
 					throw "Need songModel to draw";
 				}
+				self.forceNewCanvasLayer = forceNewCanvasLayer;
 				self.draw(songModel);
 			});
 
@@ -206,7 +213,7 @@ define([
 			}
 				//if not top, hanging nor middle, other values are bottom, alpabetic, ideographic (we do not make difference)
 			substractY = ctx.textBaseline === 'middle' ? substractY / 2 : 
-				ctx.textBaseline === 'top' && ctx.textBaseline === 'hanging' ? 0 : substractY ;
+			ctx.textBaseline === 'top' || ctx.textBaseline === 'hanging' ? 0 : substractY ;
 			//we assume start and left are the same, for the moment, only support for ltr (occidental) language
 			substractX = ctx.textAlign === 'center' ? width / 2 :
 				ctx.textAlign === 'start' || ctx.textAlign === 'left' ? 0 : width;
@@ -278,14 +285,7 @@ define([
 		LSViewer.prototype.setHeight = function(song, barWidthMng) {
 			var totalNumBars = song.getComponent("bars").getTotal();
 			this.canvas.height = (barWidthMng.getDimensions(totalNumBars - 1).top + this.lineHeight) * this.SCALE;
-			/*if (this.canvas.height > $(this.divContainer).height() && this.heightOverflow == 'scroll') {
-				$(this.divContainer).css({
-					overflowY: "scroll"
-				});
-			} else {
-				$(this.divContainer).height(this.canvas.height);
-			}*/
-
+			
 			if (this.canvas.height != $(this.divContainer).height()) {
 				if (this.heightOverflow == 'scroll') {
 					$(this.divContainer).css({
@@ -422,7 +422,8 @@ define([
 				numSection++;
 			});
 			tieMng.draw(this.ctx, noteViews, nm, this.barWidthMng, song);
-			this.noteViews = noteViews;
+			
+			
 
 			this.chordViews = chordViews;
 			this.vxfBars = vxfBars;
@@ -445,8 +446,23 @@ define([
 				}
 				this.canvasLayer = new CanvasLayer(this, this.detectEventOnAllDocument, this.INTERACTIVE_CANVAS_LAYER); //the canvasLayer needs to be created after the score has been drawn
 			}
+			this.noteViews = this._getNoteViewsArea(noteViews);
 			$.publish('LSViewer-drawEnd', this);
 		};
+
+		LSViewer.prototype._getNoteViewsArea = function(noteViews) {
+			var noteSpaceViews = [], area;
+
+			for (var i = 0; i < noteViews.length; i++) {
+				area = noteViews[i].getArea();
+				area.x -= this.CURSOR_MARGIN_LEFT;;
+				area.y += this.CURSOR_MARGIN_TOP;
+				area.w += this.CURSOR_MARGIN_LEFT + this.CURSOR_MARGIN_RIGHT;
+				area.h = this.CURSOR_HEIGHT;
+				noteSpaceViews.push(new NoteSpaceView(area, this.scaler));
+			}
+			return noteSpaceViews;
+		}
 		/**
 		 * When drawing an element from another module, it has to use this function
 		 * @param  {Function} drawFunc function that draws the element

@@ -213,20 +213,23 @@ define([
 			}
 
 			loadedModules.playerView = new PlayerView(playerHTML, imgUrl, playerViewOptions);
+			var cursorPlayerModel = new Cursor(songModel.getComponent('notes'), songModel, 'notes', 'arrow').model;
+			new NoteSpaceManager(cursorPlayerModel, viewer, 'PlayerCursor', "#0AA000", false, false);
 
 
 			if (useMidi) {
-				loadedModules.midiPlayer = LJS._loadMidiPlayer(MidiCSL, songModel, soundfontUrl, loadedModules.playerView, cursorNoteModel);
+				loadedModules.midiPlayer = LJS._loadMidiPlayer(MidiCSL, songModel, soundfontUrl, loadedModules.playerView, cursorPlayerModel);
 			}
 
 			if (useAudio) {
 				$.publish('ToMidiPlayer-disable');
 
-				var audioModule = LJS._loadAudioPlayer(AudioModule, songModel, viewer, cursorNoteModel); // audio player is use to get audio wave, it's why it needs viewer
+				var audioModule = LJS._loadAudioPlayer(AudioModule, songModel, viewer, cursorPlayerModel); // audio player is use to get audio wave, it's why it needs viewer
 				if (params.player.audio.audioFile) {
 					audioModule.load(params.player.audio.audioFile, params.player.audio.tempo);
 				}
 				loadedModules.audioPlayer = audioModule;
+				loadedModules.cursorPlayerModel = cursorPlayerModel;
 			}
 
 		}
@@ -342,7 +345,7 @@ define([
 	LJS._loadMidiPlayer = function(MidiCSL, songModel, soundfontUrl, playerView, cursorModel) {
 
 		var player = new MidiCSL.PlayerModel_MidiCSL(songModel, soundfontUrl, {
-			'cursorModel': cursorModel
+			cursorModel: cursorModel
 		});
 		new MidiCSL.PlayerController(player, playerView);
 		return player;

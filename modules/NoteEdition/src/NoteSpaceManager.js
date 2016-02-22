@@ -1,16 +1,22 @@
 define([
-	'modules/NoteEdition/src/NoteSpaceView',
 	'modules/Cursor/src/CursorModel',
 	'utils/UserLog',
 	'modules/Edition/src/ElementManager',
 	'jquery',
 	'pubsub',
-], function(NoteSpaceView, CursorModel, UserLog, ElementManager, $, pubsub) {
+], function(CursorModel, UserLog, ElementManager, $, pubsub) {
 	/**
 	 * NoteSpaceManager creates and manages an array of notes represented by their positions
 	 * @exports NoteEdition/NoteSpaceManager
+	 * 
+	 * @param {CursorModel} cursor      
+	 * @param {LSViewer} viewer      
+	 * @param {String} name        name as CanvasLayer listener
+	 * @param {String} color       RGB color. e. g.: "#FF0000"
+	 * @param {Boolean} interactive if true, can be selected (e.g. cursor to edit notes will be interactive, player cursor will not)
+	 * @param {Boolean} enabled     if true, it will be initially enabled (e.g. notes editing cursor), on the other hand, player cursor will be enabled on 'play'
 	 */
-	function NoteSpaceManager(cursor, viewer) {
+	function NoteSpaceManager(cursor, viewer, name, color, interactive, enabled) {
 
 		if (!cursor) {
 			throw "NoteSpaceManager - missing cursor";
@@ -18,19 +24,16 @@ define([
 		if (!viewer) {
 			throw "NoteSpaceManager - missing viewer";
 		}
-		this.CL_TYPE = 'CURSOR';
-		this.CL_NAME = 'NotesCursor';
+		this.interactive = interactive === undefined ? true : interactive;
+		this.CL_TYPE = this.interactive ? 'CURSOR' : 'NOT_INTERACTIVE';
+		this.CL_NAME = name || 'NotesCursor';
 		this.cursor = cursor;
 		this.viewer = viewer;
 		this.elemMng = new ElementManager();
 		this.noteSpace = [];
 		this.initSubscribe();
-		this.enabled = true;
-
-		this.CURSOR_HEIGHT = 80;
-		this.CURSOR_MARGIN_TOP = 20;
-		this.CURSOR_MARGIN_LEFT = 6;
-		this.CURSOR_MARGIN_RIGHT = 9;
+		this.enabled = enabled === undefined ? true : enabled;
+		this.COLOR = color || "#0099FF";
 	}
 
 	/**
@@ -44,7 +47,6 @@ define([
 				throw "NoteSpaceManager needs CanvasLayer";
 			}
 
-			//if (self.cursor.getEditable()) {
 			self.noteSpace = self.createNoteSpace(self.viewer);
 			self.cursor.setListElements(self.noteSpace.length);
 			self.viewer.canvasLayer.addElement(self);
@@ -56,6 +58,7 @@ define([
 			self.enable();
 		})
 		$.subscribe('ctrl-a', function() {
+			if (!self.interactive) return;
 			self.enable();
 			self.cursor.selectAll();
 			self.viewer.canvasLayer.refresh();
@@ -65,21 +68,10 @@ define([
 
 	NoteSpaceManager.prototype.createNoteSpace = function(viewer) {
 		var noteSpace = [];
-		if (typeof viewer.vxfBars === "undefined") {
+		if (viewer.vxfBars === undefined) {
 			return;
 		}
-		var area;
-
-		for (var i = 0, c = viewer.noteViews.length; i < c; i++) {
-			currentNote = viewer.noteViews[i];
-			area = currentNote.getArea();
-			//apply cursor margin changes
-			area.x -= this.CURSOR_MARGIN_LEFT;
-			area.y += this.CURSOR_MARGIN_TOP;
-			area.w += this.CURSOR_MARGIN_LEFT + this.CURSOR_MARGIN_RIGHT;
-			area.h = this.CURSOR_HEIGHT;
-			noteSpace.push(new NoteSpaceView(area, viewer.scaler));
-		}
+		noteSpace = viewer.noteViews;
 		return noteSpace;
 	};
 
@@ -106,13 +98,14 @@ define([
 	 * @param  {Boolean} ctrlPressed 
 	 */
 	NoteSpaceManager.prototype.onSelected = function(coords, ini, end, clicked, mouseUp, ctrlPressed) {
+		if (!this.interactive)	return;
 		var posCursor;
 		var coordsTop, coordsBottom;
+
 		posCursor = this.elemMng.getElemsInPath(this.noteSpace, coords, ini, end, this.getYs(coords));
 		if (ctrlPressed){
 			posCursor = this.elemMng.getMergedCursors(posCursor, this.cursor.getPos());
 		}
-
 		if (posCursor) {
 			this.cursor.setPos(posCursor);
 			//when clicking on a note, if there is an audio player, cursor should be updated
@@ -135,62 +128,16 @@ define([
 	 */
 	NoteSpaceManager.prototype.drawCursor = function(ctx) {
 		if (this.noteSpace.length === 0) return;
-		var position = this.cursor.getPos();
-		var saveFillColor = ctx.fillStyle;
-		ctx.fillStyle = "#0099FF";
+		var position = this.cursor.getPos(),
+			saveFillColor = ctx.fillStyle,
+		 	areas = [];
+		
+		ctx.fillStyle = this.COLOR;
 		ctx.globalAlpha = 0.2;
-		var currentNoteSpace;
-		var areas = [];
-		var self = this;
-
-		/*function scrollWindow(ctx, areas) {
-			var iSafe = 0;
-			var posLastCursorBottom = areas[areas.length - 1].y + areas[areas.length - 1].h;
-			var posLastCursorTop = areas[areas.length - 1].y;
-			var canvasOffset = $(ctx.canvas).offset().top;
-			var viewportHeight = $(window).height();
-			var scrollTop = $(window).scrollTop();
-
-			while ((canvasOffset + posLastCursorBottom - scrollTop) > (viewportHeight - 90) && iSafe < 15) {
-				posLastCursorBottom = areas[areas.length - 1].y + areas[areas.length - 1].h;
-				canvasOffset = $(ctx.canvas).offset().top;
-				viewportHeight = $(window).height();
-				scrollTop = $(window).scrollTop();
-				//console.log('down');
-				$(window).scrollTop($(window).scrollTop() + self.viewer.lineHeight);
-				iSafe++;
-			}
-			if (iSafe === 0) {
-				while (((canvasOffset + posLastCursorTop) < scrollTop) && iSafe < 15) {
-					//console.log('up');
-					posLastCursorTop = areas[areas.length - 1].y + areas[areas.length - 1].h;
-					canvasOffset = $(ctx.canvas).offset().top;
-					viewportHeight = $(window).height();
-					scrollTop = $(window).scrollTop();
-					$(window).scrollTop($(window).scrollTop() - self.viewer.lineHeight);
-					iSafe++;
-				}
-			}
-		}*/
 
 		if (position[0] !== null) {
-			if (position[0] === position[1]) {
-				areas.push({
-					x: this.noteSpace[position[0]].position.x,
-					y: this.noteSpace[position[0]].position.y,
-					w: this.noteSpace[position[0]].position.w,
-					h: this.noteSpace[position[0]].position.h
-				});
-			} else {
-				var cursorDims = {
-					right: this.CURSOR_MARGIN_RIGHT,
-					left: this.CURSOR_MARGIN_LEFT,
-					top: 0,
-					height: this.CURSOR_HEIGHT
-				};
-				areas = this.elemMng.getElementsAreaFromCursor(this.noteSpace, position, cursorDims);
-			}
-			for (i = 0, c = areas.length; i < c; i++) {
+			areas = this.elemMng.getElementsAreaFromCursor(this.noteSpace, position);
+			for (i = 0; i < areas.length; i++) {
 				ctx.fillRect(
 					areas[i].x,
 					areas[i].y,
@@ -200,11 +147,7 @@ define([
 			}
 			ctx.fillStyle = saveFillColor;
 			ctx.globalAlpha = 1;
-			// if (areas.length === 1) {
-			// 	// scrollWindow(ctx, areas);
-			// }
 		}
-
 	};
 
 	/**
