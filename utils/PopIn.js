@@ -1,29 +1,29 @@
 define([
 	'mustache',
 ], function(Mustache) {
-
 	/**
-	 * Create a popin view, it can contain directly content or it can be a link to a template
 	 * @param {String}  title
 	 * @param {String}  content    Can be the content or the link to a template to load (in case it's a template set istemplate to true)
-	 * @param {Boolean} isTemplate If true, the url will be loaded as a template, otherwise content will be directly included
+	 * @param {Object} options  	options.classTitle is the name of the class that will use
 	 */
 	function PopIn(title, content, options) {
 		this.title = title;
 		this.content = content;
 
-		options = (typeof options !== "undefined") ? options : {};
-		this.classTitle = (typeof options.classTitle !== "undefined") ? options.classTitle : '';
-		this.footerButtonTitle = (typeof options.footerButtonTitle !== "undefined") ? options.footerButtonTitle : 'Ok';
-		if (typeof options.isTemplate !== "undefined" && options.isTemplate === true) {
+		options = options || {};
+
+		this.classTitle = (options.classTitle !== undefined) ? options.classTitle : 'foregroundPopin';
+		
+		this.footerButtonTitle = (options.footerButtonTitle !== undefined) ? options.footerButtonTitle : 'Ok';
+		if (options.isTemplate !== undefined && options.isTemplate === true) {
 			this.isTemplate = true;
 			this.template = content;
 		} else {
 			this.isTemplate = false;
 			this.content = content;
 		}
-		this.onSubmitFunction = (typeof options.onSubmit !== "undefined") ? options.onSubmit : undefined;
-		this.onCloseFunction = (typeof options.onClose !== "undefined") ? options.onClose : undefined; // close function is launched on hiding popin AND on submit
+		this.onSubmitFunction = options.onSubmit;
+		this.onCloseFunction = options.onClose; // close function is launched on hiding popin AND on submit
 		this.backgroundOpacity = 0.5;
 	}
 
@@ -54,11 +54,11 @@ define([
 			content = this.content;
 		}
 		var txt = '';
-		txt += '<div style="display:none" class="modal foregroundPopin ' + this.classTitle + '" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">';
+		txt += '<div style="display:none;padding: 1em;z-index: 9001;" class="modal ' + this.classTitle + '" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">';
 		txt += '<div class="modal-dialog">';
 		txt += '<div class="modal-content">';
 		txt += '<div class="modal-header">';
-		txt += '<button type="button" class="popin_close close" data-dismiss="modal" aria-hidden="true">&times;</button>';
+		txt += '<button type="button" class="popin_close close" style="float:right" data-dismiss="modal" aria-hidden="true">&times;</button>';
 		txt += '<h4 class="modal-title">' + this.title + '</h4>';
 		txt += '</div>';
 		txt += '<div class="modal-body contentPopIn">' + content + '</div>';
@@ -78,9 +78,10 @@ define([
 	 * @return {String}            Render template
 	 */
 	PopIn.prototype.renderTemplate = function(callback) {
+		var self = this;
 		$.get(this.template, function(template) {
 			var rendered = Mustache.render(template);
-			$('.contentPopIn').html(rendered);
+			$('.'+ self.classTitle +' .contentPopIn').html(rendered);
 			if (typeof callback === "function") {
 				callback();
 			}
@@ -93,17 +94,11 @@ define([
 		var self = this;
 		$('.backgroundPopin, .popin_close').click(function() {
 			self.hide();
-			if (typeof self.onCloseFunction !== "undefined") {
-				self.onCloseFunction();
-			}
+			if (self.onCloseFunction)	self.onCloseFunction();
 		});
-		$('.modal_submit').click(function() {
-			if (typeof self.onSubmitFunction !== "undefined") {
-				self.onSubmitFunction();
-			}
-			if (typeof self.onCloseFunction !== "undefined") {
-				self.onCloseFunction();
-			}
+		$('.'+ self.classTitle +' .modal_submit').click(function() {
+			if (self.onSubmitFunction)  self.onSubmitFunction();
+			if (self.onCloseFunction)	self.onCloseFunction();
 		});
 	};
 
@@ -119,12 +114,12 @@ define([
 
 	PopIn.prototype.show = function() {
 		$('.backgroundPopin').fadeIn('slow');
-		$('.foregroundPopin').fadeIn('slow');
+		$('.' +this.classTitle).fadeIn('slow');
 	};
 
 	PopIn.prototype.hide = function() {
 		$('.backgroundPopin').fadeOut('slow');
-		$('.foregroundPopin').fadeOut('slow');
+		$('.' +this.classTitle).fadeOut('slow');
 	};
 
 	return PopIn;

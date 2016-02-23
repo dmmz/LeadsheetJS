@@ -6,9 +6,9 @@ define([
 	 * FileEdition constructor
 	 * @exports FileEdition
 	 */
-	function FileEdition(songModel, viewer, saveFunction, params) {
+	function FileEdition(songModel, viewer, saveFunction, params, saveAsF) {
 		this.view = new FileEditionView(params);
-		new FileEditionController(songModel, viewer, saveFunction);
+		new FileEditionController(songModel, viewer, saveFunction, true); //saveAs is true
 	}
 	return FileEdition;
 });
