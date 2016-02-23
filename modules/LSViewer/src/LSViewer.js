@@ -213,7 +213,7 @@ define([
 			}
 				//if not top, hanging nor middle, other values are bottom, alpabetic, ideographic (we do not make difference)
 			substractY = ctx.textBaseline === 'middle' ? substractY / 2 : 
-			ctx.textBaseline === 'top' || ctx.textBaseline === 'hanging' ? 0 : substractY ;
+				ctx.textBaseline === 'top' || ctx.textBaseline === 'hanging' ? 0 : substractY ;
 			//we assume start and left are the same, for the moment, only support for ltr (occidental) language
 			substractX = ctx.textAlign === 'center' ? width / 2 :
 				ctx.textAlign === 'start' || ctx.textAlign === 'left' ? 0 : width;

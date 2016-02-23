@@ -43,6 +43,7 @@ define(['vexflow'], function(Vex) {
 		ctx.textBaseline = oldBaseline;
 		ctx.font = oldFont;
 		ctx.fillStyle = oldFillStyle;
+
 		return boundingBox;	
 
 	};

@@ -7,15 +7,15 @@ define([
 	'pubsub',
 	'utils/UserLog',
 	'utils/apiFlowMachines/ComposerServlet',
-	'utils/AjaxUtils',
+	'utils/PopIn',
 	'jsPDF',
 	'jquery'
-], function(Mustache, SongModel, SongModel_CSLJson, SongModel_MusicXML,LSViewer, pubsub, UserLog, ComposerServlet, AjaxUtils, jsPDF, $) {
+], function(Mustache, SongModel, SongModel_CSLJson, SongModel_MusicXML,LSViewer, pubsub, UserLog, ComposerServlet, PopIn, jsPDF, $) {
 	/**
 	 * FileEditionController manages all file interaction like save, import, export
 	 * @exports FileEdition/FileEditionController
 	 */
-	function FileEditionController(songModel, viewer, saveFunction) {
+	function FileEditionController(songModel, viewer, saveFunction, saveAs) {
 		if (viewer) {
 			this.viewer = viewer;
 			if (viewer.canvas) {
@@ -24,6 +24,10 @@ define([
 		}
 		this.songModel = songModel || new SongModel();
 		this.initSubscribe();
+		var self = this;
+		if (saveAs){
+			this.initSubscribeSaveAS();
+		}
 		if (saveFunction) {
 			this.saveFn = saveFunction;
 		}
@@ -56,6 +60,26 @@ define([
 		$.subscribe('FileEditionView-saveAs', function(el) {
 			self.saveAs();
 		});
+	};
+	//TODO: this logic is dependent on the application that uses LeadsheetJS, not on LeadsheetJS, maybe it should be moved, just like 'save' function
+	FileEditionController.prototype.initSubscribeSaveAS = function(first_argument) {	
+		var content = 	"<div class='controls form-inline'>"+
+						"<label style='padding:5px;'>New Title</label><input name='title' type='text'></input>"+
+						"&nbsp;&nbsp;<label style='padding:5px;'>Link to original lead sheet</label><input type='checkbox' name='linked' checked='true'/>"+
+						"</div>";
+		var classTitle = "saveAs";
+		this.popin = new PopIn('Save As', content, {classTitle:classTitle});
+		this.popin.render();
+		var self = this;
+		$(document).on('click','.'+ classTitle +' .modal_submit', function(data){
+			var title = $("input[name=title]").val();
+			title = title || 'Copy of ' + self.songModel.getTitle();
+			self.songModel.setTitle(title);
+			var linked = $("input[name='linked']")[0].checked;
+			self.save(self.songModel, false, linked);
+			$.publish('ToViewer-draw', self.songModel);
+		});
+
 	};
 
 	FileEditionController.prototype.importMusicCSLJSON = function(JSONSong) {
@@ -170,7 +194,7 @@ define([
 		export_link.remove();
 	};
 
-	FileEditionController.prototype.save = function(newLeadsheet, showConfirm) {
+	FileEditionController.prototype.save = function(newLeadsheet, showConfirm, derived) {
 		
 		showConfirm = showConfirm !== undefined ? showConfirm : true;
 
@@ -178,6 +202,7 @@ define([
 		if (!newLeadsheet && this.songModel._id !== undefined) {
 			songId = this.songModel._id;
 		}
+		var derivedId = derived ? this.songModel._id : null;
 
 		this.songModel._id = undefined; // we need to clean songModel id otherwise update doesn't work
 		var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel);
@@ -188,7 +213,7 @@ define([
 			}
 			var self = this;
 			var idLog = UserLog.log('info', 'Saving...');
-			this.saveFn(JSONSong, songId, function(data) {
+			this.saveFn(JSONSong, songId, {derivedId: derivedId}, function(data) {
 				UserLog.removeLog(idLog);
 				if (data.error) {
 					UserLog.logAutoFade('error', data.msg);
@@ -201,12 +226,7 @@ define([
 	};
 
 	FileEditionController.prototype.saveAs = function() {
-		var newTitle = window.prompt('Give a new name to your song:');
-		if (newTitle !== null) {
-			this.songModel.setTitle(newTitle);
-			this.save(true);
-			$.publish('ToViewer-draw', this.songModel);
-		}
+		this.popin.show();
 	};
 
 
