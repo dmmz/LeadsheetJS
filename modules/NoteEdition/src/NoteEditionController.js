@@ -519,14 +519,14 @@ define([
 			for (var i = 0; i < selNotes.length - 1; i++) {
 				if (selNotes[i].getDuration() != selNotes[i + 1].getDuration()) {
 					return {
-						'error': 'Notes have not then same duration'
+						'error': 'Notes do not have the same duration'
 					};
 				}
 			}
 			if (selNotes.length < 3) {
 				if (!validDur(selNotes)) {
 					return {
-						'error': 'You must choose to make a tuplet over simple durations (not dotted neither tuplet notes)'
+						'error': 'Select notes with a simple duration (not dotted or tuplet notes)'
 					};
 				}
 			}
