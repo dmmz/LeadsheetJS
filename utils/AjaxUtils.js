@@ -67,7 +67,7 @@ define(['jquery'], function($) {
 		}
 		var request = {
 			url: 'http://apijava.flow-machines.com:8080/' + servletRoot + '/' + servletName,
-			type: 'GET',
+			type: 'POST',
 			data: data,
 			dataType: 'json',
 			withCredentialsBool: true
