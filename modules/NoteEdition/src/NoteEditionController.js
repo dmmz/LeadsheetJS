@@ -80,7 +80,7 @@ define([
 			if (self.noteSpaceMng.isEnabled()) {
 
 				self[fn].call(self, param, shiftKey);
-				if (fn == 'addNote'){ // we increment cursor
+				if (fn == 'addNote') { // we increment cursor
 					self.cursor.increment();
 				}
 				if (fn !== 'copyNotes') { //copyNotes is the only function that we don't save in history 
@@ -348,6 +348,7 @@ define([
 		var selNotes = this._getSelectedNotes();
 		var note;
 		var convertRestToNote = (selNotes.length == 1);
+
 		for (var i = 0; i < selNotes.length; i++) {
 			note = selNotes[i];
 			if (note.isRest && convertRestToNote) {
@@ -359,7 +360,8 @@ define([
 				newKey = NoteUtils.getClosestKey(note.getPitch(), decalOrNote);
 				note.setNoteFromString(newKey);
 			} else {
-				if (!note.isRest){
+				if (!note.isRest) {
+					
 					newKey = chromatic ? NoteUtils.getNextChromaticKey(note.getPitch(), decalOrNote) : NoteUtils.getNextKey(note.getPitch(), decalOrNote); // decalOrNote is 1 or -1
 					note.setNoteFromString(newKey);
 				}

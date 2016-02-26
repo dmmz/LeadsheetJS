@@ -209,7 +209,7 @@ define([
 	 * @return {Number}       
 	 */
 	NoteManager.prototype.getNoteBarNumber = function(index, song) {
-		if (isNaN(index) || index < 0 || typeof song === "undefined") {
+		if (isNaN(index) || index < 0 || song === undefined) {
 			throw "NoteManager - getNoteBarNumber - attributes are not what expected, song: " + song + ", index: " + index;
 		}
 		var duration = 0;

@@ -1,5 +1,26 @@
 define(function() {
 	var NoteUtils = {};
+	NoteUtils.ACCIDENTALS = ["bb","b","","#","##"];
+	NoteUtils.NATURAL_PITCHES = {
+		C: 0,
+		D: 1,
+		E: 2,
+		F: 3,
+		G: 4,
+		A: 5,
+		B: 6
+	};
+	NoteUtils.pitch2Number = function(pitch) {
+		var naturalPitch = pitch.substring(0,1);
+		var accidental = pitch.substring(1,pitch.length);
+		var number = this.PITCH_2_NUMBER[naturalPitch];
+		for (var i = 0; i < NoteUtils.ACCIDENTALS.length; i++) {
+			if (accidental == NoteUtils.ACCIDENTALS[i]){
+				return number += (i - 2);
+				return (number < 0) ? number : number + 12; 
+			}
+		}
+	}
 	NoteUtils.PITCH_CLASSES = ["C", "D", "E", "F", "G", "A", "B"];
 	NoteUtils.ASC_CHROMATIC_PITCHES = ["C", "C#", "D","D#", "E", "F","F#", "G","G#", "A","A#", "B"];
 	NoteUtils.DESC_CHROMATIC_PITCHES = ["C", "Db", "D","Eb", "E", "F","Gb", "G","Ab", "A","Bb", "B"];
@@ -95,15 +116,7 @@ define(function() {
 			if (oct1 > oct2) r = 1;
 			else if (oct1 < oct2) r = -1;
 			else { //if equal
-				var map = {
-					"C": 0,
-					"D": 1,
-					"E": 2,
-					"F": 3,
-					"G": 4,
-					"A": 5,
-					"B": 6
-				};
+				var map = NoteUtils.NATURAL_PITCHES;
 
 				if (map[pc1] > map[pc2]) r = 1;
 				if (map[pc1] < map[pc2]) r = -1;
@@ -148,13 +161,7 @@ define(function() {
 		return sortedPitches;
 	};
 
-	NoteUtils.pitch2Number = function(pitch) {
-		var number;
-		if (this.PITCH_2_NUMBER[pitch] !== undefined) {
-			number = this.PITCH_2_NUMBER[pitch];
-		}
-		return number;
-	};
+
 
 	NoteUtils.number2Pitch = function(number) {
 		var number2PitchArray = {
@@ -203,8 +210,8 @@ define(function() {
 			else
 				return value.toUpperCase();
 		}
-
 	};
+
 
 	NoteUtils.getClosestKey = function(pitch, pitchClass2) {
 		var pitchClass = pitch.split('/')[0];
