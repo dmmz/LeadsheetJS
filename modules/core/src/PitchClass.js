@@ -1,11 +1,12 @@
 define([
 	'utils/NoteUtils'
 	], function(NoteUtils) {
-	function PitchClass(name, accidental){
-		this.name = name;
-		this.accidental = accidental || "";
-		this.semitoneCount = NoteUtils.pitch2Number(this.toString());
+	function PitchClass(pitch){
+		this.name = pitch.substring(0,1);
+		this.accidental = pitch.substring(1,pitch.lengh);
+		this.semitoneCount = NoteUtils.pitch2Number(pitch);
 	}
+
 	PitchClass.prototype.toString = function() {
 		return this.name + this.accidental;
 	}
@@ -37,7 +38,6 @@ define([
 			octaveDiff : octaveDiff
 		};
 	};
-
 	PitchClass.prototype.sharp = function(semitonesToMove) {
 		for (var i = 0; i < NoteUtils.ACCIDENTALS.length; i++) {
 			if (this.accidental == NoteUtils.ACCIDENTALS[i]){
@@ -46,7 +46,6 @@ define([
 			}
 		}
 	};
-
 	PitchClass.prototype.flat = function(semitonesToMove) {
 		for (var i = NoteUtils.ACCIDENTALS.length - 1; i >= 0; i--) {
 			if (this.accidental == NoteUtils.ACCIDENTALS[i]){
@@ -55,9 +54,7 @@ define([
 			}
 		}
 	};
-
 	PitchClass.prototype.transposeBy = function(interval, direction, getOctave) {
-		
 		direction = direction || 1;
 		var r = this._sumNaturalCount(this.name, interval.type, direction);
 
@@ -65,21 +62,17 @@ define([
 		var newPitch = new PitchClass(newPitchName);
 		var semitonesDiff = this._semitonesDiff(newPitch, direction);
 
-
 		var semitonesToMove = interval.semitones - Math.abs(semitonesDiff);
 		var action = (semitonesToMove > 0) == (direction > 0) ? 'sharp' : 'flat';
-		newPitch[action](semitonesToMove);
+		newPitch[action](Math.abs(semitonesToMove));
 		
 		if (newPitch.accidental === undefined){
 			throw "impossible transposition from "+this.name+", "+direction+" "+interval.name;
 		}
-
 		return getOctave ? {
 			newPitch: newPitch,
 			octaveDiff: r.octaveDiff
 		} : newPitch;
-
-
 	};
 	return PitchClass;
 });

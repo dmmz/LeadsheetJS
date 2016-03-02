@@ -6,15 +6,15 @@ define([
 		run : function(){
 			test('PitchClass',function(assert){
 				var a = new PitchClass("A");
-				var csharp = new PitchClass("C","#");
-				var bb = new PitchClass("B","b");
+				var csharp = new PitchClass("C#");
+				var bb = new PitchClass("Bb");
 				assert.equal(a.toString(), "A");
 				assert.equal(a.semitoneCount, 9);
 				assert.equal(csharp.toString(), "C#");
 				assert.equal(csharp.semitoneCount, 1);
 				assert.equal(bb.toString(), "Bb");
 				assert.equal(bb.semitoneCount, 10);
-				var dbb = new PitchClass("D","bb");
+				var dbb = new PitchClass("Dbb");
 				assert.equal(dbb.semitoneCount, 0);
 
 				//compareSemitones all for 6 cases
@@ -34,15 +34,19 @@ define([
 				assert.equal(a.transposeBy(Intervals.augmentedFifth).toString() , "E#");	
 				assert.equal(a.transposeBy(Intervals.minorSixth).toString() , "F");	
 				
-				var db = new PitchClass("D","b");
+				var db = new PitchClass("Db");
 				assert.equal(db.transposeBy(Intervals.perfectFifth, -1).toString(), "Gb", 'Db transposing down');
 				assert.equal(db.transposeBy(Intervals.minorSecond, -1).toString(), "C");
 				assert.equal(db.transposeBy(Intervals.augmentedSecond, -1).toString(), "Cbb");
 				
-				var db = new PitchClass("D","bb");
 				assert.throws(function(){
-					db.transposeBy(Intervals.augmentedUnison, -1).toString();
+					dbb.transposeBy(Intervals.augmentedUnison, -1).toString();
 				});
+
+				assert.equal(new PitchClass("F#").transposeBy(Intervals.minorThird).toString(),"A");
+				assert.equal(new PitchClass("G").transposeBy(Intervals.minorThird).toString(),"Bb");
+				assert.equal(new PitchClass("Cb").transposeBy(Intervals.minorThird).toString(),"Ebb");
+				
 			})
 		}
 	}

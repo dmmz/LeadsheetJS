@@ -144,7 +144,7 @@ define([
 		return this.timeSignature;
 	};
 
-	/**
+	/**TODO: use songIterator instead
 	 * GetTimeSignatureAt returns the time signature at one precise moment defined by the barNumber
 	 * @param  {int} barNumber
 	 * @return {timeSignatureModel} currentTimeSignature like 3/4

@@ -80,7 +80,7 @@ define([
 			if (self.noteSpaceMng.isEnabled()) {
 
 				self[fn].call(self, param, shiftKey);
-				if (fn == 'addNote') { // we increment cursor
+				if (fn == 'addNote') { // we increment cursor if we added a note
 					self.cursor.increment();
 				}
 				if (fn !== 'copyNotes') { //copyNotes is the only function that we don't save in history 
@@ -345,28 +345,58 @@ define([
 	 * @param {int|letter} If decal is a int, than it will be a decal between current note and wanted note in semi tons, if decal is a letter then current note is the letter
 	 */
 	NoteEditionController.prototype.setPitch = function(decalOrNote, chromatic) {
-		var selNotes = this._getSelectedNotes();
-		var note;
-		var convertRestToNote = (selNotes.length == 1);
+		var self = this,
+			note,
+			type = NoteUtils.getValidPitch(decalOrNote) !== -1 ? 'pitch' : 'decal';
 
-		for (var i = 0; i < selNotes.length; i++) {
-			note = selNotes[i];
-			if (note.isRest && convertRestToNote) {
-				note.setRest(false);
+		if (chromatic && type == 'decal'  ){
+			setPitchChromatically();
+		}else{
+			setPitchNormally();
+		}
+
+		function setPitchChromatically(){
+			var noteMng = self.songModel.getComponent('notes');
+			var start = self.cursor.getStart();
+			 	end = self.cursor.getEnd() + 1;
+			var tmpNoteMng = noteMng.score2play(start, end, self.songModel);
+			
+			for (var i = 0; i < tmpNoteMng.getTotal(); i++) {
+				note = tmpNoteMng.getNote(i);
+				if (!note.isRest){
+					newKey = NoteUtils.getNextChromaticKey(note.getPitch(), decalOrNote);
+					note.setNoteFromString(newKey);
+				}
 			}
-			var newKey;
-			if (NoteUtils.getValidPitch(decalOrNote) !== -1) {
-				//find closest key
-				newKey = NoteUtils.getClosestKey(note.getPitch(), decalOrNote);
-				note.setNoteFromString(newKey);
-			} else {
-				if (!note.isRest) {
-					
-					newKey = chromatic ? NoteUtils.getNextChromaticKey(note.getPitch(), decalOrNote) : NoteUtils.getNextKey(note.getPitch(), decalOrNote); // decalOrNote is 1 or -1
+			noteMng.notesSplice([start, end -1], tmpNoteMng.getNotes());
+			var tmpNoteMng = noteMng.play2score(start, end, self.songModel);
+			noteMng.notesSplice([start, end - 1], tmpNoteMng.getNotes());
+		}
+
+		function setPitchNormally(){
+			var newKey;		
+			var selNotes = self._getSelectedNotes();
+			var convertRestToNote = (selNotes.length == 1);
+			for (var i = 0; i < selNotes.length; i++) {
+				note = selNotes[i];
+				if (note.isRest && convertRestToNote) {
+					note.setRest(false);
+				}
+				if (type == 'pitch') {
+					//find closest key
+					newKey = NoteUtils.getClosestKey(note.getPitch(), decalOrNote);
+					note.setNoteFromString(newKey);
+				} else if (!note.isRest) {
+					newKey = NoteUtils.getNextKey(note.getPitch(), decalOrNote); // decalOrNote is 1 or -1
 					note.setNoteFromString(newKey);
 				}
 			}
 		}
+	};
+
+	NoteEditionController.prototype.transposeBy = function(interval, direction) {
+		var selNotes = this._getSelectedNotes();
+		
 	};
 
 	NoteEditionController.prototype.addAccidental = function(accidental) {

@@ -2,10 +2,11 @@ define([
 	'mustache',
 	'modules/core/src/SongBarsIterator',
 	'utils/NoteUtils',
+	'modules/core/src/PitchClass',
 	'utils/UserLog',
 	'jquery',
 	'pubsub',
-], function(Mustache, SongBarsIterator, NoteUtils, UserLog, $, pubsub) {
+], function(Mustache, SongBarsIterator, NoteUtils, PitchClass, UserLog, $, pubsub) {
 	/**
 	 * ChordEditionController manages all chords edition function
 	 * @exports ChordEdition/ChordEditionController
@@ -42,6 +43,17 @@ define([
 			chord = chordMng.getChord(indexes[i]);
 			chord.setNote(NoteUtils.getNextChromaticKey(chord.getNote(),inc, true));
 		}
+	};
+	ChordEditionController.prototype.transposeBy = function(interval, direction) {
+		direction = direction || 1;
+		var chordMng = this.songModel.getComponent('chords');
+		var indexes = this.getSelectedChordsIndexes();
+		var chord, pitchClass;
+		for (var i = 0; i < indexes.length; i++) {
+			chord = chordMng.getChord(indexes[i]);
+			pitchClass = new PitchClass(chord.getNote());
+			chord.setNote(pitchClass.transposeBy(interval, direction));
+		}	
 	};
 	
 	ChordEditionController.prototype.deleteChords = function() {
@@ -122,7 +134,8 @@ define([
 		}
 		
 		$.publish('ToHistory-add', 'Paste chord');
-	};
+	}
+	
 
 	/*ChordEditionController.prototype.chordTabEvent = function(way) {
 		console.log('chordTabEvent', way);
@@ -156,7 +169,10 @@ define([
 		}
 		return [startBeat, iBeat];
 	};
-
+	/**
+	 * Returns indexes of chords depending on cursor position
+	 * @return {Array} index number of selected chords. e.g. [0,1,2]
+	 */
 	ChordEditionController.prototype.getSelectedChordsIndexes = function() {
 		var chordManager = this.songModel.getComponent('chords');
 		var selectedChords = [];

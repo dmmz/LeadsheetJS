@@ -51,10 +51,12 @@ define(function(require) {
   var testBarModel = require('modules/core/test/testBarModel');
   var testBarManager = require('modules/core/test/testBarManager');
   var testSongBarsIterator = require('modules/core/test/testSongBarsIterator');
+  var testNotesIterator = require('modules/core/test/testNotesIterator');
   var testPitchClass = require('modules/core/test/testPitchClass');
   var testNote = require('modules/core/test/testNote');
 
   var testTimeSignatureModel = require('modules/core/test/testTimeSignatureModel');
+  var testKeySignatureModel = require('modules/core/test/testKeySignatureModel');
 
   var testSongModel_CSLJson = require('modules/converters/MusicCSLJson/test/testSongModel_CSLJson');
   var testSectionModel_CSLJson = require('modules/converters/MusicCSLJson/test/testSectionModel_CSLJson');
@@ -107,7 +109,9 @@ define(function(require) {
   testBarManager.run();
   testChordManager.run();
   testTimeSignatureModel.run();
+  testKeySignatureModel.run();
   testSongBarsIterator.run();
+  testNotesIterator.run();
   testPitchClass.run();
   testNote.run();
   // MusicCSLJSON Module

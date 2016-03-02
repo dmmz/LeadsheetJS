@@ -7,7 +7,6 @@ define(['modules/core/src/PitchClass'],function(PitchClass){
 		var r = this.pitchClass.transposeBy(interval, direction, true);
 		
 		this.pitchClass = r.newPitch;
-		console.log(r.octaveDiff);
 		this.octave += r.octaveDiff;
 
 	};

@@ -224,6 +224,50 @@ define(['modules/core/src/NoteManager',
 					assert.equal(noteManager.getNoteBeat(4).toFixed(3), 3.667);
 					assert.equal(noteManager.getNoteBeat(6), 5);
 				}
+				function scorePlayFunctions(testSongs){
+
+					function createPlayingMelody(playingMelody){
+						var note;
+						var noteMng = new NoteManager();
+						for (var i = 0; i < playingMelody.length; i++) {
+							
+							note = new NoteModel(playingMelody[i]);
+							// we set ties manually because constructor from string does not support ties
+							if (i == 15) 		note.setTie("start");
+							else if(i == 16) 	note.setTie("stop_start");
+							else if (i == 17) 	note.setTie("stop");
+							noteMng.addNote(note);
+						}
+						return noteMng;
+					}
+
+					var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.keySigChanges);
+					// with this notes from testSongs.keySigChanges, all if cases on play2song and song2play methods are covered (we have checked it)
+					// keySig F 
+					// bars:  			 (0) F/4-w |
+					// 		   keySig:D  (1)Fn/4-8  (2)F/4-8  (3)F/5-8  (4)C/4-8  (5)Cb/4-8  (6)C/4-16 (7)16r   (8)A/4-16  (9)A#/4-16 (10)F/4-16 (11)A/4-16 |
+					// 		   keySig:G  (12)F/4-q  (13)C/4-q (14)D#/4-8 (15)Dn/4-8  (16)D/4-8  (17)Bb/4-8-tied | 
+					// 		   			 (18)B/4-w-tied |
+					// 		   			 (19)B/4-h  (20)B/4-h
+					// 		    		  
+					var noteMng = song.getComponent('notes'); 
+					var scoreMelody = [	"F/4-w", 
+										"Fn/4-8", "F/4-8", "F/5-8", "C/4-8", "Cb/4-8", "C/4-16", "16r", "A/4-16", "A#/4-16", "F/4-16", "A/4-16", 
+										"F/4-q",  "C/4-q", "D#/4-8", "Dn/4-8", "D/4-8", "Bb/4-8", 
+										"B/4-w", 
+										"B/4-h", "B/4-h" ];
+					var playingMelody = [	/* first bar has one note but it hasn't been selected (start is 2) */
+											/* second bar first note not selected neither,  */ "F/4-8","F#/5-8","C#/4-8","Cb/4-8","Cb/4-16","16r","A/4-16","A#/4-16","F/4-16","A#/4-16", 
+										 "F#/4-q","C/4-q","D#/4-8","D/4-8","D/4-8","Bb/4-8",
+										 "Bb/4-w",
+										 "Bb/4-h", "B/4-h"];
+					var start = 2, end = 21;
+					assert.deepEqual(noteMng.score2play(start, end, song).getNotesAsString(), playingMelody, 'score2play');
+					//we replace noteMng with playing notes
+					var playNotes = createPlayingMelody(playingMelody);
+					noteMng.notesSplice([start, end],playNotes.getNotes());
+					assert.deepEqual(noteMng.play2score(start, end, song).getNotesAsString(), scoreMelody.slice(start, end),'play2score');
+				}
 
 				function otherFunctions(testSongs) {
 					var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
@@ -399,6 +443,7 @@ define(['modules/core/src/NoteManager',
 				timeSignatureChanges();
 				testDurationToNotes(testSongs);
 				findRestAreas(noteManager);
+				scorePlayFunctions(testSongs);
 
 			});
 

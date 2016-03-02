@@ -150,151 +150,6 @@ define(function() {
 			}]
 		}]
 	};
-	var simpleIncompleteLeadSheet = {
-		composer: "Random Composer",
-		title: "Whatever song",
-		time: "4/4",
-		changes: [{
-			id: 0,
-			name: "A",
-			bars: [{
-				chords: [{
-					p: "A",
-					ch: "M7",
-					beat: 1
-				}],
-				melody: [{
-					keys: ["a/4"],
-					duration: "q"
-				}, {
-					keys: ["g/4"],
-					duration: "8"
-				}, {
-					keys: ["e/4"],
-					duration: "8"
-				}, {
-					keys: ["f/4"],
-					duration: "q"
-				}, {
-					keys: ["c/4"],
-					duration: "q"
-				}]
-			}, {
-				melody: [{
-					keys: ["a/4"],
-					duration: "q"
-				}, {
-					keys: ["f/4"],
-					duration: "q"
-				}, {
-					keys: ["g/4"],
-					duration: "q"
-				}, {
-					keys: ["e/4"],
-					duration: "q"
-				}]
-			}, {
-				chords: [{
-					p: "B",
-					ch: "7",
-					beat: 1
-				}],
-				melody: [{
-					keys: ["a/4"],
-					duration: "q"
-				}, {
-					keys: ["f/4"],
-					duration: "q"
-				}, {
-					keys: ["g/4"],
-					duration: "q"
-				}, {
-					keys: ["e/4"],
-					duration: "q"
-				}]
-			}, {
-				melody: [{
-					keys: ["a/4"],
-					duration: "q"
-				}, {
-					keys: ["f/4"],
-					duration: "q"
-				}, {
-					keys: ["g/4"],
-					duration: "q"
-				}, {
-					keys: ["e/4"],
-					duration: "q"
-				}]
-			}, {
-				chords: [{
-					p: "NC",
-					ch: "",
-					beat: 1
-				}],
-				melody: [{
-					keys: ["b/4"],
-					duration: "qr"
-				}, {
-					keys: ["f/4"],
-					duration: "qr"
-				}, {
-					keys: ["b/4"],
-					duration: "qr"
-				}, {
-					keys: ["b/4"],
-					duration: "qr"
-				}]
-			}, {
-				melody: [{
-					keys: ["b/4"],
-					duration: "qr"
-				}, {
-					keys: ["b/4"],
-					duration: "qr"
-				}, {
-					keys: ["b/4"],
-					duration: "qr"
-				}, {
-					keys: ["b/4"],
-					duration: "qr"
-				}]
-			}, {
-				chords: [{
-					p: "F",
-					ch: "7",
-					beat: 1
-				}],
-				melody: [{
-					keys: ["b/4"],
-					duration: "qr"
-				}, {
-					keys: ["b/4"],
-					duration: "qr"
-				}, {
-					keys: ["b/4"],
-					duration: "qr"
-				}, {
-					keys: ["b/4"],
-					duration: "qr"
-				}]
-			}, {
-				melody: [{
-					keys: ["b/4"],
-					duration: "qr"
-				}, {
-					keys: ["b/4"],
-					duration: "qr"
-				}, {
-					keys: ["b/4"],
-					duration: "qr"
-				}, {
-					keys: ["b/4"],
-					duration: "qr"
-				}]
-			}]
-		}]
-	};
 	var leadSheetTimeSigChanges = {
 		composer: "Random Composer",
 		title: "Whatever song",
@@ -3169,6 +3024,122 @@ define(function() {
 			}]
 		}]
 	};
+	var keySigChanges = {
+		composer: "Casey Changes",
+		title: "Oh, when the key signature changes",
+		time: "4/4",
+		keySignature: "F",
+		changes: [{
+			id: 0,
+			name: "A",
+			bars:
+			[{
+				chords:[{
+					p: "C",
+					ch: "",
+					beat: 1
+				}],
+				melody:[
+				{
+					keys:["F\/4"],
+					duration:"w"
+				}]					
+			},
+			{
+				chords:[{
+					p: "C",
+					ch: "",
+					beat: 1
+				}],
+				keySignature: "D",
+				melody:[
+				{
+					keys:["Fn\/4"],
+					duration:"8"
+				},{
+					keys:["F\/4"],
+					duration:"8"
+				},{
+					keys:["F\/5"],
+					duration:"8"
+				},{
+					keys:["C\/4"],
+					duration:"8"
+				},{
+					keys:["Cb\/4"],
+					duration:"8"
+				},{
+					keys:["C\/4"],
+					duration:"16"
+				},{
+					keys:["B/4"],
+					duration:"16r"
+				},{
+					keys:["A\/4"],
+					duration:"16"
+				},{
+					keys:["A#\/4"],
+					duration:"16"
+				},{
+					keys:["F\/4"],
+					duration:"16"
+				},{
+					keys:["A\/4"],
+					duration:"16"
+				}]
+			},
+			{
+				keySignature: "G",
+				chords:[{
+					p: "C",
+					ch: "",
+					beat: 1
+				}],
+				melody:[
+				{
+					keys:["F/4"],
+					duration: "q"
+				},{
+					keys:["C/4"],
+					duration:"q"
+				},{
+					keys:["D#/4"],
+					duration:"8"
+				},{
+					keys:["Dn/4"],
+					duration:"8"
+				},{
+					keys:["D/4"],
+					duration:"8"
+				},{
+					keys:["Bb/4"],
+					duration:"8",
+					tie: "start",
+				}
+
+				]
+			},{
+				melody:[
+				{
+					keys:["B/4"],
+					duration: "w",
+					tie: "stop_start",
+				}]
+			},{
+				melody:[
+				{
+					keys:["B/4"],
+					duration: "h",
+					tie: "stop"
+				},{
+					keys:["B/4"],
+					duration: "h"
+				}
+				]
+			}
+			]
+		}]
+	};
 
 	var wholeSilencesSong = {
 		composer: "Random Composer",
@@ -3262,8 +3233,8 @@ define(function() {
 	};
 	return {
 		simpleLeadSheet: simpleLeadSheet,
-		simpleIncompleteLeadSheet: simpleIncompleteLeadSheet,
 		leadSheetTimeSigChanges: leadSheetTimeSigChanges,
+		keySigChanges: keySigChanges,
 		afoxe: afoxe,
 		foldedSong: foldedSong,
 		wholeSilencesSong: wholeSilencesSong

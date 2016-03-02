@@ -522,7 +522,6 @@ define([
 			}
 		}
 
-		this.structEditionModel.setDecalFromOriginalTonality(semiTons);
 		$.publish('ToHistory-add', 'Transpose Song ' + semiTons + ' half ton(s)');
 	};
 

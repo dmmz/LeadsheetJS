@@ -1,8 +1,11 @@
 define([
 	'modules/core/src/NoteModel', 
 	'utils/NoteUtils', 
-	'modules/core/src/SongBarsIterator'
-	], function(NoteModel, NoteUtils, SongBarsIterator) {
+	'modules/core/src/SongBarsIterator',
+	'modules/core/src/NotesIterator',
+	'modules/core/src/KeySignatureModel',
+	'modules/core/src/BarAccidentals'
+	], function(NoteModel, NoteUtils, SongBarsIterator, NotesIterator, KeySignatureModel, BarAccidentals) {
 	/**
     * Note manager represents list of notes, it's a component of SongModel
     * @exports core/NoteManager
@@ -36,7 +39,7 @@ define([
 
 	NoteManager.prototype.addNote = function(note, pos) {
 		if (!note instanceof NoteModel) throw "note is not an instance of Note";
-		if (typeof pos === "undefined") {
+		if (pos === undefined) {
 			this.notes.push(note);
 		} else { //check
 			this.notes.splice(pos, 0, note);
@@ -92,10 +95,9 @@ define([
 		return newNotes;
 	};
 
-
 	/**
 	 * replace notes from pos1 to pos2+1, by default will always replace one note, if we want to insert notes at
-	 * position pos without replacing note at 'pos' (e.g. scoreeditor.addBar() does it) we need to call it with cursor = [pos, pos -1 ]
+	 * position pos without replacing note at 'pos' (e.g. in StructureEditionController.addBar()) we need to call it with cursor = [pos, pos -1 ]
 	 * @param  {Array} cursor       [pos1,pos2]
 	 * @param  {Array} notesToPaste array of NoteModel
 	 */
@@ -138,7 +140,7 @@ define([
 
 	/**
 	 *
-	 * @return {Array} array of pitches of all the notes. e.g.  ["Db/4", "E/4", "F/4", "A#/4", "C/5", "B/4"]
+	 * @return {Array} array of pitches of all the notes. e.g.  ["Db/4-q", "E/4-q", "F/4-8", "A#/4-4", "C/5-4", "B/4-q"]
 	 */
 	NoteManager.prototype.getNotesAsString = function() {
 		var arrPitches = [];
@@ -202,28 +204,173 @@ define([
 		songIt.setBarIndex(barNumber);
 		return this.getNotesAtCurrentBar(songIt);
 	};
+	/*NoteManager.prototype._notesTransformationTemplate = function(transformationFn, start, end, song) {
+		console.log(arguments);
+		var playingNoteAcc, //current accidental
+			newNote,
+			storedAcc,
+			note,
+			needToResetAccidentals = false,
+			barAcc = new BarAccidentals();
 
+		var notesIt = this._getNotesIteratorAt(start, song);
+		notesIt.setStart(notesIt.iFirstNoteBar);
+		var newNoteMng = new NoteManager();
+		while(notesIt.lowerThan(end)){
+
+			transformationFn();
+
+			notesIt.next();
+			if (notesIt.isNewBar){
+				needToResetAccidentals = true;
+			}
+			if (needToResetAccidentals && !newNote.isTie("start")){
+				barAcc.reset();
+				needToResetAccidentals = false;
+			}
+		}
+		return newNoteMng;
+	};
+	NoteManager.prototype.play2score = function(start, end, song ) {
+		
+		this._notesTransformationTemplate(function(){
+			if (notesIt.index < start ){
+				barAcc.updateAccidentals(note);
+			}
+			else{
+				var keySignature = new KeySignatureModel(notesIt.songIt.getBarKeySignature());
+				newNote = note.clone();
+				playingNoteAcc = note.getAccidental();
+				storedAcc = barAcc.getAccidental(note) || keySignature.getPitchAccidental(note.getPitchClass());
+				if (playingNoteAcc){
+					if (playingNoteAcc == storedAcc){
+						newNote.setAccidental("");
+					}else{
+						barAcc.updateAccidentals(newNote);
+					}
+				}else{
+					if (storedAcc && storedAcc != "n"){
+						newNote.setAccidental("n");
+						barAcc.updateAccidentals(newNote);
+					}
+				}
+				newNoteMng.addNote(newNote);
+			}
+		}, start, end,song);
+	};
+*/
+	NoteManager.prototype.play2score = function(start, end, song) {
+		var playingNoteAcc, //current accidental
+			newNote,
+			storedAcc,
+			note,
+			needToResetAccidentals = false,
+			barAcc = new BarAccidentals();
+		var notesIt = this._getNotesIteratorAt(start, song);
+		notesIt.setStart(notesIt.iFirstNoteBar);
+		var newNoteMng = new NoteManager();
+
+		while(notesIt.lowerThan(end)){
+			note = this.notes[notesIt.index];
+			if (notesIt.index < start ){
+				barAcc.updateAccidentals(note);
+			}
+			else{
+				var keySignature = new KeySignatureModel(notesIt.songIt.getBarKeySignature());
+				newNote = note.clone();
+				playingNoteAcc = note.getAccidental();
+				storedAcc = barAcc.getAccidental(note) || keySignature.getPitchAccidental(note.getPitchClass());
+				if (playingNoteAcc){
+					if (playingNoteAcc == storedAcc){
+						newNote.setAccidental("");
+					}else{
+						barAcc.updateAccidentals(newNote);
+					}
+				}else{
+					if (storedAcc && storedAcc != "n"){
+						newNote.setAccidental("n");
+						barAcc.updateAccidentals(newNote);
+					}
+				}
+				newNoteMng.addNote(newNote);
+			}
+			notesIt.next();
+			if (notesIt.isNewBar){
+				needToResetAccidentals = true;
+			}
+			if (needToResetAccidentals && !newNote.isTie("start")){
+				barAcc.reset();
+				needToResetAccidentals = false;
+			}
+		}
+		return newNoteMng;
+	};
+
+	NoteManager.prototype.score2play = function(start, end, song) {
+		
+		var accidental, //current accidental
+			newNote,
+			note,
+			needToResetAccidentals = false,
+			barAcc = new BarAccidentals();
+		
+		var notesIt = this._getNotesIteratorAt(start, song);
+		notesIt.setStart(notesIt.iFirstNoteBar);
+		var newNoteMng = new NoteManager();
+
+		while (notesIt.lowerThan(end)){
+			note = this.notes[notesIt.index];
+			accidental = barAcc.updateAccidentals(note);
+
+			if (notesIt.index >= start){
+				newNote = note.clone();
+				accidental = accidental || barAcc.getAccidental(note);	
+								
+				if (!accidental){
+					var keySignature = new KeySignatureModel(notesIt.songIt.getBarKeySignature());	
+					accidental = keySignature.getPitchAccidental(note.getPitchClass());
+				}
+				if (accidental) {
+					if (accidental == "n"){
+						accidental = "";
+					} 	
+					newNote.setAccidental(accidental);
+				}
+				newNoteMng.addNote(newNote);
+			}
+			notesIt.next();
+			if (notesIt.isNewBar){
+				needToResetAccidentals = true;
+			}
+			if (needToResetAccidentals && !newNote.isTie("start")){
+				barAcc.reset();
+				needToResetAccidentals = false;
+			}
+		}
+		return newNoteMng;
+
+	};
+
+
+	NoteManager.prototype._getNotesIteratorAt = function(index, song) {
+		if (isNaN(index) || index < 0 || song === undefined) {
+			throw "NoteManager - getNoteBarNumber - attributes are not what expected, song: " + song + ", index: " + index;
+		}
+		var duration = 0,
+			songIt = new SongBarsIterator(song),
+			notesIt = new NotesIterator(songIt, this);
+
+		notesIt.setStart(index);
+		return  notesIt;
+	};
 	/**
 	 * @param  {Number} index 
 	 * @param  {SongModel} song  
 	 * @return {Number}       
 	 */
 	NoteManager.prototype.getNoteBarNumber = function(index, song) {
-		if (isNaN(index) || index < 0 || song === undefined) {
-			throw "NoteManager - getNoteBarNumber - attributes are not what expected, song: " + song + ", index: " + index;
-		}
-		var duration = 0;
-		var songIt = new SongBarsIterator(song);
-			
-		var barNumBeats = songIt.getStartEndBeats();
-		for (var i = 0; i <= index; i++) {
-			if (NoteUtils.roundBeat(duration) == barNumBeats[1] - 1) {
-				songIt.next();
-				barNumBeats = songIt.getStartEndBeats();
-			}
-			duration += this.notes[i].getDuration();
-		}
-		return songIt.getBarIndex();
+
+		return this._getNotesIteratorAt(index, song).songIt.getBarIndex();
 	};
 
 	/**
