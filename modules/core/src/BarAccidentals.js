@@ -1,4 +1,8 @@
 define(function(){
+	/**
+	 * when converting notes from socre2play or for play2score (see NoteManagerModel), this object is useful for checking accidnetal that appear in each bar
+	 * accidentals found in a measure will influence other notes with same pitch class and octave
+	 */
 	function BarAccidentals(){
 		this.list = {};
 	}
