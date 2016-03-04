@@ -132,11 +132,13 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		return this.octave[i];
 	};
 
+	
 	/**
-	 * @param  {Number} index
-	 * @return {String} pitch. e.g.: "A#/5", "Bb/4"
+	 * @param  {Number} index        
+	 * @param  {Boolean} withoutSlash 
+	 * @return {String}        e.g.: "A#/5", "Bb/4" or       "A#5", "Bb4"
 	 */
-	NoteModel.prototype.getPitch = function(index) {
+	NoteModel.prototype.getPitch = function(index, withoutSlash) {
 		// check if number, check if  < numPitches
 		index = index || 0;
 
@@ -147,10 +149,12 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 
 		var octave = '';
 		if (typeof this.octave[index] !== "undefined") {
-			octave = '/' + this.octave[index];
+			if (!withoutSlash) octave += '/';
+			octave += this.octave[index];
 		}
 		return this.pitchClass[index] + accidental + octave;
 	};
+
 
 	/**
 	 * @param {Number} dots

@@ -65,6 +65,15 @@ define(['modules/core/src/BarModel'], function(BarModel) {
 				assert.equal(bar.getSublabel(false), 'DC al Coda');
 				assert.equal(bar.getSublabel(true), 'DC_AL_CODA' , 'formated sublabel');
 
+				var clonedBar = bar.clone();
+				assert.deepEqual(clonedBar.getTimeSignatureChange(),bar.getTimeSignatureChange(),'testing clone');
+				assert.deepEqual(clonedBar.getBegining(),bar.getBegining());
+				assert.deepEqual(clonedBar.getEnding(),bar.getEnding());
+				assert.deepEqual(clonedBar.getClef(),bar.getClef());
+				assert.deepEqual(clonedBar.getKeySignatureChange(),bar.getKeySignatureChange());
+				assert.deepEqual(clonedBar.getLabel(),bar.getLabel());
+				assert.deepEqual(clonedBar.getSublabel(),bar.getSublabel());
+				
 			});
 
 		}

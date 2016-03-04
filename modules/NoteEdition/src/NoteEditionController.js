@@ -356,10 +356,11 @@ define([
 		}
 
 		function setPitchChromatically(){
+			var newKey;
 			var noteMng = self.songModel.getComponent('notes');
-			var start = self.cursor.getStart();
+			var start = self.cursor.getStart(),
 			 	end = self.cursor.getEnd() + 1;
-			var tmpNoteMng = noteMng.score2play(start, end, self.songModel);
+			var tmpNoteMng = noteMng.score2play(self.songModel, start, end);
 			
 			for (var i = 0; i < tmpNoteMng.getTotal(); i++) {
 				note = tmpNoteMng.getNote(i);
@@ -369,7 +370,7 @@ define([
 				}
 			}
 			noteMng.notesSplice([start, end -1], tmpNoteMng.getNotes());
-			var tmpNoteMng = noteMng.play2score(start, end, self.songModel);
+			var tmpNoteMng = noteMng.play2score(self.songModel, start, end);
 			noteMng.notesSplice([start, end - 1], tmpNoteMng.getNotes());
 		}
 

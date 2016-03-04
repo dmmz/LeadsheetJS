@@ -1,4 +1,9 @@
 define(['utils/NoteUtils'], function(NoteUtils){
+	/**
+	 * class iterates through notes but being aware of structure issues (like time or key signature changes)
+	 * @param {SongBarsIterator} songIt  
+	 * @param {NoteManagerModel} noteMng 
+	 */
 	function NotesIterator(songIt, noteMng){
 		this.songIt = songIt;
 		this.noteMng = noteMng;
@@ -26,6 +31,9 @@ define(['utils/NoteUtils'], function(NoteUtils){
 	};
 	NotesIterator.prototype.lowerThan = function(end) {
 		return this.index < end && this.index < this.noteMng.getTotal();
+	};
+	NotesIterator.prototype.hasNext = function() {
+		return this.lowerThan(this.noteMng.getTotal());	
 	};
 
 	NotesIterator.prototype.next = function() {

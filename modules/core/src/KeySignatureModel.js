@@ -13,15 +13,13 @@ define(function(){
 	};
 
 	KeySignatureModel.prototype = {
-		// TODO: could be improved with a circular array
 		/**
-		 * ret
+		 * 												// TODO: could be improved with a circular array
 		 * @param  {String} key e.g.: "A", "Bb", "C#"
 		 * @return {Array}     accidentals of key. e.g.: for "D" -> {"F":"#","C":"#"}; for "Bb" -> {"B":"b","E":"b"}
 		 */
 		 _setAccidentals : function(key, bemols){
-		 	
-			var index,
+		 	var index,
 				firstNonBemolPos = 7; //F#
 			for (var i = 0; i < this.keys.length; i++) {
 				if (this.keys[i] == key){
@@ -50,17 +48,5 @@ define(function(){
 			return this.accidentals[pitch] || "";
 		}
 	};
-
-
-	// TODO: could be improved with a circular array
-	/**
-	 * ret
-	 * @param  {String} key e.g.: "A", "Bb", "C#"
-	 * @return {Array}     accidentals of key. e.g.: for "D" -> ["F","C"]; for "Bb" -> ["-B","-E"]
-	 */
-	// NoteUtils.getKeyAccidentals = function(key){
-				
-	// }
-
 	return KeySignatureModel;
 });

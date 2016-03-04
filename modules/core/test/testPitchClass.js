@@ -39,9 +39,8 @@ define([
 				assert.equal(db.transposeBy(Intervals.minorSecond, -1).toString(), "C");
 				assert.equal(db.transposeBy(Intervals.augmentedSecond, -1).toString(), "Cbb");
 				
-				assert.throws(function(){
-					dbb.transposeBy(Intervals.augmentedUnison, -1).toString();
-				});
+				assert.equal(dbb.transposeBy(Intervals.augmentedUnison, -1).accidental, undefined);
+				
 
 				assert.equal(new PitchClass("F#").transposeBy(Intervals.minorThird).toString(),"A");
 				assert.equal(new PitchClass("G").transposeBy(Intervals.minorThird).toString(),"Bb");

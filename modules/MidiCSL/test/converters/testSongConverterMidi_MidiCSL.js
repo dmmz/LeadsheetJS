@@ -3,46 +3,25 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 	return {
 		run: function() {
 			test("SongConverterMidi_MidiCSL", function(assert) {
+				function testExportNotesToMidiCSL(){
+					var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.keySigChanges);
+					var midiSong = SongConverterMidi_MidiCSL.exportNotesToMidiCSL(song);
+					var pitch = [];
+					var durations = [];
+					var currentTime = [];
+					for (var i = 0; i < midiSong.length; i++) {
+						pitch.push(midiSong[i].midiNote[0]);
+						durations.push(midiSong[i].duration);
+						currentTime.push(midiSong[i].currentTime);
+					}
+					
+					assert.deepEqual(durations, [4, 0.5, 0.5, 0.5, 0.5, 0.5, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 1, 1, 0.5, 0.5, 0.5, 0.5, 4, 6.5, 2], 'ExportNotesToMidiCSL: durations');
+					assert.deepEqual(pitch, [65, 65, 65, 78, 61, 59, 59, false, 69, 70, 65, 70, 66, 60, 63, 62, 62, undefined, undefined, 70, 71], 'ExportNotesToMidiCSL: pitches');
+					assert.deepEqual(currentTime,  [0, 4, 4.5, 5, 5.5, 6, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 9, 10, 10.5, 11, 11.5, 12, 11.5, 18], 'ExportNotesToMidiCSL: currentTimes')
+					
+				}
 
-				assert.deepEqual(SongConverterMidi_MidiCSL.convertTonality2AlteredNote("D"),{	A: "A",
-																								B: "B",
-																								C: "C#",
-																								D: "D",
-																								E: "E",
-																								F: "F#",
-																								G: "G"});
-
-				assert.deepEqual(SongConverterMidi_MidiCSL.convertTonality2AlteredNote("E"),{	A: "A",
-																								B: "B",
-																								C: "C#",
-																								D: "D#",
-																								E: "E",
-																								F: "F#",
-																								G: "G#"});
-
-				assert.deepEqual(SongConverterMidi_MidiCSL.convertTonality2AlteredNote("F"),{	A: "A",
-																								B: "Bb",
-																								C: "C",
-																								D: "D",
-																								E: "E",
-																								F: "F",
-																								G: "G"});
-				
-				assert.deepEqual(SongConverterMidi_MidiCSL.convertTonality2AlteredNote("F#"),{	A: "A#",
-																								B: "B",
-																								C: "C#",
-																								D: "D#",
-																								E: "E#",
-																								F: "F#",
-																								G: "G#"});
-				
-				assert.deepEqual(SongConverterMidi_MidiCSL.convertTonality2AlteredNote("Gb"),{	A: "Ab",
-																								B: "Bb",
-																								C: "Cb",
-																								D: "Db",
-																								E: "Eb",
-																								F: "F",
-																								G: "Gb"});			
+				testExportNotesToMidiCSL();
 
 				var msm = new SongModel_midiCSL();
 				assert.deepEqual(msm.getSong(), []);
@@ -50,7 +29,6 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 				// Create a song from testSong
 				var songModel  = new SongModel();
 				var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, songModel);
-
 				var done = assert.async();
 				// Convert songmodel to a readable model that we can insert in SongModel_midiCSL
 				SongConverterMidi_MidiCSL.exportToMidiCSL(songModel, false, function(midiSong) {
@@ -77,6 +55,10 @@ define(['modules/core/src/SongModel', 'modules/MidiCSL/src/converters/SongConver
 					assert.deepEqual(midiSongModel.getMelodySoundModelFromIndex(3), fakeNote, 'getmidiSongModel melody from index');
 					done();
 				});
+
+				//
+				
+				
 			});
 		}
 	};

@@ -10,6 +10,7 @@ define([
 			test("SongModel", function(assert) {
 				function unfold() {
 
+					//testing canBeUnfold
 					var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.foldedSong);
 					assert.equal(song.canBeUnfold(), true, "test if song can be easily unfold (detect presence of coda, segno etc.");
 					
@@ -23,7 +24,7 @@ define([
 					var unfoldedBars = song.getUnfoldedSongComponents("notes");
 					assert.equal(unfoldedBars.length, 20, "getUnfoldedSongComponents: unfolded bars"); //we know there are 20 
 					assert.equal(unfoldedBars[14][0].pitchClass[0], "A", "getUnfoldedSongComponents: note in 14th bar has pitch A");
-
+					
 
 					assert.deepEqual(
 						song.getComponent("notes").getNotesAsString(), ["Db/4-w", "E/4-w", "F/4-w", "A#/4-w", "C/5-w", "B/4-h", "A/4-h", "A/4-h", "qr", "qr", "B/4-w", "Ab/4-w", "G#/4-w",

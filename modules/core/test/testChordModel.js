@@ -175,8 +175,6 @@ define(['modules/core/src/ChordModel'], function(ChordModel) {
 				var baseOnly = new ChordModel({
 					note: 'Bb'
 				});
-				console.log(baseOnly);
-				console.log(newChordWithBase.getBase());
 				assert.deepEqual(newChordWithBase.getBase(), baseOnly, 'Check base model is an object strictly equal to Get Base');
 
 				var clonedChordWithBase = newChordWithBase.clone();

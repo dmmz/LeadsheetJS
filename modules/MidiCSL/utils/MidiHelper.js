@@ -72,9 +72,9 @@ define([], function() {
 	}
 
 	/*
-	 * This function detect non obvious flat (Cb and Fb) and transform them to note
+	 * This function detects non obvious flat (Cb and Fb) and transform them to note
 	 * @argument noteKey is a String Containing [note + (sharp) + scaleNumber] , e.g Cb4
-	 * return a string noteKey containing for e.g. B4
+	 * returns a string noteKey containing for e.g. B4
 	 */
 	MidiHelper.detectImpossibleFlat = function(noteKey) {
 		if (typeof noteKey === "undefined") {
@@ -106,6 +106,12 @@ define([], function() {
 		return undefined;
 	};
 
+	MidiHelper.getKeyToNote = function(noteKey){
+		noteKey = MidiHelper.convertDoubleAccidental(noteKey);
+		noteKey = MidiHelper.convertSharp2Flat(noteKey);
+		noteKey = MidiHelper.detectImpossibleFlat(noteKey);
+		return this.keyToNote[noteKey];
+	}
 
 	//code taken from MidiJS lib
 	// note conversions

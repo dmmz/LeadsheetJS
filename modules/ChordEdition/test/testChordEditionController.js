@@ -10,22 +10,9 @@ define(['modules/core/src/ChordModel',
 	return {
 		run: function() {
 			test("Chords Edition Controller", function(assert) {
-				function testTransposition(songJson){
-					
-					var song = SongModel_CSLJson.importFromMusicCSLJSON(songJson),
-						cursor = new CursorModel(song.getSongTotalBeats()),
-						chordSpaceMng = new ChordSpaceManager(song, cursor),
-						chordsEditionController = new ChordEditionController(song, cursor, chordSpaceMng),
-						chordMng = chordsEditionController.songModel.getComponent('chords'); //["AM7", "F#m", "G", "Cb7"]
-					cursor.selectAll();
-					
-					viewer.draw(song); //we need to draw to create chordspaces
-					chordsEditionController.transposeBy(Intervals.minorThird);
-					assert.deepEqual(chordMng.getChordsAsString(),["CM7", "Am", "Bb", "Ebb7"])
-
-				}
+				
 				function testDeleteChords(songJson){
-					var song22 = SongModel_CSLJson.importFromMusicCSLJSON(songJson);
+					var song22 = SongModel_CSLJson.importFromMusicCSLJSON(songJson),
 						cursor = new CursorModel(song22.getSongTotalBeats()),
 						chordSpaceMng = new ChordSpaceManager(song22, cursor),
 						chordsEditionController = new ChordEditionController(song22, cursor, chordSpaceMng);
@@ -153,46 +140,6 @@ define(['modules/core/src/ChordModel',
 						}]
 				};
 				testDeleteChords(song2Json);
-				var song3Json = {
-					composer: "Random Composer",
-					title: "song3",
-						time: "4/4",
-						changes: [{
-							id: 0,
-							name: "A",
-							bars: [{
-								chords: [{
-									p: "A",
-									ch: "M7",
-									beat: 1
-								},
-								{
-									p: "F#",
-									ch: "m",
-									beat: 2
-								},
-								{
-									p: "G",
-									ch: "",
-									beat: 3
-								},
-								{
-									p: "Cb",
-									ch: "7",
-									beat: 4
-								}],
-								melody: [{
-									keys: ["a/4"],
-									duration: "w"
-								}]
-							}]
-						}]
-				};
-				testTransposition(song3Json);
-				
-				
-				
-
 			});
 
 		}

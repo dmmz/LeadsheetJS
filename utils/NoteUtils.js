@@ -162,7 +162,6 @@ define(function() {
 	};
 
 
-
 	NoteUtils.number2Pitch = function(number) {
 		var number2PitchArray = {
 			0: "C",
@@ -236,7 +235,7 @@ define(function() {
 		var noteObj = {
 			octave: parseInt(noteParts[1], null)
 		}
-		pitch = noteParts[0];
+		var pitch = noteParts[0];
 		noteObj.pitch = parseAccidental ? pitch[0] : pitch;
 
 		if (parseAccidental){

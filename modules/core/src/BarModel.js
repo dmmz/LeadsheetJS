@@ -4,18 +4,15 @@ define(['modules/core/src/TimeSignatureModel'], function(TimeSignatureModel) {
     * @exports core/BarModel
     */
 	function BarModel(options) {
-		if (typeof options === "undefined") {
-			options = {};
-		}
-		this.begining = (typeof(options.begining) !== "undefined") ? options.begining : undefined;
-		this.clef = (typeof(options.clef) !== "undefined") ? options.clef : undefined; // empty clef means it doesn't change from previous 
-		this.ending = (typeof(options.ending) !== "undefined") ? options.ending : undefined; // object with repeat, type (BEGIN,END, BEGIN_END, MID) and ending (text)
-		this.style = (typeof(options.style) !== "undefined") ? options.style : '';
-		this.timeSignatureChange = (typeof(options.timeSignature) !== "undefined") ? options.timeSignature : undefined; // empty timeSignature means it doesn't change from previous
-		this.setTimeSignatureChange(this.timeSignatureChange);
-		this.keySignatureChange = (typeof(options.keySignature) !== "undefined") ? options.keySignature : undefined;
-		this.label = (typeof(options.label) !== "undefined") ? options.label : undefined; // Segno, fine, coda, on cue ...
-		this.sublabel = (typeof(options.sublabel) !== "undefined") ? options.sublabel : undefined; // Ds, Ds al fine, ds al capo ...
+		options = options || {};
+		this.begining = options.begining;
+		this.clef = options.clef; // empty clef means it doesn't change from previous 
+		this.ending = options.ending; // object with repeat, type (BEGIN,END, BEGIN_END, MID) and ending (text)
+		this.style = options.style || '';
+		this.setTimeSignatureChange(options.timeSignatureChange);// empty timeSignature means it doesn't change from previous
+		this.keySignatureChange = options.keySignatureChange;
+		this.label = options.label; // Segno, fine, coda, on cue ...
+		this.sublabel = options.sublabel; // Ds, Ds al fine, ds al capo ...
 	}
 
 

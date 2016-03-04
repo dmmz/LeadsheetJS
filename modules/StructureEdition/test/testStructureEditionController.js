@@ -2,8 +2,12 @@ define(['modules/StructureEdition/src/StructureEditionController',
 	'modules/StructureEdition/src/StructureEditionModel',
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
 	'modules/Cursor/src/CursorModel',
+	'modules/ChordEdition/src/ChordSpaceManager',
+	'modules/ChordEdition/src/ChordEditionController',
+	'modules/LSViewer/src/LSViewer',
+	'modules/core/src/Intervals',
 	'tests/test-songs'
-], function(StructureEditionController, StructureEditionModel, SongModel_CSLJson, CursorModel, testSongs) {
+], function(StructureEditionController, StructureEditionModel, SongModel_CSLJson, CursorModel, ChordSpaceManager, ChordEditionController, LSViewer, Intervals, testSongs) {
 	return {
 		run: function() {
 			test("Structures Edition Controller", function(assert) {
@@ -208,36 +212,72 @@ define(['modules/StructureEdition/src/StructureEditionController',
 				}
 
 				function transposingSong () {
-					var simpleTransposeSong = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
-					var seM = new StructureEditionModel();
-					var cursor = new CursorModel(simpleTransposeSong.getComponent('notes'));
-					var structEdition = new StructureEditionController(simpleTransposeSong, cursor, seM);
-					var notes = simpleTransposeSong.getComponent('notes').getNotes();
-					var chords = simpleTransposeSong.getComponent('chords').getChords();
 
-					var initialChords = 'AM7,B7,Em,F7';
-					var initialNotes = 'A/4-q,G/4-8,E/4-8,F/4-q,C/4-q,A/4-q,F/4-q,G/4-q,E/4-q,A/4-q,F/4-q,G/4-q,E/4-q,A/4-q,F/4-q,G/4-q,E/4-q,A/4-q,F/4-q,G/4-q,E/4-q,A/4-q,F/4-q,G/4-q,E/4-q,A/4-q,F/4-q,G/4-q,E/4-q,A/4-q,F/4-q,G/4-q,E/4-q';
+					var song1Json = {
+						composer: "Random Composer", title: "song3",
+						time: "4/4",
+						changes: [{
+							id: 0,
+							name: "A",
+							bars: [{
+								chords: [
+									{p: "F##",ch: "M7",beat: 1},
+									{p: "A##",ch: "m",beat: 2},
+									{p: "G",ch: "",beat: 3},
+									{p: "Bbb",ch: "7",beat: 4}],
+								melody: [
+									{keys: ["G##/4"],duration: "8"},
+									{keys: ["a##/4"],duration: "8"},
+									{keys: ["a#/4"],duration: "q"},
+									{keys: ["Bb/4"],duration: "q"},
+									{keys: ["Bbb/4"],duration: "q"}]
+							}]
+						}]
+					};
+	
+					var song = SongModel_CSLJson.importFromMusicCSLJSON(song1Json),
+						cursor = new CursorModel(song.getSongTotalBeats()),
+						chordMng = song.getComponent('chords'), //["F#M7", "A##m", "G", "Bbb7"]
+						noteMng = song.getComponent('notes'),  //["B##/4-8","G##/4-8" "A#/4-q", "Bb/4-q", "Bbb/4-q"]
+						structEdition = new StructureEditionController(song, cursor);
+								
+					structEdition.transposeSong(4); //perfectThird
+					assert.deepEqual(chordMng.getChordsAsString(),["A##M7", "D#m", "B", "Db7"], 'tranposing up major third: chords');
+					assert.deepEqual(noteMng.getNotesAsString(), ["B##/4-8", "D#/5-8", "C##/5-q", "Dn/5-q", "Db/5-q"], 'notes')
 
-					assert.equal(initialChords, chords.toString(), 'check if correct chords are loaded');
-					assert.equal(initialNotes, notes.toString(), 'check if correct notes are loaded');
-
-					structEdition.transposeSong(-1);
-					assert.equal('G#M7,A#7,D#m,E7', chords.toString(), 'Transpose -1 semi tons on chords');
-
-					assert.equal('Ab/4-q,Gb/4-8,Eb/4-8,En/4-q,B/3-q,Ab/4-q,E/4-q,Gb/4-q,Eb/4-q,Ab/4-q,E/4-q,Gb/4-q,Eb/4-q,Ab/4-q,E/4-q,Gb/4-q,Eb/4-q,Ab/4-q,E/4-q,Gb/4-q,Eb/4-q,Ab/4-q,E/4-q,Gb/4-q,Eb/4-q,Ab/4-q,E/4-q,Gb/4-q,Eb/4-q,Ab/4-q,E/4-q,Gb/4-q,Eb/4-q', notes.toString(), 'Transpose -1 semi tons on notes');
-
-					structEdition.transposeSong(1);
-					assert.equal(initialChords, chords.toString(), 'Transpose 1 semi tons on chords to get back to normal');
-					assert.equal(initialNotes, notes.toString(), 'Transpose 1 semi tons on notes to get back to normal');
-
-					structEdition.transposeSong(3);
-					assert.equal('CM7,D7,Gm,G#7', chords.toString(), 'Transpose 3 semi tons on chords');
-					assert.equal('C/5-q,Bb/4-8,G/4-8,Ab/4-q,Eb/4-q,C/5-q,Ab/4-q,Bb/4-q,G/4-q,C/5-q,Ab/4-q,Bb/4-q,G/4-q,C/5-q,Ab/4-q,Bb/4-q,G/4-q,C/5-q,Ab/4-q,Bb/4-q,G/4-q,C/5-q,Ab/4-q,Bb/4-q,G/4-q,C/5-q,Ab/4-q,Bb/4-q,G/4-q,C/5-q,Ab/4-q,Bb/4-q,G/4-q', notes.toString(), 'Transpose 3 semi tons on notes');
-
-					structEdition.transposeSong(-3);
-					assert.equal(initialChords, chords.toString(), 'Transpose 3 semi tons on chords to get back to normal');
-					assert.equal(initialNotes, notes.toString(), 'Transpose 3 semi tons on notes to get back to normal');
+					var song2Json = {
+						composer: "Random Composer", title: "song3",
+						time: "4/4",
+						changes: [{
+							id: 0,
+							name: "A",
+							bars: [{
+								chords: [
+									{p: "F",ch: "M7",beat: 1},
+									{p: "Bbb",ch: "m",beat: 2},
+									{p: "G",ch: "",beat: 3},
+									{p: "D##",ch: "7",beat: 4}],
+								melody: [
+									{keys: ["Fbb/4"],duration: "8"},
+									{keys: ["A/4"],duration: "8"},
+									{keys: ["Eb/4"],duration: "q"},
+									{keys: ["B/4"],duration: "q"},
+									{keys: ["A#/4"],duration: "q"}]
+							}]
+						}]
+					};
+					song = SongModel_CSLJson.importFromMusicCSLJSON(song2Json);
+					cursor = new CursorModel(song.getSongTotalBeats());
+					chordMng = song.getComponent('chords'); //["F#M7", "A##m", "G", "Bbb7"]
+					noteMng = song.getComponent('notes');   //["B##/4-8","G##/4-8" "A#/4-q", "Bb/4-q", "Bbb/4-q"]
+					structEdition = new StructureEditionController(song, cursor);
+							
+					structEdition.transposeSong(-6);//augmented fourth
+					assert.deepEqual(chordMng.getChordsAsString(),["CbM7", "Fbbm", "Db", "A#7"], 'tranposing down augmented fourth: chords');
+					assert.deepEqual(noteMng.getNotesAsString(), ["Bb/3-8", "Eb/4-8", "Bbb/3-q","F/4-q", "En/4-q"], 'notes')
+				
 				}
+
 				function complexOperations () {
 					var simpleTransposeSong = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
 					var seM = new StructureEditionModel();

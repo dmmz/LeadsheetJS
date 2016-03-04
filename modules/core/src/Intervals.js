@@ -1,4 +1,10 @@
 define(function(){
+	/**
+	 * [Interval description]
+	 * @param {Number} type      e.g. 1 for unison, 2 for second (regardless of if it is augmented, diminished...etc.)
+	 * @param {Number} semitones semitones from natural C
+	 * @param {String} name      
+	 */
 	function Interval(type, semitones, name){
 		this.type = type;
 		this.semitones = semitones;

@@ -259,7 +259,7 @@ define([
 		}, start, end,song);
 	};
 */
-	NoteManager.prototype.play2score = function(start, end, song) {
+	NoteManager.prototype.play2score = function(song,start, end) {
 		var playingNoteAcc, //current accidental
 			newNote,
 			storedAcc,
@@ -306,8 +306,10 @@ define([
 		return newNoteMng;
 	};
 
-	NoteManager.prototype.score2play = function(start, end, song) {
-		
+	NoteManager.prototype.score2play = function(song, start, end) {
+		start = start || 0;
+		end = end || this.getTotal();
+
 		var accidental, //current accidental
 			newNote,
 			note,

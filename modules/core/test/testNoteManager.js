@@ -262,11 +262,11 @@ define(['modules/core/src/NoteManager',
 										 "Bb/4-w",
 										 "Bb/4-h", "B/4-h"];
 					var start = 2, end = 21;
-					assert.deepEqual(noteMng.score2play(start, end, song).getNotesAsString(), playingMelody, 'score2play');
+					assert.deepEqual(noteMng.score2play(song, start, end).getNotesAsString(), playingMelody, 'score2play');
 					//we replace noteMng with playing notes
 					var playNotes = createPlayingMelody(playingMelody);
 					noteMng.notesSplice([start, end],playNotes.getNotes());
-					assert.deepEqual(noteMng.play2score(start, end, song).getNotesAsString(), scoreMelody.slice(start, end),'play2score');
+					assert.deepEqual(noteMng.play2score(song, start, end).getNotesAsString(), scoreMelody.slice(start, end),'play2score');
 				}
 
 				function otherFunctions(testSongs) {

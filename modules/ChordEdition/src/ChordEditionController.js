@@ -44,17 +44,6 @@ define([
 			chord.setNote(NoteUtils.getNextChromaticKey(chord.getNote(),inc, true));
 		}
 	};
-	ChordEditionController.prototype.transposeBy = function(interval, direction) {
-		direction = direction || 1;
-		var chordMng = this.songModel.getComponent('chords');
-		var indexes = this.getSelectedChordsIndexes();
-		var chord, pitchClass;
-		for (var i = 0; i < indexes.length; i++) {
-			chord = chordMng.getChord(indexes[i]);
-			pitchClass = new PitchClass(chord.getNote());
-			chord.setNote(pitchClass.transposeBy(interval, direction));
-		}	
-	};
 	
 	ChordEditionController.prototype.deleteChords = function() {
 

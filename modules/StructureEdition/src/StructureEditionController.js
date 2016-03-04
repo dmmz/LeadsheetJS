@@ -12,8 +12,12 @@ define([
 	'utils/NoteUtils',
 	'utils/UserLog',
 	'modules/MidiCSL/utils/MidiHelper',
+	'modules/core/src/Intervals',
+	'modules/core/src/Note',
+	'modules/core/src/PitchClass',
 	'pubsub',
-], function($, Mustache, CursorModel, SongModel, SectionModel, NoteManager, NoteModel, SongBarsIterator, TimeSignatureModel, SongConverterMidi_MidiCSL, NoteUtils, UserLog, Midi, pubsub) {
+], function($, Mustache, CursorModel, SongModel, SectionModel, NoteManager, NoteModel, SongBarsIterator, TimeSignatureModel, SongConverterMidi_MidiCSL, NoteUtils, 
+			UserLog, Midi, Intervals, Note, PitchClass, pubsub) {
 	/**
 	 * StructureEditionController manages all structure edition function
 	 * @exports StructureEdition/StructureEditionController
@@ -459,67 +463,62 @@ define([
 		if (isNaN(semiTons) || semiTons === 0) {
 			return;
 		}
+		function getTransposedNote(note, interval, direction){
+			var newNote = new Note(note.getPitchClass(), note.getAccidental(), note.getOctave());
+			newNote.transposeBy(interval,direction);
+			return newNote.toString();
+		}
+
+		var transpositions = [
+			'unison',		//0
+			'minorSecond',	//1
+			'majorSecond',	//2
+			'minorThird',	//3
+			'majorThird',	//4
+			'perfectFourth',//5
+			'augmentedFourth',//6
+			'perfectFifth', //7
+			'minorSixth',	//8
+			'majorSixth',	//9
+			'minorSeventh',	//10
+			'majorSeventh',	//11
+			'octave',		//12
+			'minorNinth',	//13
+			'majorNinth'	//14
+		];
+
+		var interval = Intervals[transpositions[Math.abs(semiTons)]];
+		var direction = semiTons < 0 ? -1 : 1;
+
 		// notes
 		// First we get all notes and all midi notes
-		var nm = this.songModel.getComponent('notes');
-		var midiNote, currentNote, pitchFormat;
-		var notes = nm.getNotes();
+		//var nm = this.songModel.getComponent('notes');
+		var noteMng = this.songModel.getComponent('notes');
+		var start = 0,
+			end = noteMng.getTotal(),
+			pitchClass, note;
+		// var start = this.cursor.getStart();
+		//  	end = this.cursor.getEnd() + 1;
+		var tmpNoteMng = noteMng.score2play(this.songModel, start, end);
 
-		var midiNotes = SongConverterMidi_MidiCSL.exportNoteToMidiCSL(this.songModel);
-		var tonalityNote = SongConverterMidi_MidiCSL.convertTonality2AlteredNote(this.songModel.getTonality());
-		var accidentalMeasure = (JSON.parse(JSON.stringify(tonalityNote))); // clone object
-		var numMeasure = 0;
-		for (var i = 0;  i < midiNotes.length; i++) {
-			if (midiNotes[i].midiNote && midiNotes[i].midiNote[0] !== false) { // exclude silence but not tie notes
-				// Build current tonality and accidental measure
-				if (nm.getNoteBarNumber(i, this.songModel) !== numMeasure) {
-					numMeasure = nm.getNoteBarNumber(i, this.songModel);
-					tonalityNote = SongConverterMidi_MidiCSL.convertTonality2AlteredNote(this.songModel.getTonalityAt(numMeasure));
-					accidentalMeasure = (JSON.parse(JSON.stringify(tonalityNote))); // empty accidentalMeasure on each new measure
-				}
-				midiNote = midiNotes[i].midiNote[0] + parseInt(semiTons, 10);
-				currentNote = MIDI.noteToKey[midiNote];
-				pitchFormat = currentNote.substr(0, currentNote.length - 1) + '/' + currentNote.substr(-1); // Convert C#4 to C#/4
-
-				notes[i].setNoteFromString(pitchFormat);
-
-				// Change accidental measure
-				if (notes[i].getAccidental() !== "") {
-					accidentalMeasure[notes[i].getPitchClass()] = notes[i].getPitchClass() + notes[i].getAccidental();
-				}
-				// Use accidental measure to decide if we need a natural or not
-				if (accidentalMeasure[notes[i].getPitchClass()] !== notes[i].getPitchClass() + notes[i].getAccidental()) {
-					notes[i].setAccidental('n');
-				}
-
-				// case tied notes
-				if (typeof midiNotes[i].tieNotesNumber !== "undefined" && midiNotes[i].tieNotesNumber) {
-					for (var j = 1, v = midiNotes[i].tieNotesNumber; j < v; j++) {
-						notes[i - j].setPitchClass(notes[i].getPitchClass());
-						notes[i - j].setOctave(notes[i].getOctave());
-						if (accidentalMeasure[notes[i].getPitchClass()] !== notes[i].getPitchClass() + notes[i].getAccidental()) {
-							notes[i - j].setAccidental('n');
-						} else {
-							notes[i - j].setAccidental(notes[i].getAccidental());
-						}
-					}
-				}
+		for (var i = 0; i < tmpNoteMng.getTotal(); i++) {
+			note = tmpNoteMng.getNote(i);
+			if (!note.isRest){
+				note.setNoteFromString(getTransposedNote(note, interval, direction));
 			}
 		}
 
+		noteMng.notesSplice([start, end -1], tmpNoteMng.getNotes());
+		var tmpNoteMng = noteMng.play2score(this.songModel, start, end);
+		noteMng.notesSplice([start, end - 1], tmpNoteMng.getNotes());
+		
 		// chords
-		var chords = this.songModel.getComponent('chords').getChords();
-		var pitch2Midi;
-		var newPitch;
-		for (var i = 0, c = chords.length; i < c; i++) {
-			pitch2Midi = NoteUtils.pitch2Number(chords[i].getNote());
-			newPitch = NoteUtils.number2Pitch(pitch2Midi + semiTons);
-			chords[i].setNote(newPitch);
-			if (chords[i].isEmptyBase() === false) {
-				pitch2Midi = NoteUtils.pitch2Number(chords[i].getBase().getNote());
-				newPitch = NoteUtils.number2Pitch(pitch2Midi + semiTons);
-				chords[i].base.setNote(newPitch);
-			}
+		var chordMng = this.songModel.getComponent('chords');
+		var chord;
+		for (var i = 0, c = chordMng.getTotal(); i < c; i++) {
+			chord = chordMng.getChord(i);
+			pitchClass = new PitchClass(chord.getNote());
+			chord.setNote(pitchClass.transposeBy(interval, direction).toString());
 		}
 
 		$.publish('ToHistory-add', 'Transpose Song ' + semiTons + ' half ton(s)');

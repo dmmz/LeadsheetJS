@@ -1,9 +1,13 @@
 define([
 	'utils/NoteUtils'
 	], function(NoteUtils) {
+	/**
+	 * PitchClass useful to transpose bu interval (TODO: integrate in NoteModel ?)
+	 * @param {String} pitch e.g.: "A", "A#"
+	 */
 	function PitchClass(pitch){
-		this.name = pitch.substring(0,1);
-		this.accidental = pitch.substring(1,pitch.lengh);
+		this.name = pitch.substring(0,1); // "A","B"
+		this.accidental = pitch.substring(1,pitch.lengh); //"#", "##"
 		this.semitoneCount = NoteUtils.pitch2Number(pitch);
 	}
 
@@ -11,13 +15,12 @@ define([
 		return this.name + this.accidental;
 	}
 	/**
-	 * [_semitonesDiff description]
+	 * gets the semitone distances between two current pitchClass and pc2
 	 * @param  {PitchClass} pc2       pitch class to compare to
-	 * @param  {[type]} direction [description]
-	 * @return {[type]}           [description]
+	 * @param  {Number} direction either 1 or -1
+	 * @return {Number} semitones difference
 	 */
 	PitchClass.prototype._semitonesDiff = function(pc2, direction) {
-		
 		var pc2semitoneCount = pc2.semitoneCount;
 
 		if (this.semitoneCount != pc2.semitoneCount && 	
@@ -26,6 +29,13 @@ define([
 		}
 		return pc2semitoneCount - this.semitoneCount;
 	};
+	/**
+	   return resulting natural pitch of adding interval, e.g. A + perfectFourth, returns D and octaveDiff 1
+	 * @param  {String} name         pitch name e.g. "A","B","C"...etc.
+	 * @param  {Number} intervalType natural interval. e.g. 3 for third, regardless if it is major, minor or augmented
+	 * @param  {Number} direction    either 1 or -1
+	 * @return {Object}              {pitchClassName: "D", octaveDiff: 1}
+	 */
 	PitchClass.prototype._sumNaturalCount = function(name, intervalType, direction) {
 		direction = direction || 1;
 		var naturalCount = NoteUtils.NATURAL_PITCHES[name];
@@ -38,40 +48,43 @@ define([
 			octaveDiff : octaveDiff
 		};
 	};
-	PitchClass.prototype.sharp = function(semitonesToMove) {
-		for (var i = 0; i < NoteUtils.ACCIDENTALS.length; i++) {
-			if (this.accidental == NoteUtils.ACCIDENTALS[i]){
-				this.accidental = NoteUtils.ACCIDENTALS[i + semitonesToMove];
-				return;
-			}
-		}
+	/**
+	 * sets accidental to a new pitch witch has no accidental dpending on semitones to move. 
+	 * @param {number} semitonesToMove e.g. if semitonesToMove = 2, this.accidental is set to "##"
+	 */
+	PitchClass.prototype._setAccidental = function(semitonesToMove) {
+		this.accidental = NoteUtils.ACCIDENTALS[2 + semitonesToMove]; // position 2 is where empty accidental is, in this point, we will always start form empty accidental
 	};
-	PitchClass.prototype.flat = function(semitonesToMove) {
-		for (var i = NoteUtils.ACCIDENTALS.length - 1; i >= 0; i--) {
-			if (this.accidental == NoteUtils.ACCIDENTALS[i]){
-				this.accidental = NoteUtils.ACCIDENTALS[i - semitonesToMove];
-				return;
-			}
-		}
-	};
+	
+	/**
+	 * [transposeBy description]
+	 * @param  {Interval} interval  object representing interval to move, e.g. perfectFifth
+	 * @param  {Number} direction either 1 or -1
+	 * @param  {Boolean} getOctave if true, we return octave also
+	 * @return {String or Object}           (depending on getOctave)
+	 */
 	PitchClass.prototype.transposeBy = function(interval, direction, getOctave) {
 		direction = direction || 1;
 		var r = this._sumNaturalCount(this.name, interval.type, direction);
-
-		var newPitchName = r.pitchClassName;
-		var newPitch = new PitchClass(newPitchName);
-		var semitonesDiff = this._semitonesDiff(newPitch, direction);
-
+		var newPitch = new PitchClass(r.pitchClassName),
+			octaveDiff = r.octaveDiff,
+			semitonesDiff = this._semitonesDiff(newPitch, direction);
 		var semitonesToMove = interval.semitones - Math.abs(semitonesDiff);
-		var action = (semitonesToMove > 0) == (direction > 0) ? 'sharp' : 'flat';
-		newPitch[action](Math.abs(semitonesToMove));
-		
+		newPitch._setAccidental(semitonesToMove * direction);
+
+		// if accidental is undefined it means it should be a bbb or ###, we find equivalent. e.g : F### ==> G#
 		if (newPitch.accidental === undefined){
-			throw "impossible transposition from "+this.name+", "+direction+" "+interval.name;
+			newPitch._setAccidental(semitonesToMove * direction + 2 * direction * -1);
+			var equivalentPitch = newPitch._sumNaturalCount(newPitch.name, 2, direction ); // moving a second
+			newPitch.name = equivalentPitch.pitchClassName;
+			//  case in which we have to change octave, 
+			//	e.g. G## + augemented third -> B### which would be switched to  C#, but in that case we are changing octave, so take it into account
+			octaveDiff  += equivalentPitch.octaveDiff;
+				
 		}
 		return getOctave ? {
 			newPitch: newPitch,
-			octaveDiff: r.octaveDiff
+			octaveDiff: octaveDiff
 		} : newPitch;
 	};
 	return PitchClass;
