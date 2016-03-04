@@ -517,6 +517,8 @@ define([
 		var chord;
 		for (var i = 0, c = chordMng.getTotal(); i < c; i++) {
 			chord = chordMng.getChord(i);
+			if (chord.getNote()=="NC")	continue;
+			
 			pitchClass = new PitchClass(chord.getNote());
 			chord.setNote(pitchClass.transposeBy(interval, direction).toString());
 		}
