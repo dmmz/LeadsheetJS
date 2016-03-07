@@ -511,7 +511,6 @@ define([
 		noteMng.notesSplice([start, end -1], tmpNoteMng.getNotes());
 		var tmpNoteMng = noteMng.play2score(this.songModel, start, end);
 		noteMng.notesSplice([start, end - 1], tmpNoteMng.getNotes());
-		
 		// chords
 		var chordMng = this.songModel.getComponent('chords');
 		var chord;
