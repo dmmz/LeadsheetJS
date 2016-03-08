@@ -218,7 +218,7 @@ define([
 
 
 			if (useMidi) {
-				loadedModules.midiPlayer = LJS._loadMidiPlayer(MidiCSL, songModel, soundfontUrl, loadedModules.playerView, cursorPlayerModel);
+				loadedModules.midiPlayer = LJS._loadMidiPlayer(MidiCSL, songModel, soundfontUrl, loadedModules.playerView, cursorPlayerModel, cursorNoteModel);
 			}
 
 			if (useAudio) {
@@ -342,10 +342,11 @@ define([
 		return edition;
 	};
 
-	LJS._loadMidiPlayer = function(MidiCSL, songModel, soundfontUrl, playerView, cursorModel) {
+	LJS._loadMidiPlayer = function(MidiCSL, songModel, soundfontUrl, playerView, cursorModel, cursorNoteModel) {
 
 		var player = new MidiCSL.PlayerModel_MidiCSL(songModel, soundfontUrl, {
-			cursorModel: cursorModel
+			cursorModel: cursorModel,
+			cursorNoteModel: cursorNoteModel
 		});
 		new MidiCSL.PlayerController(player, playerView);
 		return player;

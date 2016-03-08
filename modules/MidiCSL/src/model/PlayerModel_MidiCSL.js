@@ -42,7 +42,8 @@ define([
 			activeMetronome		// Boolean that indicates whether the metronome is active or not
 			volume				// Float Main volume for all instruments it vary between 0 and 1
 		*/
-		function PlayerModel_MidiCSL(songModel, soundfontPath, option) {
+		function PlayerModel_MidiCSL(songModel, soundfontPath, options) {
+			options = options || {};
 			this.isReady = false; // boolean that indicates if player is ready to be played
 			this.indexPosition = 0; // represent which notes have been lastly played
 			this.playState = false; // playState indicate if the player is currently playing or not, (paused player will return false)
@@ -54,16 +55,17 @@ define([
 			this.soundfontPath = soundfontPath;
 
 			var initVolume;
-			if ((typeof option !== "undefined" && typeof(option.volume) !== "undefined")) {
+			if (options.volume !== undefined) {
 				// case that developper explicitly declared volume
-				initVolume = option.volume;
+				initVolume = options.volume;
 			} else {
 				// natural case (it use storage item to get last user volume)
 				initVolume = this.initVolume(0.7);
 			}
-			if ((typeof option !== "undefined" && typeof(option.cursorModel) !== "undefined")) {
-				this.cursorModel = option.cursorModel;
-			}
+			this.cursorModel = options.cursorModel;
+			this.cursorNoteModel = options.cursorNoteModel;
+			
+
 
 			this.chords = {
 				volume: initVolume,
@@ -339,7 +341,7 @@ define([
 					var endTime = beatOfLastNoteOff * beatDuration + Date.now();
 					self.songDuration = beatOfLastNoteOff * beatDuration;
 					if (playFrom === undefined || isNaN(playFrom)) {
-						var cursorPosition = self.cursorModel.getPos();
+						var cursorPosition = self.cursorNoteModel ? self.cursorNoteModel.getPos() : [null];
 						if (cursorPosition[0] == null) cursorPosition = [0, 0];
 						playFrom = 0;
 						// should check here if cursor is enabled
