@@ -177,6 +177,7 @@ define([
 			}
 		}
 		nm.notesSplice([index, index - 1], newBarNm.getNotes());
+		nm.reviseNotes();
 
 		//add bar to barManager
 		var barManager = this.songModel.getComponent('bars');
@@ -229,6 +230,7 @@ define([
 		var index = nm.getNextIndexNoteByBeat(numBeat);
 		var index2 = nm.getPrevIndexNoteByBeat(numBeat + beatDuration);
 		nm.notesSplice([index, index2], []);
+		nm.reviseNotes();
 
 		// remove chords in bar
 		cm.removeChordsByBarNumber(barNumber);

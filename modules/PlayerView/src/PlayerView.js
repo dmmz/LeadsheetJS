@@ -236,6 +236,10 @@ define([
 		$.subscribe('PlayerModel-onPosition', function(el, obj) {
 			self.updateProgressbar(obj.positionInPercent * 100, obj.songDuration);
 		});
+		$.subscribe('setPlayerNotReady', function(){
+			self.playerIsNotReady();
+			$.publish('ToMidiPlayer-disable');
+		});
 	};
 
 
@@ -250,7 +254,6 @@ define([
 		$('#pause_button_container').hide();
 		$('#play_button_container').show();
 	};
-
 
 	// ready
 	PlayerView.prototype.playerIsReady = function() {
