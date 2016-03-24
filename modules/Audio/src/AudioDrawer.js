@@ -65,19 +65,7 @@ define(['modules/Audio/src/BarTimesManager',
 		var ctx = viewer.ctx;
 		var self = this;
 
-		function normalize(peaks) {
-			var NORM_FACTOR = 0.8; //if 1, maximum will draw until the very top of the audio space
-			var max = 0;
-			for (var i = 0; i < peaks.length; i++) {
-				if (peaks[i] > max) max = peaks[i];
-			}
-			if (max !== 0) {
-				for (var i = 0; i < peaks.length; i++) {
-					peaks[i] /= max / NORM_FACTOR;
-				}
-			}
-			return peaks;
-		}
+		
 
 		viewer.drawElem(function() {
 			// A half-pixel offset makes lines crisp
@@ -89,8 +77,6 @@ define(['modules/Audio/src/BarTimesManager',
 			var length = peaks.length;
 			var scale;
 			var i, h, maxH;
-
-			peaks = normalize(peaks);
 
 			// if (self.params.fillParent && width != length) {
 			//     scale = width / length;
@@ -177,17 +163,41 @@ define(['modules/Audio/src/BarTimesManager',
 	};
 
 	AudioDrawer.prototype.draw = function(barTimesMng, tempo, duration) {
+		
 		if (!tempo || !duration) {
 			throw "AudioDrawer - missing parameters, tempo : " + tempo + ", duration:" + duration;
 		}
+		/**
+		 * @param  {Array} peaksPerBar array of arrays of peaks representing peaks for each bar
+		 * @return {Array}             same array normalized
+		 */
+		function normalize(peaksPerBar) {
+			var NORM_FACTOR = 0.8; //if 1, maximum will draw until the very top of the audio space
+			var max = 0;
+			for (var i = 0; i < peaksPerBar.length; i++) {
+				for (var j = 0; j < peaksPerBar[i].length; j++) {
+					if (peaksPerBar[i][j] > max) max = peaksPerBar[i][j];
+				}
+			}
+			if (max !== 0) {
+				for (var i = 0; i < peaksPerBar.length; i++) {
+					for (var j = 0; j < peaksPerBar[i].length; j++) {
+						peaksPerBar[i][j] /= max / NORM_FACTOR;
+					}
+				}
+			}
+			return peaksPerBar;
+		}
+		
 		this.waveBarDimensions = [];
 		var numBars = barTimesMng.getLength();
 		var area, dim, prevDim, bar, barTime = 0,
 			sliceSong,
 			start = 0,
 			peaks,
-			toggleColor = 0;
-
+			toggleColor = 0,
+			peaksPerBar = [];
+		// we get peaks for each measure
 		for (var i = 0; i < barTimesMng.getLength(); i++) {
 			sliceSong = barTimesMng.getCurrBarTime(i) / duration;
 			prevDim = dim;
@@ -208,9 +218,17 @@ define(['modules/Audio/src/BarTimesManager',
 			this.waveBarDimensions.push(waveBarView);
 			area = waveBarView.getArea();
 			peaks = this.audio.getPeaks(area.w, start, start + sliceSong);
+			peaksPerBar.push(peaks);
+			start += sliceSong;
+		}
+		//normalize
+		peaksPerBar = normalize(peaksPerBar);
+		// and drraw them
+		for (var i = 0; i < this.waveBarDimensions.length; i++) {
+			peaks = peaksPerBar[i];
+			area = this.waveBarDimensions[i].getArea();
 			this._drawPeaks(peaks, area, this.color[toggleColor], this.viewer);
 			toggleColor = (toggleColor + 1) % 2;
-			start += sliceSong;
 		}
 		$.publish('AudioDrawer-audioDrawn', this);
 	};

@@ -342,6 +342,7 @@ define([
 					self.songDuration = beatOfLastNoteOff * beatDuration;
 					if (playFrom === undefined || isNaN(playFrom)) {
 						var cursorPosition = self.cursorNoteModel ? self.cursorNoteModel.getPos() : [null];
+						
 						if (cursorPosition[0] == null) cursorPosition = [0, 0];
 						playFrom = 0;
 						// should check here if cursor is enabled

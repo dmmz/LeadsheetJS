@@ -25,7 +25,7 @@ define([
 			throw "NoteSpaceManager - missing viewer";
 		}
 		this.interactive = interactive === undefined ? true : interactive;
-		this.CL_TYPE = this.interactive ? 'CURSOR' : 'NOT_INTERACTIVE';
+		this.CL_TYPE = this.interactive ? 'CURSOR' : 'NOT_INTERACTIVE'; //TODO: create maybe subclass (or abstract NoteSpaceManager)
 		this.CL_NAME = name || 'NotesCursor';
 		this.cursor = cursor;
 		this.viewer = viewer;
@@ -53,10 +53,20 @@ define([
 			self.viewer.canvasLayer.refresh();
 
 		});
-
-		$.subscribe('ToNoteSpaceManager-enable', function() {
-			self.enable();
-		})
+		if (self.CL_TYPE === 'NOT_INTERACTIVE'){
+			$.subscribe('ToNoteSpaceManager-enable', function() {
+				self.enable();	
+			});
+			$.subscribe('ToPlayer-play', function(){
+				self.playing = true;
+			});
+			$.subscribe('ToPlayer-stop', function(){
+				self.playing = false;
+			});	
+			$.subscribe('ToPlayer-pause', function(){
+				self.playing = false;
+			});
+		}
 		$.subscribe('ctrl-a', function() {
 			if (!self.interactive) return;
 			self.enable();
@@ -168,7 +178,9 @@ define([
 	 * @interface
 	 */
 	NoteSpaceManager.prototype.disable = function() {
-		this.enabled = false;
+		if (!this.playing){ 		//if 'NOT_INTERACTIVE' depends if playing
+			this.enabled = false;	
+		}
 	};
 	/**
 	 * @interface

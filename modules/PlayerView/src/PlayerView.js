@@ -225,7 +225,9 @@ define([
 			self.unsetPlayer('audio');
 			self.updateSwitch();
 		});
-
+		$.subscribe('ToAudioPlayer-disable',function(){
+			$("input[name=typeSwitch][value=midi]").prop("checked",true);
+		});
 		$.subscribe('PlayerModel-toggleMetronome', function(el, isMetronome) {
 			if (isMetronome) {
 				self.muteMetronome();

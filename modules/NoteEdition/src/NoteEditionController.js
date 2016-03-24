@@ -87,6 +87,7 @@ define([
 					addToHistory(fn);
 				}
 				$.publish('ToLayers-removeLayer');
+				$.publish('ToAudioPlayer-disable');
 				$.publish('ToViewer-draw', self.songModel);
 			}
 		});
