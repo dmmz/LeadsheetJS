@@ -35,7 +35,6 @@ define([
 		 * @param {SongModel} songModel     Songmodel that will be read by the midi player
 		 * @param {String} soundfontPath url to sond fount
 		 * @param {Object} option        contain
-			editor				// Score Editor Object, it is use mainly for viewer to display cursor
 			chordsInstrument
 			melodyInstrument
 			loop				// make the player loop over and over
@@ -65,30 +64,21 @@ define([
 			this.cursorModel = options.cursorModel;
 			this.cursorNoteModel = options.cursorNoteModel;
 			
-
-
 			this.chords = {
 				volume: initVolume,
 				tmpVolume: initVolume,
-				instrument: (typeof option !== "undefined" && typeof(option.chordsInstrument) !== "undefined") ? option.chordsInstrument : 0,
+				instrument: (typeof options.chordsInstrument !== "undefined") ? options.chordsInstrument : 0,
 			};
 			this.melody = {
 				volume: initVolume,
 				tmpVolume: initVolume,
-				instrument: (typeof option !== "undefined" && typeof(option.melodyInstrument) !== "undefined") ? option.melodyInstrument : 0,
+				instrument: (typeof options.melodyInstrument !== "undefined") ? options.melodyInstrument : 0,
 			};
-			this.activeMetronome = (typeof option !== "undefined" && typeof(option.activeMetronome) !== "undefined") ? option.activeMetronome : false;
+			this.activeMetronome = !!options.activeMetronome;
 			// When loop attributes is set to true, player will restart after the last note (indefinitively)
-			this.loop = (typeof option !== "undefined" && typeof option.loop !== "undefined") ? option.loop : false;
+			this.loop = !!options.loop;
 
-			if (typeof option !== "undefined" && typeof option.editor !== "undefined") {
-				this.editor = option.editor;
-				this.showCursorBool = (typeof option !== "undefined" && typeof option.showCursorBool !== "undefined") ? option.showCursorBool : true;
-			} else {
-				this.showCursorBool = false;
-			}
-
-			this.autoload = (typeof option !== "undefined" && typeof option.autoload !== "undefined") ? option.autoload : true;
+			this.autoload = (typeof options.autoload !== "undefined") ? options.autoload : true;
 			if (!!this.autoload) {
 				this.load();
 			}
