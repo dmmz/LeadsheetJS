@@ -88,7 +88,7 @@ define([
 		}
 		SongModel_CSLJson.importFromMusicCSLJSON(JSONSong, this.songModel);
 		$.publish('ToHistory-add', 'Open MusicCSLJson - ' + this.songModel.getTitle());
-		$.publish('ToViewer-draw', this.songModel);
+		$.publish('ToViewer-draw', [this.songModel, true]);
 	};
 
 	FileEditionController.prototype.importMusicXML = function(musicXMLSong) {
