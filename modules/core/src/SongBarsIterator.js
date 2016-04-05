@@ -1,28 +1,33 @@
-define(['modules/core/src/TimeSignatureModel'],function(TimeSignatureModel) {
+define([
+	'modules/core/src/TimeSignatureModel',
+	'modules/core/src/SongBarChange'
+], function(TimeSignatureModel, SongBarChange) {
 	/**
-     * Iterator that allow to go through bars
-     * @exports core/SongBarsIterator
+	 * Iterator that allow to go through bars
+	 * @exports core/SongBarsIterator
 	 */
 
 	function SongBarsIterator(song) {
 		this.song = song;
-		this.bm = this.song.getComponent('bars');
+		this.bm = this.song.getComponent('bars')
+		this.timeSigMng = new SongBarChange(this, 'getTimeSignatureChange', 'getTimeSignature', TimeSignatureModel);
+		this.keySigMng = new SongBarChange(this, 'getKeySignatureChange', 'getTonality');
 		this.reset();
-	}
+	};
 	SongBarsIterator.prototype = {
 		_getTimeSignatureChange: function() {
-			var barSigChange = this.getBar().getTimeSignatureChange();
-			if (barSigChange){
-				return barSigChange;
-			}else{
-				var sectionTimeSig;
-			 	//if we are at a new section, we add a time signature change
-				if (this.isFirstSectionBar){
-					sectionTimeSig = this.song.getSection(this.iSection).getTimeSignature();
-					return sectionTimeSig ? new TimeSignatureModel(sectionTimeSig) : null;
-				}
-				
-			}
+			return
+			// var barSigChange = this.getBar().getTimeSignatureChange();
+			// if (barSigChange){
+			// 	return barSigChange;
+			// }else{
+			// 	var sectionTimeSig;
+			//  	//if we are at a new section, we add a time signature change
+			// 	if (this.isFirstSectionBar){
+			// 		sectionTimeSig = this.song.getSection(this.iSection).getTimeSignature();
+			// 		return sectionTimeSig ? new TimeSignatureModel(sectionTimeSig) : null;
+			// 	}
+			// }
 		},
 
 		reset: function() {
@@ -30,8 +35,8 @@ define(['modules/core/src/TimeSignatureModel'],function(TimeSignatureModel) {
 			this.iSection = 0;
 			this.iSectionNumbars = 0; // sum of bars in previous sections
 			this.isFirstSectionBar = true;
-			this.prevTimeSig = null;
-			this.prevKeySig = null;
+			this.timeSigMng.reset();
+			this.keySigMng.reset();
 			this.endingState = null;
 			this.ending = null;
 			this.beats = 1;
@@ -69,12 +74,14 @@ define(['modules/core/src/TimeSignatureModel'],function(TimeSignatureModel) {
 		 * @return {Boolean}
 		 */
 		next: function() {
-			
-			this.prevKeySig = this.getBarKeySignature();
-			var timeSig = this.getBarTimeSignature();
-			this.prevTimeSig = timeSig;
-			this.beats += timeSig.getQuarterBeats();
 
+			var keySig = this.getBarKeySignature();
+			var timeSig = this.getBarTimeSignature();
+
+			this.timeSigMng.setPrevValue(timeSig);
+			this.keySigMng.setPrevValue(keySig);
+
+			this.beats += timeSig.getQuarterBeats();
 			// section
 			var sectionNumBars = this.song.getSection(this.iSection).getNumberOfBars();
 			if (this.index === this.iSectionNumbars + sectionNumBars - 1) {
@@ -84,13 +91,12 @@ define(['modules/core/src/TimeSignatureModel'],function(TimeSignatureModel) {
 			} else {
 				this.isFirstSectionBar = false;
 			}
-			
-			var ending = this.getEnding(this.isFirstSectionBar); ;
-			
+			var ending = this.getEnding(this.isFirstSectionBar);;
 			this.prevEnding = ending;
 			//we calculate always timeSig before endings, except if it is ending 1, because we will retrieve it after ending one
-			if (ending != 1){
-				this.beforeEndingTimeSig = timeSig;
+			if (ending != 1) {
+				this.timeSigMng.setBeforeEndingValue(timeSig);
+				this.keySigMng.setBeforeEndingValue(keySig);
 			}
 			this.index++;
 			return this.hasNext();
@@ -113,41 +119,22 @@ define(['modules/core/src/TimeSignatureModel'],function(TimeSignatureModel) {
 			return this.bm.getBar(this.index + 1);
 		},
 		getBarKeySignature: function() {
-			var keySig = this.getBar().getKeySignatureChange();
-			if (keySig) {
-				return keySig;
-			} else {
-				return (this.index === 0) ? this.song.getTonality() : this.prevKeySig;
-			}
+			return this.keySigMng.getBarElemValue();
 		},
 		doesTimeSignatureChange: function() {
-			var timeSig = this._getTimeSignatureChange();
-			return (!!timeSig && timeSig != this.prevTimeSig);
+			var timeSig = this.timeSigMng.getBarChange();
+			return (!!timeSig && timeSig != this.timeSigMng.getPrevValue());
 		},
 		getBarTimeSignature: function() {
-
-			var timeSig = this._getTimeSignatureChange();
-			if (timeSig) {
-				return timeSig;
-			}				
-			else if (this.prevEnding == 1 && this.getEnding(this.isFirstSectionBar) == 2) { // is important to use == instead of === as we are comparing sometimes string to numbers
-				// when we are in the bar just after ending 1, we return bar time signature we had before ending 1, 
-				//so that signature changes to ending 1 are not anymore taken into account
-				return this.beforeEndingTimeSig;
-			} else {
-				//case we are in first bar
-				return (this.index === 0) ? this.song.getTimeSignature() : this.prevTimeSig;
-			}
-			//return this.getBar().getTimeSignature() || (this.index == 0) ? this.song.getTimeSignature() : this.prevTimeSig;
+			return this.timeSigMng.getBarElemValue();
 		},
-		getStartEndBeats: function(){
+		getStartEndBeats: function() {
 			return [this.beats, this.beats + this.getBarTimeSignature().getQuarterBeats()];
 		},
-		getEnding: function(isFirstSectionBar){
-			if (isFirstSectionBar){
+		getEnding: function(isFirstSectionBar) {
+			if (isFirstSectionBar) {
 				return this.getBar().getEnding();
-			}
-			else{
+			} else {
 				return this.getBar().getEnding() || this.prevEnding;
 			}
 		},

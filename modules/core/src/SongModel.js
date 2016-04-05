@@ -13,16 +13,17 @@ define([
 		this.init(param);
 	}
 
-	SongModel.prototype.init = function(param) {
-		this.title = (typeof param !== "undefined" && param.title) ? param.title : '';
-		this.composers = (typeof param !== "undefined" && param.composers) ? param.composers : [];
-		this.style = (typeof param !== "undefined" && param.style) ? param.style : '';
-		this.source = (typeof param !== "undefined" && param.source) ? param.source : '';
-		this.tempo = (typeof param !== "undefined" && param.tempo) ? param.tempo : 120;
-		this.tonality = (typeof param !== "undefined" && param.tonality) ? param.tonality : "C";
-		this.timeSignature = (typeof param !== "undefined" && param.timeSignature) ? param.timeSignature : new TimeSignatureModel('4/4');
-		this.sections = (typeof param !== "undefined" && param.sections) ? param.sections : [];
-		this.components = (typeof param !== "undefined" && param.components) ? param.components : [];
+	SongModel.prototype.init = function(params) {
+		params = params || {};
+		this.title = params.title || '';
+		this.composers = params.composers || [];
+		this.style = params.style || '';
+		this.source = params.source || '';
+		this.tempo = params.tempo || 120;
+		this.tonality = params.tonality || "C";
+		this.timeSignature = params.timeSignature || new TimeSignatureModel('4/4');
+		this.sections = params.sections || [];
+		this.components = params.components || [];
 
 		this.addComponent('notes', new NoteManager());
 		this.addComponent('bars', new BarManager());
@@ -233,12 +234,6 @@ define([
 		return true;
 	};
 
-	SongModel.prototype.getBar = function(index) {
-		//TODO, remove function, duplicate
-		console.warn('get bar will be deleted, use getComponent("bars") instead');
-		return this.getComponent("bars").getBar(index);
-	};
-
 	/**
 	 * Function has to be called inside an iteration, it checks if there is a timesignature change in current bar
 	 * if not, it returns the currentBeats (calculated previously and sent as parameter)
@@ -258,13 +253,6 @@ define([
 
 		return (barTimeSig) ? barTimeSig.getQuarterBeats() : currentBeats;
 	};
-
-	SongModel.prototype.getBars = function() {
-		//TODO, remove function, duplicate
-		console.warn('getBars will be deleted, use getComponent("bars").getBars() instead');
-		return this.getComponent("bars").getBars();
-	};
-
 
 	/**
 	 * get component using unfolded song structure

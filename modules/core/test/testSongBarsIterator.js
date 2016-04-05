@@ -78,6 +78,7 @@ define([
 					composer: "Random Composer",
 					title: "Whatever song",
 					time: "4/4",
+					keySignature: "F",
 					changes: [
 						{
 							name: "A",
@@ -87,10 +88,11 @@ define([
 								chords: [{p: "A",ch: "M7",beat: 1}],
 								melody: [
 									{keys: ["b/4"],duration: "wr"}
-								],
+								]
 							},{
 								//barNum: 1 
 								chords: [{p: "B",ch: "m7",beat: 1}],
+								keySignature: "G",
 								melody: [
 									{keys: ["b/4"],duration: "wr"}
 								],
@@ -134,16 +136,21 @@ define([
 
 				while (barsIt.hasNext()){
 					switch (barsIt.getBarIndex()){
-						case 0,1:
+						case 0:
+							assert.equal(barsIt.getBarKeySignature().toString(),"F", "key signature F at start");
 							assert.equal(barsIt.getBarTimeSignature().toString(),"4/4", "4/4 at start");
 							break;
+						case 1:
+							assert.equal(barsIt.getBarTimeSignature().toString(),"4/4", "4/4 at start");
+							assert.equal(barsIt.getBarKeySignature().toString(),"G", "key signature G");
+							break;
 						case 2:
-						//case 2:
 							assert.equal(barsIt.getBarTimeSignature().toString(),"6/4", "6/4 in ending 1");
 							break;
 						case 3:
 						case 4:
 						case 5:
+							assert.equal(barsIt.getBarKeySignature().toString(),"F", "back to F from ending 2 to the end");
 							assert.equal(barsIt.getBarTimeSignature().toString(),"4/4", "back to 4/4 from ending 2 to the end");
 							break;
 					}
