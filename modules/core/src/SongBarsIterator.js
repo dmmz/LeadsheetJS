@@ -118,15 +118,21 @@ define([
 		getFollowingBar: function() {
 			return this.bm.getBar(this.index + 1);
 		},
+		getPrevKeySignature: function() {
+			return this.keySigMng.getPrevValue();
+		},
+		getPrevTimeSignature: function() {
+			return this.timeSigMng.getPrevValue();
+		},
 		getBarKeySignature: function() {
 			return this.keySigMng.getBarElemValue();
+		},
+		getBarTimeSignature: function() {
+			return this.timeSigMng.getBarElemValue();
 		},
 		doesTimeSignatureChange: function() {
 			var timeSig = this.timeSigMng.getBarChange();
 			return (!!timeSig && timeSig != this.timeSigMng.getPrevValue());
-		},
-		getBarTimeSignature: function() {
-			return this.timeSigMng.getBarElemValue();
 		},
 		getStartEndBeats: function() {
 			return [this.beats, this.beats + this.getBarTimeSignature().getQuarterBeats()];
