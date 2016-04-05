@@ -270,19 +270,15 @@ define([
 
 	// loop
 	PlayerView.prototype.activeLoop = function() {
-		this.loopActive = true;
 		$('#loop_button_container .loop_off').hide();
 		$('#loop_button_container .loop_on').show();
 	};
 
 	PlayerView.prototype.unactiveLoop = function() {
-		this.loopActive = false;
 		$('#loop_button_container .loop_on').hide();
 		$('#loop_button_container .loop_off').show();
 	};
-	PlayerView.prototype.isLoopActive = function() {
-		return this.loopActive;
-	};
+
 
 	// volume interface
 	PlayerView.prototype.setVolume = function(volume) {

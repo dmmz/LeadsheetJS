@@ -47,7 +47,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 				self.startMargin = startMargin || 0;
 				self.isEnabled = true;
 				if (loop){
-					self.loop();
+					self.loop(); //initializing loop on whole song
 				}
 				$.publish('PlayerModel-onload', 'audio');
 				$.publish('Audio-Loaded', [self, tempo] );
@@ -236,6 +236,9 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			this.disableLoop();
 			return true;
 		}
+	};
+	AudioController.prototype.isLoopSongEnabled = function() {
+		return this.loopSong;
 	};
 
 	/**
