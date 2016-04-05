@@ -423,7 +423,6 @@ define([
 													self.setPositionInPercent(0);
 													$.publish('PlayerModel-onfinish');
 												} else {
-													$.publish('PlayerModel-onloopstart');
 													self.play(tempo, playFrom, playTo);
 												}
 											}), duration * 1000);

@@ -29,7 +29,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 	/**
 	 * @param  {String} url source of audi file
 	 */
-	AudioController.prototype.load = function(url, tempo, startMargin, callback) {
+	AudioController.prototype.load = function(url, tempo, startMargin, loop, callback) {
 		if (!tempo){
 			throw "AudioController load missing tempo";
 		}
@@ -46,6 +46,9 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 				self._setParams(tempo);
 				self.startMargin = startMargin || 0;
 				self.isEnabled = true;
+				if (loop){
+					self.loop();
+				}
 				$.publish('PlayerModel-onload', 'audio');
 				$.publish('Audio-Loaded', [self, tempo] );
 				if (callback){

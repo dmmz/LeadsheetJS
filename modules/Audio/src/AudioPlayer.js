@@ -49,31 +49,6 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 				$.publish('PlayerModel-toggleLoop', self.loopEnabled);
 			}
 		});
-
-		//events from older code
-		// $.subscribe('ToPlayer-playFromPercent', function(el, obj) {
-		// 	self.playFromPercent(obj.percent);
-		// });
-		
-		// $.subscribe('ToPlayer-playPause', function() {
-		// 	self.playPause();
-		// });
-
-		// $.subscribe('ToPlayer-onToggleMute', function(el, volume) {
-		// 	self.toggleMute(volume);
-		// });
-		// $.subscribe('ToPlayer-onVolume', function(el, volume) {
-		// 	self.onVolumeChange(volume);
-		// });
-
-		
-		// $.subscribe('ToPlayer-disableAll', function() {
-		// 	self.disable();
-		// });
-
-		// $.subscribe('PlayerModel-playing', function() {
-		// 	self.restartAnimationLoop();
-		// });
 	};
 
 	return AudioPlayer;
