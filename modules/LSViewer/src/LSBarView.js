@@ -38,12 +38,13 @@ define(['vexflow'], function(Vex) {
 		}
 
 		var keySignature = songIt.getBarKeySignature();
-		if (keySignature != songIt.prevKeySig && this.drawKeySignature) {
+		if (keySignature != songIt.getPrevKeySignature() && this.drawKeySignature) {
 			this.vexflowStave.addKeySignature(keySignature);
 		}
 
 		var timeSignature = songIt.getBarTimeSignature();
-		if (timeSignature.toString() != songIt.prevTimeSig) {
+
+		if (timeSignature.toString() != songIt.getPrevTimeSignature()) {
 			this.vexflowStave.addTimeSignature(timeSignature.toString());
 		}
 
