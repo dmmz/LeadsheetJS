@@ -52,11 +52,6 @@ define(function(require) {
 				});
 				cm.addChord(chord2);
 
-
-				assert.equal(cm.getChordDurationFromBarNumber(sm, 0, 0), 3, 'chord duration - first bar');
-				assert.equal(cm.getChordDurationFromBarNumber(sm, 0, 1), 4, 'chord duration - last full bar');
-				assert.equal(cm.getChordDurationFromBarNumber(sm, 0, 2), 2, 'chord duration - end bar');
-
 				assert.equal(cm.getChordDuration(sm, 0), 9, 'chord duration - first');
 				assert.equal(cm.getChordDuration(sm, 1), 6, 'chord duration - last');
 				assert.equal(cm.getChordDuration(sm, 2), undefined, 'chord does not exist');
