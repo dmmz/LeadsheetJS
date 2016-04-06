@@ -145,43 +145,16 @@ define([
 		return this.timeSignature;
 	};
 
-	/**TODO: use songIterator instead
-	 * GetTimeSignatureAt returns the time signature at one precise moment defined by the barNumber
+	/*
+	 * GetTimeSignatureAt returns the time signature at one precise moment defined by the barNumber. 
+	 * It should not be used inside a loop iterating bars, SongBarsIterator should be used instead in that case
 	 * @param  {int} barNumber
 	 * @return {timeSignatureModel} currentTimeSignature like 3/4
 	 */
 	SongModel.prototype.getTimeSignatureAt = function(barNumber) {
-		var songTimeSignature = this.getTimeSignature();
-		var timeSig;
-		var sectionNumber = this.getSectionNumberFromBarNumber(barNumber);
-		if (sectionNumber === undefined) {
-			return songTimeSignature; // TODO need test on song that have repetitions on last section and a time signature change
-		}
-
-		var section = this.getSection(sectionNumber);
-		var bm = this.getComponent("bars");
-		var startSectionBar = this.getStartBarNumberFromSectionNumber(sectionNumber)
-			// loop in all previous bar in the current section
-		while (barNumber >= 0) {
-			timeSig = bm.getBar(barNumber).getTimeSignatureChange();
-			if (timeSig !== undefined) {
-				return timeSig;
-			} else if (barNumber === startSectionBar) {
-				timeSig = section.getTimeSignature();
-				if (timeSig) {
-					return new TimeSignatureModel(timeSig);
-				}
-				//update section data
-				if (barNumber !== 0) {
-					sectionNumber = this.getSectionNumberFromBarNumber(barNumber - 1);
-					section = this.getSection(sectionNumber);
-					startSectionBar = this.getStartBarNumberFromSectionNumber(sectionNumber)
-				}
-			}
-			barNumber--;
-		}
-		// otherwise returns song timeSig
-		return songTimeSignature;
+		var barsIt = new SongBarsIterator(this);
+		barsIt.setBarIndex(barNumber);
+		return barsIt.getBarTimeSignature();
 	};
 
 	/**
@@ -203,9 +176,9 @@ define([
 	 * @param {Integer} index   
 	 */
 	SongModel.prototype.addSection = function(sectionsItem, index) {
-		if (index === undefined){
+		if (index === undefined) {
 			this.sections.push(sectionsItem);
-		}else{
+		} else {
 			this.sections.splice(index, 0, sectionsItem);
 		}
 	};

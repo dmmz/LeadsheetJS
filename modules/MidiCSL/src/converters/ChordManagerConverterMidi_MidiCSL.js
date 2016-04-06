@@ -1,9 +1,9 @@
 define([
-	'modules/core/src/SongModel', 
-	'modules/core/src/ChordManager', 
-	'modules/core/src/SongBarsIterator',
-	'modules/MidiCSL/src/converters/ChordConverterMidi_MidiCSL', 
-	'modules/MidiCSL/src/model/NoteModel_midiCSL'
+		'modules/core/src/SongModel',
+		'modules/core/src/ChordManager',
+		'modules/core/src/SongBarsIterator',
+		'modules/MidiCSL/src/converters/ChordConverterMidi_MidiCSL',
+		'modules/MidiCSL/src/model/NoteModel_midiCSL'
 	],
 	function(SongModel, ChordManager, SongBarsIterator, ChordConverterMidi_MidiCSL, NoteModel_midiCSL) {
 		/**
@@ -24,16 +24,16 @@ define([
 		 * 
 		 */
 		ChordManagerConverterMidi_MidiCSL.exportToMidiCSL = function(songModel) {
-			
-			function getChordAsMidi(time, duration, midiNotes){
+
+			function getChordAsMidi(time, duration, midiNotes) {
 				return new NoteModel_midiCSL({
-						currentTime: time,
-						duration: duration,
-						midiNote: midiNotes,
-						type: 'chord'
-					});
+					currentTime: time,
+					duration: duration,
+					midiNote: midiNotes,
+					type: 'chord'
+				});
 			}
-			
+
 			if (!songModel instanceof SongModel) {
 				throw 'ChordManagerConverterMidi_MidiCSL - exportToMidiCSL - songModel parameters must be an instanceof SongModel';
 			}
@@ -47,32 +47,29 @@ define([
 				currentTime = 0,
 				duration = 0.0,
 				midiNotes = [],
-				lastChord,
 				barDuration,
 				chordsInBar = [];
-			
-			while(songIt.hasNext()){
+
+			while (songIt.hasNext()) {
 				chordsInBar = chordManager.getChordsByBarNumber(songIt.getBarIndex());
 				barDuration = songIt.getBarTimeSignature().getQuarterBeats();
 				if (chordsInBar.length === 0) {
 					// case there is no chord in bar, we repeat previous one, if there is no previous one we just continue to next bar
-					if (lastChord){ 
+					if (midiNotes.length != 0) {
 						duration = songIt.getBarTimeSignature().getQuarterBeats();
 						chords.push(getChordAsMidi(currentTime, duration, midiNotes));
-					} 
+					}
 				} else {
 					var nextBeatTime, chordCurrentTime,
 						barUnitQuarterBeat = songIt.getBarTimeSignature().getBeatUnitQuarter();
 
 					for (var i = 0; i < chordsInBar.length; i++) {
-						
+
 						chordCurrentTime = currentTime + (chordsInBar[i].getBeat() - 1) * barUnitQuarterBeat;
 						nextBeatTime = (i < chordsInBar.length - 1) ? (chordsInBar[i + 1].getBeat() - 1) * barUnitQuarterBeat : barDuration;
 						duration = currentTime + nextBeatTime - chordCurrentTime;
 						midiNotes = ChordConverterMidi_MidiCSL.exportToMidiCSL(chordsInBar[i]);
-						
 						chords.push(getChordAsMidi(chordCurrentTime, duration, midiNotes));
-						lastChord = chordsInBar[i];
 					}
 				}
 				currentTime += barDuration;
