@@ -110,27 +110,15 @@ define([
 	};
 
 	/**
-	 * Get the tonality of a bar by looping for each previous bar or by default on song tonality
+	 * Get the tonality of a bar by looping for each previous bar or by default on song tonality 
+	 * (not called for the moment)
 	 * @param  {int} barNumber
 	 * @return {string} eg. C, Bb etc
 	 */
-	SongModel.prototype.getTonalityAt = function(barNumber) {
-		if (typeof barNumber === "undefined" || isNaN(barNumber)) {
-			throw "invalid barNumber " + barNumber;
-		}
-		var currentTonality = this.tonality;
-		var bm = this.getComponent("bars");
-		var tonality;
-		while (barNumber >= 0) {
-			if (bm.getBar(barNumber) != null) {
-				tonality = bm.getBar(barNumber).getKeySignatureChange();
-				if (typeof tonality !== "undefined" && tonality !== '') {
-					return tonality;
-				}
-			}
-			barNumber--;
-		}
-		return currentTonality;
+	SongModel.prototype.getKeySignatureAt = function(barNumber) {
+		var barsIt = new SongBarsIterator(this);
+		barsIt.setBarIndex(barNumber);
+		return barsIt.getBarKeySignature();
 	};
 
 	SongModel.prototype.setTimeSignature = function(timeSignature) {

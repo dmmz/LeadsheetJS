@@ -74,40 +74,6 @@ define([
 				var song = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet, new SongModel());
 
 
-
-				//Get Tonality
-				song.getComponent('bars').getBar(5).setKeySignatureChange("Eb");
-				assert.equal(song.getTonalityAt(1), "C");
-				assert.equal(song.getTonalityAt(5), "Eb");
-				assert.equal(song.getTonalityAt(6), "Eb");
-
-				// // //Get TimeSignature
-				// song.getComponent('bars').getBar(5).setTimeSignatureChange("3/4");
-
-				// assert.throws(function() {
-				// 	song.getTimeSignatureAt();
-				// });
-
-				// assert.deepEqual(song.getTimeSignatureAt(1).getBeats(), new TimeSignatureModel("4/4").getBeats());
-				// assert.deepEqual(song.getTimeSignatureAt(5).getBeats(), new TimeSignatureModel("3/4").getBeats());
-				// assert.deepEqual(song.getTimeSignatureAt(6).getBeats(), new TimeSignatureModel("3/4").getBeats());
-
-				// assert.equal(song.getSectionNumberFromBarNumber(0), 0);
-				// assert.equal(song.getSectionNumberFromBarNumber(6), 0);
-				// assert.equal(song.getSectionNumberFromBarNumber(10), undefined);
-
-				// assert.equal(song.getBarNumBeats(0), 4);
-
-				// assert.equal(song.getStartBeatFromBarNumber(0), 1);
-				// assert.equal(song.getStartBeatFromBarNumber(2), 9);
-
-				// assert.equal(song.getNumberOfBars(), 8);
-
-				// assert.equal(song.getSongTotalBeats(), 29);
-
-				// testing getBarDivisionsBetweenBeats
-				// 
-				// 
 				//	CHANGES IN TIME AND KEY SIGNATURES: TESTED ALSO ON BARSITERATOR
 				var songTimeSigChanges = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.leadSheetTimeSigChanges);
 				//	song: 4/4
@@ -136,10 +102,10 @@ define([
 				assert.equal(songTimeSigChanges.getTimeSignatureAt(13).toString(), "2/4", "get previous  section time signature change");
 				assert.equal(songTimeSigChanges.getTimeSignatureAt(14).toString(), "4/4", "priority to bar change when both at the same time");
 
-				assert.equal(songTimeSigChanges.getTonalityAt(2), "C", "get original key signature");
-				assert.equal(songTimeSigChanges.getTonalityAt(4), "D", "get key signature at bar change");
-				assert.equal(songTimeSigChanges.getTonalityAt(5), "D", "get key signature after it changed, from another bar");
-				assert.equal(songTimeSigChanges.getTonalityAt(8), "D", "get key signature after it changed, from another section");
+				assert.equal(songTimeSigChanges.getKeySignatureAt(2), "C", "get original key signature");
+				assert.equal(songTimeSigChanges.getKeySignatureAt(4), "D", "get key signature at bar change");
+				assert.equal(songTimeSigChanges.getKeySignatureAt(5), "D", "get key signature after it changed, from another bar");
+				assert.equal(songTimeSigChanges.getKeySignatureAt(8), "D", "get key signature after it changed, from another section");
 
 
 
