@@ -8,7 +8,6 @@ define(['vexflow'], function(Vex) {
 		this.chord = chord;
 	}
 	/**
-	 * [draw description]
 	 * @param  {CanvasContext} ctx           
 	 * @param  {Object} barDimensions e.g. {x:1, y:1, w:2, h:2}
 	 * @param  {TimeSignatureModel} timeSig       

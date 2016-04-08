@@ -1,60 +1,54 @@
 define([
-	"modules/Edition/src/KeyboardManager",
 	"modules/Cursor/src/Cursor",
 	"modules/NoteEdition/src/NoteEdition",
 	"modules/ChordEdition/src/ChordEdition",
 	"modules/StructureEdition/src/StructureEdition",
 	"modules/TextEdition/src/TextElementManager"
-], function(KeyboardManager, Cursor, NoteEdition, ChordEdition, StructureEdition, TextElementManager) {
+], function(Cursor, NoteEdition, ChordEdition, StructureEdition, TextElementManager) {
 	/**
 	 * Edition constructor
 	 * @exports Edition
 	 */
 	function Edition(viewer, songModel, menuModel, params) {
-		if (!params) {
-			throw "Edition - need params";
+		if (!params || !songModel) {
+			throw "Edition - needs params";
 		}
 		this.noteEdition = null; //noteEdition property, as we want it accessible from outside (e.g. for harmonicAnalysis)
 
-
-		new KeyboardManager(false);
-
 		//editing title
-
 		var titleSuggs = params.title ? params.title.suggestions : null;
 		new TextElementManager('titleView', 'Title', viewer, songModel, titleSuggs);
-
-		var composerSuggs = params.composer ? params.composer.suggestions : null;
+		var composerSuggs = params.composerSuggestions;
 		new TextElementManager('composerView', 'Composer', viewer, songModel, composerSuggs);
 
 
-		var cursorNote;
+		var cursorNotesModel;
 		if (params.notes) {
 			// Edit notes on view
-			cursorNote = new Cursor(songModel.getComponent('notes'), 'notes', 'arrow');
-			this.noteEdition = new NoteEdition(songModel, cursorNote.controller.model, viewer, params.notes.imgPath);
-			this.cursorNote = cursorNote;
+			//cursorNote = new Cursor(songModel.getComponent('notes'), 'notes', 'arrow');
+			cursorNotesModel = params.snglNotesCursor.getInstance();
+			this.noteEdition = new NoteEdition(songModel, cursorNotesModel, viewer, menuModel.options.notes.imgPath, params.snglNotesManager);
+			this.cursorNote = cursorNotesModel;
 
-			if (menuModel && params.notes.menu) {
+			if (menuModel && menuModel.options.notes.menu) {
 				menuModel.addMenu({
-					title: params.notes.menu.title,
+					title: menuModel.options.notes.menu.title,
 					view: this.noteEdition.view,
-					order: params.notes.menu.order
+					order: menuModel.options.notes.menu.order
 				});
 			}
-
 		}
 		if (params.chords) {
 			// // Edit chords on view
 			var cursorChord = new Cursor(songModel.getSongTotalBeats(), 'chords', 'tab');
 			cursorChord.controller.model.setEditable(false);
-			this.chordEdition = new ChordEdition(songModel, cursorChord.controller.model, viewer, params.chords.imgPath);
+			this.chordEdition = new ChordEdition(songModel, cursorChord.controller.model, viewer, menuModel.options.chords.imgPath);
 			this.cursorChord = cursorChord;
-			if (params.chords.menu) {
+			if (menuModel.options.chords.menu) {
 				menuModel.addMenu({
-					title: params.chords.menu.title,
+					title: menuModel.options.chords.menu.title,
 					view: this.chordEdition.view,
-					order: params.chords.menu.order
+					order: menuModel.options.chords.menu.order
 				});
 			}
 		}
@@ -64,13 +58,13 @@ define([
 				throw "Edition: to add structure, cursor of notes edition needed";
 			}
 			//bars edition 
-			var structEdition = new StructureEdition(songModel, cursorNote.controller.model, params.structure.imgPath);
+			var structEdition = new StructureEdition(songModel, params.snglNotesCursor.getInstance(), menuModel.options.structure.imgPath);
 
-			if (params.structure.menu) {
+			if (menuModel.options.structure.menu) {
 				menuModel.addMenu({
-					title: params.structure.menu.title,
+					title: menuModel.options.structure.menu.title,
 					view: structEdition.view,
-					order: params.structure.menu.order
+					order: menuModel.options.structure.menu.order
 				});
 			}
 		}

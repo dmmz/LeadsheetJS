@@ -234,7 +234,7 @@ define([
 				self.unmuteMetronome();
 			}
 		});
-		$.subscribe('PlayerModel-onPosition', function(el, obj) {
+		$.subscribe('PlayerModel-positionPerCent', function(el, obj) {
 			self.updateProgressbar(obj.positionInPercent * 100, obj.songDuration);
 		});
 		$.subscribe('setPlayerNotReady', function(){

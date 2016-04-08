@@ -262,13 +262,10 @@ define([
 		 * @param {int} between 0 and 1
 		 */
 		PlayerModel_MidiCSL.prototype.setPositionInPercent = function(positionInPercent) {
-			if (typeof positionInPercent === "undefined" || isNaN(positionInPercent)) {
-				throw 'PlayerModel_MidiCSL - setPositionInPercent - positionInPercent must be a float ' + positionInPercent;
-			}
 			this.positionInPercent = positionInPercent;
-			$.publish('PlayerModel-onPosition', {
-				'positionInPercent': positionInPercent,
-				'songDuration': this.getSongDuration()
+			$.publish('PlayerModel-positionPerCent', {
+				positionInPercent: positionInPercent,
+				songDuration: this.getSongDuration()
 			});
 		};
 

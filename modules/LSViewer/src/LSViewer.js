@@ -21,24 +21,25 @@ define([
 		 * @exports LSViewer/LSViewer
 		 * @param {domObject} jQuery divContainer ; e.g.: $("#divContainerId");
 		 * @param {Object} params, possible params:
-		 *
-		 *  - width: in pixels
-		 *
-		 *  - heightOverflow: "scroll" | "auto".
+		 *<ul>
+		 *  <li>width: in pixels</li>
+		 *  <li>heightOverflow: "scroll" | "auto".</li>
 		 *    If scroll, when canvas is larger than containing div, it will scroll, if not, it will change div width
-		 *  - typeResize: "scale" | "fluid",
-		 *    If scale, when canvas is wider than containing div, it will scale to fit; if "fluid" it will try to fit withouth scaling.
-		 *  - displayTitle
-		 *  - displayComposer   // TODO: possibility of combining both (scale partially and then fluid)
-		 *  - layer: true 	// Layer represents the interaction layer, so if true, can use mouse (but layer=true is not enough to be able to select notes) TODO: really
+		 *  <li>typeResize: "scale" | "fluid",
+		 *    If scale, when canvas is wider than containing div, it will scale to fit; if "fluid" it will try to fit withouth scaling. // TODO: possibility of combining both (scale partially and then fluid)
+		 *  <li>displayTitle</li>
+		 *  <li>displayComposer</li>   
+		 *  <li>layer: true 	// Layer represents the interaction layer, so if true, can use mouse (but layer=true is not enough to be able to select notes)</li>
 		 *
 		 */
 		function LSViewer(divContainer, params) {
 			this._init(divContainer, params);
 			this._initSubscribe();
-			this.divContainer = divContainer;
 		}
 		LSViewer.prototype._init = function(divContainer, params) {
+			if (!$(divContainer).prop("tagName")){
+				throw "LSViewer: divContainer is not a valid Dom element";
+			}
 			params = params || {};
 			this.DEFAULT_HEIGHT = 1000;
 			this.scaler = new Scaler(); //object that scales objects. Used in NoteSpaceView and ChordSpaceView
@@ -114,7 +115,7 @@ define([
 			return $(this.divContainer).width() * this.CANVAS_DIV_WIDTH_PROPORTION;
 		};
 		/**
-		 * Creates and return a dom element
+		 * Creates and returns a dom element
 		 */
 		LSViewer.prototype._createCanvas = function(canvasId, width, height) {
 			var canvas = $("<canvas id='" + canvasId + "'></canvas>");
@@ -301,7 +302,6 @@ define([
 		};
 
 		LSViewer.prototype.draw = function(song) {
-
 			if (typeof song === "undefined") {
 				console.warn('song is empty'); // only for debug, remove after 1 week safe
 				return;

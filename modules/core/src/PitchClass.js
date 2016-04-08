@@ -58,11 +58,10 @@ define([
 	
 
 	/**
-	 * [transposeBy description]
 	 * @param  {Interval} interval  object representing interval to move, e.g. perfectFifth
 	 * @param  {Number} direction either 1 or -1
 	 * @param  {Boolean} getOctave if true, we return octave also
-	 * @return {String or Object}           (depending on getOctave)
+	 * @return {String|Object}           (depending on getOctave)
 	 */
 	PitchClass.prototype.transposeBy = function(interval, direction, getOctave) {
 		direction = direction || 1;

@@ -64,7 +64,6 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 
 	/**
 	 * it is called after audio is loaded
-	 * @return {[type]} [description]
 	 */
 	AudioController.prototype.enable = function(dontEnableDrawer) {
 		this.isEnabled = true;
@@ -217,7 +216,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 
 	/**
 	 * Enables whole loop song, can only be done if is not playing
-	 * @return {[type]} [description]
+	 * @return {Boolean} returns true if action could be done, otherwise returns undefined (== falsy)
 	 */
 	AudioController.prototype.enableLoopSong = function() {
 		if (!this.loopSong && !this.isPlaying){

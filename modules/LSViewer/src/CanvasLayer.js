@@ -27,7 +27,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		this.elems = {}; //elements to be added (can be CLICKABLE or CURSOR)
 		this.order = []; //we keep trace of order in which elements are added, to decide which should be prioritized on click
 		this.ctrlPressed = false;
-	}
+	};
 
 	CanvasLayer.prototype._createLayer = function(viewer) {
 		var canvasEl = $(viewer.canvas),
@@ -249,7 +249,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			self.mouseDown = false;
 			var isClick = self.mouseDidntMove();
 			if (isClick && evt.button == 2) {
-				$.publish('right-click');
+				// $.publish('right-click');
 			} else {
 				if (isTargetValid(evt)) {
 					selection(isClick, true);

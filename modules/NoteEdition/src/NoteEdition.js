@@ -7,8 +7,9 @@ define([
 	 * NoteEdition constructor
 	 * @exports NoteEdition
 	 */
-	function NoteEdition(songModel, cursorModel, viewer, imgPath) {
-		this.noteSpaceMng = new NoteSpaceManager(cursorModel, viewer);
+	function NoteEdition(songModel, cursorModel, viewer, imgPath, snglNotesManager) {
+		
+		this.noteSpaceMng = snglNotesManager.getInstance(songModel, viewer);
 		new NoteEditionController(songModel, cursorModel, this.noteSpaceMng);
 		this.view = new NoteEditionView(imgPath);
 	}

@@ -63,6 +63,7 @@ define(function(require) {
 	var playerOptions = {
 		HTMLElement: playerHTML,
 		imgUrl: '/modules/MidiCSL/img',
+		interactive: true,
 		viewOptions: {
 			displayMetronome: true,
 			displayLoop: true,
@@ -120,11 +121,12 @@ define(function(require) {
 			history: {
 				enable: true,
 				HTMLElement: historyHTML, // if not precised, then it doesn't display history but keyboard ctrl+z and y are working
-			}
+			},
+			menu: {
+				HTMLElement: menuHTML
+			},
+			composerSuggestions: ['Miles Davis', 'John Coltrane', 'Bill Evans', 'Charlie Parker', 'Thelonious Monk']
 		},
-		menu: {
-			HTMLElement: menuHTML
-		}
 	};
 
 	// var myLeadsheet1 = LJS.easyBuild('viewer', testSongs.simpleLeadSheet, viewerHTML, viewerOptions);
