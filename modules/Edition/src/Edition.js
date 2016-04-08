@@ -26,7 +26,7 @@ define([
 		if (params.notes) {
 			// Edit notes on view
 			//cursorNote = new Cursor(songModel.getComponent('notes'), 'notes', 'arrow');
-			cursorNotesModel = params.snglNotesCursor.getInstance();
+			cursorNotesModel = params.snglNotesCursor.getInstance(songModel);
 			this.noteEdition = new NoteEdition(songModel, cursorNotesModel, viewer, menuModel.options.notes.imgPath, params.snglNotesManager);
 			this.cursorNote = cursorNotesModel;
 

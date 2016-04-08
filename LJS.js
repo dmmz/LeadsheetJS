@@ -141,6 +141,7 @@ define([
 	}
 
 	function loadEdition(viewer, songModel, menuHTML, params){
+		snglKeyBoardManager.getInstance();
 		var menuModel;
 		if (menuHTML && (params.notes || params.chords || params.structure)){
 			menu = new MainMenu(menuHTML);	
