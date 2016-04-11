@@ -62,6 +62,8 @@ define([
 			}
 		};
 	};
+	//constructors for different singletons:
+	//
 	var notesCursorConstructor = function(args){	
 		var songModel = args[0];
 		return cursorConstructor(songModel, 'notes');
@@ -73,18 +75,20 @@ define([
 	var cursorConstructor = function(songModel, id){
 		return new Cursor(songModel.getComponent('notes'), id, 'arrow').model;
 	};
+	
+	//singletons used
 	var snglNotesCursor = (singleton)(notesCursorConstructor);
 	var snglPlayerCursor = (singleton)(playerCursorConstructor);
-
 	var snglNotesManager = (singleton)(function(args){
 		var songModel = args[0];
 		var viewer = args[1];
 		return new NoteSpaceManager(snglNotesCursor.getInstance(songModel), viewer, 'NotesCursor', null, true, false);
 	})
-
 	var snglKeyBoardManager = (singleton)(function(){
 		return new KeyboardManager(false);
 	});
+
+	//functions loading different modules
 
 	function loadViewer(htmlElem, options, song){
 		options = options || {};
@@ -94,7 +98,6 @@ define([
 	}
 
 	function loadPlayer(options, songModel){
-		
 		function loadMidiPlayer(playerView, soundfontUrl){
 			var player = new MidiCSL.PlayerModel_MidiCSL(songModel, soundfontUrl, {
 				cursorModel: snglPlayerCursor.getInstance(songModel),
@@ -103,7 +106,7 @@ define([
 			new MidiCSL.PlayerController(player, playerView);
 			return player;
 		}
-
+		var players = {};
 		
 		var useAudio = !!options.audio;
 		var useMidi = options.midi && options.midi.soundfontUrl;
@@ -123,7 +126,7 @@ define([
 		snglKeyBoardManager.getInstance();
 
 		if (useMidi) {
-				loadMidiPlayer(playerView, options.midi.soundfontUrl);
+				players.midiPlayer = loadMidiPlayer(playerView, options.midi.soundfontUrl);
 				//loadedModules.midiPlayer = LJS._loadMidiPlayer(MidiCSL, songModel, soundfontUrl, loadedModules.playerView, cursorPlayerModel, cursorNoteModel);
 		}
 
@@ -134,10 +137,12 @@ define([
 				viewer: viewer,
 				notesCursor: snglPlayerCursor.getInstance()
 			});
-				if (options.audio.audioFile) {
+			if (options.audio.audioFile) {
 				audioModule.load(options.audio.audioFile, options.audio.tempo);
 			}
+			players.audioPlayer = audioModule;
 		}
+		return players;
 	}
 
 	function loadEdition(viewer, songModel, menuHTML, params){
@@ -183,37 +188,36 @@ define([
 			params.snglNotesManager = snglNotesManager;
 			params.snglNotesCursor = snglNotesCursor;
 		}
-		var edition = new Edition(viewer, songModel, menuModel, params);
-		//var edition = new Edition(viewer, songModel, menu.model, modules);
-		
-		
+		return {
+			edition: new Edition(viewer, songModel, menuModel, params),
+			menuModel: menuModel,
+			menuController: menu.controller
+		}
+	
 	}
 	
-	
+	//LJS object:
+	//returns modules to be used by client
 	var LJS = {
-		"AudioComments": AudioComments,
-		"ChordEdition": ChordEdition,
-		"chordSequence": chordSequence,
-		"converters": {
-			"MusicCSLJson": convertersMusicCSLJson,
-			"MusicXML": convertersMusicXML
+		//"AudioComments": AudioComments,
+		//"chordSequence": chordSequence,
+		converters: {
+			MusicCSLJson: convertersMusicCSLJson,
+			MusicXML: convertersMusicXML
 		},
-		"core": core,
-		"Cursor": Cursor,
-		"Edition": Edition,
-		"FileEdition": FileEdition,
-		"HistoryC": HistoryC,
-		"LSViewer": LSViewer,
-		"OnWindowResizer": OnWindowResizer,
-		"MainMenu": MainMenu,
-		"MidiCSL": MidiCSL,
-		"NoteEdition": NoteEdition,
-		"StructureEdition": StructureEdition,
-		"Tag": TagManager,
-		//"Wave": Wave,
-		"utils": utils
+		core: core,
+		LSViewer: LSViewer,
+		Tag: TagManager,
+		OnWindowResizer: OnWindowResizer,
+		utils: utils,
+		Tag: TagManager
 	};
-
+	/**
+	 * initializes modules asked by 'params'
+	 * @param  {Object} MusicCSLJSON Json object representing a lead sheet
+	 * @param  {Object} params       parameters that determine which modules to load and their options
+	 * @return {Object}              contains objects from loaded modules
+	 */
 	LJS.init = function(MusicCSLJSON, params) {
 		if (MusicCSLJSON === undefined) {
 			throw "missing MusicCLJSON song";
@@ -223,7 +227,8 @@ define([
 		var useViewer = params.viewer !== undefined;
 		var usePlayer = params.player !== undefined;
 		var useEdition = params.edition !== undefined;
-		
+		var modules = {songModel: songModel};
+
 		// Viewer
 		
 		if (useViewer) {
@@ -240,13 +245,17 @@ define([
 				throw "Missing HTMLElement for player";
 			}
 
-			loadPlayer(params.player, songModel);
+			var players = loadPlayer(params.player, songModel);
+			
+			modules.audioPlayer = players.audioPlayer;
+			modules.midiPlayer = players.midiPlayer;
 		}
 
 		if (useEdition) {
 			var menuHTML = params.edition.menu !== undefined ? params.edition.menu.HTMLElement : false;
-			loadEdition(viewer, songModel, menuHTML, params.edition);
+			var editionModule = loadEdition(viewer, songModel, menuHTML, params.edition);
 			
+
 			//menu	
 			menu.controller.loadStateTab();
 			if (menu.model.getCurrentMenu() === undefined) {
@@ -261,7 +270,18 @@ define([
 				new HistoryC(songModel, historyHTML, null, true, false);
 				$.publish('ToHistory-add', 'Open song - ' + songModel.getTitle());
 			}
+			var fileEdition = new FileEdition(songModel, viewer, params.edition.saveFunction, {saveButton:params.edition.saveButton, saveAsButton:params.edition.saveAsButton});
+			menu.model.addMenu({
+				title: 'File',
+				view: fileEdition.view,
+				order: 1
+			});
+			menu.controller.loadStateTab();
+			menu.controller.activeMenu('File');
 			
+			modules.edition = editionModule.edition;
+			modules.menuModel = editionModule.menuModel;
+			modules.menuController = editionModule.menuController;
 		}
 
 		//tags
@@ -273,13 +293,15 @@ define([
 		if (useViewer){
 			viewer.draw(songModel);
 		}
-		
-		//return loadedModules;
+
+		modules.notesCursor = snglNotesCursor.getInstance();
+		modules.noteSpaceManager = snglNotesManager.getInstance();
+		return modules;
 	};
 
 
 
-	LJS._loadChordSequence = function() {
+	/*LJS._loadChordSequence = function() {
 		var optionChediak = {
 			displayTitle: true,
 			displayComposer: true,
@@ -292,9 +314,9 @@ define([
 			fillEmptyBarCharacter: "%",
 		};
 		new chordSequence($('#chordSequence1')[0], songModel, optionChediak);
-	};
+	};*/
 
-	// LJS._loadComments = function(waveMng, viewer, songModel) {
+	/*// LJS._loadComments = function(waveMng, viewer, songModel) {
 	// 	var userSession = {
 	// 		name: 'Dani',
 	// 		id: '323324422',
@@ -302,7 +324,7 @@ define([
 	// 	};
 	// 	var audioComments = new AudioComments(waveMng, viewer, songModel, userSession);
 	// 	return audioComments;
-	// };
+	// };/
 
 
 	return LJS;

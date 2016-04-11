@@ -13,8 +13,7 @@ define([
 		if (!params || !songModel) {
 			throw "Edition - needs params";
 		}
-		this.noteEdition = null; //noteEdition property, as we want it accessible from outside (e.g. for harmonicAnalysis)
-
+		
 		//editing title
 		var titleSuggs = params.title ? params.title.suggestions : null;
 		new TextElementManager('titleView', 'Title', viewer, songModel, titleSuggs);
@@ -22,18 +21,19 @@ define([
 		new TextElementManager('composerView', 'Composer', viewer, songModel, composerSuggs);
 
 
-		var cursorNotesModel;
+		var cursorNotesModel, noteEdition, chordEdition, structEdition;
+
 		if (params.notes) {
 			// Edit notes on view
 			//cursorNote = new Cursor(songModel.getComponent('notes'), 'notes', 'arrow');
 			cursorNotesModel = params.snglNotesCursor.getInstance(songModel);
-			this.noteEdition = new NoteEdition(songModel, cursorNotesModel, viewer, menuModel.options.notes.imgPath, params.snglNotesManager);
-			this.cursorNote = cursorNotesModel;
+			noteEdition = new NoteEdition(songModel, cursorNotesModel, viewer, menuModel.options.notes.imgPath, params.snglNotesManager);
+			
 
 			if (menuModel && menuModel.options.notes.menu) {
 				menuModel.addMenu({
 					title: menuModel.options.notes.menu.title,
-					view: this.noteEdition.view,
+					view: noteEdition.view,
 					order: menuModel.options.notes.menu.order
 				});
 			}
@@ -42,12 +42,12 @@ define([
 			// // Edit chords on view
 			var cursorChord = new Cursor(songModel.getSongTotalBeats(), 'chords', 'tab');
 			cursorChord.controller.model.setEditable(false);
-			this.chordEdition = new ChordEdition(songModel, cursorChord.controller.model, viewer, menuModel.options.chords.imgPath);
-			this.cursorChord = cursorChord;
+			chordEdition = new ChordEdition(songModel, cursorChord.controller.model, viewer, menuModel.options.chords.imgPath);
+			
 			if (menuModel.options.chords.menu) {
 				menuModel.addMenu({
 					title: menuModel.options.chords.menu.title,
-					view: this.chordEdition.view,
+					view: chordEdition.view,
 					order: menuModel.options.chords.menu.order
 				});
 			}
@@ -68,8 +68,13 @@ define([
 				});
 			}
 		}
-
-
+		return {
+			noteEdition: noteEdition,
+			chordEdition: chordEdition,
+			structEdition: structEdition,
+			cursorChord: cursorChord,
+			notesCursor: cursorNotesModel
+		};
 	}
 	return Edition;
 });
