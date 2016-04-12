@@ -126,8 +126,7 @@ define([
 		snglKeyBoardManager.getInstance();
 
 		if (useMidi) {
-				players.midiPlayer = loadMidiPlayer(playerView, options.midi.soundfontUrl);
-				//loadedModules.midiPlayer = LJS._loadMidiPlayer(MidiCSL, songModel, soundfontUrl, loadedModules.playerView, cursorPlayerModel, cursorNoteModel);
+			players.midiPlayer = loadMidiPlayer(playerView, options.midi.soundfontUrl);
 		}
 
 		if (useAudio) {
@@ -147,7 +146,7 @@ define([
 
 	function loadEdition(viewer, songModel, menuHTML, params){
 		snglKeyBoardManager.getInstance();
-		var menuModel;
+		var menu, menuModel;
 		if (menuHTML && (params.notes || params.chords || params.structure)){
 			menu = new MainMenu(menuHTML);	
 			menuModel = menu.model;
@@ -188,12 +187,12 @@ define([
 			params.snglNotesManager = snglNotesManager;
 			params.snglNotesCursor = snglNotesCursor;
 		}
-		return {
+		var returnObj = {
 			edition: new Edition(viewer, songModel, menuModel, params),
-			menuModel: menuModel,
-			menuController: menu.controller
-		}
-	
+		};
+		if (menu) 		returnObj.menuController = menu.controller;
+		if (menuModel) 	returnObj.menuModel = menuModel;
+		return returnObj;		
 	}
 	
 	//LJS object:
@@ -210,7 +209,8 @@ define([
 		Tag: TagManager,
 		OnWindowResizer: OnWindowResizer,
 		utils: utils,
-		Tag: TagManager
+		Tag: TagManager,
+		Audio: AudioModule
 	};
 	/**
 	 * initializes modules asked by 'params'
@@ -257,9 +257,11 @@ define([
 			
 
 			//menu	
-			menu.controller.loadStateTab();
-			if (menu.model.getCurrentMenu() === undefined) {
-				menu.controller.activeMenu('Notes');
+			if (editionModule.menuController){
+				editionModule.menuController.loadStateTab();
+				if (editionModule.menuModel.getCurrentMenu() === undefined) {
+					editionModule.menuController.activeMenu('Notes');
+				}		
 			}
 			//history
 			if (params.edition.history){
@@ -271,13 +273,16 @@ define([
 				$.publish('ToHistory-add', 'Open song - ' + songModel.getTitle());
 			}
 			var fileEdition = new FileEdition(songModel, viewer, params.edition.saveFunction, {saveButton:params.edition.saveButton, saveAsButton:params.edition.saveAsButton});
-			menu.model.addMenu({
-				title: 'File',
-				view: fileEdition.view,
-				order: 1
-			});
-			menu.controller.loadStateTab();
-			menu.controller.activeMenu('File');
+			
+			if (editionModule.menuModel){
+				editionModule.menuModel.addMenu({
+					title: 'File',
+					view: fileEdition.view,
+					order: 1
+				});
+				editionModule.menuController.loadStateTab();
+				editionModule.menuController.activeMenu('File');
+			}
 			
 			modules.edition = editionModule.edition;
 			modules.menuModel = editionModule.menuModel;
@@ -293,9 +298,10 @@ define([
 		if (useViewer){
 			viewer.draw(songModel);
 		}
-
-		modules.notesCursor = snglNotesCursor.getInstance();
-		modules.noteSpaceManager = snglNotesManager.getInstance();
+		if (usePlayer || useEdition || params.tags){
+			modules.notesCursor = snglNotesCursor.getInstance(songModel);
+			modules.noteSpaceManager = snglNotesManager.getInstance(songModel,viewer);
+		}
 		return modules;
 	};
 
@@ -316,7 +322,7 @@ define([
 		new chordSequence($('#chordSequence1')[0], songModel, optionChediak);
 	};*/
 
-	/*// LJS._loadComments = function(waveMng, viewer, songModel) {
+	// LJS._loadComments = function(waveMng, viewer, songModel) {
 	// 	var userSession = {
 	// 		name: 'Dani',
 	// 		id: '323324422',
@@ -324,7 +330,7 @@ define([
 	// 	};
 	// 	var audioComments = new AudioComments(waveMng, viewer, songModel, userSession);
 	// 	return audioComments;
-	// };/
+	// };
 
 
 	return LJS;

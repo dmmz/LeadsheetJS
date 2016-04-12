@@ -21,13 +21,15 @@ define([
 		new TextElementManager('composerView', 'Composer', viewer, songModel, composerSuggs);
 
 
-		var cursorNotesModel, noteEdition, chordEdition, structEdition;
+		var cursorNotesModel, noteEdition, chordEdition, structEdition, imgPath;
 
 		if (params.notes) {
 			// Edit notes on view
 			//cursorNote = new Cursor(songModel.getComponent('notes'), 'notes', 'arrow');
 			cursorNotesModel = params.snglNotesCursor.getInstance(songModel);
-			noteEdition = new NoteEdition(songModel, cursorNotesModel, viewer, menuModel.options.notes.imgPath, params.snglNotesManager);
+
+			imgPath = menuModel ? menuModel.options.notes.imgPath : undefined;
+			noteEdition = new NoteEdition(songModel, cursorNotesModel, viewer, imgPath, params.snglNotesManager);
 			
 
 			if (menuModel && menuModel.options.notes.menu) {
@@ -42,9 +44,10 @@ define([
 			// // Edit chords on view
 			var cursorChord = new Cursor(songModel.getSongTotalBeats(), 'chords', 'tab');
 			cursorChord.controller.model.setEditable(false);
-			chordEdition = new ChordEdition(songModel, cursorChord.controller.model, viewer, menuModel.options.chords.imgPath);
+			imgPath = menuModel ? menuModel.options.chords.imgPath : undefined;			
+			chordEdition = new ChordEdition(songModel, cursorChord.controller.model, viewer, imgPath);
 			
-			if (menuModel.options.chords.menu) {
+			if (menuModel && menuModel.options.chords.menu) {
 				menuModel.addMenu({
 					title: menuModel.options.chords.menu.title,
 					view: chordEdition.view,
@@ -58,9 +61,10 @@ define([
 				throw "Edition: to add structure, cursor of notes edition needed";
 			}
 			//bars edition 
-			var structEdition = new StructureEdition(songModel, params.snglNotesCursor.getInstance(), menuModel.options.structure.imgPath);
+			imgPath = menuModel ? menuModel.options.structure.imgPath : undefined;			
+			var structEdition = new StructureEdition(songModel, params.snglNotesCursor.getInstance(), imgPath);
 
-			if (menuModel.options.structure.menu) {
+			if (menuModel && menuModel.options.structure.menu) {
 				menuModel.addMenu({
 					title: menuModel.options.structure.menu.title,
 					view: structEdition.view,
