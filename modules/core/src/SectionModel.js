@@ -29,7 +29,7 @@ define(function() {
 
 	// Carefull, if a section is played 2 times, repeatTimes = 1
 	SectionModel.prototype.setRepeatTimes = function(repeatTimes) {
-		if (repeatTimes === undefined) {
+		if (repeatTimes === undefined || repeatTimes === 'open') {
 			repeatTimes = 0;
 		}
 		if (repeatTimes < 0) {
