@@ -221,8 +221,6 @@ define([
 			return;
 		}
 
-		// adjust section number of bars
-		section.setNumberOfBars(sectionNumberOfBars - 1);
 
 		// remove notes in bar
 		var beatDuration = this.songModel.getTimeSignatureAt(barNumber).getQuarterBeats() - 0.001; // I am not sure why we remove 0.001 here
@@ -246,6 +244,9 @@ define([
 
 		//we remove the bar
 		bm.removeBar(barNumber);
+
+		// adjust section number of bars (important to do it after removing bar, because 'number of bars in section' is used when deleting bar)
+		section.setNumberOfBars(sectionNumberOfBars - 1);
 
 		// We remove the section in songModel if it was the last bar of the section
 		if (sectionNumberOfBars === 1) {
