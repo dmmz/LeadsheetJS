@@ -28,8 +28,6 @@ define([
 		params.import = (params.import !== undefined) ? params.import : true;
 		params.export = (params.export !== undefined) ? params.export : true;
 		params.save = (params.save !== undefined) ? params.save : true;
-		params.saveButton = (params.saveButton !== undefined) ? params.saveButton : true;
-		params.saveAsButton = (params.saveAsButton !== undefined) ? params.saveAsButton : true;
 		this.el = Mustache.render(FileEditionTemplate, params);
 	};
 	/**
