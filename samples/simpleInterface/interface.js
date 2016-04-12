@@ -12,12 +12,8 @@ require.config({
 		bootstrap: 'external-libs/bootstrap/bootstrap.min',
 		jsPDF: 'external-libs/jspdf/jspdf.min',
 		JsonDelta: 'external-libs/json_delta_1.1.3_minified',
-		//bootstrap: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min',
 	},
 	shim: {
-		// 'LeadsheetJS': {
-		//	exports: 'LS'
-		// },
 		vexflow: {
 			exports: 'Vex'
 		},
