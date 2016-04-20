@@ -6,7 +6,8 @@ define(['modules/Edition/src/ElementView'], function(ElementView) {
 	 * @param {Object} position {x:439.25, y:33,w:10,h:10} //position
 	 * @param {Scaler} viewerScaler
 	 */
-	function CommentSpaceView(position, viewerScaler) {
+	function CommentSpaceView(id, position, viewerScaler) {
+		this.id = id;
 		this.position = position;
 		this.scaler = viewerScaler;
 		this.shown = false;
@@ -26,5 +27,8 @@ define(['modules/Edition/src/ElementView'], function(ElementView) {
 		return this.position;
 	};
 
+	CommentSpaceView.prototype.getId = function() {
+		return this.id;
+	};
 	return CommentSpaceView;
 });

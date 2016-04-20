@@ -9,7 +9,7 @@ define([
 	 * 
 	 * @exports AudioComments/AudioCommentsView
 	 */
-	function AudioCommentsView(viewer) {
+	function AudioCommentsView(viewer, noteSpaceMng, notesCursor, song) {
 		this.viewer = viewer;
 		this.COLOR = "#FFBF00";
 		this.commentSpaceMng = null;
@@ -18,6 +18,10 @@ define([
 		this.offset = $("#" + viewer.canvasId).offset();
 		this.newCommentId = "newComment";
 		this.bubblePreId = "bubble"; //prefix Id, the comments of bubbles' id will be, bubble0, bubble1...etc.
+		this.commentSpaceMng = new CommentSpaceManager(this.viewer);
+		this.noteSpaceMng = noteSpaceMng;
+		this.notesCursor = notesCursor;
+		this.song = song;
 	}
 
 	/**
@@ -75,12 +79,12 @@ define([
 	 * @param  {AudioCommentsModel} audioCommentsModel
 	 * @param  {WaveDrawer} waveDrawer
 	 */
-	AudioCommentsView.prototype.draw = function(audioCommentsModel, waveDrawer, userId) {
+	AudioCommentsView.prototype.draw = function(comments, waveDrawer, noteSpaceMng, userId) {
+		//we need to add element to canvas each time we draw
+		this.viewer.canvasLayer.addElement(this.commentSpaceMng, true);
+		
 		//we construct it here because it adds himself to canvasLayer which exists only after the score is drawn
-		this.commentSpaceMng = new CommentSpaceManager(this.viewer);
-
-		var comments = audioCommentsModel.comments,
-			ctx = this.viewer.ctx,
+		var ctx = this.viewer.ctx,
 			self = this;
 
 		//draw only if doesn't exists, to avoid duplicates 
@@ -93,7 +97,7 @@ define([
 		this.viewer.drawElem(function() {
 			var bubbleId;
 			for (var i in comments) {
-				self.drawComment(comments[i], ctx, waveDrawer);
+				self.drawComment(comments[i], ctx, waveDrawer, noteSpaceMng);
 				bubbleId = self.bubblePreId + comments[i].id;
 				if (!self._htmlIdExists(bubbleId)) {
 					self.drawBubble(comments[i], bubbleId, userId);
@@ -102,12 +106,20 @@ define([
 		});
 	};
 
-	AudioCommentsView.prototype.drawComment = function(comment, ctx, waveDrawer) {
+	AudioCommentsView.prototype.drawComment = function(comment, ctx, waveDrawer, noteSpaceMng) {
 		var saveFillColor = ctx.fillStyle;
 		var clickableArea;
 		ctx.fillStyle = this.COLOR;
 		ctx.strokeStyle = this.COLOR;
-		var areas = waveDrawer.getAreasFromTimeInterval(comment.timeInterval[0], comment.timeInterval[1]);
+		var areas;
+		if (comment.type == 'audio'){
+			areas = waveDrawer.getAreasFromTimeInterval(comment.timeInterval[0], comment.timeInterval[1]);	
+		}
+		else{
+			var indexes = this.song.getComponent('notes').getIndexesStartingBetweenBeatInterval(comment.beatInterval[0], comment.beatInterval[1], true);
+			areas = noteSpaceMng.elemMng.getElementsAreaFromCursor(noteSpaceMng.noteSpace, indexes);
+		}
+		
 
 		ctx.beginPath();
 		ctx.lineWidth = 5;
@@ -166,7 +178,7 @@ define([
 
 		ctx.fillStyle = saveFillColor;
 		//add clickable area to commentSpaceMgn
-		this.commentSpaceMng.addCommentSpace(clickableArea);
+		this.commentSpaceMng.addCommentSpace(comment.id, clickableArea);
 	};
 
 	/**
@@ -205,7 +217,7 @@ define([
 	AudioCommentsView.prototype.showBubble = function(commentId, index) {
 		var height = $("#" + this.bubblePreId + commentId).height();
 
-		var area = this.commentSpaceMng.commentSpaces[index].getArea();
+		var area = this.commentSpaceMng.commentSpaces[commentId].getArea();
 		var offset = this.offset; //to avoid 'this' closure problem
 		$("#bubble" + commentId).css({
 			top: area.y - area.h + offset.top - height,
@@ -250,12 +262,12 @@ define([
 	/**
 	 * when select audio region we show 'new commment' bubble
 	 * @param  {Array} cursorPos  [startTime, endTime]
-	 * @param  {WaveDrawer} waveDrawer : to find area from cursorPos
+	 * @param  {AudioCursor} audioCursor : to find area from cursorPos
 	 */
-	AudioCommentsView.prototype.showNewComment = function(cursorPos, waveDrawer) {
-		var areas = waveDrawer.getAreasFromTimeInterval(cursorPos[0], cursorPos[1]);
+	AudioCommentsView.prototype.showNewComment = function(cursorPos, audioCursor) {
+		var areas = audioCursor.getAreasFromTimeInterval(cursorPos[0], cursorPos[1]);
 		this.newComment.timeInterval = [cursorPos[0], cursorPos[1]];
-
+		this.newComment.type = 'audio';
 		var offset = this.offset; //to avoid 'this' closure problem
 		height = $("#" + this.newCommentId).outerHeight(true) + 8;
 		$("#" + this.newCommentId).css({
@@ -264,6 +276,27 @@ define([
 			left: areas[0].x + offset.left,
 			zIndex: 1900
 		}).show();
+	};
+
+	AudioCommentsView.prototype.showNewScoreComment = function(song) {
+		if (this.noteSpaceMng.isEnabled()){
+			var startPos = this.notesCursor.getStart();
+			var endPos = this.notesCursor.getEnd();
+			var startEnd = song.getComponent('notes').getBeatIntervalByIndexes(startPos, endPos);
+			var areas = this.noteSpaceMng.elemMng.getElementsAreaFromCursor(this.noteSpaceMng.noteSpace, [startPos, endPos]);
+
+			this.newComment.beatInterval = startEnd;
+			this.newComment.type = 'notes';
+			var offset = this.offset; //to avoid 'this' closure problem
+			height = $("#" + this.newCommentId).outerHeight(true) + 8;
+			$("#" + this.newCommentId).css({
+				position: "absolute",
+				top: areas[0].y + offset.top - height,
+				left: areas[0].x + offset.left,
+				zIndex: 1900
+			}).show();
+
+		}
 	};
 	/**
 	 * Update html text (updating model has been done from the controller)

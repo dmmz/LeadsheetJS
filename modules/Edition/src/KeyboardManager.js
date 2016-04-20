@@ -113,6 +113,8 @@ define(['utils/NoteUtils',
 					}
 				} else if (keyCode == 82) { // R
 					publish('R-key', evt);
+				}else if (keyCode == 75) { // R
+					publish('K-key', evt);
 				} else if (keyCode == 46 || keyCode == 8) { //supr
 					publish('supr-key', evt); // in our editor we want to replace note by silence and not delete note
 				} else if (keyCode == 13) { //enter

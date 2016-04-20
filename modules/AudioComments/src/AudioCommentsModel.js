@@ -15,17 +15,29 @@ define(function() {
 	 * gets the comments from the server. If there is no server, just runs the callback function
 	 * @param  {Function} callback [description]
 	 */
-	AudioCommentsModel.prototype.getComments = function(callback) {
+	AudioCommentsModel.prototype.getComments = function(type, callback) {
+		function getCommentsByType(type){
+			var types = (type === 'audio') ? [type] : ['notes','chords'];
+			var typeComments = [];
+			for (var i in self.comments){
+				if (types.indexOf(self.comments[i].type) != -1){
+					typeComments.push(self.comments[i]);
+				}
+			}
+			return typeComments;
+		}
+
+
 		var self = this;
 		if (this.serverAudioComments) {
 			this.serverAudioComments.getComments(function(comments) {
 				for (var i = 0; i < comments.length; i++) {
 					self.addComment(comments[i]);
 				}
-				callback();
+				callback(getCommentsByType(type));
 			});
 		} else {
-			callback();
+			callback(getCommentsByType(type));
 		}
 	};
 
@@ -39,11 +51,12 @@ define(function() {
 	 * @param {String} id      
 	 */
 	AudioCommentsModel.prototype.addComment = function(comment) {
+		var id;
 		if (comment.id !== undefined) {
 			id = comment.id;
 			this.comments[id] = comment;
 		} else {
-			id = this.nextId;
+			id = this.nextId.toString(); //ids will always be strings so that they work well for 
 			comment.id = id;
 			this.nextId++;
 			this.comments[id] = comment;

@@ -103,7 +103,7 @@ define(function(require) {
 
 	var params = {
 		viewer: viewerOptions,
-		tags : tags,
+		//tags : tags,
 		player: playerOptions,
 		edition: {
 			notes: true,
@@ -129,6 +129,49 @@ define(function(require) {
 	// var myLeadsheet2 = LJS.easyBuild('player', testSongs.simpleLeadSheet, playerHTML, playerOptions);
 	var solar = require('tests/songs/Solar');
 	var myLeadsheet = LJS.init(solar, params);
+	//function loadComments = function(waveMng, viewer, songModel) {
+		var userSession = {
+			name: 'Dani',
+			id: '323324422',
+			img: '/tests/img/dani-profile.jpg'
+		};
+		var audioComments = new LJS.AudioComments(myLeadsheet.audioPlayer, myLeadsheet.viewer, myLeadsheet.songModel, userSession, myLeadsheet.noteSpaceManager, myLeadsheet.notesCursor);
+		audioComments.addComment({
+			userName: 'Dani Martin Martinez',
+			id: '1234e',
+			userId: '323324422',
+			img: '/tests/img/dani-profile.jpg',
+			text: 'This is an audio comment',
+			timeInterval: [1.5891220809932014, 2.668046112917529],
+			date: '1 min ago',
+			type: 'audio'
+		});
+
+		var scoreComment = {
+			userName: 'Dani',
+			id: '98765',
+			img:'/tests/img/dani-profile.jpg',
+			text: 'this is a notes comment',
+			beatInterval:[1, 5],
+			date: '1 day ago',
+			timeInterval: [2.5891220809932014, 3.668046112917529],
+			type: 'audio'
+		};
+		audioComments.addComment(scoreComment);
+
+		audioComments.addComment({
+			userName: 'uampa',
+			id:'123k304',
+			img:'/tests/img/dani-profile.jpg',
+			text: 'this is anoteher audio  comment',
+			beatInterval:[10, 13],
+			date: '1 month ago',
+			type: 'chords'	
+		});
+
+		//$.publish('ToViewer-draw', myLeadsheet.songModel);
+		//return audioComments;
+	//};
 	//console.log(myLeadsheet);
 	/*if (typeof myLeadsheet.audioComments !== "undefined") {
 		addComments(myLeadsheet.audioComments);

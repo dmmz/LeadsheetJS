@@ -3,6 +3,7 @@
  * @param {LSViewer} viewer
  */
 define(['jquery', 'pubsub'], function($, pubsub) {
+	
 	/**
     * Canvas layer module manages fast drawn interaction, 
     * it creates an hover canvas that is fast and repetively drawn, it's usefull to draw cursor or selection for eg
@@ -82,17 +83,28 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 	 *		drawCursor
 	 *		setCursorEditable
 	 */
-	CanvasLayer.prototype.addElement = function(elem) {
+	CanvasLayer.prototype.addElement = function(elem, priority) {
 		if (!elem || !elem.CL_NAME || !elem.getType()) {
 			throw 'CanvasLayer element needs CL_NAME and CL_TYPE property';
 		}
+		var self = this;
+		
+		function addOrderedElemName(elemName, priority){
+			if (priority){
+				self.order.unshift(elemName); //we put it in the first position
+			}else{
+				self.order.push(elemName)
+			}
+		}
 		// if it's new, we save its order
 		if (!(elem.CL_NAME in this.elems)) {
-			this.order.push(elem.CL_NAME); //order is useful to control z-index of drawn elements, last drawn elements will be prioritized on click. (see getOneActiveElement())
+			addOrderedElemName(elem.CL_NAME, priority);
+			//order is useful to control z-index of drawn elements, last drawn elements will be prioritized on click. (see getOneActiveElement())
 		}
 		//this will update it if not new, and will create the value in the object if it is new. We were having problems when entering it only when it was not new, because
 		//audioComments where not updated
 		this.elems[elem.CL_NAME] = elem;
+
 	};
 
 	CanvasLayer.prototype._listenEvents = function() {
@@ -141,12 +153,14 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		 * @return {Object}        class of active element (ChordSpaceManager, NoteSpaceManager, WaveDrawer. TextElementManager...etc.)
 		 */
 		function getOneActiveElement(coords) {
+			
 			var name, elem;
-			for (var i = self.order.length - 1; i >= 0; i--) {
+			
+			for (var i = 0; i < self.order.length; i++) {
 				name = self.order[i];
 				elem = self.elems[name]; 
 				if (elem.getType() !== 'NOT_INTERACTIVE' && elem.inPath(coords)) {
-					return [self.elems[name]];
+					return [elem];
 				}
 			}
 		}

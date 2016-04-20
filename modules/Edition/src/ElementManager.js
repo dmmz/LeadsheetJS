@@ -39,10 +39,9 @@ define(function() {
 	 * @param  {Array} ini    Array of two numbers representing x and y ([x,y]), represents the initial position (where user clicked initially on selection), x is equal to coords.x or coords.xe, and y is equal to coords.y or coords.ye (yes, it's redundant data, and should be refactored)
 	 * @param  {Array} end    Exactly the same as ini, but represents the end position (where user did mousup after dragging on selection),
 	 * @param  {Object} ys    Has ys delimiting selection. e.g.:{bottomY: 12, topY: 24}
-	 * @return {Array}        returns indexes including selected elements
+	 * @return {Array}        returns indexes including selected elements 
 	 */
 	ElementManager.prototype.getElemsInPath = function(elems, coords, ini, end, ys) {
-
 
 		var min = null,
 			max = null;
@@ -66,6 +65,19 @@ define(function() {
 				}
 			}
 			return (min === null && max === null) ? false : [min, max];
+		}
+	};
+	/**
+	 * like getElementsInPath but returns only one element, useful in for some classes like 'CommentSpaceManager'
+	 * @param  {Array} elems   elems  array of elements; e.g. 'CommentSpaceManager'
+	 * @param  {Object} coords e.g. {x:23, y:34, xe: 153, ye: 45}
+	 * @return {[type]}        [description]
+	 */
+	ElementManager.prototype.getOneElemInPath = function(elems, coords) {
+		for (var i in elems){
+			if (elems[i].isInPath(coords)){
+				return elems[i];
+			}
 		}
 	};
 

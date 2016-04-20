@@ -7,27 +7,26 @@ define(['modules/Edition/src/ElementManager',
 	 * @exports AudioComments/CommentSpaceManager
 	 */
 	function CommentSpaceManager(viewer) {
-		this.commentSpaces = [];
+		this.commentSpaces = {};
 		this.viewer = viewer;
 		this.elemMng = new ElementManager();
 		this.CL_TYPE = 'CLICKABLE';
 		this.CL_NAME = 'AudioComments';
-		viewer.canvasLayer.addElement(this);
 		this.clickedElem = null;
 	}
 	CommentSpaceManager.prototype.getType = function() {
 		return this.CL_TYPE;
 	};
-	CommentSpaceManager.prototype.addCommentSpace = function(commentArea) {
-		this.commentSpaces.push(new CommentSpaceView(commentArea, this.viewer.scaler));
+	CommentSpaceManager.prototype.addCommentSpace = function(id, commentArea) {
+		this.commentSpaces[id] = new CommentSpaceView(id, commentArea, this.viewer.scaler);
 	};
 
 	CommentSpaceManager.prototype.inPath = function(coords) {
-		var elems = this.elemMng.getElemsInPath(this.commentSpaces, coords);
-		if (elems) {
-			this.clickedElem = elems[0]; // we know it will be only one, so pos 0 == pos 1, no matter which one we take
+		var elem = this.elemMng.getOneElemInPath(this.commentSpaces, coords);
+		if (elem) {
+			this.clickedElem = elem; // we know it will be only one, so pos 0 == pos 1, no matter which one we take
 		}
-		return !!elems;
+		return !!elem;
 	};
 
 	CommentSpaceManager.prototype.enable = function() {
@@ -42,7 +41,7 @@ define(['modules/Edition/src/ElementManager',
 	};
 
 	CommentSpaceManager.prototype.onSelected = function() {
-		$.publish('CommentSpaceManager-clickedComment', this.clickedElem);
+		$.publish('CommentSpaceManager-clickedComment', this.clickedElem.getId());
 	};
 	return CommentSpaceManager;
 });
