@@ -198,7 +198,7 @@ define([
 	//LJS object:
 	//returns modules to be used by client
 	var LJS = {
-		//"AudioComments": AudioComments,
+		AudioComments: AudioComments,
 		//"chordSequence": chordSequence,
 		converters: {
 			MusicCSLJson: convertersMusicCSLJson,
@@ -236,7 +236,6 @@ define([
 				throw "Missing HTMLElement for viewer";
 			}
 			viewer = loadViewer(params.viewer.HTMLElement, params.viewer.viewOptions, songModel);
-			
 		}
 
 		// Player
@@ -292,11 +291,12 @@ define([
 		//tags
 		if (params.tags){
 			// TagManager take as argument your array of tags here call analysis, an array of color (here undefined because we use built in colors)
-			new TagManager(songModel, snglNotesManager.getInstance(songModel,viewer), params.tags, undefined, true, false);
+			new TagManager(songModel,  {notes: snglNotesManager.getInstance(songModel,viewer)}, params.tags, undefined, true, false);
 		}
 
 		if (useViewer){
 			viewer.draw(songModel);
+			modules.viewer = viewer;
 		}
 		if (usePlayer || useEdition || params.tags){
 			modules.notesCursor = snglNotesCursor.getInstance(songModel);
@@ -322,15 +322,7 @@ define([
 		new chordSequence($('#chordSequence1')[0], songModel, optionChediak);
 	};*/
 
-	// LJS._loadComments = function(waveMng, viewer, songModel) {
-	// 	var userSession = {
-	// 		name: 'Dani',
-	// 		id: '323324422',
-	// 		img: '/tests/img/dani-profile.jpg'
-	// 	};
-	// 	var audioComments = new AudioComments(waveMng, viewer, songModel, userSession);
-	// 	return audioComments;
-	// };
+	
 
 
 	return LJS;

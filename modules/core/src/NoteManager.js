@@ -459,7 +459,7 @@ define([
 	};
 
 	/**
-	 * gets index of note who's start is between startBeat and endBeat, if endBeat exceed total duration, it returns last index end index
+	 * gets indexes of the notes who's start is between startBeat and endBeat
 	 * @param  {Integer} startBeat
 	 * @param  {Integer} endBeat
 	 * @param {Boolean} ifExactExlude, default is false. 
