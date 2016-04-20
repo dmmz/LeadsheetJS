@@ -3,6 +3,7 @@ define(['tests/DisplayTester',
 	'modules/core/src/SongModel',
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
 	'modules/NoteEdition/src/NoteSpaceManager',
+	'modules/ChordEdition/src/ChordSpaceManager',
 	'modules/Cursor/src/CursorModel',
 	'modules/Cursor/src/CursorController',
 	'modules/Cursor/src/CursorListener',
@@ -20,6 +21,7 @@ define(['tests/DisplayTester',
 	SongModel,
 	SongModel_CSLJson,
 	NoteSpaceManager,
+	ChordSpaceManager,
 	CursorModel,
 	CursorController,
 	CursorView,
@@ -113,11 +115,19 @@ define(['tests/DisplayTester',
 				var cM = new CursorModel(song.getComponent('notes'));
 				var noteSpaceManager = new NoteSpaceManager(cM, viewer);
 
+				var cM = new CursorModel(song.getComponent('chords'));
+				var chordSpaceManager = new ChordSpaceManager(song, cM, viewer);
+
 				//drawing tags
-				var tagMng = new TagManager(song, noteSpaceManager, [], undefined, false);
+				var managers = {
+					chords: chordSpaceManager,
+					notes: noteSpaceManager
+				};
+				var tagMng = new TagManager(song, managers, [], undefined, false, true);
 				tagMng.setActive(true);
 				tagMng.setTags([
-					{startBeat:5,endBeat:9,name: "F Major"}
+					{startBeat:5, endBeat:13, name: "F Major",type:'notes'},
+					{startBeat:1, endBeat:4, name: "this is a chord tag", type:'chords'}
 				]);
 
 				viewer.draw(song);
