@@ -12,6 +12,7 @@ define([
 		var audio = new AudioController(song);
 		new AudioPlayer(audio);
 
+
 		if (params){
 			var paramsDrawer = {
 	          showHalfWave: true,
@@ -38,6 +39,7 @@ define([
 	   	    }
 	   	    if (params.viewer){
 	    		var audioDrawer = new AudioDrawer(song, params.viewer, useAudioCursor, audioAnimation, paramsDrawer);
+	    		audio.drawer = audioDrawer; //needed for other modules like audioComments
 	   	    }
 		}
 

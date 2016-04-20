@@ -40,7 +40,7 @@ define(['modules/Audio/src/BarTimesManager',
 			self.viewer.setShortenLastBar(true);
 			self.adaptViewer();
 			self.viewer.forceNewCanvasLayer = true;
-			self.viewer.draw(self.songModel);
+			self.viewer.draw(self.songModel); // we need to redraw because we change some things on the viewer
 			// audio draw is done after viewer draw (event LSViewer-drawEnd)
 
 		});
@@ -163,7 +163,6 @@ define(['modules/Audio/src/BarTimesManager',
 	};
 
 	AudioDrawer.prototype.draw = function(barTimesMng, tempo, duration) {
-		
 		if (!tempo || !duration) {
 			throw "AudioDrawer - missing parameters, tempo : " + tempo + ", duration:" + duration;
 		}
