@@ -79,7 +79,7 @@ define(['tests/DisplayTester',
 
 				viewer.draw(song);
 				//not used because is not interactive, but draws the score cursor
-				audioModule.load('/tests/audio/solar.wav',170);
+				audioModule.load('../tests/audio/solar.wav',170);
 				//audioComments.draw();
 
 			},{width:1200,height:1000}, "Painting audio");

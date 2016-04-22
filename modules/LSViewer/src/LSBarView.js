@@ -37,9 +37,15 @@ define(['vexflow'], function(Vex) {
 			ctx.font = "18px Verdana";
 		}
 
-		var keySignature = songIt.getBarKeySignature();
-		if (keySignature != songIt.getPrevKeySignature() && this.drawKeySignature) {
-			this.vexflowStave.addKeySignature(keySignature);
+		var keySignatureString = songIt.getBarKeySignature();
+		if (keySignatureString != songIt.getPrevKeySignature() && this.drawKeySignature) {
+			var keySignature = new Vex.Flow.KeySignature(keySignatureString);
+			var prevKeySignature = songIt.getPrevKeySignature();
+			// see https://github.com/0xfe/vexflow/issues/335
+			if (prevKeySignature !== null && prevKeySignature !== "C") {
+				keySignature.cancelKey(prevKeySignature);
+			}
+			keySignature.addToStave(this.vexflowStave);
 		}
 
 		var timeSignature = songIt.getBarTimeSignature();
