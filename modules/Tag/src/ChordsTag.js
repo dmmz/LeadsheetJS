@@ -2,8 +2,7 @@ define(['modules/Tag/src/Tag'], function(Tag) {
 	var ChordsTag = function(tagParams, song, chordSpaceMng) {
 		var startBeat = tagParams.startBeat;
 		var endBeat = tagParams.endBeat;
-		var name = tagParams.name;
-
+		tagParams.type = 'chords';
 		var tag = Tag(startBeat, endBeat, name, 'chords');
 
 		tag.getArea = function() {

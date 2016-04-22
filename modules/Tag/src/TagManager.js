@@ -62,6 +62,7 @@ define([
 	};
 
 	TagManager.prototype.setTags = function(tags) {
+
 		this.tags = [];
 		if (tags === undefined) {
 			throw 'TagManager - setTags tags must be an array ';

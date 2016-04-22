@@ -2,8 +2,8 @@ define(['modules/Tag/src/Tag'], function(Tag) {
 	var NotesTag = function(tagParams, song, noteSpaceMng) {
 		var startBeat = tagParams.startBeat;
 		var endBeat = tagParams.endBeat;
-		var name = tagParams.name;
-		var tag = Tag(startBeat, endBeat, name, 'notes');
+		tagParams.type = 'notes';
+		var tag = Tag(tagParams);
 
 		tag.getArea = function() {
 			var notesMng = song.getComponent('notes');
