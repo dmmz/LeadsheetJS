@@ -3,6 +3,8 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		this.unfolded = false;
 		this.selectedSection = undefined;
 		this.selectedBar = undefined;
+		this.keySignature = undefined;
+		this.timeSignature = undefined;
 	}
 
 	StructureEditionModel.prototype.setUnfolded = function(value) {
@@ -10,12 +12,22 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		$.publish('StructureEditionModel-setUnfolded', this.unfolded);
 	};
 
-	StructureEditionModel.prototype.setSelectedBar = function(bar) {
+	StructureEditionModel.prototype.setSelectedBarAndSignatures = function(bar, keySignature, timeSignature) {
 		if (typeof bar === "undefined") {
 			throw 'StructureEditionModel - setSelectedBar - bar is not defined';
 		}
-		this.selectedBar = bar;
-		$.publish('StructureEditionModel-setSelectedBar', bar);
+		if (this.selectedBar != bar) {
+			this.selectedBar = bar;
+			$.publish('StructureEditionModel-setSelectedBar', bar);
+		}
+		if (this.keySignature !== keySignature) {
+			this.keySignature = keySignature;
+			$.publish('StructureEditionModel-setKeySignature', keySignature);
+		}
+		if (this.timeSignature !== timeSignature) {
+			this.timeSignature = timeSignature;
+			$.publish('StructureEditionModel-setTimeSignature', timeSignature);
+		}
 	};
 
 	StructureEditionModel.prototype.setSelectedSection = function(section) {

@@ -229,11 +229,6 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			});
 		}
 
-		//we prevent default mouse right-click
-		document.oncontextmenu = function() {
-			return false;
-		};
-
 		function mouseDown(evt) {
 			var d = evt.srcElement || evt.target;
 			if (d.tagName.toUpperCase() === 'TEXTAREA' || d.tagName.toUpperCase() === 'INPUT' || d.tagName.toUpperCase() === 'SELECT' || d.tagName.toUpperCase() === 'OPTION') {
