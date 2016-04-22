@@ -135,6 +135,12 @@ define([
 		$.subscribe('StructureEditionModel-setSelectedBar', function(el, currentBar) {
 			self._setSelectedBar(currentBar);
 		});
+		$.subscribe('StructureEditionModel-setKeySignature', function(el, keySignature) {
+			self._setTonality(keySignature);
+		});
+		$.subscribe('StructureEditionModel-setTimeSignature', function(el, timeSignature) {
+			self._setBarTimeSignature(timeSignature);
+		});
 	};
 
 
@@ -143,8 +149,6 @@ define([
 		this._setSectionRepeatTimes(currentSection.getRepeatTimes());
 	};
 	StructureEditionView.prototype._setSelectedBar = function(currentBar) {
-		this._setBarTimeSignature(currentBar.getTimeSignatureChange());
-		this._setTonality(currentBar.getKeySignatureChange());
 		this._setEnding(currentBar.getEnding());
 		this._setLabel(currentBar.getLabel());
 		this._setSublabel(currentBar.getSublabel());
