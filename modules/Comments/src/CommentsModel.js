@@ -1,11 +1,11 @@
 define(function() {
 	/**
-	 * AudioCommentsModel 
-	 * @exports AudioComments/AudioCommentsModel
-	 * @param {ServerAudioComments} serverAudioComments communicates with the server. Does not make really part of LeadsheetJS, it is provided by the server part, and it is hosted in it. In our case, in LSDB server. All methods work also without this Object, this way it works as an example without saving comment to a server part.
+	 * CommentsModel 
+	 * @exports AudioComments/CommentsModel
+	 * @param {ServerComments} serverComments communicates with the server. Does not make really part of LeadsheetJS, it is provided by the server part, and it is hosted in it. In our case, in LSDB server. All methods work also without this Object, this way it works as an example without saving comment to a server part.
 	 */
-	function AudioCommentsModel(serverAudioComments, userSession) {
-		this.serverAudioComments = serverAudioComments;
+	function CommentsModel(serverComments, userSession) {
+		this.serverComments = serverComments;
 		this.comments = {};
 		this.nextId = 0; //auto increment id used if there is no server
 
@@ -15,7 +15,7 @@ define(function() {
 	 * gets the comments from the server. If there is no server, just runs the callback function
 	 * @param  {Function} callback [description]
 	 */
-	AudioCommentsModel.prototype.getComments = function(type, callback) {
+	CommentsModel.prototype.getComments = function(type, callback) {
 		function getCommentsByType(type){
 			var types = (type === 'audio') ? [type] : ['notes','chords'];
 			var typeComments = [];
@@ -27,10 +27,9 @@ define(function() {
 			return typeComments;
 		}
 
-
 		var self = this;
-		if (this.serverAudioComments) {
-			this.serverAudioComments.getComments(function(comments) {
+		if (this.serverComments) {
+			this.serverComments.getComments(function(comments) {
 				for (var i = 0; i < comments.length; i++) {
 					self.addComment(comments[i]);
 				}
@@ -41,7 +40,7 @@ define(function() {
 		}
 	};
 
-	AudioCommentsModel.prototype.getComment = function(id) {
+	CommentsModel.prototype.getComment = function(id) {
 		return this.comments[id];
 	};
 	/**
@@ -50,7 +49,7 @@ define(function() {
 	 * @param {Object} comment 
 	 * @param {String} id      
 	 */
-	AudioCommentsModel.prototype.addComment = function(comment) {
+	CommentsModel.prototype.addComment = function(comment) {
 		var id;
 		if (comment.id !== undefined) {
 			id = comment.id;
@@ -64,12 +63,12 @@ define(function() {
 		return id;
 	};
 
-	AudioCommentsModel.prototype.saveComment = function(comment, callback) {
+	CommentsModel.prototype.saveComment = function(comment, callback) {
 		var id,
 			self = this;
 
-		if (this.serverAudioComments) {
-			this.serverAudioComments.saveComment(comment, function(data) {
+		if (this.serverComments) {
+			this.serverComments.saveComment(comment, function(data) {
 				comment = data;
 				id = self.addComment(comment);
 				if (callback) callback(id);
@@ -82,12 +81,12 @@ define(function() {
 	};
 
 
-	AudioCommentsModel.prototype.updateComment = function(id, text, callback) {
+	CommentsModel.prototype.updateComment = function(id, text, callback) {
 		var self = this;
 		this.comments[id].text = text;
 		var comment = this.comments[id];
-		if (this.serverAudioComments) {
-			this.serverAudioComments.saveComment(comment, function() {
+		if (this.serverComments) {
+			this.serverComments.saveComment(comment, function() {
 				callback();
 			});
 		} else {
@@ -96,10 +95,10 @@ define(function() {
 
 	};
 
-	AudioCommentsModel.prototype.removeComment = function(id, callback) {
+	CommentsModel.prototype.removeComment = function(id, callback) {
 		var self = this;
-		if (this.serverAudioComments) {
-			this.serverAudioComments.removeComment(id, function() {
+		if (this.serverComments) {
+			this.serverComments.removeComment(id, function() {
 				delete self.comments[id];
 				callback();
 			});
@@ -116,7 +115,7 @@ define(function() {
 	 * @param  {Integer}	commentId  it's an auto_increment id (0, 1, 2..etc)
 	 * @return {Integer}	position in which comment is placed, corresponding to commentSpace position alse
 	 */
-	AudioCommentsModel.prototype.getOrderedIndexByCommentId = function(commentId) {
+	CommentsModel.prototype.getOrderedIndexByCommentId = function(commentId) {
 		var count = 0;
 		for (var id in this.comments) {
 			if (id == commentId) {
@@ -126,5 +125,5 @@ define(function() {
 		}
 	};
 
-	return AudioCommentsModel;
+	return CommentsModel;
 });

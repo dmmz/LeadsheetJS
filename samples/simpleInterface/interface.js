@@ -103,7 +103,7 @@ define(function(require) {
 
 	var params = {
 		viewer: viewerOptions,
-		//tags : tags,
+		tags : tags,
 		player: playerOptions,
 		edition: {
 			notes: true,
@@ -129,19 +129,28 @@ define(function(require) {
 	// var myLeadsheet2 = LJS.easyBuild('player', testSongs.simpleLeadSheet, playerHTML, playerOptions);
 	var solar = require('tests/songs/Solar');
 	var myLeadsheet = LJS.init(solar, params);
+	//console.log(myLeadsheet);
 	//function loadComments = function(waveMng, viewer, songModel) {
 		var userSession = {
 			name: 'Dani',
 			id: '323324422',
-			img: '/tests/img/dani-profile.jpg'
+			img: '/tests/img/avatar.png'
 		};
-		var audioComments = new LJS.AudioComments(myLeadsheet.audioPlayer, myLeadsheet.viewer, myLeadsheet.songModel, userSession, myLeadsheet.noteSpaceManager, myLeadsheet.notesCursor);
-		audioComments.addComment({
+		var commentsMng = new LJS.Comments({
+			audio: myLeadsheet.audioPlayer,
+			viewer: myLeadsheet.viewer, 
+			song: myLeadsheet.songModel, 
+			userSession: userSession, 
+			noteSpaceManager: myLeadsheet.noteSpaceManager, 
+			notesCursor: myLeadsheet.notesCursor,
+			chordsEditor: myLeadsheet.edition.chordEdition
+		});
+		commentsMng.addComment({
 			userName: 'Dani Martin Martinez',
 			id: '1234e',
 			userId: '323324422',
-			img: '/tests/img/dani-profile.jpg',
-			text: 'This is an audio comment',
+			img: userSession.img,
+			text: 'This is a long audio comment, a very very long comment This is a long audio comment, a very very long comment This is a long audio comment, a very very long comment This is a long audio comment, a very very long comment This is a long audio comment, a very very long comment This is a long audio comment, a very very long comment This is a long audio comment, a very very long comment This is a long audio comment, a very very long comment This is a long audio comment, a very very long comment This is a long audio comment, a very very long comment This is a long audio comment, a very very long comment This is a long audio comment, a very very long comment This is a long audio comment, a very very long comment',
 			timeInterval: [1.5891220809932014, 2.668046112917529],
 			date: '1 min ago',
 			type: 'audio'
@@ -150,26 +159,27 @@ define(function(require) {
 		var scoreComment = {
 			userName: 'Dani',
 			id: '98765',
-			img:'/tests/img/dani-profile.jpg',
-			text: 'this is a notes comment',
+			img:userSession.img,
+			text: 'this is a notes comment' ,
 			beatInterval:[1, 5],
 			date: '1 day ago',
-			timeInterval: [2.5891220809932014, 3.668046112917529],
-			type: 'audio'
+			type: 'notes'
 		};
-		audioComments.addComment(scoreComment);
+		commentsMng.addComment(scoreComment);
 
-		audioComments.addComment({
+		commentsMng.addComment({
 			userName: 'uampa',
 			id:'123k304',
-			img:'/tests/img/dani-profile.jpg',
-			text: 'this is anoteher audio  comment',
-			beatInterval:[10, 13],
+			img: userSession.img,
+			text: 'this is chords comment',
+			beatInterval:[1, 5],
 			date: '1 month ago',
 			type: 'chords'	
 		});
-
-		//$.publish('ToViewer-draw', myLeadsheet.songModel);
+		//we need to draw again to take into account the new comments module.  
+		
+		
+		$.publish('ToViewer-draw', myLeadsheet.songModel);
 		//return audioComments;
 	//};
 	//console.log(myLeadsheet);

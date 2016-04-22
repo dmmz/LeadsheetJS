@@ -534,6 +534,7 @@ body {
 
 /* for the moment bubble css for audio comments are here*/
 .speech-bubble {
+    height:120px;
     background-color: #f8f8f8;
     border: 1px solid #a8a8f8;
     border-radius: 5px;
@@ -541,11 +542,17 @@ body {
     text-align: center;
     padding: 5px;
     position: absolute;
-    z-index: 10;
+    z-index: 20010;
+}
+.speech-bubble .textComment{
+	overflow-y: auto;
+	padding: 10px 10px 0 10px;
+	height: 78%;
 }
 .speech-bubble .arrow {
     border-style: solid;
     position: absolute;
+
 }
  
 .bottom {

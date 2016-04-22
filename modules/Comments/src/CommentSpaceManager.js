@@ -1,5 +1,5 @@
 define(['modules/Edition/src/ElementManager',
-	'modules/AudioComments/src/CommentSpaceView',
+	'modules/Comments/src/CommentSpaceView',
 	'jquery'
 ], function(ElementManager, CommentSpaceView, $) {
 	/**

@@ -1,5 +1,5 @@
 define([
-	'modules/AudioComments/src/AudioCommentsController',
+	'modules/Comments/src/CommentsController',
 	'modules/ChordEdition/src/ChordEdition',
 	'modules/chordSequence/src/SongView_chordSequence',
 	"modules/converters/MusicCSLJson/src/main",
@@ -25,7 +25,7 @@ define([
 	'modules/Edition/src/KeyboardManager',
 	'jquery'
 ], function(
-	AudioComments,
+	Comments,
 	ChordEdition,
 	chordSequence,
 	convertersMusicCSLJson,
@@ -198,7 +198,7 @@ define([
 	//LJS object:
 	//returns modules to be used by client
 	var LJS = {
-		AudioComments: AudioComments,
+		Comments: Comments,
 		//"chordSequence": chordSequence,
 		converters: {
 			MusicCSLJson: convertersMusicCSLJson,

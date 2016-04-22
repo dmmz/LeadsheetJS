@@ -1,15 +1,19 @@
 define([
 	'mustache',
 	'jquery',
-	'modules/AudioComments/src/CommentSpaceManager',
-	'text!modules/AudioComments/src/SpeechBubbleTpl.html',
-	'text!modules/AudioComments/src/NewCommentTpl.html'
-], function(Mustache, $, CommentSpaceManager, SpeechBubbleTpl, NewCommentTpl) {
+	'modules/Comments/src/CommentSpaceManager',
+	'modules/Comments/src/AudioCommentsView',
+	'modules/Comments/src/NoteCommentsView',
+	'modules/Comments/src/ChordCommentsView',
+	'text!modules/Comments/src/SpeechBubbleTpl.html',
+	'text!modules/Comments/src/NewCommentTpl.html',
+
+], function(Mustache, $, CommentSpaceManager, AudioCommentsView, NoteCommentsView, ChordCommentsView, SpeechBubbleTpl, NewCommentTpl) {
 	/**
 	 * 
-	 * @exports AudioComments/AudioCommentsView
+	 * @exports AudioComments/CommentsView
 	 */
-	function AudioCommentsView(viewer, noteSpaceMng, notesCursor, song) {
+	function CommentsView(viewer, song, audioCursor, noteSpaceMng, notesCursor, chordsEditor) {
 		this.viewer = viewer;
 		this.COLOR = "#FFBF00";
 		this.commentSpaceMng = null;
@@ -19,6 +23,16 @@ define([
 		this.newCommentId = "newComment";
 		this.bubblePreId = "bubble"; //prefix Id, the comments of bubbles' id will be, bubble0, bubble1...etc.
 		this.commentSpaceMng = new CommentSpaceManager(this.viewer);
+		this.viewTypes = {};
+		if (audioCursor){
+			this.viewTypes['audio'] = AudioCommentsView(audioCursor);
+		}
+		if (noteSpaceMng){
+			this.viewTypes['notes'] = NoteCommentsView(noteSpaceMng, notesCursor, song);
+		}
+		if (chordsEditor){
+			this.viewTypes['chords'] = ChordCommentsView(chordsEditor, song);	
+		}
 		this.noteSpaceMng = noteSpaceMng;
 		this.notesCursor = notesCursor;
 		this.song = song;
@@ -27,7 +41,7 @@ define([
 	/**
 	 * jquery events
 	 */
-	AudioCommentsView.prototype.initController = function() {
+	CommentsView.prototype.initController = function() {
 		var self = this;
 		//close comment
 		$(document).on('click', '.close', function() {
@@ -36,7 +50,7 @@ define([
 				self.hideNewComment();
 			} else {
 				id = id.substr(self.bubblePreId.length, id.length); //extracting prefix "bubble", to get id X on "bubbleX"
-				$.publish('AudioCommentsView-closeBubble', id);
+				$.publish('CommentsView-closeBubble', id);
 			}
 		});
 		//new comment
@@ -46,10 +60,10 @@ define([
 			var commentId = commentEl.find('input[name="commentId"]').val();
 
 			if (commentId.length !== 0) {
-				$.publish('AudioCommentsView-updateComment', [commentId, text]);
+				$.publish('CommentsView-updateComment', [commentId, text]);
 			} else {
 				self.newComment.text = text;
-				$.publish('AudioCommentsView-saveComment', self.newComment);
+				$.publish('CommentsView-saveComment', self.newComment);
 			}
 			self.hideNewComment();
 		});
@@ -58,28 +72,28 @@ define([
 		$(document).on('click', '.edit-comment', function() {
 			var commentEl = $(this).closest('.speech-bubble'),
 				commentId = commentEl.attr('data-commentId');
-			$.publish('AudioCommentsView-editingComment', [commentEl, commentId]);
+			$.publish('CommentsView-editingComment', [commentEl, commentId]);
 		});
 
 		//remove comment
 		$(document).on('click', '.remove-comment', function() {
 			var commentEl = $(this).closest('.speech-bubble'),
 				commentId = commentEl.attr('data-commentId');
-			$.publish('AudioCommentsView-removingComment', [commentEl, commentId]);
+			$.publish('CommentsView-removingComment', [commentEl, commentId]);
 		});
 	};
 
-	AudioCommentsView.prototype._htmlIdExists = function(id) {
+	CommentsView.prototype._htmlIdExists = function(id) {
 		return $("#" + id).length !== 0;
 	};
 
 	/**
 	 * called by AudioCommentsController
 	 * draws comment marker (with the picture and the name)
-	 * @param  {AudioCommentsModel} audioCommentsModel
+	 * @param  {CommentsModel} CommentsModel
 	 * @param  {WaveDrawer} waveDrawer
 	 */
-	AudioCommentsView.prototype.draw = function(comments, waveDrawer, noteSpaceMng, userId) {
+	CommentsView.prototype.draw = function(comments, userId) {
 		//we need to add element to canvas each time we draw
 		this.viewer.canvasLayer.addElement(this.commentSpaceMng, true);
 		
@@ -88,7 +102,7 @@ define([
 			self = this;
 
 		//draw only if doesn't exists, to avoid duplicates 
-		//(html elements are different from canvas elements, html elements are not reset in every LSViewer draw whereas canvas elements are)
+		//(html elements are different from canvas elements, html elements are not reseted in every LSViewer draw whereas canvas elements are)
 		if (!this._htmlIdExists(this.newCommentId)) {
 			this.drawNewComment();
 		}
@@ -97,7 +111,7 @@ define([
 		this.viewer.drawElem(function() {
 			var bubbleId;
 			for (var i in comments) {
-				self.drawComment(comments[i], ctx, waveDrawer, noteSpaceMng);
+				self.drawComment(comments[i], ctx);
 				bubbleId = self.bubblePreId + comments[i].id;
 				if (!self._htmlIdExists(bubbleId)) {
 					self.drawBubble(comments[i], bubbleId, userId);
@@ -106,34 +120,31 @@ define([
 		});
 	};
 
-	AudioCommentsView.prototype.drawComment = function(comment, ctx, waveDrawer, noteSpaceMng) {
+	CommentsView.prototype.drawComment = function(comment, ctx) {
 		var saveFillColor = ctx.fillStyle;
 		var clickableArea;
-		ctx.fillStyle = this.COLOR;
-		ctx.strokeStyle = this.COLOR;
-		var areas;
-		if (comment.type == 'audio'){
-			areas = waveDrawer.getAreasFromTimeInterval(comment.timeInterval[0], comment.timeInterval[1]);	
-		}
-		else{
-			var indexes = this.song.getComponent('notes').getIndexesStartingBetweenBeatInterval(comment.beatInterval[0], comment.beatInterval[1], true);
-			areas = noteSpaceMng.elemMng.getElementsAreaFromCursor(noteSpaceMng.noteSpace, indexes);
-		}
+		var color = this.viewTypes[comment.type].color || this.COLOR;
+		ctx.fillStyle = color;
+		ctx.strokeStyle = color;
+		var areas = this.viewTypes[comment.type].getArea(comment);
 		
-
 		ctx.beginPath();
 		ctx.lineWidth = 5;
+		paddingY = 5; // could be part of each viewType
+		for (var i = 0; i < areas.length; i++) {
+			areas[i].y -= paddingY;
+		}
 		//draw border top of comment marker
 		for (i = 0, c = areas.length; i < c; i++) {
-			ctx.moveTo(areas[i].x, areas[i].y);
+			ctx.moveTo(areas[i].x, areas[i].y );
 			ctx.lineTo(areas[i].x + areas[i].w, areas[i].y);
 		}
 		ctx.stroke();
-
+		
 		ctx.lineWidth = 1;
 		//draw border left, to indicate time start of audio comment
 		ctx.moveTo(areas[0].x, areas[0].y);
-		ctx.lineTo(areas[0].x, areas[0].y + areas[0].h);
+		ctx.lineTo(areas[0].x, areas[0].y + areas[0].h + paddingY);
 
 		//draw border right, to indicate time end of audio comment
 		var lastArea = areas.length - 1;
@@ -148,7 +159,7 @@ define([
 		if (text.width > widthBox) {
 			widthBox = text.width + 50; // 50 stand for 30px image width + padding/margin
 		}
-
+		
 		//draw little box with picture and name, which will be clickable
 		clickableArea = {
 			x: areas[0].x,
@@ -175,7 +186,7 @@ define([
 			ctx.font = "10px Arial";
 			ctx.fillText("(" + comment.date + ")", areas[0].x + 35, areas[0].y - 2);
 		}
-
+		
 		ctx.fillStyle = saveFillColor;
 		//add clickable area to commentSpaceMgn
 		this.commentSpaceMng.addCommentSpace(comment.id, clickableArea);
@@ -187,7 +198,7 @@ define([
 	 * @param  {String} bubbleId
 	 * @param  {String} userId
 	 */
-	AudioCommentsView.prototype.drawBubble = function(comment, bubbleId, userId) {
+	CommentsView.prototype.drawBubble = function(comment, bubbleId, userId) {
 		var el = Mustache.render(SpeechBubbleTpl, {
 			textComment: comment.text,
 			ownComment: comment.userId == userId
@@ -203,9 +214,10 @@ define([
 	/**
 	 * NewComment represents the editable bubble with empty textare, drawn here as hidden
 	 */
-	AudioCommentsView.prototype.drawNewComment = function() {
+	CommentsView.prototype.drawNewComment = function() {
 		var el = Mustache.render(NewCommentTpl);
-		$("body").append($(el).hide());
+		$("body").append($(el).hide()); 
+		
 	};
 
 	/**
@@ -214,7 +226,7 @@ define([
 	 * @param  {Integer} index   refers to the index of the space manager, which is an ordered index, unlike comment Id
 	 *                           e.g. if we have removed comment with id 2, keys of comments is ["0","1","3","4"] whereas corresponding indexes will be [0,1,2,3], so when *                           commentId is 2, index will be 3 (works well as every time a comment is added or deleted, everything is recalculated)
 	 */
-	AudioCommentsView.prototype.showBubble = function(commentId, index) {
+	CommentsView.prototype.showBubble = function(commentId, index) {
 		var height = $("#" + this.bubblePreId + commentId).height();
 
 		var area = this.commentSpaceMng.commentSpaces[commentId].getArea();
@@ -222,9 +234,10 @@ define([
 		$("#bubble" + commentId).css({
 			top: area.y - area.h + offset.top - height,
 			left: area.x + offset.left,
-			height: height,
+			maxHeight: height,
 			zIndex: 1900
 		}).show();
+		$("#bubble" + commentId+" .textComment");
 	};
 
 	/**
@@ -233,7 +246,7 @@ define([
 	 * @param  {String}				commentText text of current comment
 	 * @param  {String}				commentId   
 	 */
-	AudioCommentsView.prototype.showEditingComment = function(bubbleEl, commentText, commentId) {
+	CommentsView.prototype.showEditingComment = function(bubbleEl, commentText, commentId, controller) {
 		function getOldCommentPosition(bubbleEl, newCommentId) {
 			var offset = $(bubbleEl).offset();
 			var oldCommentHeight = $(bubbleEl).outerHeight(true);
@@ -243,9 +256,10 @@ define([
 				y: offset.top + oldCommentHeight - newCommentHeight
 			};
 		}
-		//need to get point before hiding bubble
+		//need to get point before hiding comment
 		var point = getOldCommentPosition(bubbleEl, this.newCommentId);
-		this.hideBubble(bubbleEl.attr('id'));
+		controller.hideComment(bubbleEl.attr('id')); //TODO: hideComment and showComment methods should be in view
+		// controller calls this.hideBubble();
 
 		var newCommentEl = $("#" + this.newCommentId);
 
@@ -257,6 +271,7 @@ define([
 			left: point.x,
 			zIndex: 1900
 		}).show();
+		$("#" + this.newCommentId+" textarea").focus();
 	};
 
 	/**
@@ -264,10 +279,21 @@ define([
 	 * @param  {Array} cursorPos  [startTime, endTime]
 	 * @param  {AudioCursor} audioCursor : to find area from cursorPos
 	 */
-	AudioCommentsView.prototype.showNewComment = function(cursorPos, audioCursor) {
-		var areas = audioCursor.getAreasFromTimeInterval(cursorPos[0], cursorPos[1]);
-		this.newComment.timeInterval = [cursorPos[0], cursorPos[1]];
-		this.newComment.type = 'audio';
+	CommentsView.prototype.showNewComment = function() {
+
+		var audioEnabled = this.viewTypes['audio'] && this.viewTypes['audio'].isEnabled();
+		var notesEnabled = this.viewTypes['notes'] && this.viewTypes['notes'].isEnabled();
+		var chordsEnabled = this.viewTypes['chords'] &&  this.viewTypes['chords'].isEnabled();
+
+		var type = audioEnabled ? 'audio' : notesEnabled ? 'notes' : chordsEnabled ? 'chords' : null;
+
+		var areas = this.viewTypes[type].getArea()
+		if (type === 'audio'){
+			this.newComment.timeInterval = this.viewTypes[type].getTimeInterval();// [cursorPos[0], cursorPos[1]];
+		}else{
+			this.newComment.beatInterval = this.viewTypes[type].getBeatInterval();
+		}
+		this.newComment.type = type;
 		var offset = this.offset; //to avoid 'this' closure problem
 		height = $("#" + this.newCommentId).outerHeight(true) + 8;
 		$("#" + this.newCommentId).css({
@@ -276,34 +302,15 @@ define([
 			left: areas[0].x + offset.left,
 			zIndex: 1900
 		}).show();
+		$("#" + this.newCommentId+" textarea").focus();
 	};
 
-	AudioCommentsView.prototype.showNewScoreComment = function(song) {
-		if (this.noteSpaceMng.isEnabled()){
-			var startPos = this.notesCursor.getStart();
-			var endPos = this.notesCursor.getEnd();
-			var startEnd = song.getComponent('notes').getBeatIntervalByIndexes(startPos, endPos);
-			var areas = this.noteSpaceMng.elemMng.getElementsAreaFromCursor(this.noteSpaceMng.noteSpace, [startPos, endPos]);
-
-			this.newComment.beatInterval = startEnd;
-			this.newComment.type = 'notes';
-			var offset = this.offset; //to avoid 'this' closure problem
-			height = $("#" + this.newCommentId).outerHeight(true) + 8;
-			$("#" + this.newCommentId).css({
-				position: "absolute",
-				top: areas[0].y + offset.top - height,
-				left: areas[0].x + offset.left,
-				zIndex: 1900
-			}).show();
-
-		}
-	};
 	/**
 	 * Update html text (updating model has been done from the controller)
 	 * @param  {String} id    id of the comment
 	 * @param  {String} text 
 	 */
-	AudioCommentsView.prototype.updateComment = function(id, text) {
+	CommentsView.prototype.updateComment = function(id, text) {
 		$("#" + this.bubblePreId + id + " .textComment").html(text);
 	};
 	/**
@@ -311,7 +318,7 @@ define([
 	 * Normally a bubble id "bubbleX" starts always with prefix "bubble", but we can call this function with the prefix (ex. "bubble0abc") or the id directly (ex. "0abc")
 	 * If there is no prefix, we add it
 	 */
-	AudioCommentsView.prototype.hideBubble = function(bubbleId) {
+	CommentsView.prototype.hideBubble = function(bubbleId) {
 		if (bubbleId.indexOf(this.bubblePreId) == -1) {
 			bubbleId = this.bubblePreId + bubbleId;
 		}
@@ -320,12 +327,12 @@ define([
 	/**
 	 * hides the 'new comment' bubble
 	 */
-	AudioCommentsView.prototype.hideNewComment = function() {
+	CommentsView.prototype.hideNewComment = function() {
 		this.newComment = {};
 		var newCommentEl = $("#" + this.newCommentId);
 		newCommentEl.find('input[name="commentId"]').val("");
 		newCommentEl.find('textarea').val("");
 		newCommentEl.hide();
 	};
-	return AudioCommentsView;
+	return CommentsView;
 });
