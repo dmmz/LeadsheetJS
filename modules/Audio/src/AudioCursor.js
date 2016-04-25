@@ -30,6 +30,9 @@ define([
 
 		});
 		$.subscribe("ToWave-setCursor", function(el, cursorStart, cursorEnd) {
+			//if audio is not being drawn, no need to move audio cursor
+			if (!self.audioDrawer.isEnabled) return;
+
 			var beats = self.audioDrawer.songModel.getComponent('notes').getBeatIntervalByIndexes(cursorStart, cursorEnd);
 			var startTime = self.audioDrawer.audio.beatDuration * (beats[0] - 1);
 			if (self.cursor) {

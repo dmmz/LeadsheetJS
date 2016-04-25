@@ -144,23 +144,20 @@ define([
 		var selBars = this._getSelectedBars();
 		var numBar = 0;
 		if (selBars.length !== 0) {
-			numBar = selBars[0] + 1; // add bar after current one
+			numBar = selBars[0]; // add bar after current one
 		}
 
 		var nm = this.songModel.getComponent('notes');
 		//get the duration of the bar, and create a new bar with silences
 		var beatDuration = this.songModel.getTimeSignatureAt(numBar).getQuarterBeats();
 		var newBarNm = new NoteManager(); //Create new Bar NoteManager
-		//if is first bar we add a note, otherwise there are inconsistencies with duration of a bar
-		if (numBar === 0) {
-			newBarNm.addNote(new NoteModel("E/4-q"));
-			beatDuration = beatDuration - 1;
-		}
+		
 		//insert those silences
 		newBarNm.fillGapWithRests(beatDuration);
 
+		var numInsertBar = numBar + 1;
 		//get numBeat from first note of current bar
-		var numBeat = this.songModel.getStartBeatFromBarNumber(numBar);
+		var numBeat = this.songModel.getStartBeatFromBarNumber(numInsertBar);
 		// get the index of that note
 		var index = nm.getNextIndexNoteByBeat(numBeat);
 
@@ -185,10 +182,10 @@ define([
 
 		//add bar to barManager
 		var barManager = this.songModel.getComponent('bars');
-		barManager.insertBar(numBar, this.songModel);
+		barManager.insertBar(numInsertBar, this.songModel);
 
 		// decal chords
-		this.songModel.getComponent('chords').incrementChordsBarNumberFromBarNumber(1, numBar);
+		this.songModel.getComponent('chords').incrementChordsBarNumberFromBarNumber(1, numInsertBar);
 		$.publish('ToLayers-removeLayer');
 		$.publish('ToHistory-add', 'Add Bar');
 	};
