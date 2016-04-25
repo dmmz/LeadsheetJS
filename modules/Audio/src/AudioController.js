@@ -1,11 +1,11 @@
-define(['jquery', 'pubsub'], function($, pubsub) {
+define(['jquery', 'pubsub', 'modules/Audio/src/AudioContext'], function($, pubsub, AudioContext) {
 	/**
 	 * Low level audio treating 
 	 * @param {Number} timeEndSong given in seconds 
 	 */
 	function AudioController(song) {
 		this.song = song;
-		this.audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+		this.audioCtx = new AudioContext();
 		this.source = this.audioCtx.createBufferSource();
 		this.isEnabled = false; //accessed publicly
 		this.startedAt;
