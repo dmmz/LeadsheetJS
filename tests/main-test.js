@@ -4,7 +4,6 @@ requirejs.config({
   paths: {
     jquery: 'external-libs/jquery-2.1.0.min',
     jquery_autocomplete: 'external-libs/jquery.autocomplete.min',
-    // qunit: 'external-libs/qunit/qunit',
     vexflow_helper: 'external-libs/qunit/vexflow_test_helpers',
     vexflow: 'external-libs/vexflow-min',
     Midijs: 'external-libs/Midijs/midijs.min',
@@ -16,13 +15,9 @@ requirejs.config({
     JsonDelta: 'external-libs/json_delta_1.1.3_minified'
   },
   shim: {
-    // 'qunit': {
-    //   exports: 'QUnit',
-    //   init: function() {
-    //     QUnit.config.autoload = false;
-    //     QUnit.config.autostart = false;
-    //   }
-    // },
+    'external-libs/qunit/qunit': {
+      exports: 'QUnit',
+    },
     'vexflow': {
       exports: 'Vex'
     },
@@ -36,6 +31,9 @@ requirejs.config({
 });
 
 define(function(require) {
+    require('external-libs/qunit/qunit');
+    QUnit.config.autoload = false;
+    QUnit.config.autostart = false;
     function sendMessage() {
       var args = [].slice.call(arguments);
       alert(JSON.stringify(args));
@@ -44,10 +42,10 @@ define(function(require) {
       sendMessage('qunit.done', arguments[0].failed, arguments[0].passed, arguments[0].total, arguments[0].runtime);
     });
     QUnit.testDone(function() {
-      sendMessage('qunit.testDone', arguments[0].name, arguments[0].failed);
+        sendMessage('qunit.testDone', arguments[0].name, arguments[0].failed);
     });
     QUnit.log(function() {
-      sendMessage('qunit.log', arguments[0].result, arguments[0].actual, arguments[0].expected, arguments[0].message, arguments[0].source);
+        sendMessage('qunit.log', arguments[0].result, arguments[0].actual, arguments[0].expected, arguments[0].message, arguments[0].source);
     });
     QUnit.moduleStart(function() {
       sendMessage('qunit.moduleStart', arguments[0].name);

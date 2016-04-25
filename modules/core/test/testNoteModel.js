@@ -139,9 +139,13 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 				// set duration functions
 				var durNote = new NoteModel('A/4-q');
 				assert.equal(durNote.getDot(), 0, 'no dot for quarter note');
-				assert.throws(function() {
-					durNote.setDurationByBeats(1.3333);
-				});
+				assert.throws(
+					function() {
+						durNote.setDurationByBeats(1.3333);
+					}, 
+					/fraction of 2/, 
+					'should throw exception containing "should be fraction of 2"'
+				);
 				assert.throws(function() {
 					durNote.setDurationByBeats('1.3333');
 				});
