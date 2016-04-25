@@ -9,6 +9,8 @@ define(['utils/NoteUtils',
 	 */
 	function KeyboardManager(test) {
 
+		var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
+
 		function stopEvent(evt) {
 			evt.preventDefault();
 			evt.stopPropagation();
@@ -48,6 +50,11 @@ define(['utils/NoteUtils',
 		 * The only example when this triggers (by the moment) is in AZERTY configured keyboards on SAFARI browser (on Mac)
 		 */
 		$(document).keypress(function(evt){
+			// sometimes key does not map to any command in our list, if so, we allow default usage, 
+			// however the code that follows does not apply to other browsers than safari
+			if (!isSafari){ 
+				return;
+			}
 			var keyCode = (evt === null) ? event.keyCode : evt.keyCode;
 			if (keyCode == 34){
 				publish('number-key', evt, 3);
@@ -59,8 +66,6 @@ define(['utils/NoteUtils',
 		$(document).keydown(function(evt) {
 			var keyCode = (evt === null) ? event.keyCode : evt.keyCode;
 			var key = String.fromCharCode(keyCode).toLowerCase();
-			
-			
 			var ctrlMetaKey = !!(evt.metaKey || evt.ctrlKey);
 			// console.log("metaKey");
 			// console.log(metaKey);
@@ -76,7 +81,7 @@ define(['utils/NoteUtils',
 				preventBackspace(evt, d);
 			}
 			if (isInHtmlInput(d) && keyCode != 9) { //if it's tab, we do run the event, even if it's in an html input, as this helps in chord edition
-				//do not do anything
+				//do nothing
 				return;
 			}
 			if (keyCode == 17){ //ctrl
