@@ -55,7 +55,7 @@ define([
 				barDuration = songIt.getBarTimeSignature().getQuarterBeats();
 				if (chordsInBar.length === 0) {
 					// case there is no chord in bar, we repeat previous one, if there is no previous one we just continue to next bar
-					if (midiNotes.length != 0) {
+					if (!midiNotes || midiNotes.length != 0) { //first condition will be true when there are no chords in current bar and previous bar had NC, second condition will be true on bars with one NC
 						duration = songIt.getBarTimeSignature().getQuarterBeats();
 						chords.push(getChordAsMidi(currentTime, duration, midiNotes));
 					}
