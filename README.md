@@ -117,6 +117,9 @@ To run tests in the browser, open a new tab:
  - `tests/test.html` for functionnal tests
  - `tests/viewer-test.html` for visual tests
 
+ You can also run the tests using cli with
+ 	$ grunt qunit
+
 Tests use RequireJS and Qunit, like in http://www.nathandavison.com/article/17/using-qunit-and-requirejs-to-build-modular-unit-tests
 
 There are some example also in the `samples` folder.
