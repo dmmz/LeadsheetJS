@@ -34,6 +34,18 @@ module.exports = function(grunt) {
 				}
 			}
 		},
+		jshint: {
+	      files: ['modules/**/*.js','utils/**/*.js'],
+	      options: {
+	        eqnull: true,   // allow == and ~= for nulls
+	        sub: true,      // don't enforce dot notation
+	        trailing: true, // no more trailing spaces
+	        globals: {
+	          "Vex": false,
+	          "Raphael": false
+	         }
+	      }
+	    },
 		requirejs: {
 			compile: {
 				options: {
@@ -106,6 +118,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-requirejs');
 	grunt.loadNpmTasks('grunt-contrib-qunit');
+	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-jsdoc');
 	grunt.loadNpmTasks('grunt-umd');
 

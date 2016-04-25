@@ -318,7 +318,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 			throw "NoteModel - setDurationByBeats -  dur is not a number ";
 		}
 
-		if (!Number.isInteger(dur * 64)) {
+		if (dur * 64 !== parseInt(dur * 64, 10)) {
 			throw "NoteModel - setDuration - dur should be fraction of 2, dur =" + dur;
 		}
 		var finalStringDur,
