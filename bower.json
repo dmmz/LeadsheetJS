@@ -1,0 +1,28 @@
+{
+  "name": "LeadsheetJS",
+  "description": "A JavaScript library for viewing, playing, editing and annotating music lead sheets",
+  "main": "LJS.js",
+  "authors": [
+    "Martín",
+    "Neullas",
+    "Degroote"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "Lead",
+    "sheet",
+    "javascript",
+    "editing",
+    "composition",
+    "tools",
+    "annotation"
+  ],
+  "homepage": "http://lsdb.flow-machines.com/leadsheetJS",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
