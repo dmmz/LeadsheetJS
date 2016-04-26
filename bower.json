@@ -1,5 +1,5 @@
 {
-  "name": "LeadsheetJS",
+  "name": "leadsheetjs",
   "description": "A JavaScript library for viewing, playing, editing and annotating music lead sheets",
   "main": "LJS.js",
   "authors": [
