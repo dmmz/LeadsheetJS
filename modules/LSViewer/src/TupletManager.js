@@ -43,9 +43,11 @@ define(['vexflow'], function(Vex) {
 		var vexflowTuplet,
 		tupletNotes;
 		for (var i in this.tuplets) {
-			tupletNotes = noteViews.slice(this.tuplets[i][0], this.tuplets[i][1] + 1);
-			vexflowTuplet = new Vex.Flow.Tuplet(convertToVxfNotes(tupletNotes));
-			vexflowTuplet.setContext(ctx).draw();
+			tupletNotes = convertToVxfNotes(noteViews.slice(this.tuplets[i][0], this.tuplets[i][1] + 1));
+			if (tupletNotes && tupletNotes.length) {
+				vexflowTuplet = new Vex.Flow.Tuplet(tupletNotes);
+				vexflowTuplet.setContext(ctx).draw();
+			}
 		}
 	};
 

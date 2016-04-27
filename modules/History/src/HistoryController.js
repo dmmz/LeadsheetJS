@@ -1,11 +1,10 @@
 define([
-	'modules/core/src/SongModel',
-	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
-	'mustache',
-	'utils/UserLog',
 	'jquery',
-	'pubsub',
-], function(SongModel, SongModel_CSLJson, Mustache, UserLog, $, pubsub) {
+	'modules/core/src/SongModel',
+	'modules/History/src/HistoryModel',
+	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
+	'utils/UserLog',
+], function($, SongModel, HistoryModel, SongModel_CSLJson, UserLog) {
 	/**
 	 * History constroller
 	 * @exports History/HistoryController
@@ -27,7 +26,11 @@ define([
 		$.subscribe('HistoryView-moveSelectHistory', function(el, inc) {
 			self.moveSelectHistory(inc);
 		});
-		$.subscribe('ToHistory-add', function(el, title, updateLastEntry) {
+		$.subscribe('ToHistory-add', function(el, title, updateLastEntry, pos) {
+			if (pos) {
+				var measureIndex = self.songModel.getComponent('notes').getNoteBarNumber(pos[0], self.songModel) + 1;
+				title += ' - bar ' + measureIndex;
+			}
 			self.addToHistory(title, updateLastEntry);
 		});
 		$.subscribe('ToHistory-updateLastEntry', function() {

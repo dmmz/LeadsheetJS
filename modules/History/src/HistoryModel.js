@@ -31,7 +31,7 @@ define([
 	};
 
 	HistoryModel.prototype.getState = function(position) {
-		var leadsheet = JSON.parse(JSON.stringify(this.lastLeadsheet)); //cloning,so that this.lastLeadsheet is not affected
+		var leadsheet = $.extend(true, {}, this.lastLeadsheet); //cloning,so that this.lastLeadsheet is not affected
 		for (var i = this.historyList.length - 1; i > position; i--) {
 			leadsheet = JSON_delta.patch(leadsheet, this.historyList[i].invertedDelta);
 		}
@@ -55,7 +55,7 @@ define([
 	 * @param {string} title     state name, view can display this message to user.
 	 * @param {Boolean} updateLastEntry     if updating last entry, true, this is common when changing pitch note, first time pitch is changed, we add a new entry entry, 
 	 *                                      but if pitch is changed many times in the same note without moving the cursor, we just update it in order to not have very long historics
-	 *
+	 * @param {Array} pos cursor as an array of two positions [start,end]
 	 */
 	HistoryModel.prototype.addToHistory = function(leadsheet, title, updateLastEntry) {
 
@@ -83,7 +83,7 @@ define([
 			title: title,
 			time: time
 		};
-
+		console.log(newHistorical);
 		if (updateLastEntry) {
 			this.historyList[this.historyList.length - 1] = newHistorical;
 		} else {

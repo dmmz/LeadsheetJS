@@ -1,4 +1,5 @@
 # LeadsheetJS
+[![Build Status](https://travis-ci.org/dmmz/LeadsheetJS.svg?branch=master)](https://travis-ci.org/dmmz/LeadsheetJS)
 
 A JavaScript library for online music leadsheets (visualizing, playing, editing and other features). 2015 Daniel Martín and Timotée Neullas
 

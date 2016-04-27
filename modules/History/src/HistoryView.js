@@ -10,14 +10,13 @@ define([
 	 */
 	function HistoryView(parentHTML, displayHistory, displayTime) {
 		this.el = undefined;
+		this.$historyFoldEl = $('<span class="pull-right history-fold"><i class="icon-chevron-right"></i></span>');
 		this.parentHTML = (parentHTML) ? parentHTML : $('#rightPanel');
 		this.displayHistory = (typeof displayHistory !== "undefined") ? displayHistory : true;
 		this.displayTime = !!displayTime;
-		this.isActive = true;
 		this.initController();
 		this.initKeyboard();
 		this.initSubscribe();
-		this.render();
 		this.activeView();
 	}
 
@@ -28,12 +27,12 @@ define([
 		if (this.displayHistory === false || !this.parentHTML) {
 			return;
 		}
-
-		var history = '';
-		history += '<span class="pull-right history-fold">></span>';
-		history += '<div class="history-container">';
-		history += '<h3>History</h3>';
-		history += '<ul class="history_ul">';
+		this.parentHTML.empty();
+		this.parentHTML.append(this.$historyFoldEl);
+		var $historyContainer = $('<div class="history-container"></div>');
+		$historyContainer.append('<h3>History</h3>');
+		var $historyList = $('<ul class="history_ul">');
+		$historyContainer.append($historyList);
 		var text = '',
 			classCurrent = "";
 		// loop through each history state
@@ -44,18 +43,16 @@ define([
 					classCurrent = "current_history";
 				}
 				text = '';
-				if (model.historyList[i]['title'] !== '') {
-					text += model.historyList[i]['title'] + ' ';
+				if (model.historyList[i].title !== '') {
+					text += model.historyList[i].title + ' ';
 				}
 				if (this.displayTime) {
-					text += model.historyList[i]['time'];
+					text += model.historyList[i].time;
 				}
-				history += '<li class="' + classCurrent + '" data-history="' + i + '">' + text + '</li>';
+				$historyList.append('<li class="' + classCurrent + '" data-history="' + i + '">' + text + '</li>');
 			}
 		}
-		history += '</ul>';
-		history += '</div>';
-		this.parentHTML.html(history);
+		this.parentHTML.append($historyContainer);
 		//$.publish('HistoryView-render');
 	};
 
@@ -77,22 +74,11 @@ define([
 			var indexItem = parseInt($(this).attr('data-history'), 10);
 			$.publish('HistoryView-selectHistory', indexItem);
 		});
-
-		this.parentHTML.addClass('history-open');
-		this.parentHTML.on('click', ".history-fold", function() {
-			if (self.isActive === true) {
-				$('.history-fold').html('<');
-				self.parentHTML.removeClass('history-open');
-				self.parentHTML.addClass('history-close');
-				self.parentHTML.find('.history-container').hide();
-				self.isActive = false;
-			} else {
-				$('.history-fold').html('>');
-				self.parentHTML.removeClass('history-close');
-				self.parentHTML.addClass('history-open');
-				self.parentHTML.find('.history-container').show();
-				self.isActive = true;
-			}
+		self.parentHTML.addClass('history-open');
+		self.parentHTML.on('click', '.history-fold', function() {
+			self.$historyFoldEl.find('i').toggleClass('icon-chevron-right icon-chevron-left');
+			self.parentHTML.toggleClass('history-open history-close');
+			self.parentHTML.find('.history-container, h3').toggle(0);
 		});
 	};
 

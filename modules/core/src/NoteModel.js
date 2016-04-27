@@ -233,8 +233,11 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 	 * @return {String} it can be "start", "stop", "stop_start", "middle"
 	 */
 	NoteModel.prototype.getTuplet = function() {
-		if (this.timeModification && !this.tuplet) return "middle";
-		else return this.tuplet;
+		if (this.timeModification && !this.tuplet) {
+			return "middle";
+		} else {
+			return this.tuplet;
+		}
 	};
 
 	NoteModel.prototype.getTimeModification = function() {

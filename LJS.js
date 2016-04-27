@@ -209,7 +209,6 @@ define([
 		Tag: TagManager,
 		OnWindowResizer: OnWindowResizer,
 		utils: utils,
-		Tag: TagManager,
 		Audio: AudioModule
 	};
 	/**
@@ -254,14 +253,6 @@ define([
 			var menuHTML = params.edition.menu !== undefined ? params.edition.menu.HTMLElement : false;
 			var editionModule = loadEdition(viewer, songModel, menuHTML, params.edition);
 			
-
-			//menu	
-			if (editionModule.menuController){
-				editionModule.menuController.loadStateTab();
-				if (editionModule.menuModel.getCurrentMenu() === undefined) {
-					editionModule.menuController.activeMenu('Notes');
-				}		
-			}
 			//history
 			if (params.edition.history){
 				if (!params.edition.history.HTMLElement){
@@ -279,8 +270,11 @@ define([
 					view: fileEdition.view,
 					order: 1
 				});
+			}
+
+			// menu	
+			if (editionModule.menuController){
 				editionModule.menuController.loadStateTab();
-				editionModule.menuController.activeMenu('File');
 			}
 			
 			modules.edition = editionModule.edition;

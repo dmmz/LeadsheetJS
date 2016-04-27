@@ -1,13 +1,11 @@
 define([
 	'mustache',
-	'modules/core/src/SongModel',
 	'modules/core/src/NoteManager',
-	'modules/Cursor/src/CursorModel',
 	'utils/NoteUtils',
 	'utils/UserLog',
 	'jquery',
 	'pubsub',
-], function(Mustache, SongModel, NoteManager, CursorModel, NoteUtils, UserLog, $, pubsub) {
+], function(Mustache, NoteManager, NoteUtils, UserLog, $, pubsub) {
 	/**
 	 * NoteEditionController manages all notes edition function
 	 * @exports NoteEdition/NoteEditionController
@@ -64,7 +62,7 @@ define([
 
 		function addToHistory(fn) {
 			var updateLastEntry = self._lastCursorIndexHistory === self.cursor.getPos();
-			$.publish('ToHistory-add', [getHistoryName(fn), updateLastEntry]);
+			$.publish('ToHistory-add', [getHistoryName(fn), updateLastEntry, self.cursor.getPos()]);
 			self._lastCursorIndexHistory = self.cursor.getPos();
 		}
 
@@ -78,7 +76,6 @@ define([
 		// All functions related with note edition go here
 		$.subscribe('NoteEditionView', function(el, fn, param, shiftKey) {
 			if (self.noteSpaceMng.isEnabled()) {
-
 				self[fn].call(self, param, shiftKey);
 				if (fn == 'addNote') { // we increment cursor if we added a note
 					self.cursor.increment();
