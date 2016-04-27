@@ -26,12 +26,12 @@ define([
 		$.subscribe('HistoryView-moveSelectHistory', function(el, inc) {
 			self.moveSelectHistory(inc);
 		});
-		$.subscribe('ToHistory-add', function(el, title, updateLastEntry, pos) {
+		$.subscribe('ToHistory-add', function(el, title, updateLastEntry, pos, extraData) {
 			if (pos) {
 				var measureIndex = self.songModel.getComponent('notes').getNoteBarNumber(pos[0], self.songModel) + 1;
 				title += ' - bar ' + measureIndex;
 			}
-			self.addToHistory(title, updateLastEntry);
+			self.addToHistory(title, updateLastEntry, extraData);
 		});
 		$.subscribe('ToHistory-updateLastEntry', function() {
 			self.updateLastEntry();
@@ -56,6 +56,12 @@ define([
 				SongModel_CSLJson.importFromMusicCSLJSON(retrievedLeadsheet, this.songModel);
 				$.publish('ToLayers-removeLayer');
 				$.publish('ToViewer-draw', this.songModel);
+				var eventName = 'HistoryController-itemLoaded';
+				var historyItem = this.model.getCurrentItem();
+				if (historyItem && historyItem.extraData && historyItem.extraData.type) {
+					eventName += '-' + historyItem.extraData.type;
+				}
+				$.publish(eventName, historyItem);
 			}
 		}
 	};
@@ -74,9 +80,9 @@ define([
 	/**
 	 * Function is called to save a state to history
 	 */
-	HistoryController.prototype.addToHistory = function(title, updateLastEntry) {
+	HistoryController.prototype.addToHistory = function(title, updateLastEntry, extraData) {
 		var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel); // Exporting current songModel to json
-		this.model.addToHistory(JSONSong, title, updateLastEntry);
+		this.model.addToHistory(JSONSong, title, updateLastEntry, extraData);
 	};
 
 	/**

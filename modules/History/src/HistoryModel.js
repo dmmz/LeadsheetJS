@@ -1,10 +1,8 @@
 define([
-	'mustache',
 	'jquery',
 	'utils/UserLog',
-	'pubsub',
 	'JsonDelta'
-], function(Mustache, $, UserLog, pubsub, JSON_delta) {
+], function($, UserLog, JSON_delta) {
 
 	/**
 	 * HistoryModel is an array of state, it allow a high level management of Historys
@@ -38,6 +36,10 @@ define([
 		return leadsheet;
 	};
 
+	HistoryModel.prototype.getCurrentItem = function() {
+		return this.historyList[this.currentPosition];
+	};
+
 	HistoryModel.prototype.getCurrentState = function() {
 		return this.getState(this.currentPosition);
 	};
@@ -55,9 +57,9 @@ define([
 	 * @param {string} title     state name, view can display this message to user.
 	 * @param {Boolean} updateLastEntry     if updating last entry, true, this is common when changing pitch note, first time pitch is changed, we add a new entry entry, 
 	 *                                      but if pitch is changed many times in the same note without moving the cursor, we just update it in order to not have very long historics
-	 * @param {Array} pos cursor as an array of two positions [start,end]
+	 * @param {mixed} extraData extraData that needs to be stored. Optionnal.
 	 */
-	HistoryModel.prototype.addToHistory = function(leadsheet, title, updateLastEntry) {
+	HistoryModel.prototype.addToHistory = function(leadsheet, title, updateLastEntry, extraData) {
 
 		var time = new Date().toLocaleString();
 		title = title ? title : '';
@@ -81,9 +83,9 @@ define([
 		var newHistorical = {
 			invertedDelta: invertedDelta,
 			title: title,
-			time: time
+			time: time,
+			extraData: extraData
 		};
-		console.log(newHistorical);
 		if (updateLastEntry) {
 			this.historyList[this.historyList.length - 1] = newHistorical;
 		} else {

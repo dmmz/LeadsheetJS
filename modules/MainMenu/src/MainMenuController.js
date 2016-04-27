@@ -18,8 +18,8 @@ define([
 	}
 
 	MainMenuController.prototype.activeMenu = function(menuTitle) {
-		menuTitle = menuTitle || 'File';
 		var index = this.model.searchMenuIndex(menuTitle);
+		// if menu is not found, then display the first one
 		index = index === -1 ? 0 : index;
 		var currentMenu = this.model.getMenu(index);
 		this.model.setCurrentMenu(currentMenu);	
