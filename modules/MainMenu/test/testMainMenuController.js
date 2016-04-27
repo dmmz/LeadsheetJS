@@ -13,10 +13,10 @@ define([
 				mmc.model.addMenu({title:'Chords', view: undefined});
 				
 				mmc.activeMenu('Lyrics');
-				assert.equal(mmc.model.getCurrentMenu(), undefined, "Try active menu on a menu that doesn't exist");
+				assert.equal(mmc.model.getCurrentMenu().title, 'Notes', "Try active menu on a menu that doesn't exist. Default is the first Menu.");
 
-				mmc.activeMenu('Notes');
-				assert.equal(mmc.model.getCurrentMenu().title, 'Notes', "try to activate a menu");
+				mmc.activeMenu('Chords');
+				assert.equal(mmc.model.getCurrentMenu().title, 'Chords', "try to activate a menu");
 			});
 		}
 	};

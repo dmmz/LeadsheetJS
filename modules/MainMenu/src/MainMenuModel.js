@@ -1,7 +1,6 @@
 define([
 	'jquery',
-	'pubsub',
-], function($, pubsub) {
+], function($) {
 
 	/**
 	 * MainMenuModel is the model containing a set of menuList, each menuList contain a menu, each menu contain at least a title

@@ -4,7 +4,7 @@ define(['modules/core/src/NoteModel', 'utils/NoteUtils'], function(NoteModel, No
 	NoteModel_CSLJson.importFromMusicCSLJSON = function(noteStruct, noteModel) {
 
 		var duration = noteStruct.duration;
-		if ((duration.indexOf("r") != -1)) {
+		if (duration && duration.indexOf("r") !== -1) {
 			noteModel.duration = duration.substring(0, duration.length - 1);
 			noteModel.isRest = true;
 			noteModel.barDuration = false; // when there is only a whole note in the bar, its duration will depend on bar's duration. Initially is false, in SongModel_CSLJson it can be modified

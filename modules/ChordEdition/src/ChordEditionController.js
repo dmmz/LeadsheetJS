@@ -167,13 +167,15 @@ define([
 		var selectedChords = [];
 		for (var cursorIndex = this.cursor.getStart(); cursorIndex <= this.cursor.getEnd(); cursorIndex++) {
 			var chordSpace = this.chordSpaceMng.chordSpaces[cursorIndex];
-			var pos = {
-				numBeat: chordSpace.beatNumber,
-				numBar: chordSpace.barNumber
-			};
-			var r = chordManager.getChordIndexByPosition(pos);
-			if (r.exact) {
-				selectedChords.push(r.index);
+			if (chordSpace) {
+				var pos = {
+					numBeat: chordSpace.beatNumber,
+					numBar: chordSpace.barNumber
+				};
+				var r = chordManager.getChordIndexByPosition(pos);
+				if (r.exact) {
+					selectedChords.push(r.index);
+				}
 			}
 		}
 		return selectedChords;

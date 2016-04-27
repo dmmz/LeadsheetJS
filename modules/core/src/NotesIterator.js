@@ -8,8 +8,7 @@ define(['utils/NoteUtils'], function(NoteUtils){
 		this.songIt = songIt;
 		this.noteMng = noteMng;
 		this._reset();
-
-	};
+	}
 	NotesIterator.prototype._reset = function() {
 		this.index = 0;
 		this.duration = 0;

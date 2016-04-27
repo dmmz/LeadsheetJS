@@ -1,11 +1,10 @@
 define([
-	'modules/core/src/SongModel',
-	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
-	'mustache',
-	'utils/UserLog',
 	'jquery',
-	'pubsub',
-], function(SongModel, SongModel_CSLJson, Mustache, UserLog, $, pubsub) {
+	'modules/core/src/SongModel',
+	'modules/History/src/HistoryModel',
+	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
+	'utils/UserLog',
+], function($, SongModel, HistoryModel, SongModel_CSLJson, UserLog) {
 	/**
 	 * History constroller
 	 * @exports History/HistoryController
@@ -27,8 +26,12 @@ define([
 		$.subscribe('HistoryView-moveSelectHistory', function(el, inc) {
 			self.moveSelectHistory(inc);
 		});
-		$.subscribe('ToHistory-add', function(el, title, updateLastEntry) {
-			self.addToHistory(title, updateLastEntry);
+		$.subscribe('ToHistory-add', function(el, title, updateLastEntry, pos, extraData) {
+			if (pos) {
+				var measureIndex = self.songModel.getComponent('notes').getNoteBarNumber(pos[0], self.songModel) + 1;
+				title += ' - bar ' + measureIndex;
+			}
+			self.addToHistory(title, updateLastEntry, extraData);
 		});
 		$.subscribe('ToHistory-updateLastEntry', function() {
 			self.updateLastEntry();
@@ -53,6 +56,12 @@ define([
 				SongModel_CSLJson.importFromMusicCSLJSON(retrievedLeadsheet, this.songModel);
 				$.publish('ToLayers-removeLayer');
 				$.publish('ToViewer-draw', this.songModel);
+				var eventName = 'HistoryController-itemLoaded';
+				var historyItem = this.model.getCurrentItem();
+				if (historyItem && historyItem.extraData && historyItem.extraData.type) {
+					eventName += '-' + historyItem.extraData.type;
+				}
+				$.publish(eventName, historyItem);
 			}
 		}
 	};
@@ -71,9 +80,9 @@ define([
 	/**
 	 * Function is called to save a state to history
 	 */
-	HistoryController.prototype.addToHistory = function(title, updateLastEntry) {
+	HistoryController.prototype.addToHistory = function(title, updateLastEntry, extraData) {
 		var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel); // Exporting current songModel to json
-		this.model.addToHistory(JSONSong, title, updateLastEntry);
+		this.model.addToHistory(JSONSong, title, updateLastEntry, extraData);
 	};
 
 	/**

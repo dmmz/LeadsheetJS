@@ -9,14 +9,14 @@ define([
 
 	function SongBarsIterator(song) {
 		this.song = song;
-		this.bm = this.song.getComponent('bars')
+		this.bm = this.song.getComponent('bars');
 		this.timeSigMng = new SongBarChange(this, 'getTimeSignatureChange', 'getTimeSignature', TimeSignatureModel);
 		this.keySigMng = new SongBarChange(this, 'getKeySignatureChange', 'getTonality');
 		this.reset();
-	};
+	}
 	SongBarsIterator.prototype = {
 		_getTimeSignatureChange: function() {
-			return
+			return;
 			// var barSigChange = this.getBar().getTimeSignatureChange();
 			// if (barSigChange){
 			// 	return barSigChange;
