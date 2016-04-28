@@ -9,8 +9,8 @@ define(function(){
 		if (this.keys.indexOf(key) == -1){
 			throw "Key "+ key + " not valid";
 		}
-		this.accidentals = this._setAccidentals(key, bemols)
-	};
+		this.accidentals = this._setAccidentals(key, bemols);
+	}
 
 	KeySignatureModel.prototype = {
 		/**

@@ -3,9 +3,9 @@ define([
 		'modules/core/src/ChordManager',
 		'modules/core/src/SongBarsIterator',
 		'modules/MidiCSL/src/converters/ChordConverterMidi_MidiCSL',
-		'modules/MidiCSL/src/model/NoteModel_midiCSL'
+		'modules/MidiCSL/src/model/NoteModel_MidiCSL'
 	],
-	function(SongModel, ChordManager, SongBarsIterator, ChordConverterMidi_MidiCSL, NoteModel_midiCSL) {
+	function(SongModel, ChordManager, SongBarsIterator, ChordConverterMidi_MidiCSL, NoteModel_MidiCSL) {
 		/**
 		 * ChordManagerConverterMidi_MidiCSL convert chords to a list of note that can be read by midi player
 		 * It creates ChordConverterMidi_MidiCSL to retrieve midi informations about every chords
@@ -26,7 +26,7 @@ define([
 		ChordManagerConverterMidi_MidiCSL.exportToMidiCSL = function(songModel) {
 
 			function getChordAsMidi(time, duration, midiNotes) {
-				return new NoteModel_midiCSL({
+				return new NoteModel_MidiCSL({
 					currentTime: time,
 					duration: duration,
 					midiNote: midiNotes,

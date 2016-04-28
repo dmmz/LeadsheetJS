@@ -60,13 +60,16 @@ define(['modules/MidiCSL/src/model/NoteModel_MidiCSL'], function(NoteModel_MidiC
 		// Looking for last note
 		var lastNote = this.song[0];
 		var lastNoteEndTime = lastNote.getCurrentTime() + lastNote.getDuration();
+		var lastNoteType = lastNote.getType();
 		var currentNote, currentEndTime;
 		for (var i = 0, c = this.song.length; i < c; i++) {
 			currentNote = this.song[i];
 			if (currentNote && currentNote.getType() !== "metronome") {
 				currentEndTime = currentNote.getCurrentTime() + currentNote.getDuration();
-				if (lastNoteEndTime < currentEndTime) {
+				var lastNoteTime  = (currentNote.getType() !== "chord" && lastNoteType === "chord") ? lastNote.getCurrentTime() : lastNoteEndTime;
+				if (lastNoteTime < currentEndTime ) {
 					lastNoteEndTime = currentEndTime;
+					lastNoteType = currentNote.getType();
 					lastNote = currentNote;
 				}
 			}

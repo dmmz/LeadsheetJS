@@ -85,8 +85,8 @@ define(function(require) {
 
     var testSongView_chordSequence = require('modules/chordSequence/test/testSongView_chordSequence');
 
-    var testSongModel_midiCSL = require('modules/MidiCSL/test/model/testSongModel_midiCSL');
-    var testNoteModel_midiCSL = require('modules/MidiCSL/test/model/testNoteModel_midiCSL');
+    var testSongModel_MidiCSL = require('modules/MidiCSL/test/model/testSongModel_MidiCSL');
+    var testNoteModel_MidiCSL = require('modules/MidiCSL/test/model/testNoteModel_MidiCSL');
     var testPlayerModel_MidiCSL = require('modules/MidiCSL/test/model/testPlayerModel_MidiCSL');
     var testSongConverterMidi_MidiCSL = require('modules/MidiCSL/test/converters/testSongConverterMidi_MidiCSL');
     var testChordManagerConverterMidi_MidiCSL = require('modules/MidiCSL/test/converters/testChordManagerConverterMidi_MidiCSL');
@@ -102,11 +102,8 @@ define(function(require) {
 
     var testMainMenuModel = require('modules/MainMenu/test/testMainMenuModel');
     var testMainMenuController = require('modules/MainMenu/test/testMainMenuController');
-
     var testBarWidthManager = require('modules/LSViewer/test/testBarWidthManager');
-
     var testCursorModel = require('modules/Cursor/test/testCursorModel');
-
     var testAudioController = require('modules/Audio/test/testAudioController');
 
     // Utils
@@ -173,8 +170,8 @@ define(function(require) {
     // Midi sound model Module
     module('Midi sound model')
     testPlayerModel_MidiCSL.run();
-    testSongModel_midiCSL.run();
-    testNoteModel_midiCSL.run();
+    testSongModel_MidiCSL.run();
+    testNoteModel_MidiCSL.run();
 
     testSongConverterMidi_MidiCSL.run();
     testChordManagerConverterMidi_MidiCSL.run();

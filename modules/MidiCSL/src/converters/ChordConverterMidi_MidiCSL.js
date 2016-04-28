@@ -1,5 +1,5 @@
-define(['modules/core/src/SongModel', 'modules/core/src/ChordManager', 'modules/core/src/ChordModel', 'modules/MidiCSL/src/model/NoteModel_midiCSL', 'utils/NoteUtils', 'utils/ChordUtils', 'modules/MidiCSL/utils/MidiHelper'],
-	function(SongModel, ChordManager, ChordModel, NoteModel_midiCSL, NoteUtils, ChordUtils, MidiHelper) {
+define(['modules/core/src/SongModel', 'modules/core/src/ChordManager', 'modules/core/src/ChordModel', 'modules/MidiCSL/src/model/NoteModel_MidiCSL', 'utils/NoteUtils', 'utils/ChordUtils', 'modules/MidiCSL/utils/MidiHelper'],
+	function(SongModel, ChordManager, ChordModel, NoteModel_MidiCSL, NoteUtils, ChordUtils, MidiHelper) {
 		/**
 		 * ChordConverterMidi_MidiCSL convert chords to a list of note that can be read by midi player
 		 * Object is created by ChordManagerConverterMidi_MidiCSL while song is converted

@@ -1,6 +1,6 @@
 define([
 		'modules/core/src/SongModel',
-		'modules/MidiCSL/src/model/NoteModel_midiCSL',
+		'modules/MidiCSL/src/model/NoteModel_MidiCSL',
 		'modules/MidiCSL/src/converters/ChordManagerConverterMidi_MidiCSL',
 		'modules/MidiCSL/utils/MidiHelper',
 		'modules/core/src/NotesIterator',
@@ -10,7 +10,7 @@ define([
 	],
 	function(
 		SongModel,
-		NoteModel_midiCSL,
+		NoteModel_MidiCSL,
 		ChordManagerConverterMidi_MidiCSL,
 		MidiHelper,
 		NotesIterator,
@@ -108,7 +108,7 @@ define([
 
 		SongConverterMidi_MidiCSL.exportNotesToMidiCSL = function(songModel) {
 			function addNote(midiNote, currentTime, duration, index, midiSong){
-				midiSong.push(new NoteModel_midiCSL({
+				midiSong.push(new NoteModel_MidiCSL({
 					midiNote: 	midiNote,
 					type: 		'melody',
 					currentTime:currentTime,
@@ -152,7 +152,7 @@ define([
 						if (note.getTie() === "start") {
 							inTie = true;
 							tieNotesNumber = 2;
-							tieNotesObject = new NoteModel_midiCSL({
+							tieNotesObject = new NoteModel_MidiCSL({
 								'midiNote': midiNote,
 								'type': 'melody',
 								'currentTime': currentTime,
@@ -172,7 +172,7 @@ define([
 							if (typeof tieNotesObject.getDuration === "undefined") {
 								// case the tieNotes have not been yet created (it's a particular case where tie note is tie with nothing)
 								// It happens when we take a chunk of a melody
-								tieNotesObject = new NoteModel_midiCSL({
+								tieNotesObject = new NoteModel_MidiCSL({
 									'midiNote': midiNote,
 									'type': 'melody',
 									'currentTime': currentTime,

@@ -1,15 +1,15 @@
 define([
 	'modules/core/src/SongModel', 
 	'modules/MidiCSL/src/converters/ChordManagerConverterMidi_MidiCSL', 
-	'modules/MidiCSL/src/model/SongModel_midiCSL', 'modules/MidiCSL/src/model/NoteModel_midiCSL', 
+	'modules/MidiCSL/src/model/SongModel_MidiCSL', 'modules/MidiCSL/src/model/NoteModel_MidiCSL', 
 	'tests/test-songs', 
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson'],
-	function(SongModel, ChordManagerConverterMidi_MidiCSL, SongModel_midiCSL, NoteModel_midiCSL, testSongs, SongModel_CSLJson) {
+	function(SongModel, ChordManagerConverterMidi_MidiCSL, SongModel_MidiCSL, NoteModel_MidiCSL, testSongs, SongModel_CSLJson) {
 	return {
 		run: function() {
 			test("ChordManagerConverterMidi_MidiCSL", function(assert) {
 
-				var msm = new SongModel_midiCSL();
+				var msm = new SongModel_MidiCSL();
 				
 
 				// Create a song from testSong
