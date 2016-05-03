@@ -138,50 +138,73 @@ define([
 	};
 
 	FileEditionController.prototype.exportAndPromptLeadsheetToPDF = function(title, composer, timeSignature, style, sources_abr) {
+		
+		function drawPage(totalSumHeight, pageSumHeight, i){
+			//create new canvas
+			var destinationCanvas = document.createElement("CANVAS");
+			destinationCanvas.width = srcCanvas.width;
+			destinationCanvas.height = srcCanvas.height;
+			// set white background
+			var destCtx = destinationCanvas.getContext('2d');
+				destCtx.fillStyle = "#FFFFFF";
+				destCtx.fillRect(0, 0, destinationCanvas.width, destinationCanvas.height);
+			
+			//set offset start and end Y to create new page
+			var startY = totalSumHeight - lineHeight * 0.34; // startY is relative to lineHeight
+			var endY = pageSumHeight;
+			// draw new image clipping original image
+			destCtx.drawImage(currentViewer.canvas, 0,  startY, srcCanvas.width,  endY , 0, 0, srcCanvas.width, endY);
+						
+			if (i > 0){
+				doc.addPage();
+			}
+
+			imgData = destinationCanvas.toDataURL('image/jpeg', 1);
+			doc.addImage(imgData, 'JPEG', 10, 0, dina4Width, totalHeight);
+		}
+
+
+		var doc = new jsPDF();
+		var dina4Width = 200;	//dinA4  210 * 297
+		var dina4Height = 283; //282,857142857
 		var srcCanvas = this.viewerCanvas;
-		// create a dummy CANVAS to create a new viewer without selection or edition
 		var destinationElement = document.createElement("div");
 		var currentViewer = new LSViewer(destinationElement, {
 			'width': srcCanvas.width - 10
 		});
+
 		currentViewer.setLineHeight(this.viewer.getLineHeight());
 		currentViewer.draw(this.songModel);
 
-		// create another dummy CANVAS in which we will draw the first canvas, it prevents black screen to appear
-		var destinationCanvas = document.createElement("canvas");
-		destinationCanvas.width = srcCanvas.width;
-		destinationCanvas.height = srcCanvas.height;
-		var destCtx = destinationCanvas.getContext('2d');
-		// create a rectangle with the desired color
-		destCtx.fillStyle = "#FFFFFF";
-		destCtx.fillRect(0, 0, srcCanvas.width, srcCanvas.height);
-		// draw the original canvas onto the destination canvas
-		destCtx.drawImage(currentViewer.canvas, 0, 0);
-		var imgData = destinationCanvas.toDataURL('image/jpeg', 1);
+		var totalHeight = dina4Width * (srcCanvas.height / srcCanvas.width); // total height on pdf
+		var imgPageHeight = (dina4Height / dina4Width) * srcCanvas.width;    // height on pdf
+		var lineHeight = this.viewer.getLineHeight();	
+		
+		var i = 0;
+			totalSumHeight = 0;
+			pageSumHeight = this.viewer.marginTop;
 
-		var totalWidth = 200;
-		var totalHeight = totalWidth * (srcCanvas.height / srcCanvas.width);
-
-		var doc = new jsPDF();
-		doc.setFontSize(34);
-		// doc.text(15, 20, title);
-		// doc.setFontSize(18);
-		// doc.text(15, 30, composer);
-		doc.addImage(imgData, 'JPEG', 10, 23, totalWidth, totalHeight);
-		doc.setFontSize(10);
-		doc.text(15, 20, style + ' (' + timeSignature + ')');
-		if (totalHeight >= 365) {
-			doc.addPage();
-			doc.addImage(imgData, 'JPEG', 10, -270, totalWidth, totalHeight);
+		// we draw each page 
+		while (totalSumHeight < srcCanvas.height){
+			if (pageSumHeight + lineHeight > imgPageHeight || totalSumHeight + pageSumHeight >= srcCanvas.height){
+				drawPage(totalSumHeight, pageSumHeight, i);
+				totalSumHeight += pageSumHeight;
+				pageSumHeight = 0;	
+				i++;
+			}else{
+				pageSumHeight += lineHeight;
+			}
 		}
+
 		if (sources_abr && sources_abr !== "") {
 			sources_abr = '_' + sources_abr;
 		} else {
 			sources_abr = '';
-		}
+        }
+		
 		doc.save(title + sources_abr + '.pdf');
 	};
-
+	
 	FileEditionController.prototype.exportLeadsheetJSON = function() {
 		var JSONSong = SongModel_CSLJson.exportToMusicCSLJSON(this.songModel);
 		// Code is a bit special for json because we transform data and we add a 'data:' prefix after href to make it works
