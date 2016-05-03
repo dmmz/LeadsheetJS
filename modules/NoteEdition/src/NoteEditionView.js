@@ -18,7 +18,7 @@ define([
 		this.render();
 	}
 
-	NoteEditionView.prototype.render = function(parentHTML, callback) {
+	NoteEditionView.prototype.render = function() {
 		this.el = Mustache.render(NoteEditionTemplate, {
 			'imgPath': this.imgPath
 		});
@@ -28,6 +28,7 @@ define([
 	 * manages events that come from the keyboard
 	 */
 	NoteEditionView.prototype.initKeyboard = function() {
+		var self = this;
 		$.subscribe('updown-arrows', function(el, inc, evt) {
 			fn = 'setPitch';
 			$.publish('NoteEditionView', [fn, inc, evt.shiftKey]);
@@ -80,16 +81,17 @@ define([
 			fn = 'copyNotes';
 			$.publish('NoteEditionView', fn);
 		});
-		$.subscribe('ctrl-v-key', function(el) {
+		$.subscribe('pasteJSONData', function(el, jsonData) {
 			fn = 'pasteNotes';
-			$.publish('NoteEditionView', fn);
+			if (jsonData && jsonData.notes) {
+				$.publish('NoteEditionView', [fn, jsonData.notes]);
+			}
 		});
 
 	};
 	/**
 	 * Manages events clicked from the menu
 	 * this function is called by MainMenuView
-	 *
 	 */
 	NoteEditionView.prototype.initController = function() {
 		// pitch
@@ -195,11 +197,10 @@ define([
 		// Selection
 		$('#copy-note').click(function() {
 			fn = 'copyNotes';
-			$.publish('NoteEditionView', fn);
+			$.publish('ctrl-c-key');
 		});
 		$('#paste-note').click(function() {
-			fn = 'pasteNotes';
-			$.publish('NoteEditionView', fn);
+			$(document).trigger('paste');
 		});
 	};
 	return NoteEditionView;

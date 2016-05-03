@@ -10,7 +10,7 @@ define(function(){
 		this.song = song;
 		this.notesCursor = notesCursor;
 		this.prevINote = 0;
-	};
+	}
 
 	NotesCursorUpdater.prototype.update = function(audio) {
 		var currTime = audio.getCurrentTime();

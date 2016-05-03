@@ -1,3 +1,4 @@
 node_modules
 build/chordseq-0.1.0.min.js
 doc/
+bower_components/

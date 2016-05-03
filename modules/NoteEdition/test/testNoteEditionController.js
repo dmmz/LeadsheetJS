@@ -1,16 +1,28 @@
-define(['modules/core/src/NoteModel',
+define([
+	'modules/core/src/NoteModel',
 	'modules/NoteEdition/src/NoteEditionController',
+	'modules/NoteEdition/src/NoteEditionView',
+	'modules/NoteEdition/src/NoteSpaceManager',
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
 	'modules/Cursor/src/CursorModel',
+	'modules/LSViewer/src/LSViewer',
+	'modules/Edition/src/ClipboardManager',
 	'tests/test-songs'
-], function(NoteModel, NoteEditionController, SongModel_CSLJson, CursorModel, testSongs) {
+], function(NoteModel, NoteEditionController, NoteEditionView, NoteSpaceManager, SongModel_CSLJson, CursorModel, LSViewer, ClipboardManager, testSongs) {
 	return {
 		run: function() {
 			test("Notes Edition Controller", function(assert) {
 
 				var songModel = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
 				var cM = new CursorModel(songModel.getComponent('notes'));
-				var nec = new NoteEditionController(songModel, cM);
+				var viewer = new LSViewer($("#test")[0], {
+					layer: true
+				});
+				var noteSpaceManager = new NoteSpaceManager(cM, viewer, 'NotesCursor', null, true, false);
+				noteSpaceManager.enabled = true;
+				viewer.draw(songModel);
+				var notesEditionView = new NoteEditionView('');
+				var nec = new NoteEditionController(songModel, cM, noteSpaceManager);
 				
 				nec.setPitch(1, true);
 				cM.setPos([0,5]);
@@ -150,14 +162,17 @@ define(['modules/core/src/NoteModel',
 				assert.equal(nec._getSelectedNotes()[1].getTuplet(), "middle", 'type tuplet with 3 notes selected - middle');
 				assert.equal(nec._getSelectedNotes()[2].getTuplet(), "stop", 'type tuplet with 3 notes selected - stop');
 
+				// copy/paste
+				var clipBoardManager = new ClipboardManager($("#test")[0]);
+				var $hiddenClipboardElement = clipBoardManager.$hiddenClipboardHolder;
 				nec.cursor.setPos([3,5])
 				var selNotes = nec._getSelectedNotes().toString();
-
 				nec.copyNotes();
-				assert.equal(nec.buffer.toString(), selNotes, 'copy Notes');
+				var textareaVal = $hiddenClipboardElement.val();
+				assert.equal(JSON.parse(textareaVal).notes, selNotes, 'copy Notes');
 
-				nec.cursor.setPos(9);
-				nec.pasteNotes();
+				nec.cursor.setPos([9, 11]);
+				$.publish('pasteJSONData', [JSON.parse(textareaVal)]);
 				nec.cursor.setPos([9, 11]);
 				assert.equal(nec._getSelectedNotes().toString(), selNotes, 'paste Notes');
 

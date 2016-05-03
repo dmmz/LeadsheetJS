@@ -55,10 +55,6 @@ define([
 			fn = 'copyChords';
 			$.publish('ChordEditionView', fn);
 		});
-		$.subscribe('ctrl-v-key', function(el) {
-			fn = 'pasteChords';
-			$.publish('ChordEditionView', fn);
-		});
 		$.subscribe('supr-key', function(el) {
 			fn = 'deleteChords';
 			$.publish('ChordEditionView', fn);

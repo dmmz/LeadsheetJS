@@ -4,9 +4,10 @@ define(['modules/core/src/ChordModel',
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
 	'modules/Cursor/src/CursorModel',
 	'modules/LSViewer/src/LSViewer',
+	'modules/Edition/src/ClipboardManager',
 	'modules/core/src/Intervals',
 	'tests/test-songs'
-], function(ChordModel, ChordEditionController, ChordSpaceManager, SongModel_CSLJson, CursorModel, LSViewer, Intervals, testSongs) {
+], function(ChordModel, ChordEditionController, ChordSpaceManager, SongModel_CSLJson, CursorModel, LSViewer, ClipboardManager, Intervals, testSongs) {
 	return {
 		run: function() {
 			test("Chords Edition Controller", function(assert) {
@@ -79,31 +80,6 @@ define(['modules/core/src/ChordModel',
 				cec.deleteChords();
 				assert.deepEqual(cec.getSelectedChordsIndexes(), [], 'delete chords');
 
-
-
-				// Copy chords
-				var songModel2 = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
-				var cM2 = new CursorModel(songModel2.getSongTotalBeats());
-				var csm2 = new ChordSpaceManager(songModel2, cM2);
-				var cec2 = new ChordEditionController(songModel2, cM2, csm2);
-
-				var chordManager2 = songModel2.getComponent('chords');
-				viewer.draw(songModel2);
-
-				csm2.cursor.setPos([0, 8]);
-				assert.equal(cec2.buffer, undefined, 'copy chords buffer is empty');
-				assert.deepEqual(cec2.getSelectedChordsIndexes(), [0, 1], 'getSelectedChordsIndexes');
-
-				cec2.copyChords();
-				assert.deepEqual(cec2.buffer, [1,10], 'copy chords buffer, chord spaces go from 0 to 8, so from beat 1 to 9, 9 included, so beatStart is 1 and beatEnd is 10');
-
-				// Paste chords
-				csm2.cursor.setPos([8, 10]);
-				assert.deepEqual(cec2.getSelectedChordsIndexes(), [1], 'getSelectedChordsIndexes');
-				assert.deepEqual(chordManager2.getChords().toString(), "AM7,B7,Em,F7", 'Chords Name at start');
-				cec2.pasteChords();
-				assert.deepEqual(chordManager2.getChords().toString(), "AM7,AM7,B7,F7", 'Paste chords');
-
 				var song2Json = {
 					composer: "Random Composer",
 					title: "song22",
@@ -141,7 +117,42 @@ define(['modules/core/src/ChordModel',
 				};
 				testDeleteChords(song2Json);
 			});
+			test('Chord Edition Controller - Copy and Paste chords', function(assert) {
+				var viewer = new LSViewer($("#test")[0], {
+					layer: true
+				});
+				var clipBoardManager = new ClipboardManager($("#test")[0]);
+				// Copy chords
+				var songModel2 = SongModel_CSLJson.importFromMusicCSLJSON(testSongs.simpleLeadSheet);
+				var cM2 = new CursorModel(songModel2.getSongTotalBeats());
+				var csm2 = new ChordSpaceManager(songModel2, cM2);
+				var cec2 = new ChordEditionController(songModel2, cM2, csm2);
+				var chordManager2 = songModel2.getComponent('chords');
+				viewer.draw(songModel2);
+				csm2.createAllChordSpaces(viewer);
 
+				csm2.cursor.setPos([0, 8]);
+				var $hiddenClipboardElement = clipBoardManager.$hiddenClipboardHolder;
+				assert.equal($hiddenClipboardElement.val(), '', 'hidden textarea is empty');
+				assert.deepEqual(cec2.getSelectedChordsIndexes(), [0, 1], 'getSelectedChordsIndexes');
+
+				cec2.copyChords();
+				var textareaVal = $hiddenClipboardElement.val();
+				assert.notEqual(textareaVal, '', 'hidden textarea should not be emtpy when copiing chords');
+				assert.ok(JSON.parse(textareaVal),'JSON.parse of textarea content should be ok');
+				assert.ok(JSON.parse(textareaVal).chords,'JSON.parse of textarea content should be an object conataining a chords property');
+				assert.deepEqual(JSON.parse(textareaVal).chords.length, 2,'The chords property should be an array containing 2 elements');
+				assert.ok(JSON.parse(textareaVal).chords[0].note, 'The chords\' first element should have like a chordModel a note property');
+				assert.ok(JSON.parse(textareaVal).chords[1].beat, 'The chords\' second element should have like a chordModel a beat property');
+				assert.deepEqual(JSON.parse(textareaVal).chords[0].beat, 0,'The chords\' first element beat should equal 0 since it is relative');
+				// Paste chords
+				csm2.cursor.setPos([8, 10]);
+				assert.deepEqual(chordManager2.getChords().toString(), "AM7,B7,Em,F7", 'Chords Name at start');
+				// simulate paste event
+				// $.publish('pasteJSONData', [JSON.parse(textareaVal)]);
+				// assert.deepEqual(cec2.getSelectedChordsIndexes(), [1], 'getSelectedChordsIndexes');
+				// assert.deepEqual(chordManager2.getChords().toString(), "AM7,AM7,B7,F7", 'Paste chords');
+			});
 		}
 	};
 });

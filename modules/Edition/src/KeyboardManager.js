@@ -1,8 +1,6 @@
-//TODO: we should add jquery and pubsub, but it's working anyway??? no clear what's going on 
 define(['utils/NoteUtils',
 	'jquery',
-	'pubsub'
-], function(NoteUtils, $, pubsub) {
+], function(NoteUtils, $) {
 	/**
 	 * KeyboardManager allows to interact with keyboard using pubsub events
 	 * @exports Edition/KeyboardManager
@@ -36,12 +34,14 @@ define(['utils/NoteUtils',
 			);
 		}
 
-		function publish(eventName, evt, param) {
+		function publish(eventName, evt, param, cancelStopEvent) {
 			if (test) {
 				console.log("keyboard " + eventName);
 			}
 			$.publish(eventName, [param, evt]);
-			stopEvent(evt);
+			if (cancelStopEvent !== true) {
+				stopEvent(evt);
+			}
 		}
 
 		/**
@@ -153,14 +153,14 @@ define(['utils/NoteUtils',
 
 			}else{
 				if (keyCode == 67) { // Ctrl + c or Command + c (mac or windows specific key)
-					publish('ctrl-c-key', evt);
+					publish('ctrl-c-key', evt, undefined, true);
 				} else if (keyCode == 86) { // Ctrl + v or Command + v (mac or windows specific key)
-					publish('ctrl-v-key', evt);
+					publish('ctrl-v-key', evt, undefined, true);
 				} else if (keyCode === 90) { // Ctrl + z
 					publish('ctrl-z', evt);
 				} else if (keyCode === 89) { // Ctrl + y
 					publish('ctrl-y', evt);
-				} else if (keyCode === 65) { // Ctrl + y
+				} else if (keyCode === 65) { // Ctrl + a
 					publish('ctrl-a', evt);
 				} else if (keyCode == 37 || keyCode == 39) { // left-right arrows
 					inc = (keyCode == 39) ? 1 : -1;
