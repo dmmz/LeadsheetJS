@@ -224,7 +224,7 @@ define([
 				y: y - substractY,
 				w: width,
 				h: height
-			}
+			};
 			return boundingBox;
 		};
 
@@ -455,14 +455,14 @@ define([
 
 			for (var i = 0; i < noteViews.length; i++) {
 				area = noteViews[i].getArea();
-				area.x -= this.CURSOR_MARGIN_LEFT;;
+				area.x -= this.CURSOR_MARGIN_LEFT;
 				area.y += this.CURSOR_MARGIN_TOP;
 				area.w += this.CURSOR_MARGIN_LEFT + this.CURSOR_MARGIN_RIGHT;
 				area.h = this.CURSOR_HEIGHT;
 				noteSpaceViews.push(new NoteSpaceView(area, this.scaler));
 			}
 			return noteSpaceViews;
-		}
+		};
 		/**
 		 * When drawing an element from another module, it has to use this function
 		 * @param  {Function} drawFunc function that draws the element

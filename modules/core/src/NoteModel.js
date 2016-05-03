@@ -7,7 +7,7 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 	 */
 	function NoteModel(param) {
 		this.pitchClass = []; // Note c, b
-		this.octave = []; // octave from 0 to 8
+		this.octave = (param && param.octave) ? param.octave : []; // octave from 0 to 8
 		this.accidental = []; // b or #
 		this.duration = (param && param.duration) ? param.duration : undefined; // string duration "h", "q", "8", "16" ...etc
 		this.isRest = (param && param.isRest) ? param.isRest : false;
@@ -366,7 +366,6 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		}
 		this.duration = dur;
 	};
-
 
 	NoteModel.prototype.serialize = function(complete) {
 		if (complete === undefined) complete = true;

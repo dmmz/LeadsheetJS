@@ -20,7 +20,6 @@ define(['vexflow', 'modules/converters/MusicCSLJson/src/NoteModel_CSLJson'], fun
 				cslNote.keys[0] = "B/4";
 			}
 			var vexflowNote = new Vex.Flow.StaveNote(cslNote);
-			
 			if (parseInt(vexflowNote.keyProps[0].octave, null) >= 5) {
 				vexflowNote.setStemDirection(-1);
 			}

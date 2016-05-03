@@ -82,7 +82,7 @@ define([
 			self.enable();
 			self.cursor.selectAll();
 			self.viewer.canvasLayer.refresh();
-		})
+		});
 	};
 	ChordSpaceManager.prototype.getType = function() {
 		return this.CL_TYPE;

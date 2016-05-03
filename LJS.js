@@ -23,7 +23,9 @@ define([
 	'utils/main',
 	'modules/Audio/src/AudioModule',
 	'modules/Edition/src/KeyboardManager',
-	'jquery'
+	'jquery',
+	'pubsub',
+	'modules/Edition/src/ClipboardManager',
 ], function(
 	Comments,
 	ChordEdition,
@@ -49,7 +51,9 @@ define([
 	utils,
 	AudioModule,
 	KeyboardManager,
-	$
+	$,
+	pubsub,
+	ClipboardManager
 ) {
 	function singleton(constructorFn){
 		var instance;
@@ -61,17 +65,17 @@ define([
 				return instance;
 			}
 		};
-	};
+	}
 	//constructors for different singletons:
 	//
 	var notesCursorConstructor = function(args){	
 		var songModel = args[0];
 		return cursorConstructor(songModel, 'notes');
-	}
+	};
 	var playerCursorConstructor = function(args){	
 		var songModel = args[0];
 		return cursorConstructor(songModel, 'player');
-	}
+	};
 	var cursorConstructor = function(songModel, id){
 		return new Cursor(songModel.getComponent('notes'), id, 'arrow').model;
 	};
@@ -83,7 +87,7 @@ define([
 		var songModel = args[0];
 		var viewer = args[1];
 		return new NoteSpaceManager(snglNotesCursor.getInstance(songModel), viewer, 'NotesCursor', null, true, false);
-	})
+	});
 	var snglKeyBoardManager = (singleton)(function(){
 		return new KeyboardManager(false);
 	});
@@ -93,6 +97,7 @@ define([
 	function loadViewer(htmlElem, options, song){
 		options = options || {};
 		var viewer = new LSViewer(htmlElem, options);
+		var clipBoardManager = new ClipboardManager(htmlElem);
 		OnWindowResizer(song);
 		return viewer;
 	}

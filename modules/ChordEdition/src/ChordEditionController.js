@@ -1,12 +1,13 @@
 define([
 	'mustache',
 	'modules/core/src/SongBarsIterator',
+	'modules/core/src/ChordModel',
 	'utils/NoteUtils',
 	'modules/core/src/PitchClass',
 	'utils/UserLog',
 	'jquery',
 	'pubsub',
-], function(Mustache, SongBarsIterator, NoteUtils, PitchClass, UserLog, $, pubsub) {
+], function(Mustache, SongBarsIterator, ChordModel, NoteUtils, PitchClass, UserLog, $, pubsub) {
 	/**
 	 * ChordEditionController manages all chords edition function
 	 * @exports ChordEdition/ChordEditionController
@@ -30,6 +31,17 @@ define([
 		$.subscribe('ChordEditionView', function(el, fn, param) {
 			if (self.chordSpaceMng.isEnabled()) {
 				self[fn].call(self, param);
+				$.publish('ToViewer-draw', self.songModel);
+			}
+		});
+
+		$.subscribe('pasteJSONData', function(el, jsonData) {
+			if (jsonData.chords && jsonData.chords.length > 0) {
+				var pastedChords = [];
+				for (var i = 0; i < jsonData.chords.length;i++) {
+					pastedChords.push(new ChordModel(jsonData.chords[i]));
+				}
+				self.pasteChords(pastedChords);
 				$.publish('ToViewer-draw', self.songModel);
 			}
 		});
@@ -62,40 +74,34 @@ define([
 		$.publish('ToHistory-add', 'Remove chord');
 	};
 
-	/*ChordEditionController.prototype.addChord = function() {
-		console.log('addChord');
-		// editor.addChord();
-	};*/
 	ChordEditionController.prototype.toggleEditChord = function() {
 		console.log('toggleEditChord');
 	};
 
 	ChordEditionController.prototype.copyChords = function() {
-		this.buffer = this.getSelectedChordsBeats();
-		//this.buffer now equals to [startBeat, endBeat]
-	};
-
-	ChordEditionController.prototype.pasteChords = function() {
-		if (!this.buffer || this.buffer.length === 0) {
-			return;
-		}
+		var selectedChordsPos = this.getSelectedChordsBeats();
 		var chordMng = this.songModel.getComponent('chords');
-		var arrBeatChords = chordMng.getBeatsBasedChordIndexes(this.songModel);
-		var indexesBeats = chordMng.getChordsRelativeToBeat(this.songModel,this.buffer[0], this.buffer[1], arrBeatChords);
 		// indexesBeat is an array of objects {index: 1, beat: 2} (with the index of the chord, and the beat differents to start beat of selected sections)
-
-		if (indexesBeats.length === 0){
-			//no chords selected
-			return;
-		}
-
+		var indexesBeats = chordMng.getChordsRelativeToBeat(this.songModel, selectedChordsPos[0], selectedChordsPos[1]);
+		if (indexesBeats.length === 0){		
+ 			//no chords selected		
+ 			return;		
+ 		}
 		var pos1 = indexesBeats[0].index;
 		var pos2 = indexesBeats[indexesBeats.length - 1].index;
-
 		var copiedChords = chordMng.cloneElems(pos1, pos2 + 1);
+		var chords = [];
+		for (var i = 0; i < copiedChords.length;i++) {
+			chords.push(copiedChords[i].serialize());
+			chords[i].beat = indexesBeats[i].beat;
+		}
+		$.publish('ClipboardManager-addToClipboardHolder', {chords: chords});
+	};
+ 
+	ChordEditionController.prototype.pasteChords = function(copiedChords) {
+		var chordMng = this.songModel.getComponent('chords');
 		var startPasteBeat = this.getSelectedChordsBeats()[0];
-		var endPasteBeat = startPasteBeat + this.buffer[1] - this.buffer[0] - 1;
-
+		var endPasteBeat = startPasteBeat + copiedChords[copiedChords.length - 1].beat;
 		// remove chords in affected chordspaces
 		var firstChordSpace = chordMng.getBarNumAndBeatFromBeat(this.songModel,startPasteBeat);
 		var lastChordSpace = chordMng.getBarNumAndBeatFromBeat(this.songModel,endPasteBeat);
@@ -106,8 +112,8 @@ define([
 
 		//we copy chords
 		var pasteBeat, numBarAndBeat, barNumAndBeat;
-		for (var i = 0; i < indexesBeats.length; i++) {
-			pasteBeat = indexesBeats[i].beat + startPasteBeat;
+		for (var i = 0; i < copiedChords.length; i++) {
+			pasteBeat = copiedChords[i].beat + startPasteBeat;
 			barNumAndBeat = chordMng.getBarNumAndBeatFromBeat(this.songModel,pasteBeat);
 			if (!barNumAndBeat.notExactBeat){
 				copiedChords[i].setBarNumber(barNumAndBeat.barNumber);
@@ -115,21 +121,9 @@ define([
 				chordMng.addChord(copiedChords[i]);
 			}
 		}
-		
-		var ch, str;
-		for (var i = 0; i < chordMng.getChords().length; i++) {
-			ch = chordMng.getChords()[i]
-			str=ch.toString()+" "+ch.getBarNumber()+ " ..  " +ch.getBeat() ;
-		}
-		
-		$.publish('ToHistory-add', 'Paste chord');
-	}
+		$.publish('ToHistory-add', ['Paste chord', false, [startPasteBeat, endPasteBeat]]);
+	};
 	
-
-	/*ChordEditionController.prototype.chordTabEvent = function(way) {
-		console.log('chordTabEvent', way);
-	};*/
-
 	/**
 	 * returns start and end beats of chords taking into account cursor, depending on chordSpaces selected
 	 * @return {Array} [startBeat, endBeat]

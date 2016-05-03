@@ -1,11 +1,11 @@
 define([
 	'mustache',
 	'modules/core/src/NoteManager',
+	'modules/core/src/NoteModel',
 	'utils/NoteUtils',
 	'utils/UserLog',
 	'jquery',
-	'pubsub',
-], function(Mustache, NoteManager, NoteUtils, UserLog, $, pubsub) {
+], function(Mustache, NoteManager, NoteModel, NoteUtils, UserLog, $) {
 	/**
 	 * NoteEditionController manages all notes edition function
 	 * @exports NoteEdition/NoteEditionController
@@ -76,11 +76,11 @@ define([
 		// All functions related with note edition go here
 		$.subscribe('NoteEditionView', function(el, fn, param, shiftKey) {
 			if (self.noteSpaceMng.isEnabled()) {
-				self[fn].call(self, param, shiftKey);
+				var modifications = self[fn].call(self, param, shiftKey);
 				if (fn == 'addNote') { // we increment cursor if we added a note
 					self.cursor.increment();
 				}
-				if (fn !== 'copyNotes') { //copyNotes is the only function that we don't save in history 
+				if (modifications !== false) { //if the fn didn't do any modifiations, then no history to store 
 					addToHistory(fn);
 				}
 				$.publish('ToLayers-removeLayer');
@@ -88,7 +88,6 @@ define([
 				$.publish('ToViewer-draw', self.songModel);
 			}
 		});
-
 	};
 	//Private functions
 	/**
@@ -628,16 +627,29 @@ define([
 			tmpNm.addNote(cloned, 0);
 		});
 	};
-
+	/**
+	 * @return false we don't want to add anything to history so we return always false
+	 */
 	NoteEditionController.prototype.copyNotes = function() {
 		this._ifTupletExpandCursor();
 		var noteManager = this.songModel.getComponent('notes');
-		this.buffer = noteManager.cloneElems(this.cursor.getStart(), this.cursor.getEnd() + 1);
+		var notesToCopy = noteManager.cloneElems(this.cursor.getStart(), this.cursor.getEnd() + 1);
+		var serializedNotes = [];
+		for (var i = 0; i < notesToCopy.length; i++) {
+			serializedNotes.push(String(notesToCopy[i]));
+		}
+		$.publish('ClipboardManager-addToClipboardHolder', {notes: serializedNotes});
+		return false;
 	};
 
 
-	NoteEditionController.prototype.pasteNotes = function() {
-		var notesToPaste = this.buffer;
+	NoteEditionController.prototype.pasteNotes = function(notesToPaste) {
+		if (!notesToPaste) {
+			return false;
+		}
+		for (var i = 0; i < notesToPaste.length; i++) {
+			notesToPaste[i] = new NoteModel(notesToPaste[i]);
+		}
 		this._runDurationFn(function(tmpNm) {
 			tmpNm.setNotes(notesToPaste);
 		});
