@@ -141,7 +141,7 @@ define(function(require) {
 			}
 
 			notesBarDur += notes[i].getDuration();
-			if (notesBarDur > currentBarNumBeats){
+			if (roundBeat(notesBarDur) > currentBarNumBeats){
 				console.warn("note exceeds bar duration (index "+ i +") bar "+songIt.getBarIndex());
 			}
 			else if (roundBeat(notesBarDur) == currentBarNumBeats ){
