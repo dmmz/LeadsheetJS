@@ -1,6 +1,7 @@
-define(function() {
+define(['underscore'], function(_) {
+
 	var NoteUtils = {};
-	NoteUtils.ACCIDENTALS = ["bb","b","","#","##"];
+	NoteUtils.ACCIDENTALS = ["bb", "b", "", "#", "##"];
 	NoteUtils.NATURAL_PITCHES = {
 		C: 0,
 		D: 1,
@@ -10,53 +11,47 @@ define(function() {
 		A: 5,
 		B: 6
 	};
+	/**
+	 * @param  {String} pitch e.g. "A#" or "Cb"
+	 * @return {Number}       e.g. 10   or  11
+	 */
 	NoteUtils.pitch2Number = function(pitch) {
-		var naturalPitch = pitch.substring(0,1);
-		var accidental = pitch.substring(1,pitch.length);
-		var number = this.PITCH_2_NUMBER[naturalPitch];
+		var classPitch2Number = {
+			C: 0,
+			D: 2,
+			E: 4,
+			F: 5,
+			G: 7,
+			A: 9,
+			B: 11
+		};
+		var naturalPitch = pitch.substring(0, 1);
+		var accidental = pitch.substring(1, pitch.length);
+		var number = classPitch2Number[naturalPitch];
 		for (var i = 0; i < NoteUtils.ACCIDENTALS.length; i++) {
-			if (accidental == NoteUtils.ACCIDENTALS[i]){
-				return number += (i - 2);
-				return (number < 0) ? number : number + 12; 
+			if (accidental == NoteUtils.ACCIDENTALS[i]) {
+				number += (i - 2);
+				return number < 0 ? number + 12 : number > 11 ? number - 12 : number;
 			}
 		}
-	}
+	};
 	NoteUtils.PITCH_CLASSES = ["C", "D", "E", "F", "G", "A", "B"];
-	NoteUtils.ASC_CHROMATIC_PITCHES = ["C", "C#", "D","D#", "E", "F","F#", "G","G#", "A","A#", "B"];
-	NoteUtils.DESC_CHROMATIC_PITCHES = ["C", "Db", "D","Eb", "E", "F","Gb", "G","Ab", "A","Bb", "B"];
-	NoteUtils.PITCH_2_NUMBER = {
-			"C": 0,
-			"C#": 1,
-			"Db": 1,
-			"D": 2,
-			"D#": 3,
-			"Eb": 3,
-			"E": 4,
-			"Fb": 4,
-			"E#": 5,
-			"F": 5,
-			"F#": 6,
-			"Gb": 6,
-			"G": 7,
-			"G#": 8,
-			"Ab": 8,
-			"A": 9,
-			"A#": 10,
-			"Bb": 10,
-			"B": 11,
-			"Cb": 11,
-			"B#": 0,
-		};
+	NoteUtils.ASC_CHROMATIC_PITCHES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+	NoteUtils.DESC_CHROMATIC_PITCHES = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+
 
 	NoteUtils.DURATIONS = {
-		4: "w",
-		2: "h",
-		1: "q",
-		0.5: "8",
-		0.25: "16",
-		0.125: "32",
-		0.0625: "64"
+		"w": 	4,
+		"h": 	2,
+		"q": 	1,
+		"8": 	0.5,
+		"16":  	0.25,
+		"32":  	0.125,
+		"64":  0.0625
 	};
+
+	NoteUtils.INV_DURATIONS = _.invert(NoteUtils.DURATIONS);
+	
 	NoteUtils.ARR_DUR = [{
 		strDur: 'w',
 		numDur: 4
@@ -82,17 +77,12 @@ define(function() {
 
 
 	NoteUtils.getStringFromBeatDuration = function(beat) {
-		return NoteUtils.DURATIONS[beat];
+		return NoteUtils.INV_DURATIONS[beat];
 	};
-
 	NoteUtils.getBeatFromStringDuration = function(string) {
-		for (var dur in NoteUtils.DURATIONS) {
-			if (NoteUtils.DURATIONS[dur] === string) {
-				return Number(dur);
-			}
-		}
+		return NoteUtils.DURATIONS[string];		
 	};
-
+	
 	/**
 	 * sorting pitches in case of polyphony because Vexflow adds accidentals in order relating to pitch order,
 	 * not to the actual array order
@@ -230,7 +220,7 @@ define(function() {
 		}
 		return i;
 	};
-	NoteUtils._parseNote = function(note, parseAccidental){
+	NoteUtils._parseNote = function(note, parseAccidental) {
 		var noteParts = note.split("/");
 		var noteObj = {
 			octave: parseInt(noteParts[1], null)
@@ -238,12 +228,12 @@ define(function() {
 		var pitch = noteParts[0];
 		noteObj.pitch = parseAccidental ? pitch[0] : pitch;
 
-		if (parseAccidental){
+		if (parseAccidental) {
 			noteObj.accidental = pitch.length == 2 ? pitch[1] : "";
 		}
 		return noteObj;
 	}
-	
+
 	NoteUtils._getKey = function(note, inc, pitches, isChromatic) {
 		var currentPos = isChromatic ? this.pitch2Number(note.pitch) : this.getKeyPosition(note.pitch, pitches);
 		var newAbsPos = currentPos + inc;
@@ -259,26 +249,26 @@ define(function() {
 			octave: newOctave
 		}
 	};
-	NoteUtils.getNextKey = function(key, inc){
+	NoteUtils.getNextKey = function(key, inc) {
 		var note = this._parseNote(key, true);
 		var newNote = this._getKey(note, inc, this.PITCH_CLASSES, false);
-		if (newNote){
+		if (newNote) {
 			return newNote.pitch + note.accidental + "/" + newNote.octave;
 		}
 	}
-	NoteUtils.getNextChromaticKey = function(key, inc, withoutOctave){
-		var note = this._parseNote(key);
-		var pitches = inc > 0 ? this.ASC_CHROMATIC_PITCHES : this.DESC_CHROMATIC_PITCHES;
-		var newNote = this._getKey(note, inc, pitches, true);
-		if (newNote){
-			return withoutOctave ? newNote.pitch : newNote.pitch + "/" + newNote.octave;
+	NoteUtils.getNextChromaticKey = function(key, inc, withoutOctave) {
+			var note = this._parseNote(key);
+			var pitches = inc > 0 ? this.ASC_CHROMATIC_PITCHES : this.DESC_CHROMATIC_PITCHES;
+			var newNote = this._getKey(note, inc, pitches, true);
+			if (newNote) {
+				return withoutOctave ? newNote.pitch : newNote.pitch + "/" + newNote.octave;
+			}
 		}
-	}
-	/**
-	 * @param  {Number}		4.5, 
-	 * @param  {Number}		0.5
-	 * @return {Array}		array of notes
-	 */
+		/**
+		 * @param  {Number}		4.5, 
+		 * @param  {Number}		0.5
+		 * @return {Array}		array of notes
+		 */
 	NoteUtils.durationToNotes = function(duration, initBeat) {
 
 		var durs = ["w", "h", "q", "8", "16", "32", "64"];
@@ -322,12 +312,10 @@ define(function() {
 					if (dot === 0) {
 						dot++;
 						notes[i - 1] += ".";
-					} 
-					else if (dot === 1){
+					} else if (dot === 1) {
 						dot++;
 						notes[i - 1] += "..";
-					}
-					else {
+					} else {
 						dot = 0;
 						mergedNotes.push(notes[i]);
 					}
@@ -344,11 +332,11 @@ define(function() {
 		findDur(notes, indexes, duration);
 		// console.log(notes);
 		// console.log(indexes);
-		notes = mergeByDot(notes,indexes);
+		notes = mergeByDot(notes, indexes);
 
 		return notes;
 	};
-	NoteUtils.roundBeat = function(beat){
+	NoteUtils.roundBeat = function(beat) {
 		return Math.round(beat * 1000000) / 1000000;
 	}
 

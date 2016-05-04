@@ -9,7 +9,9 @@ require.config({
     Midijs: 'external-libs/Midijs/midijs.min',
     pubsub: 'external-libs/tiny-pubsub.min',
     mustache: 'external-libs/mustache',
-    jquery_autocomplete: 'external-libs/jquery.autocomplete.min'
+    jquery_autocomplete: 'external-libs/jquery.autocomplete.min',
+    underscore: 'external-libs/bower_components/underscore/underscore-min'
+
   },
   shim: {
     'qunit': {
@@ -24,7 +26,11 @@ require.config({
     },
     'Midijs': {
       exports: 'MIDI'
+    },
+    underscore : {
+      exports: '_'  
     }
+
   }
 });
 

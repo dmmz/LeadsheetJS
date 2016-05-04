@@ -5,6 +5,7 @@ require.config({
 		jquery: 'external-libs/jquery-2.1.0.min',
 		vexflow: 'external-libs/vexflow-min',
 		pubsub: 'external-libs/tiny-pubsub.min',
+		underscore: 'external-libs/bower_components/underscore/underscore-min'
 	},
 	shim: {
 		// 'LeadsheetJS': {
@@ -12,7 +13,10 @@ require.config({
 		// },
 		vexflow: {
 			exports: 'Vex'
-		}
+		},
+		underscore : {
+	      exports: '_'  
+	    }
 	}
 });
 
