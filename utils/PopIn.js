@@ -25,7 +25,6 @@ define([
 		}
 		this.onSubmitFunction = options.onSubmit;
 		this.onCloseFunction = options.onClose; // close function is launched on hiding popin AND on submit
-		this.backgroundOpacity = 0.5;
 
 		this.show = function() {
 			this.$modal.modal('show');
@@ -66,7 +65,7 @@ define([
 		txt += '<div class="modal-body contentPopIn">' + content + '</div>';
 
 		txt += '<div class="modal-footer"><span class="modal-footer-text"></span><button type="button" data-dismiss="modal" class="btn btn-default">Close</button>';
-		txt += ' <button type="button" class="btn btn-primary popin_close modal_submit">' + this.footerButtonTitle + '</button></div>';
+		txt += '<button type="button" data-dismiss="modal" class="btn btn-primary modal_submit">' + this.footerButtonTitle + '</button></div>';
 
 		txt += '</div>';
 		txt += '</div>';
