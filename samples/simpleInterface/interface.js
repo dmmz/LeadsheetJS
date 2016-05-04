@@ -12,6 +12,7 @@ require.config({
 		bootstrap: 'external-libs/bootstrap/bootstrap.min',
 		jsPDF: 'external-libs/jspdf/jspdf.min',
 		JsonDelta: 'external-libs/json_delta_1.1.3_minified',
+		underscore: 'external-libs/bower_components/underscore/underscore-min'
 	},
 	shim: {
 		vexflow: {
@@ -22,6 +23,9 @@ require.config({
 		},
 		JsonDelta: {
 			exports: 'JSON_delta'
+		},
+		underscore : {
+			exports: '_'	
 		}
 	}
 });

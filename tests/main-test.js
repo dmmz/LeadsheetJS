@@ -12,7 +12,8 @@ requirejs.config({
     mustache: 'external-libs/mustache',
     bootstrap: 'external-libs/bootstrap/bootstrap.min',
     text: 'external-libs/require-text',
-    JsonDelta: 'external-libs/json_delta_1.1.3_minified'
+    JsonDelta: 'external-libs/json_delta_1.1.3_minified',
+    underscore: 'external-libs/bower_components/underscore/underscore-min'
   },
   shim: {
     'external-libs/qunit/qunit': {
@@ -26,6 +27,9 @@ requirejs.config({
     },
     JsonDelta: {
       exports: 'JSON_delta'
+    },
+    underscore : {
+        exports: '_'    
     }
   }
 });
