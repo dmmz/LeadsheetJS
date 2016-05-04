@@ -1,5 +1,6 @@
 define([
 	'mustache',
+	'bootstrap'
 ], function(Mustache) {
 	/**
 	 * @param {String}  title
@@ -25,20 +26,23 @@ define([
 		this.onSubmitFunction = options.onSubmit;
 		this.onCloseFunction = options.onClose; // close function is launched on hiding popin AND on submit
 		this.backgroundOpacity = 0.5;
+
+		this.show = function() {
+			this.$modal.modal('show');
+		};
+
+		this.hide = function() {
+			this.$modal.modal('hide');
+		};
 	}
 
 
 	PopIn.prototype.render = function() {
 		this.initView();
 		if (this.isTemplate) {
-			var self = this;
-			this.renderTemplate(function() {
-				self.initController();
-				self.initKeyboard();
-			});
+			this.renderTemplate(this.initController);
 		} else {
 			this.initController();
-			this.initKeyboard();
 		}
 	};
 
@@ -47,29 +51,28 @@ define([
 	 * When content is available (in case it's not a template) it's directly inserted
 	 */
 	PopIn.prototype.initView = function() {
-		var backgroundPopin = '<div class="backgroundPopin" style="display:none;opacity:' + this.backgroundOpacity + '"></div>';
-		$(document.body).append(backgroundPopin);
 		var content = '';
 		if (!this.isTemplate) {
 			content = this.content;
 		}
 		var txt = '';
-		txt += '<div style="display:none;padding: 1em;z-index: 9001;" class="modal ' + this.classTitle + '" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">';
+		txt += '<div class="modal hide fade ' + this.classTitle + '" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">';
 		txt += '<div class="modal-dialog">';
 		txt += '<div class="modal-content">';
 		txt += '<div class="modal-header">';
-		txt += '<button type="button" class="popin_close close" style="float:right" data-dismiss="modal" aria-hidden="true">&times;</button>';
+		txt += '<button type="button" class="close" style="float:right" data-dismiss="modal" aria-hidden="true">&times;</button>';
 		txt += '<h4 class="modal-title">' + this.title + '</h4>';
 		txt += '</div>';
 		txt += '<div class="modal-body contentPopIn">' + content + '</div>';
 
-		txt += '<div class="modal-footer"><span class="modal-footer-text"></span><button type="button" class="btn btn-default popin_close">Close</button>';
+		txt += '<div class="modal-footer"><span class="modal-footer-text"></span><button type="button" data-dismiss="modal" class="btn btn-default">Close</button>';
 		txt += ' <button type="button" class="btn btn-primary popin_close modal_submit">' + this.footerButtonTitle + '</button></div>';
 
 		txt += '</div>';
 		txt += '</div>';
 		txt += '</div>';
-		$(document.body).append(txt);
+		this.$modal = $(txt);
+		$('body').append(this.$modal);
 	};
 
 	/**
@@ -92,34 +95,14 @@ define([
 
 	PopIn.prototype.initController = function() {
 		var self = this;
-		$('.backgroundPopin, .popin_close').click(function() {
-			self.hide();
-			if (self.onCloseFunction)	self.onCloseFunction();
+		self.$modal.on('hidden', function () {
+			if (self.onCloseFunction)
+				self.onCloseFunction();
 		});
 		$('.'+ self.classTitle +' .modal_submit').click(function() {
 			if (self.onSubmitFunction)  self.onSubmitFunction();
 			if (self.onCloseFunction)	self.onCloseFunction();
 		});
-	};
-
-	PopIn.prototype.initKeyboard = function() {
-		var self = this;
-		$(document).keydown(function(evt) {
-			var keyCode = (evt === null) ? event.keyCode : evt.keyCode;
-			if (keyCode === 27) { // Escape touch close view
-				self.hide();
-			}
-		});
-	};
-
-	PopIn.prototype.show = function() {
-		$('.backgroundPopin').fadeIn('slow');
-		$('.' +this.classTitle).fadeIn('slow');
-	};
-
-	PopIn.prototype.hide = function() {
-		$('.backgroundPopin').fadeOut('slow');
-		$('.' +this.classTitle).fadeOut('slow');
 	};
 
 	return PopIn;

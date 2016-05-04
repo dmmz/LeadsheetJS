@@ -52,6 +52,7 @@ module.exports = function(grunt) {
 					baseUrl: ".",
 					paths: {
 						jquery: 'empty:',
+						bootstrap: 'empty:',
 						jquery_autocomplete: 'empty:',
 						qunit: 'empty:',
 						vexflow: 'empty:',
