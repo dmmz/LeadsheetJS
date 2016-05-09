@@ -1,17 +1,16 @@
 define([
 	'jquery',
-	'modules/core/src/SongModel',
 	'modules/History/src/HistoryModel',
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
 	'utils/UserLog',
-], function($, SongModel, HistoryModel, SongModel_CSLJson, UserLog) {
+], function($, HistoryModel, SongModel_CSLJson, UserLog) {
 	/**
 	 * History constroller
 	 * @exports History/HistoryController
 	 */
 	function HistoryController(model, songModel, notesCursor) {
 		this.model = model || new HistoryModel();
-		this.songModel = songModel;
+		this.songModel = songModel; 
 		this.notesCursor = notesCursor;
 		this.initSubscribe();
 	}
