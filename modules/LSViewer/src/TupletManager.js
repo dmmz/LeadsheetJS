@@ -15,15 +15,13 @@ define(['vexflow'], function(Vex) {
 	 */
 	TupletManager.prototype.checkTuplet = function(note, iNote) {
 
-		var tuplet = note.getTuplet(),
-			isTuplet;
+		var tuplet = note.getTuplet();
 		if (tuplet != null) {
 			if (tuplet == 'start') {
-				isTuplet = 1;
 				this.numTuplets++;
 				this.tuplets[this.numTuplets] = [];
 				this.tuplets[this.numTuplets][0] = iNote;
-			} else if (tuplet == 'stop') { //'stop'
+			} else if (tuplet == 'stop' && this.tuplets[this.numTuplets]) { //'stop'
 				this.tuplets[this.numTuplets][1] = iNote;
 			}
 		}

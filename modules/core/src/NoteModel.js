@@ -94,6 +94,12 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 			// check if there is a dot
 			var dotPosition = partDuration.indexOf(".");
 			if (dotPosition == -1) {
+				// check if there is a time modification
+				var partDurationModidifications = partDuration.match(/(q){1}\(([\d\/]+)\)/);
+				if (partDurationModidifications) {
+					partDuration = 	partDurationModidifications[1];
+					this.timeModification = partDurationModidifications[2];
+				}
 				this.duration = partDuration;
 			} else {
 				this.duration = partDuration.split('.')[0];

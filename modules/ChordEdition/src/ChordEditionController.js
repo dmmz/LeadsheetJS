@@ -103,8 +103,8 @@ define([
 		var startPasteBeat = this.getSelectedChordsBeats()[0];
 		var endPasteBeat = startPasteBeat + copiedChords[copiedChords.length - 1].beat;
 		// remove chords in affected chordspaces
-		var firstChordSpace = chordMng.getBarNumAndBeatFromBeat(this.songModel,startPasteBeat);
-		var lastChordSpace = chordMng.getBarNumAndBeatFromBeat(this.songModel,endPasteBeat);
+		var firstChordSpace = chordMng.getBarNumAndBeatFromBeat(this.songModel, startPasteBeat);
+		var lastChordSpace = chordMng.getBarNumAndBeatFromBeat(this.songModel, endPasteBeat);
 		if (firstChordSpace.exceedsSongLength || lastChordSpace.exceedsSongLength){
 			throw "ChordEdition error exceedsSongLength";
 		}
@@ -131,6 +131,9 @@ define([
 	ChordEditionController.prototype.getSelectedChordsBeats = function() {
 		var songIt = new SongBarsIterator(this.songModel);
 		var startChordSpace = this.chordSpaceMng.chordSpaces[this.cursor.getStart()];
+		if (!startChordSpace) {
+			startChordSpace = {beatNumber: 1, barNumber: 0};
+		}
 		var startBarNum = startChordSpace.barNumber;
 
 		songIt.setBarIndex(startBarNum);

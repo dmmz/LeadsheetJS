@@ -135,6 +135,9 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 				var noteSilenceDoubleDot = new NoteModel('q..r');
 				assert.equal(noteSilenceDoubleDot.getDot(), 2, 'q..r has 2 dots');
 
+				// check tuplets 
+				var durNote = new NoteModel('A/4-q(3/2)');
+				assert.equal(durNote.timeModification, '3/2', 'Time modification inside parenthesis');
 
 				// set duration functions
 				var durNote = new NoteModel('A/4-q');
@@ -152,6 +155,7 @@ define(['modules/core/src/NoteModel'], function(NoteModel) {
 				assert.throws(function() {
 					durNote.setDuration('1.3333');
 				});
+
 
 				var dur;
 
