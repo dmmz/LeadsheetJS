@@ -22,7 +22,7 @@ define(['modules/core/src/SongBarsIterator', 'modules/core/src/SectionBarsIterat
 		this.marginTop = Number(marginTop);
 	}
 	/**
-	 * calculates the minimum width for each bar depending on the number of notes it has
+	 * calculates the minimum width for each bar depending on the number of notes it has, and the length of chords
 	 * @param  {SongModel} song
 	 * @param  {NoteManagerModel} noteMng
 	 * @param  {CanvasContext} ctx
@@ -54,6 +54,21 @@ define(['modules/core/src/SongBarsIterator', 'modules/core/src/SectionBarsIterat
 				//get minimum notes width
 				barNotes = noteMng.getNotesAtCurrentBar(songIt);
 				width = (barNotes.length * self.noteWidth) * self.WIDTH_FACTOR;
+				var noteProportion = 2; // relation we estimate between a note's width and the with of a key signature, a time signature, or a clef
+				if (songIt.getBarIndex() === 0){
+					width += self.noteWidth * noteProportion; //if first bar we add space for clef and time signature (we consider clef and time signature as wide as a note)
+					if (songIt.getBarKeySignature() !== 'C') {
+						width += self.noteWidth * noteProportion; // same for key signature (armure) if we are not in 'C'
+					}
+				}else{
+					if (songIt.doesTimeSignatureChange()){
+						width += self.noteWidth * noteProportion;
+					}
+					if (songIt.doesKeySignatureChange()){
+						width += self.noteWidth * noteProportion;	
+					}
+				}
+
 
 				//get minimum chords width. strategy: we check if any chords of bar are longer than the space assigned for them, 
 				//if there are one or more, we get the longest difference and we widen ALL beats (this way we keep consistency between chord duration and chord space)

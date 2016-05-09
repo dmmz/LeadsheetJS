@@ -9,7 +9,8 @@ require.config({
     vexflow: 'external-libs/vexflow-min',
     Midijs: 'external-libs/Midijs/midijs.min',
     pubsub: 'external-libs/tiny-pubsub.min',
-    mustache: 'external-libs/mustache'
+    mustache: 'external-libs/mustache',
+    underscore: 'external-libs/bower_components/underscore/underscore-min'
 
   },
   shim: {
