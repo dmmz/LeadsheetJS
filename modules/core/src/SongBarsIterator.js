@@ -91,7 +91,7 @@ define([
 			} else {
 				this.isFirstSectionBar = false;
 			}
-			var ending = this.getEnding(this.isFirstSectionBar);;
+			var ending = this.getEnding(this.isFirstSectionBar);
 			this.prevEnding = ending;
 			//we calculate always timeSig before endings, except if it is ending 1, because we will retrieve it after ending one
 			if (ending != 1) {
@@ -133,6 +133,10 @@ define([
 		doesTimeSignatureChange: function() {
 			var timeSig = this.timeSigMng.getBarChange();
 			return (!!timeSig && timeSig != this.timeSigMng.getPrevValue());
+		},
+		doesKeySignatureChange: function() {
+			var keySig = this.keySigMng.getBarChange();
+			return (!!keySig && keySig != this.keySigMng.getPrevValue());
 		},
 		getStartEndBeats: function() {
 			return [this.beats, this.beats + this.getBarTimeSignature().getQuarterBeats()];

@@ -15,9 +15,10 @@ define(['vexflow'], function(Vex) {
 	 * @param  {String} fontChords    
 	 * @param  {Number} marginLeft    
 	 * @param  {Function} boundingBoxFn returns bounding box of drawed chord, i.e. an object like {x:1, y:1, w:2, h:2}
+	 * @param  {Number} offset indicates the space covered by clef + key sig + time only in first bar (for the moment), so it will be 0 for the rest
 	 * @return {Object}               returns bounding box if function is sent (i.e. when LSViewer.SAVE_CHORDS === true)
 	 */
-	LSChordView.prototype.draw = function(ctx, barDimensions, timeSig, chordsY, fontChords, marginLeft, boundingBoxFn) {
+	LSChordView.prototype.draw = function(ctx, barDimensions, timeSig, chordsY, fontChords, marginLeft, boundingBoxFn, offset) {
 		if (!fontChords){
 			throw "LSChordView - missing params";
 		}
@@ -35,7 +36,9 @@ define(['vexflow'], function(Vex) {
 		ctx.font = fontChords; 
 		ctx.fillStyle = this.color;
 
-		var chordX = getChordX(this.chord.getBeat(), barDimensions, beatWidth)
+		var chordX = getChordX(this.chord.getBeat(), barDimensions, beatWidth);
+		chordX += offset;
+		
 		ctx.fillText(this.chord.toString(), chordX, barDimensions.top - chordsY);
 		var	boundingBox = boundingBoxFn ? boundingBoxFn(ctx, this.chord.toString(), chordX, barDimensions.top - chordsY) : undefined;
 		

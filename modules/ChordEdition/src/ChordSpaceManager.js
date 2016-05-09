@@ -97,17 +97,20 @@ define([
 		if (typeof viewer.vxfBars === "undefined") {
 			return;
 		}
-		var xi, yi, xe, ye;
-		var beatsInBar;
-		var decalX;
-		var widthBeat;
-		var area;
+		var xi, yi, xe, ye,
+			beatsInBar,
+			decalX,
+			widthBeat,
+			area,
+			offset; //to be aligned with section name (whose offset is determined by vexflow)
+
 		for (var i = 0, c = viewer.vxfBars.length; i < c; i++) {
 			beatsInBar = viewer.vxfBars[i].timeSignature.getBeats();
-			widthBeat = viewer.vxfBars[i].barDimensions.width / beatsInBar;
+			offset = viewer.vxfBars[i].offset || 0;
+			widthBeat = (viewer.vxfBars[i].barDimensions.width - offset) / beatsInBar;
 			for (var j = 0; j < beatsInBar; j++) {
 				area = {
-					x: (viewer.vxfBars[i].barDimensions.left + widthBeat * j),
+					x: (viewer.vxfBars[i].barDimensions.left + widthBeat * j) + offset,
 					y: (viewer.vxfBars[i].barDimensions.top - 17),
 					w: widthBeat,
 					h: 20

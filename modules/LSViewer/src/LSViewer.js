@@ -87,6 +87,7 @@ define([
 			this.lineMarginTop = this.INITIAL_LINE_MARGIN_TOP;
 			this.marginTop = this.INITIAL_MARGIN_TOP;
 			this.lineHeight = this.INITIAL_LINE_HEIGHT;
+			this.offsetFirstBar = null; // it is set when drawing
 
 			if (!this.DISPLAY_TITLE) this.marginTop -= 70;
 			if (!this.DISPLAY_COMPOSER) this.marginTop -= 30;
@@ -385,12 +386,22 @@ define([
 
 					barView = new LSBarView(barDimensions, barViewParams);
 					barView.draw(self.ctx, songIt, sectionIt, self.ENDINGS_Y, self.LABELS_Y);
-
-
-					vxfBars.push({
+					
+					var vxfBar = {
 						barDimensions: barDimensions,
 						timeSignature: songIt.getBarTimeSignature(),
-					});
+
+					};
+					
+					// we just calculate offset for first bar
+					// start_x inidicates the offset where notes start, to get the relative offset we should compare it with barDimensions.left, 
+					// but when i == 0 we that know barDimensions.left == 0
+					var offset = 0;
+					if (songIt.getBarIndex() === 0){
+						vxfBar.offset = barView.vexflowStave.start_x;
+						offset = vxfBar.offset;
+					}
+					vxfBars.push(vxfBar);
 
 					barChords = cm.getChordsByBarNumber(songIt.getBarIndex());
 					for (i = 0, c = barChords.length; i < c; i++) {
@@ -402,7 +413,8 @@ define([
 							self.CHORDS_DISTANCE_STAVE,
 							self.FONT_CHORDS,
 							self.PADDING_LEFT_CHORDS,
-							self.SAVE_CHORDS ? self._getTextBoundingBox : null
+							self.SAVE_CHORDS ? self._getTextBoundingBox : null,
+							offset
 						);
 						if (self.SAVE_CHORDS) chordViews.push(chordView);
 					}
@@ -423,8 +435,6 @@ define([
 			});
 			tieMng.draw(this.ctx, noteViews, nm, this.barWidthMng, song);
 			
-			
-
 			this.chordViews = chordViews;
 			this.vxfBars = vxfBars;
 			this.ctx.fillStyle = "black";
