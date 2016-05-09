@@ -38,7 +38,7 @@ define([
 	};
 
 	NoteManager.prototype.addNote = function(note, pos) {
-		if (!note instanceof NoteModel) throw "note is not an instance of Note";
+		if (!(note instanceof NoteModel)) throw "note is not an instance of Note";
 		if (pos === undefined) {
 			this.notes.push(note);
 		} else { //check

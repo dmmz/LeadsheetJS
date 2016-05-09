@@ -264,7 +264,7 @@ define([
 					throw "Missing HTMLElement for history";		
 				}
 				var historyHTML = params.edition.history.HTMLElement;
-				new HistoryC(songModel, historyHTML, null, true, false);
+				new HistoryC(songModel, historyHTML, snglNotesCursor.getInstance(songModel), {displayHistory:true, displayTime:false});
 				$.publish('ToHistory-add', 'Open song - ' + songModel.getTitle());
 			}
 			var fileEdition = new FileEdition(songModel, viewer, params.edition.saveFunction, {saveButton:params.edition.saveButton, saveAsButton:params.edition.saveAsButton});

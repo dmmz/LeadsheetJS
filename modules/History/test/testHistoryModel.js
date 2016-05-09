@@ -120,7 +120,7 @@ define([
 				}, 'checking going back to entry' );
 
 				//Testing history length
-				var shortHm = new HistoryModel({maxHistoryLength:2});
+				var shortHm = new HistoryModel(2);
 				shortHm.addToHistory({example:'1'}, 'first add');
 				assert.equal(shortHm.historyList.length,1,'testing history length (maxLength == 2)');
 				

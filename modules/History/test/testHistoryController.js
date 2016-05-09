@@ -1,14 +1,15 @@
 define([
 	'modules/History/src/HistoryModel',
 	'modules/History/src/HistoryController',
-], function(HistoryModel, HistoryController) {
+	'modules/core/src/SongModel',
+], function(HistoryModel, HistoryController, SongModel) {
 	return {
 		run: function() {
 			test("HistoryController", function(assert) {
 
 				var hm = new HistoryModel();
 
-				var hc = new HistoryController(hm);
+				var hc = new HistoryController(hm, new SongModel());
 
 				hc.addToHistory('test', false);
 				hc.addToHistory('test2',false);
