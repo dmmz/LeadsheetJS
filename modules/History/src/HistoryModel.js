@@ -9,9 +9,9 @@ define([
 	 * @exports History/HistoryModel
 	 * @param {object} options
 	 */
-	var HistoryModel = function(options) {
+	var HistoryModel = function(maxHistoryLength) {
 		this.init();
-		this.maxHistoryLength = options && !isNaN(options.maxHistoryLength) ? options.maxHistoryLength : 10000;
+		this.maxHistoryLength = maxHistoryLength || 10000;
 		this.lastLeadsheet = null;
 	};
 

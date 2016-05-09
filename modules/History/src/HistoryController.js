@@ -9,9 +9,10 @@ define([
 	 * History constroller
 	 * @exports History/HistoryController
 	 */
-	function HistoryController(model, songModel) {
+	function HistoryController(model, songModel, notesCursor) {
 		this.model = model || new HistoryModel();
-		this.songModel = songModel || new SongModel();
+		this.songModel = songModel;
+		this.notesCursor = notesCursor;
 		this.initSubscribe();
 	}
 
@@ -36,7 +37,6 @@ define([
 		$.subscribe('ToHistory-updateLastEntry', function() {
 			self.updateLastEntry();
 		});
-
 	};
 
 
@@ -50,20 +50,31 @@ define([
 			return;
 		}
 		this.model.setCurrentPosition(currentHistory);
-		if (this.songModel) {
-			var retrievedLeadsheet = this.model.getCurrentState();
-			if (retrievedLeadsheet) {
-				SongModel_CSLJson.importFromMusicCSLJSON(retrievedLeadsheet, this.songModel);
-				$.publish('ToLayers-removeLayer');
-				$.publish('ToViewer-draw', this.songModel);
-				var eventName = 'HistoryController-itemLoaded';
-				var historyItem = this.model.getCurrentItem();
-				if (historyItem && historyItem.extraData && historyItem.extraData.type) {
-					eventName += '-' + historyItem.extraData.type;
-				}
-				$.publish(eventName, historyItem);
+		var noteMng = this.songModel.getComponent('notes'),
+			newNoteMng;
+		
+		var noteStart = this.notesCursor.getStart(),
+			noteEnd = this.notesCursor.getEnd(),
+			pos;
+		
+		var beats =  noteMng.getBeatIntervalByIndexes(noteStart, noteEnd);
+
+		var retrievedLeadsheet = this.model.getCurrentState();
+		if (retrievedLeadsheet) {
+			SongModel_CSLJson.importFromMusicCSLJSON(retrievedLeadsheet, this.songModel);
+			newNoteMng = this.songModel.getComponent('notes');
+			pos = newNoteMng.getIndexesStartingBetweenBeatInterval(beats[0], beats[1], true);
+			this.notesCursor.setPos(pos);
+			$.publish('ToLayers-removeLayer');
+			$.publish('ToViewer-draw', this.songModel);
+			var eventName = 'HistoryController-itemLoaded';
+			var historyItem = this.model.getCurrentItem();
+			if (historyItem && historyItem.extraData && historyItem.extraData.type) {
+				eventName += '-' + historyItem.extraData.type;
 			}
+			$.publish(eventName, historyItem);
 		}
+
 	};
 
 	/**
