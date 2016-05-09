@@ -204,61 +204,7 @@ define([
 		songIt.setBarIndex(barNumber);
 		return this.getNotesAtCurrentBar(songIt);
 	};
-	/*NoteManager.prototype._notesTransformationTemplate = function(transformationFn, start, end, song) {
-		console.log(arguments);
-		var playingNoteAcc, //current accidental
-			newNote,
-			storedAcc,
-			note,
-			needToResetAccidentals = false,
-			barAcc = new BarAccidentals();
 
-		var notesIt = this._getNotesIteratorAt(start, song);
-		notesIt.setStart(notesIt.iFirstNoteBar);
-		var newNoteMng = new NoteManager();
-		while(notesIt.lowerThan(end)){
-
-			transformationFn();
-
-			notesIt.next();
-			if (notesIt.isNewBar){
-				needToResetAccidentals = true;
-			}
-			if (needToResetAccidentals && !newNote.isTie("start")){
-				barAcc.reset();
-				needToResetAccidentals = false;
-			}
-		}
-		return newNoteMng;
-	};
-	NoteManager.prototype.play2score = function(start, end, song ) {
-		
-		this._notesTransformationTemplate(function(){
-			if (notesIt.index < start ){
-				barAcc.updateAccidentals(note);
-			}
-			else{
-				var keySignature = new KeySignatureModel(notesIt.songIt.getBarKeySignature());
-				newNote = note.clone();
-				playingNoteAcc = note.getAccidental();
-				storedAcc = barAcc.getAccidental(note) || keySignature.getPitchAccidental(note.getPitchClass());
-				if (playingNoteAcc){
-					if (playingNoteAcc == storedAcc){
-						newNote.setAccidental("");
-					}else{
-						barAcc.updateAccidentals(newNote);
-					}
-				}else{
-					if (storedAcc && storedAcc != "n"){
-						newNote.setAccidental("n");
-						barAcc.updateAccidentals(newNote);
-					}
-				}
-				newNoteMng.addNote(newNote);
-			}
-		}, start, end,song);
-	};
-*/
 	NoteManager.prototype.play2score = function(song,start, end) {
 		var playingNoteAcc, //current accidental
 			newNote,

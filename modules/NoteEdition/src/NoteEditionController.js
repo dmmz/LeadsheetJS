@@ -183,8 +183,7 @@ define([
 	 */
 	NoteEditionController.prototype._getSelectedNotes = function() {
 		var noteManager = this.songModel.getComponent('notes');
-		var selectedNotes = noteManager.getNotes(this.cursor.getStart(), this.cursor.getEnd() + 1);
-		return selectedNotes;
+		return noteManager.getNotes(this.cursor.getStart(), this.cursor.getEnd() + 1);
 	};
 
 	/**
@@ -636,7 +635,7 @@ define([
 		var notesToCopy = noteManager.cloneElems(this.cursor.getStart(), this.cursor.getEnd() + 1);
 		var serializedNotes = [];
 		for (var i = 0; i < notesToCopy.length; i++) {
-			serializedNotes.push(String(notesToCopy[i]));
+			serializedNotes.push(notesToCopy[i].serialize());
 		}
 		$.publish('ClipboardManager-addToClipboardHolder', {notes: serializedNotes});
 		return false;

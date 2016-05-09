@@ -165,16 +165,25 @@ define([
 				// copy/paste
 				var clipBoardManager = new ClipboardManager($("#test")[0]);
 				var $hiddenClipboardElement = clipBoardManager.$hiddenClipboardHolder;
-				nec.cursor.setPos([3,5])
-				var selNotes = nec._getSelectedNotes().toString();
+				nec.cursor.setPos([3,5]);
+				var selNotes = nec._getSelectedNotes();
+				var serializedNotes = [];
+				for (var index in selNotes) {
+					serializedNotes.push(selNotes[index].serialize());
+				}
 				nec.copyNotes();
 				var textareaVal = $hiddenClipboardElement.val();
-				assert.equal(JSON.parse(textareaVal).notes, selNotes, 'copy Notes');
+				assert.deepEqual(JSON.parse(textareaVal).notes, serializedNotes, 'copy Notes');
 
 				nec.cursor.setPos([9, 11]);
 				$.publish('pasteJSONData', [JSON.parse(textareaVal)]);
 				nec.cursor.setPos([9, 11]);
-				assert.equal(nec._getSelectedNotes().toString(), selNotes, 'paste Notes');
+				var pastedNotes = nec._getSelectedNotes();
+				var serializedPastedNotes = [];
+				for (var j in pastedNotes) {
+					serializedPastedNotes.push(pastedNotes[j].serialize());
+				}
+				assert.deepEqual(serializedNotes, serializedPastedNotes, 'paste Notes');
 
 				
 

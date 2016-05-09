@@ -9,7 +9,7 @@ define(function(){
 		this.type = type;
 		this.semitones = semitones;
 		this.name = name;
-	};
+	}
 
 	var Intervals = {};
  	Intervals.unison                  = new Interval(1,  0, "unison");
@@ -42,4 +42,4 @@ define(function(){
 	Intervals.augmentedNinth          = new Interval(9, 15, "augmented ninth");
 
 	return Intervals;
-})
+});
