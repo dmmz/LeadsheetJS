@@ -7,7 +7,8 @@ define(function(){
 		this.cursors = [];
 		this._initSubscribe();
 		this.canvasLayer; //canvasLayer is initialised on viewer draw (see _initSubscribe)
-	};
+	}
+
 	AudioAnimation.prototype._initSubscribe = function() {
 		var self = this;
 		$.subscribe('LSViewer-drawEnd', function(el,viewer){

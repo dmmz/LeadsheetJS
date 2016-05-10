@@ -317,6 +317,8 @@ define([
 			$.publish('PlayerModel-onplay');
 			// Convert songmodel to a readable model that we can insert in SongModel_MidiCSL
 			SongConverterMidi_MidiCSL.exportToMidiCSL(this.songModel, true, function(midiSong) {
+				// redraw if unfolded
+				$.publish('ToViewer-draw', self.songModel.clone().unfold());
 				var midiSongModel = new SongModel_MidiCSL({
 					song: midiSong
 				});

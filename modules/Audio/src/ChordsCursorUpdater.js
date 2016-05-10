@@ -11,7 +11,8 @@ define(function(){
 		this.prevIChord = 0;
 		this.chordSpaceManagerType = chordSpaceManagerType || 'ALL_CHORD_SPACES';
 		this.beatsIndex = this.chordMng.getBeatsBasedChordIndexes(song);
-	};
+	}
+
 	ChordsCursorUpdater.prototype._getChordIndex = function(time) {
 		var onlyChords = this.chordSpaceManagerType === 'ONLY_CHORDS';
 		for (var i = 0; i < this.beatsIndex.length; i++) {

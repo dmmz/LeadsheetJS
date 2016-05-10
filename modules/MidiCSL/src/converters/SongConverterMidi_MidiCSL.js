@@ -69,9 +69,8 @@ define([
 		};
 
 		SongConverterMidi_MidiCSL.unfoldDirectly = function(songModel) {
-			var newSongModel = songModel.clone();
-			newSongModel.unfold();
-			return newSongModel;
+			songModel.unfold();
+			return songModel;
 		};
 
 		SongConverterMidi_MidiCSL.unfoldUsingServlet = function(songModel, callback) {

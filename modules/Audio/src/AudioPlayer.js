@@ -5,18 +5,19 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		this.startPos = 0;
 		this.endPos = 0;
 		this.loopEnabled = false;
-	};
+	}
+
 	AudioPlayer.prototype._initSubscribe = function() {
 		var self = this;
 		$.subscribe("AudioCursor-clickedAudio", function(el, posCursor) {
 			self.startPos = posCursor;
 		 	self.audio.disableLoop();
-		})
+		});
 		$.subscribe("AudioCursor-selectedAudio", function(el, startPos, endPos) {
 			self.startPos = startPos;
 			self.endPos = endPos;
 			self.audio.loop(startPos, endPos);
-		})
+		});
 		$.subscribe("ToPlayer-play", function() {
 			self.audio.play(self.startPos);
 		});
