@@ -11,8 +11,8 @@ require.config({
 		text: 'external-libs/require-text',
 		bootstrap: 'external-libs/bootstrap/bootstrap.min',
 		jsPDF: 'external-libs/jspdf/jspdf.min',
-		JsonDelta: 'external-libs/json_delta_1.1.3_minified',
-		underscore: 'external-libs/bower_components/underscore/underscore-min'
+		underscore: 'external-libs/bower_components/underscore/underscore-min',
+		deepdiff: 'external-libs/bower_components/deep-diff/releases/deep-diff-0.3.3.min'
 	},
 	shim: {
 		vexflow: {
@@ -20,9 +20,6 @@ require.config({
 		},
 		Midijs: {
 			exports: 'MIDI'
-		},
-		JsonDelta: {
-			exports: 'JSON_delta'
 		},
 		underscore : {
 			exports: '_'	

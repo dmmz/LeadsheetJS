@@ -21,8 +21,9 @@ LeadsheetJS uses RequireJS, so the script tag should look like this:
 			mustache: 'external-libs/mustache',
 			text: 'external-libs/require-text',
 			bootstrap: 'external-libs/bootstrap/bootstrap.min',
+			underscore: 'external-libs/bower_components/underscore/underscore-min',
 			jsPDF: 'external-libs/jspdf/jspdf.min',
-			JsonDelta: 'external-libs/json_delta_1.1.3_minified',
+			deepdiff: 'external-libs/bower_components/deep-diff/releases/deep-diff-0.3.3.min'
 		},
 		shim: {
 			vexflow: {
@@ -30,9 +31,6 @@ LeadsheetJS uses RequireJS, so the script tag should look like this:
 			},
 			Midijs: {
 				exports: 'MIDI'
-			},
-			JsonDelta: {
-				exports: 'JSON_delta'
 			}
 		}
 	});

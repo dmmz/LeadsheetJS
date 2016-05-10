@@ -12,7 +12,7 @@ requirejs.config({
     mustache: 'external-libs/mustache',
     bootstrap: 'external-libs/bootstrap/bootstrap.min',
     text: 'external-libs/require-text',
-    JsonDelta: 'external-libs/json_delta_1.1.3_minified',
+    deepdiff: 'external-libs/bower_components/deep-diff/releases/deep-diff-0.3.2.min',
     underscore: 'external-libs/bower_components/underscore/underscore-min'
   },
   shim: {
@@ -24,9 +24,6 @@ requirejs.config({
     },
     'Midijs': {
       exports: 'MIDI'
-    },
-    JsonDelta: {
-      exports: 'JSON_delta'
     },
     underscore : {
         exports: '_'    
@@ -96,8 +93,6 @@ define(function(require) {
     var testChordManagerConverterMidi_MidiCSL = require('modules/MidiCSL/test/converters/testChordManagerConverterMidi_MidiCSL');
 
     var testHistoryModel = require('modules/History/test/testHistoryModel');
-    var testHistoryController = require('modules/History/test/testHistoryController');
-
     var testChordEditionController = require('modules/ChordEdition/test/testChordEditionController');
     var testNoteEditionController = require('modules/NoteEdition/test/testNoteEditionController');
     var testElementView = require('modules/Edition/test/testElementView');
@@ -168,11 +163,11 @@ define(function(require) {
     testFileEditionController.run();
 
     //LSViewer Module
-    module('LSViewer')
+    module('LSViewer');
     testBarWidthManager.run();
 
     // Midi sound model Module
-    module('Midi sound model')
+    module('Midi sound model');
     testPlayerModel_MidiCSL.run();
     testSongModel_MidiCSL.run();
     testNoteModel_MidiCSL.run();
@@ -182,7 +177,6 @@ define(function(require) {
 
     module('History');
     testHistoryModel.run();
-    testHistoryController.run();
 
     testMainMenuModel.run();
     testMainMenuController.run();
