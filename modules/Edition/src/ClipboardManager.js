@@ -19,7 +19,10 @@ define([
 		$('body').append(self.$hiddenClipboardHolder);
 		// mainly for safari to allow paste on second try
 		$.subscribe('ctrl-v-key', function(){
-			self.$hiddenClipboardHolder.focus();
+			//focus without scrolling
+			var x = window.scrollX, y = window.scrollY;
+		  	self.$hiddenClipboardHolder.focus();
+		  	window.scrollTo(x, y);
 		});
 		$.subscribe('ClipboardManager-addToClipboardHolder', function(el, newValueToAdd) {
 			var actualValue = self.$hiddenClipboardHolder.val() && contentCopied === false ? JSON.parse(self.$hiddenClipboardHolder.val()) : {};
