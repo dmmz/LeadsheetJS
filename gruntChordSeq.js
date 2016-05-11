@@ -24,9 +24,7 @@ module.exports = function(grunt) {
 						text: 'external-libs/require-text',
 						pubsub: 'empty:',
 						jsPDF: 'empty:',
-						mustache: 'empty:',
-						JsonDelta: 'empty:'
-
+						mustache: 'empty:'
 					},
 					cjsTranslate: true,
 					//findNestedDependencies: true,

@@ -37,6 +37,173 @@
 
     <div id="vexflow_testoutput"></div>
     <div id="test"></div>
-    <script data-main="main-test.js" src="../external-libs/require.js"></script>
+    <script src="../external-libs/require.js"></script>
+    <script src="../config.js"></script>
+    <script type="text/javascript">
+      requirejs.config({
+        baseUrl: "../",
+        paths: {
+          qunit: 'external-libs/qunit/qunit',
+        },
+        shim: {
+          'qunit': {
+            exports: 'QUnit',
+          },
+        }
+      });
+      require([
+          'qunit',
+          'modules/core/test/testSongModel',
+          'modules/core/test/testSectionModel',
+          'modules/core/test/testChordManager',
+          'modules/core/test/testChordModel',
+          'modules/core/test/testNoteManager',
+          'modules/core/test/testNoteModel',
+          'modules/core/test/testBarModel',
+          'modules/core/test/testBarManager',
+          'modules/core/test/testSongBarsIterator',
+          'modules/core/test/testNotesIterator',
+          'modules/core/test/testPitchClass',
+          'modules/core/test/testNote',
+          'modules/core/test/testTimeSignatureModel',
+          'modules/core/test/testKeySignatureModel',
+          'modules/converters/MusicCSLJson/test/testSongModel_CSLJson',
+          'modules/converters/MusicCSLJson/test/testSectionModel_CSLJson',
+          'modules/converters/MusicCSLJson/test/testBarModel_CSLJson',
+          'modules/converters/MusicCSLJson/test/testChordManager_CSLJson',
+          'modules/converters/MusicCSLJson/test/testChordModel_CSLJson',
+          'modules/converters/MusicCSLJson/test/testNoteManager_CSLJson',
+          'modules/converters/MusicCSLJson/test/testNoteModel_CSLJson',
+          'modules/converters/MusicXML/test/testSongModel_MusicXML',
+          'modules/chordSequence/test/testSongView_chordSequence',
+          'modules/MidiCSL/test/model/testSongModel_MidiCSL',
+          'modules/MidiCSL/test/model/testNoteModel_MidiCSL',
+          'modules/MidiCSL/test/model/testPlayerModel_MidiCSL',
+          'modules/MidiCSL/test/converters/testSongConverterMidi_MidiCSL',
+          'modules/MidiCSL/test/converters/testChordManagerConverterMidi_MidiCSL',
+          'modules/History/test/testHistoryModel',
+          'modules/ChordEdition/test/testChordEditionController',
+          'modules/NoteEdition/test/testNoteEditionController',
+          'modules/Edition/test/testElementView',
+          'modules/StructureEdition/test/testStructureEditionController',
+          'modules/FileEdition/test/testFileEditionController',
+          'modules/MainMenu/test/testMainMenuModel',
+          'modules/MainMenu/test/testMainMenuController',
+          'modules/LSViewer/test/testBarWidthManager',
+          'modules/Cursor/test/testCursorModel',
+          'modules/Audio/test/testAudioController',
+          'utils/test/testUserLog',
+          'utils/test/testAjaxUtils',
+          'utils/test/testChordUtils',
+          'utils/test/testNoteUtils',
+        ],
+        function(QUnit, testSongModel, testSectionModel, testChordManager, testChordModel, testNoteManager, testNoteModel, testBarModel, testBarManager, testSongBarsIterator, testNotesIterator, testPitchClass, testNote, testTimeSignatureModel, testKeySignatureModel, testSongModel_CSLJson, testSectionModel_CSLJson, testBarModel_CSLJson, testChordManager_CSLJson, testChordModel_CSLJson, testNoteManager_CSLJson, testNoteModel_CSLJson, testSongModel_MusicXML, testSongView_chordSequence, testSongModel_MidiCSL, testNoteModel_MidiCSL, testPlayerModel_MidiCSL, testSongConverterMidi_MidiCSL, testChordManagerConverterMidi_MidiCSL, testHistoryModel, testChordEditionController, testNoteEditionController, testElementView, testStructureEditionController, testFileEditionController, testMainMenuModel, testMainMenuController, testBarWidthManager, testCursorModel, testAudioController, testUserLog, testAjaxUtils, testChordUtils, testNoteUtils) {
+          QUnit.config.autoload = false;
+          QUnit.config.autostart = false;
+          function sendMessage() {
+            var args = [].slice.call(arguments);
+            alert(JSON.stringify(args));
+          }
+          QUnit.done(function() {
+            sendMessage('qunit.done', arguments[0].failed, arguments[0].passed, arguments[0].total, arguments[0].runtime);
+          });
+          QUnit.testDone(function() {
+              sendMessage('qunit.testDone', arguments[0].name, arguments[0].failed);
+          });
+          QUnit.log(function() {
+              sendMessage('qunit.log', arguments[0].result, arguments[0].actual, arguments[0].expected, arguments[0].message, arguments[0].source);
+          });
+          QUnit.moduleStart(function() {
+            sendMessage('qunit.moduleStart', arguments[0].name);
+          });
+          QUnit.moduleDone(function() {
+            sendMessage('qunit.moduleDone', arguments[0].name);
+          });
+          QUnit.testStart(function() {
+            sendMessage('qunit.testStart', arguments[0].name);
+          });
+
+          // Utils
+          module('Utils');
+          testUserLog.run();
+          testAjaxUtils.run();
+          testChordUtils.run();
+          testNoteUtils.run();
+          // Core Module
+          module('Core');
+          testNoteModel.run();
+          testChordModel.run();
+          testNoteManager.run();
+          testSongModel.run();
+          testSectionModel.run();
+          testBarModel.run();
+          testBarManager.run();
+          testChordManager.run();
+          testTimeSignatureModel.run();
+          testKeySignatureModel.run();
+          testSongBarsIterator.run();
+          testNotesIterator.run();
+          testPitchClass.run();
+          testNote.run();
+          // MusicCSLJSON Module
+          module('MusicCSLJSON');
+          testSongModel_CSLJson.run();
+          testSectionModel_CSLJson.run();
+          testBarModel_CSLJson.run();
+          testChordManager_CSLJson.run();
+          testChordModel_CSLJson.run();
+          testNoteManager_CSLJson.run();
+          testNoteModel_CSLJson.run();
+
+          // MusicXML Module
+          module('MusicXML');
+          testSongModel_MusicXML.run();
+
+          // Chord Sequence Module
+          module('Chord Sequence');
+          testSongView_chordSequence.run();
+
+          // Chord Edition
+          module('Chord Edition');
+          testChordEditionController.run();
+
+          // Note Edition
+          module('Note Edition');
+          testNoteEditionController.run();
+          testElementView.run();
+
+          // Structure Edition
+          module('Structure Edition');
+          testStructureEditionController.run();
+
+          // File Edition
+          module('File Edition');
+          testFileEditionController.run();
+
+          //LSViewer Module
+          module('LSViewer')
+          testBarWidthManager.run();
+
+          // Midi sound model Module
+          module('Midi sound model')
+          testPlayerModel_MidiCSL.run();
+          testSongModel_MidiCSL.run();
+          testNoteModel_MidiCSL.run();
+
+          testSongConverterMidi_MidiCSL.run();
+          testChordManagerConverterMidi_MidiCSL.run();
+
+          module('History');
+          testHistoryModel.run();
+          testMainMenuModel.run();
+          testMainMenuController.run();
+
+          testCursorModel.run();
+
+          testAudioController.run();
+          QUnit.load();
+          QUnit.start();
+    });
+    </script>
 </body>
 </html>

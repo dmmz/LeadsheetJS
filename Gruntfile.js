@@ -62,7 +62,8 @@ module.exports = function(grunt) {
 						jsPDF: 'empty:',
 						mustache: 'empty:',
 						underscore: 'empty:',
-						JsonDelta: 'empty:'
+						deepdiff: 'empty:'
+
 
 						/*
 						jquery: 'external-libs/jquery-2.1.0.min',
@@ -74,7 +75,6 @@ module.exports = function(grunt) {
 						pubsub: 'external-libs/tiny-pubsub.min',
 						jsPDF: 'external-libs/jspdf/jspdf.min',
 						mustache: 'external-libs/mustache',
-						JsonDelta: 'external-libs/json_delta_1.1.3_minified.js'
 						*/
 
 					},

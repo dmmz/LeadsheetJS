@@ -11,19 +11,24 @@
   },
   "repository": {
     "type": "git",
-    "url": "gitadmin@ns2292021.ovh.net:LeadsheetJS.git"
+    "url": "git@github.com:SonyCSL-Paris/LeadsheetJS.git"
   },
   "keywords": [
     "Leadsheet",
     "javascript",
     "audio",
-    "composer",
+    "music",
     "composition tools",
     "Sony CSL"
   ],
   "author": "Neullas, Martin",
-  "license": "Sony CSL",
-  "private": true,
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "deep-diff": "^0.3.4",
+    "jquery": "^2.2.3",
+    "underscore": "^1.8.3"
+  },
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-amd-build": "^0.8.2",

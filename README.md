@@ -1,92 +1,83 @@
-# LeadsheetJS
-[![Build Status](https://travis-ci.org/dmmz/LeadsheetJS.svg?branch=master)](https://travis-ci.org/dmmz/LeadsheetJS)
+# LeadsheetJS [![Build Status](https://travis-ci.org/SonyCSL-Paris/LeadsheetJS.svg?branch=master)](https://travis-ci.org/SonyCSL-Paris/LeadsheetJS)
+A JavaScript library for online music leadsheets (visualizing, playing, editing and other features). 
+2015 Daniel Martín and Timotée Neullas
 
-A JavaScript library for online music leadsheets (visualizing, playing, editing and other features). 2015 Daniel Martín and Timotée Neullas
+##Installation
+Inside the LeadsheetJS folder, you need to run [npm](http://blog.npmjs.org/post/85484771375/how-to-install-npm) to get all the dependencies:
+
+    npm install --prod
 
 ## How to use 
-
-LeadsheetJS uses RequireJS, so the script tag should look like this: 
-	`<script data-main="my_main.js" src="path_to/require.js"></script>`
-
-... where `my_main.js` is a simple script that uses LeadsheetJS:
-	
-	require.config({
-		baseUrl: "../../",
-		paths: {
-			jquery: 'external-libs/jquery-2.1.0.min',
-			jquery_autocomplete: 'external-libs/jquery.autocomplete.min',
-			vexflow: 'external-libs/vexflow-min',
-			Midijs: 'external-libs/Midijs/midijs.min',
-			pubsub: 'external-libs/tiny-pubsub.min',
-			mustache: 'external-libs/mustache',
-			text: 'external-libs/require-text',
-			bootstrap: 'external-libs/bootstrap/bootstrap.min',
-			jsPDF: 'external-libs/jspdf/jspdf.min',
-			JsonDelta: 'external-libs/json_delta_1.1.3_minified',
-		},
-		shim: {
-			vexflow: {
-				exports: 'Vex'
-			},
-			Midijs: {
-				exports: 'MIDI'
-			},
-			JsonDelta: {
-				exports: 'JSON_delta'
-			}
-		}
-	});
-
-	define(function() {
-			//we load constructor
-			var LeadsheetJS = require('_your_path_to_external_libs_/LeadsheetJS-0.1.0.min');
-			//we get a song in JSON format
-			var song = require('path_to_song/song.js');
-			//we set the parameters
-			var params = {
-				'viewer': {'HTMLElement': document.getElementById('myViewerDiv')}, // minimum parameters for viewer
-				'player': {'HTMLElement': document.getElementById('myPlayerDiv')}, // minimum parameters for player
-				'edition': {'notes': true}, // minimum parameters for edition (notes chords and structure are editable by default)
-			};
-			//we initialise LeadsheetJS
-			var myLeadsheet = LeadsheetJS.init(song, params);
-			// You are using LeadsheetJS
-		}
-	);
-
-The first part (require.config) includes all the libraries needed for LeadsheetJS to work. The second part is the script that uses LeadsheetJS. Basically it takes a song in a specific JSON format (see json examples at [/tests/songs](/tests/songs).  And it sends it to `LeadsheetJS.init` together with the desired parameters. This is a simple example of a json song with 2 bars with chords `C | Am` and as a melody a whole rest and a whole note C/4.
-
-	var simpleSong = {
-		composer: "John ",
-		title: "Whatever song",
-		time: "4/4",
-		changes: [{
-			id: 0,
-			name: "A",
-			bars: [
-			{
-				chords: [{p: "C",
-					ch: "",
-					beat: 1
-				}],
-				melody: [{
-					keys: ["B/4"],
-					duration: "wr"
-				}]
-			},{
-				chords: [{
-					p: "A",
-					ch: "m",
-					beat: 1
-				}],
-				melody: [{
-					keys: ["C/4"],
-					duration: "W"
-				}]
+LeadsheetJS uses RequireJS, so you should have 2 script tags: 	
+```html
+<script src="path_to/require.js"></script>
+<script src="LeadsheetJS_folder/config.js"></script>
+```	
+and then you can use it this way 
+```javascript
+require.config({
+	baseUrl: "LeadsheetJS_folder/",
+});
+require(
+	['LJS', '/absolute_path_to_song/song.js'], 
+	function(LeadsheetJS, song) {
+		//we set the parameters
+		var params = {
+			// minimum parameters for viewer
+			'viewer': {'HTMLElement': document.getElementById('myViewerDiv')}, 
+			// minimum parameters for player
+			'player': {'HTMLElement': document.getElementById('myPlayerDiv')}, 
+			// minimum parameters for edition (notes chords and structure are editable by default)
+			'edition': {'notes': true},
+		};
+		// We initialise LeadsheetJS
+		var myLeadsheet = LeadsheetJS.init(song, params);
+		// You are using LeadsheetJS
+	}
+);
+```
+The first part (require.config) defines the LeadsheetJS folder so require can resolve easily all the paths. If you wan't to use your own libraries, you need overload the paths values defined in config.js. For instance if you want to use your own version of jquery, you have to do so:
+```javascript
+require.config({
+	baseUrl: "LeadsheetJS_folder/",
+	paths:{
+		jquery: 'my_own_path/to_my_own_jquery'
+	}
+});
+```
+The second part is the script that uses LeadsheetJS. Basically it takes a song in a specific JSON format (see json examples at [/tests/songs](/tests/songs).  And it sends it to `LeadsheetJS.init` together with the desired parameters. This is a simple example of a json song with 2 bars with chords `C | Am` and as a melody a whole rest and a whole note C/4.
+```javascript
+var simpleSong = {
+	composer: "John ",
+	title: "Whatever song",
+	time: "4/4",
+	changes: [{
+		id: 0,
+		name: "A",
+		bars: [
+		{
+			chords: [{p: "C",
+				ch: "",
+				beat: 1
+			}],
+			melody: [{
+				keys: ["B/4"],
+				duration: "wr"
+			}]
+		},{
+			chords: [{
+				p: "A",
+				ch: "m",
+				beat: 1
+			}],
+			melody: [{
+				keys: ["C/4"],
+				duration: "W"
 			}]
 		}]
-	};
-
+	}]
+};
+```
 There examples of different configurations of LeadsheetJS in http://lsdb.flow-machines.com/leadsheetJS
 
 
@@ -119,7 +110,8 @@ To run tests in the browser, open a new tab:
  - `tests/viewer-test.html` for visual tests
 
  You can also run the tests using cli with
- 	$ grunt qunit
+
+    $ grunt qunit
 
 Tests use RequireJS and Qunit, like in http://www.nathandavison.com/article/17/using-qunit-and-requirejs-to-build-modular-unit-tests
 

@@ -1,4 +1,6 @@
-define([
+define(
+	'LJS',
+	[
 	'modules/Comments/src/CommentsController',
 	'modules/ChordEdition/src/ChordEdition',
 	'modules/chordSequence/src/SongView_chordSequence',

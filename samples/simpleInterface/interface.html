@@ -19,16 +19,161 @@
 		<![endif]-->
 	</head>
 	<body>
-	<div id="menu-container"></div>
-	<div id="chordSequence1"></div>
-	<div id="chordSequence2"></div>
-	<div id="main-container" class="container-fluid">
-		<div id="canvas_container"></div>
-	</div>
-	<div id="rightPanel"></div>
-    <div id="player_test"></div>
-  
+		<div id="menu-container"></div>
+		<div id="chordSequence1"></div>
+		<div id="chordSequence2"></div>
+		<div id="main-container" class="container-fluid">
+			<div id="canvas_container"></div>
+		</div>
+		<div id="rightPanel"></div>
+	    <div id="player_test"></div>
+		<script src="../../external-libs/require.js"></script>
+		<script src="../../config.js"></script>
+		<script>
+			requirejs.config({
+				baseUrl: "../../",
+			});
+			require(['LJS', 'tests/test-songs', 'tests/songs/Solar'], function(LJS, testSongs, solar){
+				var menuHTML = $('#menu-container')[0];
+				var viewerHTML = $("#canvas_container")[0];
+				var playerHTML = $('#player_test')[0];
 
-	<script data-main="interface.js" src="../../external-libs/require.js"></script>
+				var historyHTML = $('#rightPanel');
+				var soundfontUrl = "../../external-libs/Midijs/soundfont/";
+
+				var viewerOptions = {
+					HTMLElement: viewerHTML,
+					viewOptions: {
+						//displayTitle: true,
+						//displayComposer: true,
+						layer: true,
+						detectEventOnAllDocument: true
+						//typeResize: "fluid", // "scale" | "fluid"
+						//heightOverflow: "auto", // "scroll" | "auto"
+					}
+				};
+
+				var playerOptions = {
+					HTMLElement: playerHTML,
+					imgUrl: '/modules/MidiCSL/img',
+					interactive: true,
+					viewOptions: {
+						displayMetronome: true,
+						displayLoop: true,
+						displayTempo: true,
+						changeInstrument: false,
+						autoload: false,
+						progressBar: true
+					},
+					audio:{
+						//audioFile: '/tests/audio/solar.wav',
+						//tempo: 170
+						audioFile: '/tests/audio/Solar_120_bpm.335',
+						tempo: 120
+					},
+					midi:{
+						soundfontUrl: soundfontUrl
+					}
+				};
+
+				var tags = [{
+						startBeat: 1,
+						endBeat: 4,
+						name: 'First bar',
+						color: "#559"
+					}, {
+						startBeat: 5,
+						endBeat: 16,
+						name: 'This is second part',
+						color: "#995"
+					}, {
+						startBeat: 16,
+						endBeat: 33,
+						name: 'New line !',
+						color: "#599"
+					}, {
+						startBeat: 44,
+						endBeat: 49,
+						name: 'Outro',
+						color: "#595"
+					}];
+
+				var params = {
+					viewer: viewerOptions,
+					tags : tags,
+					player: playerOptions,
+					edition: {
+						notes: true,
+						imgUrl: {
+							notes: '/modules/NoteEdition/img',
+							chords: '/modules/NoteEdition/img',
+							structure: '/modules/NoteEdition/img',
+						},
+						chords: true,
+						structure: true,
+						history: {
+							enable: true,
+							HTMLElement: historyHTML, // if not precised, then it doesn't display history but keyboard ctrl+z and y are working
+						},
+						menu: {
+							HTMLElement: menuHTML
+						},
+						composerSuggestions: ['Miles Davis', 'John Coltrane', 'Bill Evans', 'Charlie Parker', 'Thelonious Monk']
+					},
+				};
+				var myLeadsheet = LJS.init(solar, params);
+				//console.log(myLeadsheet);
+				//function loadComments = function(waveMng, viewer, songModel) {
+					var userSession = {
+						name: 'Dani',
+						id: '323324422',
+						img: '/tests/img/avatar.png'
+					};
+					var commentsMng = new LJS.Comments({
+						audio: myLeadsheet.audioPlayer,
+						viewer: myLeadsheet.viewer, 
+						song: myLeadsheet.songModel, 
+						userSession: userSession, 
+						noteSpaceManager: myLeadsheet.noteSpaceManager, 
+						notesCursor: myLeadsheet.notesCursor,
+						chordsEditor: myLeadsheet.edition.chordEdition
+					});
+					commentsMng.addComment({
+						userName: 'Dani Martin Martinez',
+						id: '1234e',
+						userId: '323324422',
+						img: userSession.img,
+						text: 'This is a long audio comment, a very very long comment This is a long audio comment, a very very long comment This is a long audio comment, a very very long comment This is a long audio comment, a very very long comment This is a long audio comment, a very very long comment This is a long audio comment, a very very long comment This is a long audio comment, a very very long comment This is a long audio comment, a very very long comment This is a long audio comment, a very very long comment This is a long audio comment, a very very long comment This is a long audio comment, a very very long comment This is a long audio comment, a very very long comment This is a long audio comment, a very very long comment',
+						timeInterval: [1.5891220809932014, 2.668046112917529],
+						date: '1 min ago',
+						type: 'audio'
+					});
+
+					var scoreComment = {
+						userName: 'Dani',
+						id: '98765',
+						img:userSession.img,
+						text: 'this is a notes comment' ,
+						beatInterval:[1, 5],
+						date: '1 day ago',
+						type: 'notes'
+					};
+					commentsMng.addComment(scoreComment);
+
+					commentsMng.addComment({
+						userName: 'uampa',
+						id:'123k304',
+						img: userSession.img,
+						text: 'this is chords comment',
+						beatInterval:[1, 5],
+						date: '1 month ago',
+						type: 'chords'	
+					});
+					//we need to draw again to take into account the new comments module.  
+					
+					
+					$.publish('ToViewer-draw', myLeadsheet.songModel);
+			});
+		</script>
 	</body>
 </html>

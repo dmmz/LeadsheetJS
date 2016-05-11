@@ -6,6 +6,33 @@
 </head>
 <body>
     <div id="score"></div>
-	<script data-main="testMusicXML.js" src="../../external-libs/require.js"></script>
+	<script src="../../external-libs/require.js"></script>
+	<script src="../../config.js"></script>
+	<script>
+	requirejs.config({
+		baseUrl: "../../",
+	});
+	require([
+		'utils/UserLog',
+		'utils/AjaxUtils',
+		'modules/core/src/SongModel',
+		'modules/core/src/TimeSignatureModel',
+		'modules/LSViewer/src/LSViewer',
+		'modules/converters/MusicXML/utils/musicXMLParser',
+		'modules/converters/MusicXML/src/SongModel_MusicXML',
+		'modules/converters/MusicXML/utils/musicXMLParser'
+		],
+		function(UserLog, AjaxUtils, SongModel, TimeSignatureModel, LSViewer, musicXMLParser, SongModel_MusicXML, MusicXMLParser) {
+			var filepath = 'Ferme.xml';
+			var mxlParse = new MusicXMLParser();
+			var docString = mxlParse.fetch(filepath);
+			var songModel = SongModel_MusicXML.importFromMusicXML(docString);
+			//console.log(songModel);
+			var viewer = new LSViewer($('#score')[0]);
+			viewer.draw(songModel);
+			songModel = SongModel_MusicXML.importFromMusicXML(mxlParse.fetch('Faire fi de tout.xml'));
+			viewer.draw(songModel);
+	});
+	</script>
 </body>
 </html>

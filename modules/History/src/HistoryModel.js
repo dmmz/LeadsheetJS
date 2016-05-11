@@ -1,9 +1,8 @@
 define([
 	'jquery',
 	'utils/UserLog',
-	'JsonDelta'
-], function($, UserLog, JSON_delta) {
-
+	'deepdiff'
+], function($, UserLog, deepdiff) {
 	/**
 	 * HistoryModel is an array of state, it allow a high level management of Historys
 	 * @exports History/HistoryModel
@@ -30,8 +29,12 @@ define([
 
 	HistoryModel.prototype.getState = function(position) {
 		var leadsheet = $.extend(true, {}, this.lastLeadsheet); //cloning,so that this.lastLeadsheet is not affected
+		
 		for (var i = this.historyList.length - 1; i > position; i--) {
-			leadsheet = JSON_delta.patch(leadsheet, this.historyList[i].invertedDelta);
+			var differences = this.historyList[i].differences;
+			for (var j = 0; j < differences.length; j++){
+				deepdiff.applyChange(leadsheet, this.lastLeadsheet, differences[j]);	
+			}
 		}
 		return leadsheet;
 	};
@@ -63,25 +66,25 @@ define([
 
 		var time = new Date().toLocaleString();
 		title = title ? title : '';
-		var invertedDelta;
+		var differences;
 		var leadsheetToCompareTo;
+
+
+
 		//first time lastLeadsheet will be null so there will be no delta to obtain
 		if (this.lastLeadsheet) {
-			if (updateLastEntry) {
-				leadsheetToCompareTo = this.getState(this.currentPosition - 1); //get previous leadsheet, as we want delta to get to previous leadsheet, not the last
-			} else {
-				leadsheetToCompareTo = this.getState(this.currentPosition); //get leadsheet of currentPosition
-			}
-			invertedDelta = JSON_delta.diff(leadsheet, leadsheetToCompareTo);
-			if (invertedDelta.length === 0) { //in case there was no change (not probable)
+			var pos = updateLastEntry ? this.currentPosition - 1 : this.currentPosition;
+			leadsheetToCompareTo = this.getState(pos); //get previous leadsheet, as we want delta to get to previous leadsheet, not the last
+			differences = deepdiff.diff(leadsheet, leadsheetToCompareTo);
+			if (!differences) { //in case there was no change (not probable)
 				return;
 			}
 		} else {
-			invertedDelta = null;
+			differences = null;
 		}
 
 		var newHistorical = {
-			invertedDelta: invertedDelta,
+			differences: differences,
 			title: title,
 			time: time,
 			extraData: extraData
