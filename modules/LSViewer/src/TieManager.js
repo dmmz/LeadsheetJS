@@ -63,20 +63,21 @@ define(['vexflow'], function(Vex) {
 			auxStartNote;
 
 		for (var i in this.ties) {
-			iNoteTieStart = this.ties[i][0];
-			iNoteTieEnd = this.ties[i][1];
+			if (this.ties[i].length === 2) {
+				iNoteTieStart = this.ties[i][0];
+				iNoteTieEnd = this.ties[i][1];
 
-			auxStartNote = noteViews[iNoteTieStart].getVexflowNote();
+				auxStartNote = noteViews[iNoteTieStart].getVexflowNote();
 
-			iTieStartBar = nm.getNoteBarNumber(iNoteTieStart, song);
-			iTieEndBar = nm.getNoteBarNumber(iNoteTieEnd, song);
+				iTieStartBar = nm.getNoteBarNumber(iNoteTieStart, song);
+				iTieEndBar = nm.getNoteBarNumber(iNoteTieEnd, song);
 
-			if (!barWidthMng.inSameLine(iTieStartBar, iTieEndBar)) {
-				drawTie(auxStartNote, null);
-				auxStartNote = null;
+				if (!barWidthMng.inSameLine(iTieStartBar, iTieEndBar)) {
+					drawTie(auxStartNote, null);
+					auxStartNote = null;
+				}
+				drawTie(auxStartNote, noteViews[iNoteTieEnd].getVexflowNote());
 			}
-			drawTie(auxStartNote, noteViews[iNoteTieEnd].getVexflowNote());
-
 		}
 	};
 

@@ -6,8 +6,8 @@ define([
 	'modules/core/src/PitchClass',
 	'utils/UserLog',
 	'jquery',
-	'pubsub',
-], function(Mustache, SongBarsIterator, ChordModel, NoteUtils, PitchClass, UserLog, $, pubsub) {
+	'underscore',
+], function(Mustache, SongBarsIterator, ChordModel, NoteUtils, PitchClass, UserLog, $, _) {
 	/**
 	 * ChordEditionController manages all chords edition function
 	 * @exports ChordEdition/ChordEditionController
@@ -100,11 +100,13 @@ define([
  
 	ChordEditionController.prototype.pasteChords = function(copiedChords) {
 		var chordMng = this.songModel.getComponent('chords');
-		var startPasteBeat = this.getSelectedChordsBeats()[0];
-		var endPasteBeat = startPasteBeat + copiedChords[copiedChords.length - 1].beat;
+		var selectedChordsBeats = this.getSelectedChordsBeats();
+		var startPasteBeat = selectedChordsBeats[0];
+		var endPasteBeat = this.getSelectedChordsBeats().length > 1 ? _.last(selectedChordsBeats) : startPasteBeat + 1;
 		// remove chords in affected chordspaces
 		var firstChordSpace = chordMng.getBarNumAndBeatFromBeat(this.songModel, startPasteBeat);
 		var lastChordSpace = chordMng.getBarNumAndBeatFromBeat(this.songModel, endPasteBeat);
+		var previousFollowingChord = chordMng.getChordForBeat(this.songModel, endPasteBeat);
 		if (firstChordSpace.exceedsSongLength || lastChordSpace.exceedsSongLength){
 			throw "ChordEdition error exceedsSongLength";
 		}
@@ -120,6 +122,14 @@ define([
 				copiedChords[i].setBeat(barNumAndBeat.beatNumber);
 				chordMng.addChord(copiedChords[i]);
 			}
+		}
+		var newFollowingChord = chordMng.getChordForBeat(this.songModel, endPasteBeat);
+		if (!_.isEqual(previousFollowingChord, newFollowingChord)) {
+			// if previousFollowingChord was not removed by paste we need to clone it
+			var chordToAdd = new ChordModel(previousFollowingChord.serialize());
+			chordToAdd.setBeat(lastChordSpace.beatNumber);
+			chordToAdd.setBarNumber(lastChordSpace.barNumber);
+			chordMng.addChord(chordToAdd);
 		}
 		$.publish('ToHistory-add', ['Paste chord', false, [startPasteBeat, endPasteBeat]]);
 	};

@@ -94,10 +94,14 @@
 		 */
 		ChordManager.prototype.getChordsRelativeToBeat = function(song, startBeat, endBeat, arrBeatChords) {
 			arrBeatChords = arrBeatChords || this.getBeatsBasedChordIndexes(song);
-
 			var selectedChords = [];
 			for (var i = 0; i < arrBeatChords.length; i++) {
-				if (arrBeatChords[i] >= startBeat && arrBeatChords[i] < endBeat) {
+				if (arrBeatChords[i] >= endBeat && arrBeatChords[i-1] < startBeat) {
+					selectedChords.push({
+						index: i - 1,
+						beat: 0
+					});
+				} else if (arrBeatChords[i] >= startBeat && arrBeatChords[i] < endBeat) {
 					selectedChords.push({
 						index: i,
 						beat: arrBeatChords[i] - startBeat
@@ -105,6 +109,15 @@
 				}
 			}
 			return selectedChords;
+		};
+
+		/**
+		 * @param  {SongModel} song
+		 * @return {ChordModel}
+		 */
+		ChordManager.prototype.getChordForBeat = function(song, beat){
+			var chordIndexAndBeat = this.getChordsRelativeToBeat(song, beat, beat);
+			return chordIndexAndBeat.length === 1 ? this.chords[chordIndexAndBeat[0].index] : false;	
 		};
 
 		/**
@@ -139,24 +152,6 @@
 			};
 
 		};
-		//not needed
-		/*ChordManager.prototype.getBeatFromBarNumAndBeat = function(song, barNumAndBeat) {
-			var songIt = new SongBarsIterator(song);
-			var startBeat = 1;
-			var incBeat, offsetBeat;
-			while (songIt.hasNext()){
-
-				if (songIt.getBarIndex() === barNumAndBeat.barNum){
-					incBeat = 4 / songIt.getBarTimeSignature().getBeatUnit();
-					offsetBeat = (barNumAndBeat.beat - 1) * incBeat;
-					return 
-
-				}
-
-				songIt.next();
-				startBeat += songIt.getBarTimeSignature().getQuarterBeats();
-			}
-		};*/
 
 		/**
 		 * Set a new chord to a specific index, if chords[index] already have a chord it will replace it
