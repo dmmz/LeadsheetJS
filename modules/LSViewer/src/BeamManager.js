@@ -1,4 +1,4 @@
-define(['vexflow'], function(Vex) {
+define(['vexflow', 'modules/LSViewer/src/LSNoteView',], function(Vex, LSNoteView) {
 	/**
     * 
     * @exports LSViewer/BeamManager
@@ -9,13 +9,33 @@ define(['vexflow'], function(Vex) {
 		this.lastNoteBeat = -1;
 	}
 
+	BeamManager.prototype.setBeamIndexes = function(barNotes, tupletMng, offsetIndex) {
+		var noteView;
+		var index;
+		var tuplet = false;
+		for (var i = 0; i < barNotes.length; i++) {
+			noteView = new LSNoteView(barNotes[i]);
+			//index = offsetIndex + i;
+			if (tupletMng.isNewTuplet(i)){
+				tuplet = true;
+			}
+			if (!tuplet.inTuplet(i)){
+				tuplet = false;
+			}
+			
+		}
+		
+		
+	};
+
 	/**
 	 * saves information for later drawing beams: it is set in this.beams
 	 * @param  {NoteManagerModel} noteMng
 	 * @param  {Number} iNote    index of note
 	 * @param  {LSNoteView} noteView
+	 * @param  {Boolean} openTuplet true if note in 'iNote' is inside a tuplet, this allows us to beam together tuplets that exceed on beat; e.g. an 8th note septet (occupies 2 beats)
 	 */
-	BeamManager.prototype.checkBeam = function(noteMng, iNote, noteView) {
+	BeamManager.prototype.checkBeam = function(noteMng, iNote, noteView, tupletMng) {
 
 		/**
 		 * isSameBeat: for now we just consider beaming at quarter beat level (in the future we may decide beaming level dependign on time signature )
@@ -29,18 +49,16 @@ define(['vexflow'], function(Vex) {
 
 		var noteBeat;
 		if (noteView.isBeamable()) {
+
 			noteBeat = noteMng.getNoteBeat(iNote);
 			//new position for beam array when they are not in same beat
-			if (!isSameBeat(noteBeat, this.lastNoteBeat)) {
-				//if length is not > 1, it means that we had a lonely beamable note, so we won't beam it
-				//thus, we don't increment counter -> we overwrite position
-				if (this.beams[this.counter] && this.beams[this.counter].length > 1) {
-					this.counter++;
-				}
-				this.beams[this.counter] = [];
+			if (tupletMng.isNewTuplet(iNote) || !isSameBeat(noteBeat, this.lastNoteBeat) && !tupletMng.inTuplet(iNote)) {
+				//we create new beam
+				this.beams[this.counter + 1] = [];
+				this.counter++;
 			}
+			console.log(this.beams);
 			var vexflowNote = noteView.getVexflowNote();
-
 			this.beams[this.counter].push(vexflowNote);
 			this.lastNoteBeat = noteBeat;
 		}

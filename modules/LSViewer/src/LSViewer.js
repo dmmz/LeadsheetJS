@@ -1,3 +1,4 @@
+
 define([
 		'vexflow',
 		'modules/LSViewer/src/LSNoteView',
@@ -356,19 +357,27 @@ define([
 					beamMng = new BeamManager();
 					tupletMng = new TupletManager();
 					bar = [];
-
+					var tmpNote;
 					if (!self.ONLY_CHORDS) {
 						barNotes = nm.getNotesAtCurrentBar(songIt);
+
 						for (j = 0, v = barNotes.length; j < v; j++) {
-							tieMng.checkTie(barNotes[j], iNote);
+							tmpNote = iNote + j;
+							tieMng.checkTie(barNotes[j], tmpNote);
 							tupletMng.checkTuplet(barNotes[j], j);
+						}
+
+						beamMng.setBeamIndexes(barNotes, tupletMng, iNote);
+
+						for (j = 0, v = barNotes.length; j < v; j++){
+							tmpNote = iNote + j;
 							noteView = new LSNoteView(barNotes[j]);
-							beamMng.checkBeam(nm, iNote, noteView);
+							beamMng.checkBeam(nm, tmpNote, noteView, tupletMng);
 
 							bar.push(noteView.getVexflowNote());
 							barNoteViews.push(noteView);
-							iNote++;
 						}
+						iNote+= barNotes.length;
 					}
 					//BARS
 					barDimensions = self.barWidthMng.getDimensions(songIt.getBarIndex());
@@ -390,7 +399,6 @@ define([
 					var vxfBar = {
 						barDimensions: barDimensions,
 						timeSignature: songIt.getBarTimeSignature(),
-
 					};
 					
 					// we just calculate offset for first bar

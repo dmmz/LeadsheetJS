@@ -107,6 +107,7 @@ define(function(require) {
     var testMainMenuModel = require('modules/MainMenu/test/testMainMenuModel');
     var testMainMenuController = require('modules/MainMenu/test/testMainMenuController');
     var testBarWidthManager = require('modules/LSViewer/test/testBarWidthManager');
+    var testTupletManager = require('modules/LSViewer/test/testTupletManager');
     var testCursorModel = require('modules/Cursor/test/testCursorModel');
     var testAudioController = require('modules/Audio/test/testAudioController');
 
@@ -170,6 +171,7 @@ define(function(require) {
     //LSViewer Module
     module('LSViewer')
     testBarWidthManager.run();
+    testTupletManager.run();
 
     // Midi sound model Module
     module('Midi sound model')

@@ -9,7 +9,7 @@ define(function(){
 				name:"A",
 				bars:
 				[
-					{
+					/*{
 						chords:[{p:"A",ch:"M7",beat:1}],
 						melody:
 						[
@@ -57,38 +57,137 @@ define(function(){
 								
 						]
 					},
+					//TUPLETS
 					{
 						melody:
 						[
-								//bar2
-								{ keys: ["g/4"], duration: "16" },{ keys: ["a/4"], duration: "16" },{ keys: ["b/4"], duration: "16",  },{ keys: ["b/4"], duration: "16" },
-								{ keys: ["g/4"], duration: "16" },{ keys: ["a/4"], duration: "16" },{ keys: ["b/4"], duration: "16",  },{ keys: ["b/4"], duration: "16" },
-								{ keys: ["g/4"], duration: "16" },{ keys: ["a/4"], duration: "16" },{ keys: ["b/4"], duration: "16",  },{ keys: ["b/4"], duration: "16" },
-								{ keys: ["g/4"], duration: "16" },{ keys: ["a/4"], duration: "16" },{ keys: ["b/4"], duration: "16",  },{ keys: ["b/4"], duration: "16" }
+							//first beat
+							
+							{ keys: ["g/4"], duration: "16", time_modification: '5/4', tuplet: 'start', },
+							{ keys: ["a/4"], duration: "16", time_modification: '5/4'  },
+							{ keys: ["b/4"], duration: "16", time_modification: '5/4'  },
+							{ keys: ["b/4"], duration: "16", time_modification: '5/4'  },
+							{ keys: ["b/4"], duration: "16", time_modification: '5/4', tuplet: 'stop'},
+
+							//secong bea
+							{ keys: ["c/4"], duration: "32", time_modification: '7/8', tuplet: 'start', },
+							{ keys: ["b/4"], duration: "32", time_modification: '7/8'  },
+							{ keys: ["a/4"], duration: "32", time_modification: '7/8'  },
+							{ keys: ["g/4"], duration: "32", time_modification: '7/8'  },
+							{ keys: ["f/4"], duration: "32", time_modification: '7/8'  },
+							{ keys: ["e/4"], duration: "32", time_modification: '7/8'  },
+							{ keys: ["d/4"], duration: "32", time_modification: '7/8', tuplet: 'stop'},
 								
+								// rest of beats
+							{ keys: ["g/4"], duration: "16", time_modification: '10/8', tuplet: 'start'},
+							{ keys: ["a/4"], duration: "16", time_modification: '10/8' },
+							{ keys: ["b/4"], duration: "16", time_modification: '10/8' },
+							{ keys: ["b/4"], duration: "16", time_modification: '10/8' },
+							{ keys: ["b/4"], duration: "16", time_modification: '10/8' },
+
+							{ keys: ["a/4"], duration: "16", time_modification: '10/8' },
+							{ keys: ["b/4"], duration: "16", time_modification: '10/8' },
+							{ keys: ["b/4"], duration: "16", time_modification: '10/8' },
+							{ keys: ["b/4"], duration: "16", time_modification: '10/8' },
+							{ keys: ["g/4"], duration: "16", time_modification: '10/8', tuplet: 'stop'}
+						]
+					},
+					{	
+						melody:
+						[
+							
+							{ keys: ["c/4"], duration: "8", time_modification: '7/4', tuplet: 'start'},
+							{ keys: ["d/4"], duration: "8", time_modification: '7/4'},
+							{ keys: ["e/4"], duration: "8", time_modification: '7/4'},
+							{ keys: ["f/4"], duration: "8", time_modification: '7/4'},
+							{ keys: ["g/4"], duration: "8", time_modification: '7/4'},
+							{ keys: ["a/4"], duration: "8", time_modification: '7/4'},
+							{ keys: ["b/4"], duration: "8", time_modification: '7/4', tuplet: 'stop'},
+
+							{ keys: ["a/4"], duration: "q" },
+
+							{ keys: ["g/4"], duration: "16", time_modification: '6/4', tuplet: 'start'},
+							{ keys: ["a/4"], duration: "16", time_modification: '6/4' },
+							{ keys: ["b/4"], duration: "16", time_modification: '6/4' },
+							{ keys: ["b/4"], duration: "16", time_modification: '6/4' },
+							{ keys: ["b/4"], duration: "16", time_modification: '6/4' },
+							{ keys: ["b/4"], duration: "16", time_modification: '6/4', tuplet: 'stop'}
+						]
+					},
+					{
+						timeSignature:'3/4',
+						melody:
+						[
+							{ keys: ["c/4"], duration: "q", time_modification: '4/3', tuplet: 'start'},
+							{ keys: ["d/4"], duration: "q", time_modification: '4/3'},
+							{ keys: ["e/4"], duration: "q", time_modification: '4/3'},
+							{ keys: ["e/4"], duration: "q", time_modification: '4/3', tuplet: 'stop'}
+						]
+					},
+					{
+						melody:
+						[
+							{ keys: ["c/4"], duration: "h", time_modification: '4/3', tuplet: 'start'},
+							{ keys: ["e/4"], duration: "q", time_modification: '4/3'},
+							{ keys: ["e/4"], duration: "q", time_modification: '4/3', tuplet: 'stop'}
+						]	
+					},
+					{
+						timeSignature:'6/4',
+						melody:
+						[
+							{ keys: ["c/4"], duration: "q", time_modification: '5/3', tuplet: 'start'},
+							{ keys: ["d/4"], duration: "q", time_modification: '5/3'},
+							{ keys: ["e/4"], duration: "q", time_modification: '5/3'},
+							{ keys: ["f/4"], duration: "q", time_modification: '5/3'},
+							{ keys: ["e/4"], duration: "q", time_modification: '5/3', tuplet: 'stop'},
+							{ keys: ["a/4"], duration: "q" },
+							{ keys: ["a/4"], duration: "q" },
+							{ keys: ["a/4"], duration: "q" }
+						]	
+
+					},
+					{
+						timeSignature:'6/8',
+						melody:
+						[
+							{ keys: ["c/4"], duration: "8", time_modification: '2/3', tuplet: 'start'},
+							{ keys: ["d/4"], duration: "8", time_modification: '2/3', tuplet: 'stop'},
+							{ keys: ["a/4"], duration: "q", dot:true }
+						]
+
+					},
+					{
+						timeSignature:'12/8',
+						melody:
+						[
+							{ keys: ["c/4"], duration: "8", time_modification: '2/3', tuplet: 'start'},
+							{ keys: ["d/4"], duration: "8", time_modification: '2/3', tuplet: 'stop'},
+							{ keys: ["a/4"], duration: "q", dot:true },
+							{ keys: ["a/4"], duration: "q", dot:true },
+							{ keys: ["a/4"], duration: "q", dot:true }
+						]
+
+					},
+					{
+						timeSignature:'4/4',
+						melody:
+						[
+								//bar2
+								{ keys: ["g/4"], duration: "h" },
+								{ keys: ["g/4"], duration: "h" }
 						]
 					},
 					{
 						melody:
 						[
 								//bar2
-								{ keys: ["g/4"], duration: "h" },
-								{ keys: ["g/4"], duration: "h" },
-								
-								
+								{ keys: ["g/4"], duration: "q" },
+								{ keys: ["g/4"], duration: "q" },
+								{ keys: ["g/4"], duration: "q" },
+								{ keys: ["g/4"], duration: "q", tie: 'start'}
 						]
 					},
-					{
-						melody:
-						[
-								//bar2
-								{ keys: ["g/4"], duration: "q" },
-								{ keys: ["g/4"], duration: "q" },
-								{ keys: ["g/4"], duration: "q" },
-								{ keys: ["g/4"], duration: "q", tie: 'start'},
-						]
-					}
-					,
 					{
 						melody:
 						[
@@ -104,33 +203,36 @@ define(function(){
 							
 						]
 
-					},
+					},*/
 					{
 						melody:
 						[
-							//bar5
+								//
+								{ keys: ["a/4"], duration: "q", tuplet:'start', time_modification:'3/2' },
+								{ keys: ["b/4"], duration: "8", tuplet:'stop', time_modification:'3/2' },
+								//
+								{ keys: ["a/4"], duration: "q", tuplet:'start', time_modification:'3/2' },
+								{ keys: ["b/4"], duration: "8" , time_modification:'3/2'},
+								{ keys: ["b/4"], duration: "16" , time_modification:'3/2'},
+								{ keys: ["b/4"], duration: "16", tuplet:'stop', time_modification:'3/2' },
+								//
 								{ keys: ["a/4"], duration: "8", tuplet:'start', time_modification:'3/2' },
 								{ keys: ["b/4"], duration: "8" , time_modification:'3/2'},
 								{ keys: ["b/4"], duration: "8", tuplet:'stop', time_modification:'3/2' },
-								{ keys: ["a/4"], duration: "8", tuplet:'start', time_modification:'3/2' },
-								{ keys: ["b/4"], duration: "8" , time_modification:'3/2'},
-								{ keys: ["b/4"], duration: "8", tuplet:'stop', time_modification:'3/2' },
-								{ keys: ["a/4"], duration: "8", tuplet:'start', time_modification:'3/2' },
-								{ keys: ["b/4"], duration: "8" , time_modification:'3/2'},
-								{ keys: ["b/4"], duration: "8", tuplet:'stop', time_modification:'3/2' },
+								//
 								{ keys: ["a/4"], duration: "8", tuplet:'start', time_modification:'3/2' },
 								{ keys: ["b/4"], duration: "8" , time_modification:'3/2'},
 								{ keys: ["b/4"], duration: "8", tuplet:'stop', time_modification:'3/2' }
 
 						]
-					},
+					}/*,
 					{
 						melody:[
 							{ keys: ["b/4"], duration: "wr" }
 						]
 					},
 					{
-						melody:[
+						melody: [
 							{ keys: ["b/4"], duration: "hr" },
 							{ keys: ["b/4"], duration: "hr" }
 						]
@@ -227,7 +329,7 @@ define(function(){
 								{ keys: ["g/4"], duration: "64" },{ keys: ["a/4"], duration: "64" },{ keys: ["b/4"], duration: "64",  },{ keys: ["b/4"], duration: "64" }
 
 						]
-					}
+					}*/
 				]
 			}
 		]
