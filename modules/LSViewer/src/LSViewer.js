@@ -367,17 +367,16 @@ define([
 							tupletMng.checkTuplet(barNotes[j], j);
 						}
 
-						beamMng.setBeamIndexes(barNotes, tupletMng, iNote);
-
+						var beamIndexes = beamMng.getBeamIndexes(barNotes, tupletMng, songIt);
+						
 						for (j = 0, v = barNotes.length; j < v; j++){
-							tmpNote = iNote + j;
+							//tmpNote = iNote + j;
 							noteView = new LSNoteView(barNotes[j]);
-							beamMng.checkBeam(nm, tmpNote, noteView, tupletMng);
-
 							bar.push(noteView.getVexflowNote());
 							barNoteViews.push(noteView);
 						}
-						iNote+= barNotes.length;
+						beamMng.setBeams(beamIndexes, barNoteViews);
+						iNote += barNotes.length;
 					}
 					//BARS
 					barDimensions = self.barWidthMng.getDimensions(songIt.getBarIndex());

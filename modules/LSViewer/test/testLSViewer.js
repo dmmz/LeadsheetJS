@@ -41,48 +41,48 @@ define(['tests/DisplayTester',
 			var songModel = SongModel_CSLJson.importFromMusicCSLJSON(AloneTogether);
 			var dispTest = new DisplayTester();
 
-			// var viewer = new LSViewer($('#ls1')[0],{typeResize: 'fluid',heightOverflow: 'scroll'});
-			// viewer.draw(songModel);
+			var viewer = new LSViewer($('#ls1')[0],{typeResize: 'fluid',heightOverflow: 'scroll'});
+			viewer.draw(songModel);
 
-			// var viewer2 = new LSViewer($('#ls2')[0],{typeResize: 'scale'});
-			// viewer2.draw(songModel);
+			var viewer2 = new LSViewer($('#ls2')[0],{typeResize: 'scale'});
+			viewer2.draw(songModel);
 			
-			// dispTest.runTest(function(divContainer){
-			// 	var viewer = new LSViewer(divContainer,{heightOverflow:'resizeDiv',layer:true});
-			// 	var song = SongModel_CSLJson.importFromMusicCSLJSON(Solar);
-			// 	var cM = new CursorModel(song.getComponent('notes'));
+			dispTest.runTest(function(divContainer){
+				var viewer = new LSViewer(divContainer,{heightOverflow:'resizeDiv',layer:true});
+				var song = SongModel_CSLJson.importFromMusicCSLJSON(Solar);
+				var cM = new CursorModel(song.getComponent('notes'));
 			
-			// 	var audioModule = new AudioModule(song,{draw:
-			// 										{
-			// 											viewer: viewer,
-			// 											cursorNotes: cM
-			// 										}
-			// 									});
-			// 	var noteSpaceManager = new NoteSpaceManager(cM, viewer);
-			// 	var userSession = {name:'Dani', id:'323324422',img:'/tests/img/dani-profile.jpg'};
-			// 	//var audioComments = new AudioComments(waveMng,viewer,song,userSession);
-			// 	/*audioComments.addComment({
-			// 		userName: 'Dani',
-			// 		img: '/tests/img/dani-profile.jpg',
-			// 		text: 'I am hungry',
-			// 		timeInterval: [1.5891220809932014, 2.668046112917529],
-			// 		color: '#F00'
-			// 	});
+				var audioModule = new AudioModule(song,{draw:
+			 										{
+			 											viewer: viewer,
+			 											cursorNotes: cM
+			 										}
+			 									});
+			 	var noteSpaceManager = new NoteSpaceManager(cM, viewer);
+			 	var userSession = {name:'Dani', id:'323324422',img:'/tests/img/dani-profile.jpg'};
+			 	//var audioComments = new AudioComments(waveMng,viewer,song,userSession);
+			 	/*audioComments.addComment({
+			 		userName: 'Dani',
+			 		img: '/tests/img/dani-profile.jpg',
+			 		text: 'I am hungry',
+			 		timeInterval: [1.5891220809932014, 2.668046112917529],
+			 		color: '#F00'
+			 	});
 
-			// 	audioComments.addComment({
-			// 		userName: 'Dani',
-			// 		img: '/tests/img/dani-profile.jpg',
-			// 		text: 'I am hungry',
-			// 		timeInterval: [3.3, 10.1],
-			// 		color: '#0F0'
-			// 	});*/
+			 	audioComments.addComment({
+			 		userName: 'Dani',
+			 		img: '/tests/img/dani-profile.jpg',
+			 		text: 'I am hungry',
+			 		timeInterval: [3.3, 10.1],
+			 		color: '#0F0'
+			 	});*/
 
-			// 	viewer.draw(song);
-			// 	//not used because is not interactive, but draws the score cursor
-			// 	audioModule.load('../tests/audio/solar.wav',170);
-			// 	//audioComments.draw();
+			 	viewer.draw(song);
+			 	//not used because is not interactive, but draws the score cursor
+			 	audioModule.load('../tests/audio/solar.wav',170);
+			 	//audioComments.draw();
 
-			// },{width:1200,height:1000}, "Painting audio");
+			},{width:1200,height:1000}, "Painting audio");
 			
 			dispTest.runTest(
 				function(divContainer){

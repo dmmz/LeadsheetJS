@@ -15,21 +15,7 @@ define([
 		this.reset();
 	}
 	SongBarsIterator.prototype = {
-		_getTimeSignatureChange: function() {
-			return;
-			// var barSigChange = this.getBar().getTimeSignatureChange();
-			// if (barSigChange){
-			// 	return barSigChange;
-			// }else{
-			// 	var sectionTimeSig;
-			//  	//if we are at a new section, we add a time signature change
-			// 	if (this.isFirstSectionBar){
-			// 		sectionTimeSig = this.song.getSection(this.iSection).getTimeSignature();
-			// 		return sectionTimeSig ? new TimeSignatureModel(sectionTimeSig) : null;
-			// 	}
-			// }
-		},
-
+		
 		reset: function() {
 			this.index = 0;
 			this.iSection = 0;

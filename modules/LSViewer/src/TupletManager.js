@@ -28,16 +28,12 @@ define(['vexflow','underscore'], function(Vex,_) {
 		var tuplet = note.getTuplet();
 		if (tuplet != null) {
 			if (tuplet == 'start') {
-				this.numTuplets++;
 				this.tuplets[this.numTuplets] = [];
 				this.timeModifs[this.numTuplets] = parseTimeModif(note.getTimeModification());
 				this.tuplets[this.numTuplets][0] = iNote;
 			} else if (tuplet == 'stop' && this.tuplets[this.numTuplets]) { //'stop'
-				this.openTuplet = false;
 				this.tuplets[this.numTuplets][1] = iNote;
-			}
-			else{
-				this.openTuplet = true;
+				this.numTuplets++;
 			}
 		}
 	};
@@ -67,26 +63,6 @@ define(['vexflow','underscore'], function(Vex,_) {
 				vexflowTuplet.setContext(ctx).draw();
 			}
 		}
-	};
-
-	TupletManager.prototype.inTuplet = function(iNote) {
-		var r = false;
-		_.each(this.tuplets, function(tuplet){
-			if (tuplet && iNote <= tuplet[1] && iNote >= tuplet[0]){
-				r = true;
-			}
-		});
-		return r;
-	};
-
-	TupletManager.prototype.isNewTuplet = function(iNote) {
-		var r = false;
-		_.each(this.tuplets, function(tuplet){
-			if (tuplet && iNote === tuplet[0]){
-				r =  true;
-			}
-		});
-		return r;
 	};
 	return TupletManager;
 });
