@@ -16,7 +16,7 @@ LeadsheetJS uses RequireJS, so you should have 2 script tags:
 and then you can use it this way 
 ```javascript
 require.config({
-	baseUrl: "LeadsheetJS_folder/",
+	baseUrl: "path_to_your/LeadsheetJS_folder/",
 });
 require(
 	['LJS', '/absolute_path_to_song/song.js'], 
@@ -24,11 +24,11 @@ require(
 		//we set the parameters
 		var params = {
 			// minimum parameters for viewer
-			'viewer': {'HTMLElement': document.getElementById('myViewerDiv')}, 
+			viewer: {HTMLElement: document.getElementById('myViewerDiv')}, 
 			// minimum parameters for player
-			'player': {'HTMLElement': document.getElementById('myPlayerDiv')}, 
+			player: {HTMLElement: document.getElementById('myPlayerDiv')}, 
 			// minimum parameters for edition (notes chords and structure are editable by default)
-			'edition': {'notes': true},
+			edition: {notes: true},
 		};
 		// We initialise LeadsheetJS
 		var myLeadsheet = LeadsheetJS.init(song, params);
@@ -39,9 +39,9 @@ require(
 The first part (require.config) defines the LeadsheetJS folder so require can resolve easily all the paths. If you wan't to use your own libraries, you need overload the paths values defined in config.js. For instance if you want to use your own version of jquery, you have to do so:
 ```javascript
 require.config({
-	baseUrl: "LeadsheetJS_folder/",
+	baseUrl: "path_to_your/LeadsheetJS_folder/",
 	paths:{
-		jquery: 'my_own_path/to_my_own_jquery'
+		jquery: '/my_own_absolute_path/to_my_own_jquery'
 	}
 });
 ```
@@ -111,7 +111,7 @@ To run tests in the browser, open a new tab:
 
  You can also run the tests using cli with
 
-    $ grunt qunit
+	$ grunt qunit
 
 Tests use RequireJS and Qunit, like in http://www.nathandavison.com/article/17/using-qunit-and-requirejs-to-build-modular-unit-tests
 
