@@ -10,8 +10,7 @@ define([
 		this.elemMng = new ElementManager();
 		this.audioAnimation = audioAnimation;
 		this._initSubscribe();
-	};
-
+	}
 
 	AudioCursor.prototype._initSubscribe = function() {
 		var self = this;

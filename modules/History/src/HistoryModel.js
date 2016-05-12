@@ -32,7 +32,7 @@ define([
 		
 		for (var i = this.historyList.length - 1; i > position; i--) {
 			var differences = this.historyList[i].differences;
-			for (var j = 0; j < differences.length; j++){
+			for (var j = differences.length; j >= 0; j--){
 				deepdiff.applyChange(leadsheet, this.lastLeadsheet, differences[j]);	
 			}
 		}
