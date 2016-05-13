@@ -57,7 +57,7 @@ module.exports = function(grunt) {
 						qunit: 'empty:',
 						vexflow: 'empty:',
 						Midijs: 'empty:',
-						text: 'external-libs/require-text',
+						text: 'node_modules/requirejs-text/text',
 						pubsub: 'empty:',
 						jsPDF: 'empty:',
 						mustache: 'empty:',

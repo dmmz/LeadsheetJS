@@ -27,7 +27,25 @@
     <div id="ls2" style="border:1px solid;width:1000px;height:500px;"></div>
   </div>
   <div id="tests"></div>
-    
+  <script src="../external-libs/require.js"></script>
+  <script src="../config.js"></script>
+  <script type="text/javascript">
+     requirejs.config({
+        baseUrl: "../",
+        paths: {
+          qunit: 'external-libs/qunit/qunit',
+        },
+        shim: {
+          'qunit': {
+            exports: 'QUnit',
+          },
+        }
+      });
+      require(['qunit', 'modules/LSViewer/test/testLSViewer', 'modules/LSViewer/test/testBarWidthManager'], function(QUnit, testLSViewer, testBarWidthManager){
+        testLSViewer.run(Vex);
+        testBarWidthManager.run();
+      });
+  </script>
 	<script data-main="viewer-test.js" src="../external-libs/require.js"></script>
 </body>
 </html>

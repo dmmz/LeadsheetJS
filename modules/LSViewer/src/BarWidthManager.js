@@ -69,7 +69,6 @@ define(['modules/core/src/SongBarsIterator', 'modules/core/src/SectionBarsIterat
 					}
 				}
 
-
 				//get minimum chords width. strategy: we check if any chords of bar are longer than the space assigned for them, 
 				//if there are one or more, we get the longest difference and we widen ALL beats (this way we keep consistency between chord duration and chord space)
 				chordWidth = width / songIt.getBarTimeSignature().getBeats();
