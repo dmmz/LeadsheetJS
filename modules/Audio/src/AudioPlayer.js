@@ -38,6 +38,13 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		$.subscribe('ToAudioPlayer-enable', function(){
 			self.audio.enable(true); //true to not disable audio
 		});
+		$.subscribe('ToPlayer-playPause', function() {
+			if (self.audio.isPlaying){
+				$.publish('ToPlayer-pause');
+			} else {
+				self.audio.play(self.startPos);
+			}
+		});
 		$.subscribe('ToPlayer-toggleLoop', function() {
 			var toggle;
 			if (self.loopEnabled){

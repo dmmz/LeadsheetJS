@@ -2,9 +2,8 @@ define([
 	'jquery',
 	'mustache',
 	'utils/UserLog',
-	'pubsub',
 	'text!modules/PlayerView/src/PlayerTemplate.html',
-], function($, Mustache, UserLog, pubsub, PlayerTemplate) {
+], function($, Mustache, UserLog, PlayerTemplate) {
 	/**
 	 * PlayerView creates player template
 	 * @exports PlayerView
@@ -111,42 +110,7 @@ define([
 			}
 		});
 
-		// volume slider
-		var dragStart = false;
-		$('#volume_controller_barre').bind('dragstart', function(e) {
-			e.preventDefault();
-			return false;
-		});
-		$('#volume_controller').bind('dragstart', function(e) {
-			e.preventDefault();
-			return false;
-		});
-		$('#volume_controller_barre').mousedown(function() {
-			dragStart = true;
-		});
-		$('#volume_controller_barre').mouseup(function() {
-			dragStart = false;
-		});
-		$('body').mouseup(function() {
-			dragStart = false;
-		});
-		$('#volume_controller').mousemove(function(evt) {
-			if (dragStart) {
-				self._dragVolumeController(evt);
-			}
-		});
-		$('#volume_controller').mousedown(function(evt) {
-			self._dragVolumeController(evt);
-			dragStart = true;
-		});
-		$('#volume_controller').mouseup(function() {
-			dragStart = false;
-		});
-		$('#volume_controller_barre').mousemove(function(evt) {
-			if (dragStart) {
-				self._dragVolumeController(evt);
-			}
-		});
+		$('#volume_controller').change(self.updateVolume);
 
 		$('.progress_bar_player').click(function(e) {
 			var width = $(this).width();
@@ -353,23 +317,8 @@ define([
 	};
 
 
-	PlayerView.prototype._dragVolumeController = function(evt) {
-		var heightParent = $('#volume_controller').height();
-		var topPositionParent = $('#volume_controller').offset().top;
-		var topPosition = evt.pageY;
-		var decal = 5; // shadow of barre at the top/bottom
-
-		var realHeight = heightParent - (2 * decal);
-		var relativePosition = topPosition - topPositionParent;
-		if (relativePosition < decal) {
-			relativePosition = decal;
-		}
-		if (relativePosition > heightParent - decal) {
-			relativePosition = heightParent - decal;
-		}
-		var volume = 1 - ((relativePosition - decal) / realHeight);
-		//this.setControllerPosition((relativePosition - decal) / realHeight);
-		$.publish('ToPlayer-onVolume', volume);
+	PlayerView.prototype.updateVolume = function(evt) {
+		$.publish('ToPlayer-onVolume', $(this).val()/100);
 	};
 
 	/**
