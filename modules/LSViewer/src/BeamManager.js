@@ -67,7 +67,6 @@ define(['vexflow',
 	 */
 	BeamManager.prototype._mergeBeamIndexes = function(tuplets,beams) {
 		/**
-		 * [getComprisingBeamsIndexes description]
 		 * @param  {Array} beams  of [startIndex, endIndex]
 		 * @param  {Array} tuplet of [startIndex, endIndex]
 		 * @return {Array} containing index of first and last beams that tuplet comprises
@@ -98,14 +97,14 @@ define(['vexflow',
 					decal = 0;
 				}
 				else{
-					//we make beam last until tuplet starts, and create a new beam from tuplet end add the whole tuplet space
+					//we make beam last until tuplet starts, and create a new beam from tuplet end and add the whole tuplet space
 					firstBeam[1] = tuplet[0] - 1;
 					beams.splice(comprBeamsIdx[0] + 1, 0, tuplet);
 					decal = 1; //we have to decal indexes by 1 as we added 1 position
 				}
 				//we set to [-1, -1] all beams that will be later deleted 
 				for (var i = comprBeamsIdx[0] + 1 + decal; i <= comprBeamsIdx[1] + decal; i++) {
-					// we delete all beams covered competely by tuplet
+					// we will delete all beams covered competely by tuplet
 					if (beams[i][1] <= tuplet[1]){
 						beams[i] = [-1,-1];
 					}else{
@@ -115,6 +114,7 @@ define(['vexflow',
 				}
 			}
 		});
+		//here we actually delete beams with only one note
 		var i = beams.length;
 		while( i--) {
 			if (beams[i][0] === beams[i][1]){
@@ -160,12 +160,12 @@ define(['vexflow',
 				beam = beams[i];
 
 				if (inBeam(beam, idx)){
-					//case [n, n + 1] //one note remaining -> no beams
+					//case [n, n + 1] //one note remaining -> no beams (we remove beam)
 					if (beam[1] - beam[0] < 2){ 
 						beams.splice(i, 1);
 						i--;
 					}else{
-						// case [n, n+2 ] and idx == n + 1 //one note remaining -> no beams
+						// case [n, n + 2] and idx == n + 1 //one note remaining -> no beams (we remove beam)
 						if (idx === beam[0] + 1 && idx === beam[1] - 1){ 
 	 						beams.splice(i, 1);
 							i--;
