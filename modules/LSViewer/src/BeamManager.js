@@ -85,7 +85,7 @@ define(['vexflow',
 			return [idx[0], idx[idx.length - 1]];
 		}
 
-		var comprisingBeams, firstBeam, decal;
+		var comprBeamsIdx, firstBeam, decal;
 		_.each(tuplets, function(tuplet){
 			comprBeamsIdx = getComprisingBeamsIndexes(beams, tuplet); //returns  indexes e.g: [1,3]
 			if (comprBeamsIdx[0] !== comprBeamsIdx[1]){ //if more than one beam
