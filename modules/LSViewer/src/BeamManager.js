@@ -170,11 +170,11 @@ define(['vexflow',
 	 						beams.splice(i, 1);
 							i--;
 						} 
-						// e.g beam [6, 9] and idx = 6 (or 7) -> turns into [8,9]
+						// e.g beam [6, 9] and idx = 6 (or 7) -> turns into [7,8,9] (or [8,9])
 						else if (idx <= beam[0] + 1){
 							beam[0] = idx + 1;
 						}
-						// e.g beam [6, 9] and idx = 9 (or 8) -> turns into [6,7]
+						// e.g beam [6, 9] and idx = 9 (or 8) -> turns into [6,7,8] (or [6,7])
 						else if (idx >= beam[1] - 1){
 							beam[1] = idx - 1;
 						}
