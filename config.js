@@ -15,6 +15,9 @@ require.config({
 		deepdiff: 'node_modules/deep-diff/index',
 	},
 	shim: {
+		jsPDF : {
+			exports : 'jsPDF'
+		},
 		jquery: {
 			exports: '$'
 		},

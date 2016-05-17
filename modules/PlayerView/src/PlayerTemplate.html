@@ -17,17 +17,11 @@
 			<div id="stop_button">
 				<img src="{{imgPath}}/stop.png" alt="stop" title="Stop" />
 			</div>
-			<div class="player_text">
-				Stop
-			</div>
 		</div>
 
 		<div id="play_button_container" class="player_button">
 			<div id="play_button">
 				<img src="{{imgPath}}/play_grey.png" alt="play" title="Play" />
-			</div>
-			<div class="player_text">
-				Loading
 			</div>
 		</div>
 
@@ -35,30 +29,20 @@
 			<div id="pause_button">
 				<img src="{{imgPath}}/pause.png" alt="pause" title="Pause" />
 			</div>
-			<div class="player_text">
-				Pause
-			</div>
 		</div>
 
 		<div id="volume_container" class="player_button">
 			<span id="all-sound">
 				<img src="{{imgPath}}/sound_on.png" class="sound_on" alt="sound_on" title="Mute" /><img src="{{imgPath}}/sound_2.png" class="sound_2" alt="sound_2" title="Mute" /><img src="{{imgPath}}/sound_1.png" class="sound_1" alt="sound_1" title="Mute" /><img src="{{imgPath}}/sound_off.png" class="sound_off" alt="sound_off" title="Unmute" />
 			</span>
-			<div class="player_text">
-				Volume
-			</div>
 		</div>
 		<div id="volume_slider_container">
-			<img id="volume_controller_barre" src="{{imgPath}}/barre.png" width="33" height="19" alt="" />
-			<img id="volume_controller" src="{{imgPath}}/control_sansbarre.png" width="28" height="68" alt="" />
+			<input type="range" id="volume_controller"/>
 		</div>
 		
 		{{#displayTempo}}
 		<div id="tempo_container" style="margin-left:20px">
 			<input type="number" value="{{tempo}}" min="20" max="300" id="tempo" name="tempo" />
-			<div class="player_text">
-				Tempo
-			</div>
 		</div>
 		{{/displayTempo}}
 
@@ -66,9 +50,6 @@
 		<div id="loop_button_container" class="player_button">
 			<div id="loop_button">
 				<img src="{{imgPath}}/loop_grey.png" class="loop_off" alt="loop_off" title="Unactive Loop" /><img src="{{imgPath}}/loop.png" class="loop_on" alt="loop_on" title="Active Loop" />
-			</div>
-			<div class="player_text">
-				Loop
 			</div>
 		</div>
 		{{/displayLoop}}
@@ -78,12 +59,7 @@
 			<span id="all-metronome">
 				<img src="{{imgPath}}/metronome_on.png" class="metronome_on" alt="metronome_on" title="Active Metronome" /><img src="{{imgPath}}/metronome_off.png" class="metronome_off" alt="metronome_off" title="Mute Metronome" />
 			</span>
-			<div class="player_text">
-				Metronome
-			</div>
 		</div>
 		{{/displayMetronome}}
-
 	</div>
-	
 </div>
