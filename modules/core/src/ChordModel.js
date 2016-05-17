@@ -129,6 +129,9 @@ define([
 		return false;
 	};
 
+	ChordModel.prototype.isInLastMeasureBeat = function(timeSignature) {
+		return (this.beat == timeSignature.getBeats());
+	};
 
 	/**
 	 *
