@@ -98,6 +98,12 @@ define([
 		getBarIndex: function() {
 			return this.index;
 		},
+		getBarIndexInSection: function() {
+			return this.index - this.iSectionNumbars;
+		},
+		getSectionIndex: function() {
+			return this.iSection;
+		},
 		getBar: function() {
 			return this.bm.getBar(this.index);
 		},

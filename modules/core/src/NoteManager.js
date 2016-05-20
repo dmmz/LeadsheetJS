@@ -188,8 +188,8 @@ define([
 	 */
 	NoteManager.prototype.getNotesAtCurrentBar = function(songIt) {
 		var beatIntervals = songIt.getStartEndBeats();
-		var idxs = this.getIndexesStartingBetweenBeatInterval(beatIntervals[0],beatIntervals[1]);
-		return this.getNotes(idxs[0],idxs[1]);
+		var idxs = this.getIndexesStartingBetweenBeatInterval(beatIntervals[0], beatIntervals[1]);
+		return this.getNotes(idxs[0], idxs[1]);
 	};
 	/**
 	 * @param  {Number} barNumber 
@@ -203,6 +203,14 @@ define([
 		var songIt = new SongBarsIterator(song);
 		songIt.setBarIndex(barNumber);
 		return this.getNotesAtCurrentBar(songIt);
+	};
+
+	NoteManager.prototype.getNoteBeatInBarNumber = function(noteNumber, barNumber, song) {
+		var songIt = new SongBarsIterator(song);
+		songIt.setBarIndex(barNumber);
+		var noteBeat = this.getNoteBeat(noteNumber);
+		var barBeatIntervals = songIt.getStartEndBeats();
+		return 1 + noteBeat - barBeatIntervals[0];
 	};
 
 	NoteManager.prototype.play2score = function(song,start, end) {

@@ -134,21 +134,32 @@ define([
 		$.publish('ToHistory-add', ['Paste chord', false, [startPasteBeat, endPasteBeat]]);
 	};
 	
+	ChordEditionController.prototype.getFirstSelectedChordSpace = function() {
+		var startChordSpace = this.chordSpaceMng.chordSpaces[this.cursor.getStart()];
+		if (!startChordSpace) {
+			startChordSpace = {beatNumber: 1, barNumber: 0};
+		}
+		return startChordSpace;
+	};
+
+	ChordEditionController.prototype.getLastSelectedChordSpace = function() {
+		var endChordSpace = this.chordSpaceMng.chordSpaces[this.cursor.getEnd()];
+		if (!endChordSpace) {
+			endChordSpace = {beatNumber: 1, barNumber: 0};
+		}
+		return endChordSpace;
+	};
+
 	/**
 	 * returns start and end beats of chords taking into account cursor, depending on chordSpaces selected
 	 * @return {Array} [startBeat, endBeat]
 	 */
 	ChordEditionController.prototype.getSelectedChordsBeats = function() {
 		var songIt = new SongBarsIterator(this.songModel);
-		var startChordSpace = this.chordSpaceMng.chordSpaces[this.cursor.getStart()];
-		if (!startChordSpace) {
-			startChordSpace = {beatNumber: 1, barNumber: 0};
-		}
-		var startBarNum = startChordSpace.barNumber;
-
+		var startBarNum = this.getFirstSelectedChordSpace().barNumber;
 		songIt.setBarIndex(startBarNum);
 		var beatInc = 4 / songIt.getBarTimeSignature().getBeatUnit(); //will be 1 for x/4 time signatures, 2 for x/2, and 0.5 for x/8
-		var barBeatOffset = (startChordSpace.beatNumber - 1) * beatInc;
+		var barBeatOffset = (this.getFirstSelectedChordSpace().beatNumber - 1) * beatInc;
 		var startBeat = this.songModel.getStartBeatFromBarNumber(startBarNum) + barBeatOffset;
 		var iBeat = startBeat;
 
