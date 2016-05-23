@@ -44,7 +44,8 @@ define([
 	CommentsView.prototype.initController = function() {
 		var self = this;
 		//close comment
-		$(document).on('click', '.close', function() {
+		$(document).on('click', '.close', function(e) {
+			e.preventDefault();
 			var id = $(this).closest('.speech-bubble').attr('id');
 			if (id == self.newCommentId) {
 				self.hideNewComment();
@@ -54,7 +55,8 @@ define([
 			}
 		});
 		//new comment
-		$(document).on('click', '#sendNewComment', function() {
+		$(document).on('click', '#sendNewComment', function(e) {
+			e.preventDefault();
 			var commentEl = $(this).closest('.speech-bubble');
 			var text = commentEl.find('textarea').val();
 			var commentId = commentEl.find('input[name="commentId"]').val();
@@ -69,7 +71,8 @@ define([
 		});
 
 		//edit comment
-		$(document).on('click', '.edit-comment', function() {
+		$(document).on('click', '.edit-comment', function(e) {
+			e.preventDefault();
 			var commentEl = $(this).closest('.speech-bubble'),
 				commentId = commentEl.attr('data-commentId');
 			$.publish('CommentsView-editingComment', [commentEl, commentId]);
