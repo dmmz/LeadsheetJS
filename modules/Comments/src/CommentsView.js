@@ -227,11 +227,13 @@ define([
 	 *                           e.g. if we have removed comment with id 2, keys of comments is ["0","1","3","4"] whereas corresponding indexes will be [0,1,2,3], so when *                           commentId is 2, index will be 3 (works well as every time a comment is added or deleted, everything is recalculated)
 	 */
 	CommentsView.prototype.showBubble = function(commentId, index) {
-		var height = $("#" + this.bubblePreId + commentId).height();
-
+		
+		//var height = $("#" + this.bubblePreId + commentId).height();
+		var height = 100;
+		
 		var area = this.commentSpaceMng.commentSpaces[commentId].getArea();
 		var offset = this.offset; //to avoid 'this' closure problem
-		$("#bubble" + commentId).css({
+		$("#" + this.bubblePreId + commentId).css({
 			top: area.y - area.h + offset.top - height,
 			left: area.x + offset.left,
 			maxHeight: height,
@@ -286,13 +288,13 @@ define([
 		var chordsEnabled = this.viewTypes['chords'] &&  this.viewTypes['chords'].isEnabled();
 
 		var type = audioEnabled ? 'audio' : notesEnabled ? 'notes' : chordsEnabled ? 'chords' : null;
+		if (!type){
+			console.warn("either no area selected, element editing is not passed properly to commments constructor");
+			return;
+		}
 
 		var areas = this.viewTypes[type].getArea()
-		if (type === 'audio'){
-			this.newComment.timeInterval = this.viewTypes[type].getTimeInterval();// [cursorPos[0], cursorPos[1]];
-		}else{
-			this.newComment.beatInterval = this.viewTypes[type].getBeatInterval();
-		}
+		this.newComment.interval = (type === 'audio') ? this.viewTypes[type].getTimeInterval() : this.viewTypes[type].getBeatInterval();
 		this.newComment.type = type;
 		var offset = this.offset; //to avoid 'this' closure problem
 		height = $("#" + this.newCommentId).outerHeight(true) + 8;

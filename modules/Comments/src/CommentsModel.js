@@ -16,6 +16,7 @@ define(function() {
 	 * @param  {Function} callback [description]
 	 */
 	CommentsModel.prototype.getComments = function(type, callback) {
+
 		function getCommentsByType(type){
 			var types = (type === 'audio') ? [type] : ['notes','chords'];
 			var typeComments = [];
@@ -29,14 +30,15 @@ define(function() {
 
 		var self = this;
 		if (this.serverComments) {
+			//comments MUST be an array, even if there is only one comment
 			this.serverComments.getComments(function(comments) {
 				for (var i = 0; i < comments.length; i++) {
 					self.addComment(comments[i]);
 				}
-				callback(getCommentsByType(type));
+				return callback(getCommentsByType(type));
 			});
 		} else {
-			callback(getCommentsByType(type));
+			return callback(getCommentsByType(type));
 		}
 	};
 
@@ -70,8 +72,7 @@ define(function() {
 		if (this.serverComments) {
 			this.serverComments.saveComment(comment, function(data) {
 				comment = data;
-				id = self.addComment(comment);
-				if (callback) callback(id);
+				if (callback) callback(comment.id);
 			});
 		} else {
 			id = self.addComment(comment);
