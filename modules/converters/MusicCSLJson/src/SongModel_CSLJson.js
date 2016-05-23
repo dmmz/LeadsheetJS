@@ -66,8 +66,14 @@ define(function(require) {
 					songModel.addSection(section);
 
 					if (JSONSection.bars != null) {
+						var endingToKeepForNextBars = false;
 						JSONSection.bars.forEach(function(JSONBar) {
 							bar = BarModel_CSLJson.importFromMusicCSLJSON(JSONBar, new BarModel());
+							if (bar.getEnding()) {
+								endingToKeepForNextBars = bar.getEnding();
+							} else if (endingToKeepForNextBars) {
+								bar.ending = endingToKeepForNextBars;
+							}
 							barManager.addBar(bar);
 							//chords:
 							if (JSONBar.chords != null) {

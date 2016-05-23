@@ -262,6 +262,7 @@ define([
 			var repeatedPart = [];
 			var pointerBarNumberStructure = [];
 			var endingBar;
+			var endingChanged = false;
 			while (repeat >= 0 || whileSecurity > 1000) {
 				whileSecurity++;
 				// looping in all sections repeat
@@ -272,7 +273,8 @@ define([
 				for (var barNumber = startBar; barNumber < endBar; barNumber++) {
 					endingBar = parseInt(bm.getBar(barNumber).getEnding(), 10);
 					// case there is an ending
-					if (!isNaN(endingBar) && endingBar > 0) {
+					if (!isNaN(endingBar) && endingBar > 0 && currentRepeatedPart !== endingBar) {
+						endingChanged = true;
 						currentRepeatedPart = endingBar;
 						repeat--;
 					}
@@ -281,7 +283,8 @@ define([
 						repeatedPart.push(barNumber);
 					}
 					// case there is an ending, we add saved part to begining
-					if (!isNaN(endingBar) && endingBar > 1) {
+					if (!isNaN(endingBar) && endingBar > 1 && endingChanged) {
+						endingChanged = false;
 						pointerBarNumberStructure = pointerBarNumberStructure.concat(repeatedPart);
 					}
 					pointerBarNumberStructure.push(barNumber);

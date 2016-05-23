@@ -347,9 +347,10 @@ define([
 			}
 
 
-			//we set previous time signature in the bar just after the selection, only if there are no time sign. changes and if we are not at end of song
+			//we set previous time signature in the bar just after the selection, only if there are no time sign. changes and if we are not at end/begining of the song
 			var indexFollowingBar = selBars[1] + diffBars + 1;
-			if (barMng.getTotal() > indexFollowingBar && // if following bar exists
+			if (selBars[0] !== 0 &&
+				barMng.getTotal() > indexFollowingBar && // if following bar exists
 				!timeSigChangesInSelection &&
 				!barMng.getBar(indexFollowingBar).getTimeSignatureChange()) //if there is no time signature change in following bar
 			{

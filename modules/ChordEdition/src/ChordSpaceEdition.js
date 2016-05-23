@@ -9,7 +9,7 @@ define([
 	function ChordSpaceEdition(songModel, viewer) {
 		this.songModel = songModel;
 		this.viewer = viewer;
-	};
+	}
 	
 	ChordSpaceEdition.prototype.setMargins = function(marginRight, marginTop) {
 		this.marginRight = marginRight;

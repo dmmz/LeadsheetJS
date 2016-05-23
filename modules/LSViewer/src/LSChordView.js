@@ -26,7 +26,7 @@ define(['vexflow'], function(Vex) {
 			var zeroBasedBeat = beat - 1;
 			return barDimensions.left + marginLeft + zeroBasedBeat * beatWidth;
 		}
-		var beatWidth = (barDimensions.width - marginLeft - barDimensions.margin) / timeSig.getBeats();
+		var beatWidth = (barDimensions.width - marginLeft) / timeSig.getBeats();
 		
 		var oldBaseline = ctx.textBaseline,
 			oldFillStyle = ctx.fillStyle,
@@ -47,7 +47,6 @@ define(['vexflow'], function(Vex) {
 		ctx.fillStyle = oldFillStyle;
 
 		return boundingBox;	
-
 	};
 
 	return LSChordView;

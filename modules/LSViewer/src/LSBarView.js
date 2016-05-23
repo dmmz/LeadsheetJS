@@ -10,7 +10,7 @@ define(['vexflow'], function(Vex) {
 		this.drawStaveNumbers = options.draw_stave_numbers === undefined ? true : !!options.draw_stave_numbers;
 	}
 
-	LSBarView.prototype.draw = function(ctx, songIt, sectionIt, endingsY, labelsY) {
+	LSBarView.prototype.draw = function(ctx, songIt, sectionIt, positions) {
 		if (songIt.getBarIndex() === 0 && this.drawClef) {
 			this.vexflowStave.addClef("treble").setContext(ctx).draw();
 		}
@@ -58,38 +58,30 @@ define(['vexflow'], function(Vex) {
 			followingBar = songIt.getFollowingBar(),
 			ending = bar.getEnding();
 		// endings
-		if (ending) {
-			songIt.setEndingState((sectionIt.isLastBar() || followingBar.getEnding()) ? 'BEGIN_END' : 'BEGIN');
-			this.vexflowStave.setVoltaType(Vex.Flow.Volta.type[songIt.getEndingState()], ending + ".", endingsY);
-		} else {
-			if (songIt.getEndingState() != null) {
-				if (sectionIt.isLastBar() || followingBar.getEnding()) {
-					songIt.setEndingState('END');
-					if (!sectionIt.isLastBar()) {
-						this.vexflowStave.setEndBarType(Vex.Flow.Barline.type.REPEAT_END);
-					}
-					this.vexflowStave.setVoltaType(Vex.Flow.Volta.type[songIt.getEndingState()], ending + ".", endingsY);
-					songIt.setEndingState(null);
-				} else if (songIt.getEndingState() == 'BEGIN' || songIt.getEndingState() == 'MID') {
-					songIt.setEndingState('MID');
-					this.vexflowStave.setVoltaType(Vex.Flow.Volta.type[songIt.getEndingState()], ending + ".", endingsY);
-				}
+		if (ending && ending !== songIt.getPreviousBar().getEnding()) {
+			var endingState = (sectionIt.isLastBar() || followingBar.getEnding() !== bar.getEnding()) ? 'BEGIN_END' : 'BEGIN';
+			this.vexflowStave.setVoltaType(Vex.Flow.Volta.type[endingState], ending + ".", positions.ENDINGS_Y);
+		} else if (ending) {
+			if (sectionIt.isLastBar() || (followingBar && followingBar.getEnding() !== ending)) {
+				this.vexflowStave.setVoltaType(Vex.Flow.Volta.type.END, ending + ".", positions.ENDINGS_Y);
+			} else if (ending === songIt.getPreviousBar().getEnding()) {
+				this.vexflowStave.setVoltaType(Vex.Flow.Volta.type.MID, ending + ".", positions.ENDINGS_Y);
 			}
 		}
-		if (sectionIt.isLastBar()) {
-			songIt.setEndingState(null);
+		if (ending && (followingBar && followingBar.getEnding() !== ending)) {
+			this.vexflowStave.setEndBarType(Vex.Flow.Barline.type.REPEAT_END);
 		}
-
 		var label = bar.getLabel();
 		if (label === 'coda' || label === 'coda2') {
-			this.vexflowStave.setRepetitionTypeRight(Vex.Flow.Repetition.type.CODA_RIGHT, labelsY);
+			this.vexflowStave.setRepetitionTypeRight(Vex.Flow.Repetition.type.CODA_RIGHT, positions.LABELS_Y);
 		}
 		if (label === 'segno' || label === 'segno2') {
-			this.vexflowStave.setRepetitionTypeRight(Vex.Flow.Repetition.type.SEGNO_RIGHT, labelsY);
+			var segnoY = positions.LABELS_BAR_START_Y ? positions.LABELS_BAR_START_Y : positions.LABELS_Y;
+			this.vexflowStave.setRepetitionTypeLeft(Vex.Flow.Repetition.type.SEGNO_LEFT, segnoY);
 		}
 		var sublabel = bar.getSublabel(true);
 		if (sublabel != null) {
-			this.vexflowStave.setRepetitionTypeRight(Vex.Flow.Repetition.type[sublabel], labelsY);
+			this.vexflowStave.setRepetitionTypeRight(Vex.Flow.Repetition.type[sublabel], positions.LABELS_Y);
 		}
 		if (sectionIt.isLastBar()) {
 			this.vexflowStave.setEndBarType(Vex.Flow.Barline.type.END);

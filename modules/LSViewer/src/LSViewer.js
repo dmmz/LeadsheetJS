@@ -14,9 +14,9 @@ define([
 		'modules/LSViewer/src/CanvasLayer',
 		'modules/LSViewer/src/Scaler',
 		'jquery',
-		'pubsub'
+		'modules/LSViewer/src/SymbolsPositioner'
 	],
-	function(Vex, LSNoteView, NoteSpaceView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator, CanvasLayer, Scaler, $, pubsub) {
+	function(Vex, LSNoteView, NoteSpaceView, LSChordView, LSBarView, BeamManager, TieManager, TupletManager, BarWidthManager, SectionBarsIterator, SongBarsIterator, CanvasLayer, Scaler, $, SymbolsPositioner) {
 		/**
 		 * LSViewer module manage interaction between canvas, core model and vexflow, it's the main module that allow drawing
 		 * @exports LSViewer/LSViewer
@@ -53,8 +53,8 @@ define([
 			this.LINE_WIDTH = 1550;
 			this.BARS_PER_LINE = 4;
 			this.ENDINGS_Y = 20; //0 -> thisChordsPosY==40, the greater the closer to stave 
-			this.LABELS_Y = 0; //like this.ENDINGS_Y
-			this.CHORDS_DISTANCE_STAVE = params.chordDistanceStave || 20; //distance from stave (if negative, will be insied stave)
+			this.LABELS_Y = 10; //like this.ENDINGS_Y
+			this.CHORDS_DISTANCE_STAVE = params.chordDistanceStave || 10; //distance from stave (if negative, will be insied stave)
 			this.DISPLAY_TITLE = params.displayTitle != undefined ? params.displayTitle : true;
 			this.DISPLAY_COMPOSER = params.displayComposer != undefined ? params.displayComposer : true;
 			// constant with INITIAL prefix refer to inital values, as they can be changed when visualizing audio
@@ -331,15 +331,25 @@ define([
 				barNoteViews,
 				vxfBars = [],
 				barDimensions,
+				sympolsPositions,
 				tieMng = new TieManager();
 
 			var lastBarWidthRatio = this.shortenLastBar ? this.LAST_BAR_WIDTH_RATIO : 1;
 			this.barWidthMng = new BarWidthManager(this.lineHeight, this.LINE_WIDTH, this.NOTE_WIDTH, this.BARS_PER_LINE, this.marginTop, lastBarWidthRatio);
 			this.barWidthMng.calculateBarsStructure(song, nm, cm, this.ctx, this.FONT_CHORDS);
+			var symbolsPositioner = new SymbolsPositioner(
+				song,
+				this.barWidthMng,
+				{
+					ENDINGS_Y: self.ENDINGS_Y,
+					LABELS_Y: self.LABELS_Y,
+					CHORDS_DISTANCE_STAVE : self.CHORDS_DISTANCE_STAVE
+				}
+			);
+			symbolsPositioner.setElementsPositonsByLine();
 			this.setHeight(song, this.barWidthMng);
 			this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 			this.scale();
-
 
 			var numSection = 0;
 			var songIt = new SongBarsIterator(song);
@@ -380,6 +390,7 @@ define([
 					}
 					//BARS
 					barDimensions = self.barWidthMng.getDimensions(songIt.getBarIndex());
+					symbolsPositions = symbolsPositioner.getPositionsForBarIndex(songIt.getBarIndex());
 					var barViewParams = {
 						draw_clef: self.DRAW_CLEF,
 						draw_key_signature: self.DRAW_KEY_SIGNATURE,
@@ -393,11 +404,12 @@ define([
 					}
 
 					barView = new LSBarView(barDimensions, barViewParams);
-					barView.draw(self.ctx, songIt, sectionIt, self.ENDINGS_Y, self.LABELS_Y);
+					barView.draw(self.ctx, songIt, sectionIt, symbolsPositions);
 					
 					var vxfBar = {
 						barDimensions: barDimensions,
 						timeSignature: songIt.getBarTimeSignature(),
+						symbolsPositions: symbolsPositions,
 					};
 					
 					// we just calculate offset for first bar
@@ -417,9 +429,9 @@ define([
 							self.ctx,
 							barDimensions,
 							songIt.getBarTimeSignature(),
-							self.CHORDS_DISTANCE_STAVE,
+							symbolsPositions.CHORDS_DISTANCE_STAVE,
 							self.FONT_CHORDS,
-							self.PADDING_LEFT_CHORDS,
+							symbolsPositions.PADDING_LEFT_CHORDS > 0 ? symbolsPositions.PADDING_LEFT_CHORDS : self.PADDING_LEFT_CHORDS,
 							self.SAVE_CHORDS ? self._getTextBoundingBox : null,
 							offset
 						);
