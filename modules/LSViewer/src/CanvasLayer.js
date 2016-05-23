@@ -28,7 +28,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		this.elems = {}; //elements to be added (can be CLICKABLE or CURSOR)
 		this.order = []; //we keep trace of order in which elements are added, to decide which should be prioritized on click
 		this.ctrlPressed = false;
-	};
+	}
 
 	CanvasLayer.prototype._createLayer = function(viewer) {
 		var canvasEl = $(viewer.canvas),
@@ -93,7 +93,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			if (priority){
 				self.order.unshift(elemName); //we put it in the first position
 			}else{
-				self.order.push(elemName)
+				self.order.push(elemName);
 			}
 		}
 		// if it's new, we save its order
@@ -294,9 +294,7 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		$.subscribe('ctrlUnpressed', function(el){
 			self.ctrlPressed = false;
 		});
-		$.subscribe('CanvasLayer-refresh', function(el) {
-			self.refresh();
-		});
+		$.subscribe('CanvasLayer-refresh', self.refresh);
 	};
 
 	/**

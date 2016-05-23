@@ -3231,12 +3231,358 @@ define(function() {
 			}]
 		}]
 	};
+	var solarWithSymbols = {
+	    "_id": "573f0a9f18d92feb010041a7",
+	    "composer": "Miles Davis",
+	    "title": "Solar with symbols",
+	    "time": "4/4",
+	    "keySignature": "C",
+	    "tempo": 120,
+	    "style": "Jazz",
+	    "source": "51b6fe4067ca227d25665b0e",
+	    "changes": [{
+	        "name": "Melody/Solos",
+	        "bars": [{
+	            "segno": 1,
+	            "chords": [{
+	                "p": "C",
+	                "ch": "m",
+	                "beat": 1
+	            }],
+	            "melody": [{
+	                "keys": ["B/4"],
+	                "duration": "8r",
+	                "dot": 0
+	            }, {
+	                "keys": ["C/5"],
+	                "duration": "q",
+	                "dot": 1
+	            }, {
+	                "keys": ["B/4"],
+	                "duration": "q",
+	                "dot": 0
+	            }, {
+	                "keys": ["D/5"],
+	                "duration": "8",
+	                "dot": 0
+	            }, {
+	                "keys": ["C/5"],
+	                "duration": "8",
+	                "dot": 0
+	            }]
+	        }, {
+	            "chords": [{
+	                "p": "C",
+	                "ch": "m",
+	                "beat": 1
+	            }],
+	            "melody": [{
+	                "keys": ["B/4"],
+	                "duration": "8r",
+	                "dot": 0
+	            }, {
+	                "keys": ["G/4"],
+	                "duration": "q",
+	                "dot": 1,
+	                "tie": "start"
+	            }, {
+	                "keys": ["G/4"],
+	                "duration": "q",
+	                "dot": 1,
+	                "tie": "stop"
+	            }, {
+	                "keys": ["A/4"],
+	                "duration": "8",
+	                "dot": 0
+	            }]
+	        }, {
+	            "chords": [{
+	                "p": "G",
+	                "ch": "m7",
+	                "beat": 1
+	            }],
+	            "melody": [{
+	                "keys": ["Bb/4"],
+	                "duration": "q",
+	                "dot": 0
+	            }, {
+	                "keys": ["C/5"],
+	                "duration": "8",
+	                "dot": 0
+	            }, {
+	                "keys": ["B/4"],
+	                "duration": "8",
+	                "dot": 0
+	            }, {
+	                "keys": ["B/4"],
+	                "duration": "q",
+	                "dot": 0
+	            }, {
+	                "keys": ["C/5"],
+	                "duration": "8",
+	                "dot": 0
+	            }, {
+	                "keys": ["B/4"],
+	                "duration": "8",
+	                "dot": 0,
+	                "tie": "start"
+	            }]
+	        }, {
+	            "chords": [{
+	                "p": "C",
+	                "ch": "7",
+	                "beat": 1
+	            }],
+	            "melody": [{
+	                "keys": ["B/4"],
+	                "duration": "w",
+	                "dot": 0,
+	                "tie": "stop"
+	            }]
+	        }, {
+	            "chords": [{
+	                "p": "F",
+	                "ch": "M7",
+	                "beat": 1
+	            }],
+	            "melody": [{
+	                "keys": ["B/4"],
+	                "duration": "8r",
+	                "dot": 0
+	            }, {
+	                "keys": ["A/4"],
+	                "duration": "q",
+	                "dot": 1
+	            }, {
+	                "keys": ["G#/4"],
+	                "duration": "q",
+	                "dot": 0
+	            }, {
+	                "keys": ["Bb/4"],
+	                "duration": "8",
+	                "dot": 0
+	            }, {
+	                "keys": ["An/4"],
+	                "duration": "8",
+	                "dot": 0
+	            }]
+	        }, {
+	            "chords": [{
+	                "p": "F",
+	                "ch": "M7",
+	                "beat": 1
+	            }],
+	            "melody": [{
+	                "keys": ["B/4"],
+	                "duration": "8r",
+	                "dot": 0
+	            }, {
+	                "keys": ["C/4"],
+	                "duration": "q",
+	                "dot": 1,
+	                "tie": "start"
+	            }, {
+	                "keys": ["C/4"],
+	                "duration": "q",
+	                "dot": 0,
+	                "tie": "stop"
+	            }, {
+	                "keys": ["F/4"],
+	                "duration": "8",
+	                "dot": 0
+	            }, {
+	                "keys": ["E/4"],
+	                "duration": "8",
+	                "dot": 0
+	            }]
+	        }, {
+	            "chords": [{
+	                "p": "F",
+	                "ch": "m7",
+	                "beat": 1
+	            }],
+	            "melody": [{
+	                "keys": ["Ab/4"],
+	                "duration": "q",
+	                "dot": 0
+	            }, {
+	                "keys": ["A/4"],
+	                "duration": "8",
+	                "dot": 0
+	            }, {
+	                "keys": ["A/4"],
+	                "duration": "8",
+	                "dot": 0
+	            }, {
+	                "keys": ["G/4"],
+	                "duration": "q",
+	                "dot": 0
+	            }, {
+	                "keys": ["Bb/4"],
+	                "duration": "8",
+	                "dot": 0
+	            }, {
+	                "keys": ["Ab/4"],
+	                "duration": "8",
+	                "dot": 0,
+	                "tie": "start"
+	            }]
+	        }, {
+	            "chords": [{
+	                "p": "Bb",
+	                "ch": "7",
+	                "beat": 1
+	            }],
+	            "melody": [{
+	                "keys": ["Ab/4"],
+	                "duration": "h",
+	                "dot": 1,
+	                "tie": "stop"
+	            }, {
+	                "keys": ["B/4"],
+	                "duration": "8r",
+	                "dot": 0
+	            }, {
+	                "keys": ["G/4"],
+	                "duration": "8",
+	                "dot": 0,
+	                "tie": "start"
+	            }]
+	        }, {
+	            "ending": "2",
+	            "chords": [{
+	                "p": "Eb",
+	                "ch": "M7",
+	                "beat": 1
+	            }],
+	            "melody": [{
+	                "keys": ["G/4"],
+	                "duration": "q",
+	                "dot": 0,
+	                "tie": "stop"
+	            }, {
+	                "keys": ["F/4"],
+	                "duration": "8",
+	                "dot": 0
+	            }, {
+	                "keys": ["Eb/4"],
+	                "duration": "8",
+	                "dot": 0
+	            }, {
+	                "keys": ["D/4"],
+	                "duration": "8",
+	                "dot": 0
+	            }, {
+	                "keys": ["C/4"],
+	                "duration": "q",
+	                "dot": 0
+	            }, {
+	                "keys": ["Gb/4"],
+	                "duration": "8",
+	                "dot": 0,
+	                "tie": "start"
+	            }]
+	        }, {
+	            "ending": "2",
+	            "chords": [{
+	                "p": "Eb",
+	                "ch": "m7",
+	                "beat": 1
+	            }, {
+	                "p": "Ab",
+	                "ch": "7",
+	                "beat": 3
+	            }],
+	            "melody": [{
+	                "keys": ["G/4"],
+	                "duration": "q",
+	                "dot": 0,
+	                "tie": "stop"
+	            }, {
+	                "keys": ["F/4"],
+	                "duration": "8",
+	                "dot": 0
+	            }, {
+	                "keys": ["Eb/4"],
+	                "duration": "8",
+	                "dot": 0
+	            }, {
+	                "keys": ["Db/4"],
+	                "duration": "8",
+	                "dot": 0
+	            }, {
+	                "keys": ["C/4"],
+	                "duration": "q",
+	                "dot": 0
+	            }, {
+	                "keys": ["F/4"],
+	                "duration": "8",
+	                "dot": 0,
+	                "tie": "start"
+	            }]
+	        }, {
+	            "ending": "2",
+	            "chords": [{
+	                "p": "Db",
+	                "ch": "M7",
+	                "beat": 1
+	            }],
+	            "melody": [{
+	                "keys": ["F/4"],
+	                "duration": "w",
+	                "dot": 0,
+	                "tie": "stop"
+	            }]
+	        }, {
+	            "ending": "2",
+	            "chords": [{
+	                "p": "D",
+	                "ch": "halfdim7",
+	                "beat": 1
+	            }, {
+	                "p": "G",
+	                "ch": "7b9",
+	                "beat": 3
+	            }],
+	            "melody": [{
+	                "keys": ["B/4"],
+	                "duration": "8r",
+	                "dot": 0
+	            }, {
+	                "keys": ["Dn/4"],
+	                "duration": "8",
+	                "dot": 0
+	            }, {
+	                "keys": ["Eb/4"],
+	                "duration": "8",
+	                "dot": 0
+	            }, {
+	                "keys": ["F/4"],
+	                "duration": "8",
+	                "dot": 0
+	            }, {
+	                "keys": ["G/4"],
+	                "duration": "8",
+	                "dot": 0
+	            }, {
+	                "keys": ["Ab/4"],
+	                "duration": "8",
+	                "dot": 0
+	            }, {
+	                "keys": ["Bn/4"],
+	                "duration": "q",
+	                "dot": 0
+	            }]
+	        }]
+	    }]
+	};
 	return {
 		simpleLeadSheet: simpleLeadSheet,
 		leadSheetTimeSigChanges: leadSheetTimeSigChanges,
 		keySigChanges: keySigChanges,
 		afoxe: afoxe,
 		foldedSong: foldedSong,
+		solarWithSymbols: solarWithSymbols,
 		wholeSilencesSong: wholeSilencesSong
 	};
 

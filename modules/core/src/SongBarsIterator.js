@@ -110,6 +110,9 @@ define([
 		getFollowingBar: function() {
 			return this.bm.getBar(this.index + 1);
 		},
+		getPreviousBar: function() {
+			return this.bm.getBar(this.index - 1);
+		},
 		getPrevKeySignature: function() {
 			return this.keySigMng.getPrevValue();
 		},

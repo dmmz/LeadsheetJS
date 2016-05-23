@@ -1,9 +1,9 @@
-define(['modules/core/src/SongBarsIterator', 'modules/core/src/SectionBarsIterator'], function(SongBarsIterator, SectionBarsIterator) {
+define(['modules/core/src/SongBarsIterator', 'modules/core/src/SectionBarsIterator', 'underscore'], function(SongBarsIterator, SectionBarsIterator, _) {
 	/**
     * 
     * @exports LSViewer/BarWidthManager
     */
-	function BarWidthManager(lineHeight, lineWidth, noteWidth, barsPerLine, marginTop, lastBarWidthRatio) {
+	function BarWidthManager(lineHeight, lineWidth, noteWidth, barsPerLine, marginTop, lastBarWidthRatio, marginLeft) {
 		if (lineHeight === undefined) throw "BarWidthManager - lineHeight not defined";
 		if (lineWidth === undefined) throw "BarWidthManager - lineWidth not defined";
 		if (noteWidth === undefined) throw "BarWidthManager - noteWidth not defined";
@@ -16,7 +16,8 @@ define(['modules/core/src/SongBarsIterator', 'modules/core/src/SectionBarsIterat
 		this.barsStruct = [];
 
 		this.lineHeight = Number(lineHeight);
-		this.lineWidth = Number(lineWidth);
+		this.marginLeft = _.isUndefined(marginLeft) ? 8 : marginLeft;
+		this.lineWidth = Number(lineWidth) - this.marginLeft;
 		this.noteWidth = Number(noteWidth);
 		this.barsPerLine = Number(barsPerLine);
 		this.marginTop = Number(marginTop);
@@ -62,7 +63,7 @@ define(['modules/core/src/SongBarsIterator', 'modules/core/src/SectionBarsIterat
 					if (songIt.getBarKeySignature() !== 'C') {
 						structElemsWidth = self.noteWidth * noteProportion; // same for key signature (armure) if we are not in 'C'
 					}
-				}else{
+				} else {
 					if (songIt.doesTimeSignatureChange()){
 						structElemsWidth = self.noteWidth * noteProportion;
 					}
@@ -163,7 +164,9 @@ define(['modules/core/src/SongBarsIterator', 'modules/core/src/SectionBarsIterat
 				if (calculateWidth(lineMinWidths, lastBarIncluded) < this.lineWidth) {
 					// if they fit, we save them in lineWidthList
 					exceedsTotal = false;
-					for (i = 0; i <= lastBarIncluded; i++) lineWidthList[i] = lineMinWidths[i];
+					for (i = 0; i <= lastBarIncluded; i++) {
+						lineWidthList[i] = lineMinWidths[i];
+					}
 				} else {
 					//if not, we take out iteratively last one and put as carry for the next line 
 					if (lastBarIncluded > 0) {
@@ -268,12 +271,12 @@ define(['modules/core/src/SongBarsIterator', 'modules/core/src/SectionBarsIterat
 	BarWidthManager.prototype.setBarsStruct = function(barsStruct) {
 		this.barsStruct = barsStruct;
 	};
+
 	/**
 	 * Decides which bar goes into which line depending on its width, and sets the final width depending on the distribution of bars among lines
 	 * @param {SongMoel} song
 	 * @param {NoteManagerModel} noteMng [description]
 	 */
-
 	BarWidthManager.prototype.calculateBarsStructure = function(song, noteMng, chordsMng, ctx, fontChords) {
 		var obj = this.getMinWidthList(song, noteMng, chordsMng, ctx, fontChords);
 
@@ -290,8 +293,6 @@ define(['modules/core/src/SongBarsIterator', 'modules/core/src/SectionBarsIterat
 
 	};
 
-
-
 	/**
 	 * returns top,left and width of a given bar. Used when drawing
 	 * @param  {Integer} numBar
@@ -305,7 +306,7 @@ define(['modules/core/src/SongBarsIterator', 'modules/core/src/SectionBarsIterat
 		var i, j,
 			currentNumBar = 0,
 			currentLine = 0,
-			left = 0;
+			left = this.marginLeft;
 		for (i = 0; i < this.barsStruct.length; i++) {
 			for (j = 0; j < this.barsStruct[i].length; j++) {
 				if (currentNumBar == numBar) {
@@ -320,7 +321,7 @@ define(['modules/core/src/SongBarsIterator', 'modules/core/src/SectionBarsIterat
 				currentNumBar++;
 				left += this.barsStruct[i][j];
 			}
-			left = 0;
+			left = this.marginLeft;
 			currentLine++;
 		}
 	};

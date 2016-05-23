@@ -111,7 +111,7 @@ define([
 			for (var j = 0; j < beatsInBar; j++) {
 				area = {
 					x: (viewer.vxfBars[i].barDimensions.left + widthBeat * j) + offset,
-					y: (viewer.vxfBars[i].barDimensions.top - 17),
+					y: (viewer.vxfBars[i].barDimensions.top - (viewer.vxfBars[i].symbolsPositions.CHORDS_DISTANCE_STAVE - 4)),
 					w: widthBeat,
 					h: 20
 				};

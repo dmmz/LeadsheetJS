@@ -97,8 +97,9 @@
           'utils/test/testAjaxUtils',
           'utils/test/testChordUtils',
           'utils/test/testNoteUtils',
+          'modules/LSViewer/test/testSymbolsPositioner',
         ],
-        function(QUnit, testSongModel, testSectionModel, testChordManager, testChordModel, testNoteManager, testNoteModel, testBarModel, testBarManager, testSongBarsIterator, testNotesIterator, testPitchClass, testNote, testTimeSignatureModel, testKeySignatureModel, testSongModel_CSLJson, testSectionModel_CSLJson, testBarModel_CSLJson, testChordManager_CSLJson, testChordModel_CSLJson, testNoteManager_CSLJson, testNoteModel_CSLJson, testSongModel_MusicXML, testSongView_chordSequence, testSongModel_MidiCSL, testNoteModel_MidiCSL, testPlayerModel_MidiCSL, testSongConverterMidi_MidiCSL, testChordManagerConverterMidi_MidiCSL, testHistoryModel, testChordEditionController, testNoteEditionController, testElementView, testStructureEditionController, testFileEditionController, testMainMenuModel, testMainMenuController, testBarWidthManager, tupletAndBeamsManager, testCursorModel, testAudioController, testUserLog, testAjaxUtils, testChordUtils, testNoteUtils) {
+        function(QUnit, testSongModel, testSectionModel, testChordManager, testChordModel, testNoteManager, testNoteModel, testBarModel, testBarManager, testSongBarsIterator, testNotesIterator, testPitchClass, testNote, testTimeSignatureModel, testKeySignatureModel, testSongModel_CSLJson, testSectionModel_CSLJson, testBarModel_CSLJson, testChordManager_CSLJson, testChordModel_CSLJson, testNoteManager_CSLJson, testNoteModel_CSLJson, testSongModel_MusicXML, testSongView_chordSequence, testSongModel_MidiCSL, testNoteModel_MidiCSL, testPlayerModel_MidiCSL, testSongConverterMidi_MidiCSL, testChordManagerConverterMidi_MidiCSL, testHistoryModel, testChordEditionController, testNoteEditionController, testElementView, testStructureEditionController, testFileEditionController, testMainMenuModel, testMainMenuController, testBarWidthManager, tupletAndBeamsManager, testCursorModel, testAudioController, testUserLog, testAjaxUtils, testChordUtils, testNoteUtils, testSymbolsPositioner) {
           QUnit.config.autoload = false;
           QUnit.config.autostart = false;
           function sendMessage() {
@@ -185,6 +186,7 @@
           module('LSViewer')
           testBarWidthManager.run();
           tupletAndBeamsManager.run();
+          testSymbolsPositioner.run();
 
           // Midi sound model Module
           module('Midi sound model')
