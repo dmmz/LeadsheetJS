@@ -9,7 +9,7 @@ define(function() {
 			getArea: function(comment) {
 				var cursor = audioDrawer.audioCursor.cursor;
 				var timeInterval = comment ? 
-					comment.timeInterval : cursor.getPos();
+					comment.interval : cursor.getPos();
 				return audioDrawer.audioCursor.getAreasFromTimeInterval(timeInterval[0], timeInterval[1]);
 			},
 			isEnabled: function() {

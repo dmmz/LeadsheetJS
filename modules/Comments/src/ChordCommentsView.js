@@ -15,7 +15,7 @@ define(function() {
 			getArea: function(comment) {
 				var indexes = comment ?
 					//loading a given comment
-					[comment.beatInterval[0] - 1, comment.beatInterval[1] - 1]
+					[comment.interval[0] - 1, comment.interval[1] - 1]
 					//getting indexes from selection	
 					: chordsEditor.controller.cursor.getPos()
 				return chordsEditor.chordSpaceMng.elemMng.getElementsAreaFromCursor(chordsEditor.chordSpaceMng.chordSpaces, indexes);

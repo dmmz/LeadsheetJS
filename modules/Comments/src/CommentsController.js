@@ -7,12 +7,22 @@ define([
 	/**
 	 * Audio comments controller
 	 * @exports AudioComments/CommentsController
-	 * @param {AudioModule} audio        
-	 * @param {LSViewer} viewer         
-	 * @param {song} song      
-	 * @param {Object} userSession    with fields {'name': "Jon", id:'4abcgf4435', pathImg: 'path/to/img'}
+	 */
+	/**
+	 * [CommentsController description]
+	 * @param {Object} params
+	 *        				 {
+	 *        				 	userSession: userSession,
+	 *        				 	viewer: {LSViewer} viewer,
+	 *        				 	song: {song} song ,
+	 *        				 	audio: {AudioModule} audio        
+	 *        				 	noteSpaceManager: {NoteSpaceManager} noteSpaceManager
+	 *        				 	notesCursor: {CursorModel} notesCursor
+	 *        				 	chordsEditor: {ChordsEditor} chordsEditor
+	 *        				 }
+	 *        					
+	 * @param {Object} serverComment, object (provided by the client) that communicates with server
 	 * 
-	 * @param {Object} serverAudioComments is an external objects that can allow to save comment to a server
 	 */
 	function CommentsController(params, serverComments) {
 		params = params || {};
@@ -28,32 +38,36 @@ define([
 		this.song = params.song;
 		this.user = params.userSession;
 		this.commentsShowingBubble = [];
-		this.initSubscribe();
+		this.initSubscribe(params);
 	}
 
-	CommentsController.prototype.initSubscribe = function() {
+	CommentsController.prototype.initSubscribe = function(params) {
 		var self = this;
 		/**
 		 * draw comments when audio has been drawn
 		 */
-		$.subscribe('AudioDrawer-audioDrawn', function() {
-			self.model.getComments('audio',function(comments) {
-				self.view.draw(comments, self.user.id);
+		if (params.audio) {
+			$.subscribe('AudioDrawer-audioDrawn', function() {
+				self.model.getComments('audio',function(comments) {
+					self.view.draw(comments, self.user.id);
+				});
 			});
-		});
+		}
 
 		//ScoreComments
-		$.subscribe('LSViewer-drawEnd', function() {
-			self.model.getComments('score',function(comments) {
-				self.view.draw(comments, self.user.id);
+		if (params.notesCursor || params.chordsEditor){
+			$.subscribe('LSViewer-drawEnd', function() {
+				self.model.getComments('score',function(comments) {
+					self.view.draw(comments, self.user.id);
+				});
 			});
-		});
+		}
 		//comments are activated by K-key
 		$.subscribe('K-key', function(el){
 			self.view.showNewComment();
 		});
 		// showing audio comment could be directly done on audio selection 
-		// (BUT there is an issue, audioCursor is 'disabled', as we have not released the mouse button yet in this moment )
+		// (BUT there is an issue, audioCursor is 'disabled', as we have not released the mouse button yet in this moment ). So we comment it, and use a keyboard event to show comment
 		// 
 		// $.subscribe('AudioCursor-selectedAudio', function(el, startCursor, endCursor) {
 		// 	self.view.showNewComment();
@@ -74,10 +88,9 @@ define([
 		$.subscribe('CommentsView-saveComment', function(el, comment) {
 			comment.userId = self.user.id;
 			comment.userName = self.user.name;
-			comment.img = self.user.img;
 			comment.type = self.view.newComment.type;
 			self.saveComment(comment, function(commentId) {
-				$.publish('ToViewer-draw', self.song);
+				$.publish('ToViewer-draw', self.song); 
 				//we show comment bubble after waiting 200 ms, time enough to let 'toViewer-draw' finish drawing all comments, otherwise it would give an error
 				setTimeout(function() {
 					self.showComment(commentId);

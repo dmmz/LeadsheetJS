@@ -15,7 +15,7 @@ define(function() {
 			getArea: function(comment) {
 				var indexes = comment ?
 					//loading a given comment
-					noteMng.getIndexesStartingBetweenBeatInterval(comment.beatInterval[0], comment.beatInterval[1], true)
+					noteMng.getIndexesStartingBetweenBeatInterval(comment.interval[0], comment.interval[1], true)
 					//getting indexes from selection		
 					: [notesCursor.getStart(), notesCursor.getEnd()];
 
