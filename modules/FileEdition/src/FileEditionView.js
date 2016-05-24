@@ -3,16 +3,15 @@ define([
 	'mustache',
 	'modules/core/src/SongModel',
 	'utils/UserLog',
-	'pubsub',
 	'text!modules/FileEdition/src/FileEditionTemplate.html',
-], function($, Mustache, SongModel, UserLog, pubsub, FileEditionTemplate) {
+], function($, Mustache, SongModel, UserLog, FileEditionTemplate) {
 	/**
 	 * [FileEditionView description] 
 	 * @exports FileEdition/FileEditionView
 	 * @param {Object} params {
 	 *	import: Boolean,
 	 *	export: Boolean,
-	 *	save: Boolean
+	 *	extraElementsForMenu: jQuery Object representing DOM fragment
 	 * }
 	 */
 	function FileEditionView(params) {
@@ -22,36 +21,19 @@ define([
 		this.render(params);
 	}
 
-	FileEditionView.prototype.render = function(params) {
-		
+	FileEditionView.prototype.render = function(params) {	
 		params = params || {};
 		params.import = (params.import !== undefined) ? params.import : true;
 		params.export = (params.export !== undefined) ? params.export : true;
-		params.save = (params.save !== undefined) ? params.save : true;
-		this.el = Mustache.render(FileEditionTemplate, params);
+		this.el = $(Mustache.render(FileEditionTemplate, params));
+		if (params.extraElementsForMenu) {
+			this.el.find('#file_edition_extra_elements_container').append(params.extraElementsForMenu);
+		}
 	};
 	/**
 	 * Publish event after receiving dom events
 	 */
 	FileEditionView.prototype.initController = function() {
-
-		var self = this;
-		// Leadsheet parameters
-		$('#leadsheet_save').click(function() {
-			$.publish('FileEditionView-save');
-		});
-		$('#leadsheet_save_as').click(function() {
-			$.publish('FileEditionView-saveAs');
-		});
-
-		/*
-		$('#leadsheet_edit_chord_sequence').click(function() {
-
-		});
-
-		$('#leadsheet_key_title').click(function() {
-
-		});*/
 		$('#importFile').change(function(e) {
 			var file = e.target.files[0];
 			var allowedTypes = ['json', 'xml', 'mxml'];
@@ -73,7 +55,6 @@ define([
 			return false;
 		});
 
-
 		// leadsheet export
 		$('#export_png').click(function() {
 			$.publish('FileEditionView-exportPNG');
@@ -81,7 +62,6 @@ define([
 
 		$('#export_pdf').click(function() {
 			$.publish('FileEditionView-exportPDF');
-
 		});
 
 		$('#export_musicCslJson').click(function() {

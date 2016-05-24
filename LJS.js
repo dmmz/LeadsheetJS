@@ -269,9 +269,8 @@ define(
 				new HistoryC(songModel, historyHTML, snglNotesCursor.getInstance(songModel), {displayHistory:true, displayTime:false});
 				$.publish('ToHistory-add', 'Open song - ' + songModel.getTitle());
 			}
-			var fileEdition = new FileEdition(songModel, viewer, params.edition.saveFunction, {saveButton:params.edition.saveButton, saveAsButton:params.edition.saveAsButton});
-			
 			if (editionModule.menuModel){
+				var fileEdition = new FileEdition(songModel, viewer, {extraElementsForMenu: params.edition.extraElementsForMenu});
 				editionModule.menuModel.addMenu({
 					title: 'File',
 					view: fileEdition.view,
