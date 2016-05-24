@@ -288,13 +288,15 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			setPointerIfInPath(xy);
 
 		});
-		$.subscribe('ctrlPressed', function(el){
+		$.subscribe('ctrlPressed', function(){
 			self.ctrlPressed = true;
 		});
-		$.subscribe('ctrlUnpressed', function(el){
+		$.subscribe('ctrlUnpressed', function(){
 			self.ctrlPressed = false;
 		});
-		$.subscribe('CanvasLayer-refresh', self.refresh);
+		$.subscribe('CanvasLayer-refresh', function() {
+			self.refresh();
+		});	
 	};
 
 	/**
