@@ -320,6 +320,10 @@ define([
 
 		//we get start and en beats of selection
 		var startBeat = song.getStartBeatFromBarNumber(selBars[0]);
+		
+		if (selBars[0] === 0 && selBars[1] === selBars[0]){
+			selBars[1] = barMng.getTotal() - 1;
+		}
 		var endBeat = (barMng.getTotal() - 1 === selBars[1]) ? null : song.getStartBeatFromBarNumber(selBars[1] + 1);
 
 		//we get selected notes and adapt them to new time signature
