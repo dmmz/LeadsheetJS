@@ -292,6 +292,7 @@ define([
 
 		var type = audioEnabled ? 'audio' : notesEnabled ? 'notes' : chordsEnabled ? 'chords' : null;
 		if (!type){
+			$.publish('commentZoneNotSelected');
 			console.warn("either no area selected, element editing is not passed properly to commments constructor");
 			return;
 		}

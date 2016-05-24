@@ -66,6 +66,9 @@ define([
 		$.subscribe('K-key', function(el){
 			self.view.showNewComment();
 		});
+		$.subscribe('createComment', function(el){
+			self.view.showNewComment();
+		});
 		// showing audio comment could be directly done on audio selection 
 		// (BUT there is an issue, audioCursor is 'disabled', as we have not released the mouse button yet in this moment ). So we comment it, and use a keyboard event to show comment
 		// 
