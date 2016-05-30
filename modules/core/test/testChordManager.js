@@ -111,11 +111,11 @@ define(function(require) {
 				var chordForBeat = chordMng.getChordForBeat(songTimeSig, 100);
 				assert.deepEqual(chordForBeat, false, 'When beat is too high or no chord found, getChordForBeat should return false');
 				chordForBeat = chordMng.getChordForBeat(songTimeSig, 30);
-				assert.deepEqual(chordForBeat, chordMng.chords[10]);
+				assert.deepEqual(chordForBeat, chordMng.chords[10], "beat 30 => chord[10]");
 				chordForBeat = chordMng.getChordForBeat(songTimeSig, 28);
-				assert.deepEqual(chordForBeat, chordMng.chords[9]);
-				chordForBeat = chordMng.getChordForBeat(songTimeSig, 35);
-				assert.deepEqual(chordForBeat, chordMng.chords[11]);
+				assert.deepEqual(chordForBeat, chordMng.chords[9], "beat 28 => chord[9]");
+				chordForBeat = chordMng.getChordForBeat(songTimeSig, 36.5);
+				assert.deepEqual(chordForBeat, chordMng.chords[13], "beat 36.5 => chord[11]");
 
 				assert.deepEqual(chordMng.getBarNumAndBeatFromBeat(songTimeSig,32),{beatNumber:1,barNumber:9, notExactBeat: false});				
 				assert.deepEqual(chordMng.getBarNumAndBeatFromBeat(songTimeSig,36.5),{beatNumber:1,barNumber:11, notExactBeat: false});

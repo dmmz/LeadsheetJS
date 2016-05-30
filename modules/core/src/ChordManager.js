@@ -94,19 +94,20 @@
 		 */
 		ChordManager.prototype.getChordsRelativeToBeat = function(song, startBeat, endBeat, arrBeatChords) {
 			arrBeatChords = arrBeatChords || this.getBeatsBasedChordIndexes(song);
+			endBeat = endBeat || startBeat;
 			var selectedChords = [];
 			for (var i = 0; i < arrBeatChords.length; i++) {
 				if (arrBeatChords[i] >= endBeat && arrBeatChords[i-1] < startBeat) {
 					selectedChords.push({
-						index: i - 1,
-						beat: 0
+						index: arrBeatChords[i] === endBeat ? i : i - 1,
+						beat: 1
 					});
 				} else if (arrBeatChords[i] >= startBeat && arrBeatChords[i] < endBeat) {
 					selectedChords.push({
 						index: i,
 						beat: arrBeatChords[i] - startBeat
 					});
-				}
+				} 
 			}
 			return selectedChords;
 		};
@@ -319,7 +320,7 @@
 		 * @param  {int} index of chord in this.chords
 		 * @return {int} number of beat the chord last
 		 */
-		ChordManager.prototype.getChordDuration = function(songModel, index) {
+		ChordManager.prototype.getChordDuration = function(songModel, index, asBeatUnitQuarter) {
 			if (typeof songModel === "undefined" || typeof index === "undefined" || isNaN(index)) {
 				throw "ChordManager - getChordDuration - wrong arguments";
 			}
@@ -346,10 +347,10 @@
 			} else if (nextBn > currentBn) {
 				duration = beats * (nextBn - currentBn) + nextBeat - currentBeat;
 				// TODO test duration 2, it's probably more correct because it take into account time modification change
-				//duration2 = songModel.getStartBeatFromBarNumber(nextBn-1) + songModel.getTimeSignatureAt(nextBn-1).getBeats() + nextBeat - songModel.getStartBeatFromBarNumber(currentBn) - currentBeat;
-				//console.log(duration, duration2);
+				// duration2 = songModel.getStartBeatFromBarNumber(nextBn-1) + songModel.getTimeSignatureAt(nextBn-1).getBeats() + nextBeat - songModel.getStartBeatFromBarNumber(currentBn) - currentBeat;
+				// console.log(duration, duration2);
 			}
-			return duration;
+			return asBeatUnitQuarter === true ? duration * songModel.getTimeSignatureAt(currentBn).getBeatUnitQuarter() : duration;
 		};
 
 
