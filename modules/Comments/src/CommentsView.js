@@ -79,7 +79,8 @@ define([
 		});
 
 		//remove comment
-		$(document).on('click', '.remove-comment', function() {
+		$(document).on('click', '.remove-comment', function(e) {
+			e.preventDefault();
 			var commentEl = $(this).closest('.speech-bubble'),
 				commentId = commentEl.attr('data-commentId');
 			$.publish('CommentsView-removingComment', [commentEl, commentId]);
@@ -233,13 +234,12 @@ define([
 		
 		//var height = $("#" + this.bubblePreId + commentId).height();
 		var height = 100;
-		
 		var area = this.commentSpaceMng.commentSpaces[commentId].getArea();
 		var offset = this.offset; //to avoid 'this' closure problem
 		$("#" + this.bubblePreId + commentId).css({
 			top: area.y - area.h + offset.top - height,
 			left: area.x + offset.left,
-			maxHeight: height,
+			height: 100,
 			zIndex: 1900
 		}).show();
 		$("#bubble" + commentId+" .textComment");
@@ -251,7 +251,7 @@ define([
 	 * @param  {String}				commentText text of current comment
 	 * @param  {String}				commentId   
 	 */
-	CommentsView.prototype.showEditingComment = function(bubbleEl, commentText, commentId, controller) {
+	CommentsView.prototype.showEditingComment = function(bubbleEl, commentText, commentId, hideCommentFn) {
 		function getOldCommentPosition(bubbleEl, newCommentId) {
 			var offset = $(bubbleEl).offset();
 			var oldCommentHeight = $(bubbleEl).outerHeight(true);
@@ -263,7 +263,7 @@ define([
 		}
 		//need to get point before hiding comment
 		var point = getOldCommentPosition(bubbleEl, this.newCommentId);
-		controller.hideComment(bubbleEl.attr('id')); //TODO: hideComment and showComment methods should be in view
+		hideCommentFn(bubbleEl.attr('id')); //TODO: hideComment and showComment methods should be in view
 		// controller calls this.hideBubble();
 
 		var newCommentEl = $("#" + this.newCommentId);

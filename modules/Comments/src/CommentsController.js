@@ -26,131 +26,179 @@ define([
 	 */
 	function CommentsController(params, serverComments) {
 		params = params || {};
-
+		
 		if (!params.viewer || !params.song || !params.userSession || !params.userSession.name || !params.userSession.id){
 			throw "CommentsController - wrong params";
 		}
 		
 		var audioDrawer = params.audio && params.audio.drawer ? params.audio.drawer : undefined;
 
-		this.model = new CommentsModel(serverComments);
-		this.view = new CommentsView(params.viewer, params.song, audioDrawer, params.noteSpaceManager, params.notesCursor, params.chordsEditor );
-		this.song = params.song;
-		this.user = params.userSession;
-		this.commentsShowingBubble = [];
-		this.initSubscribe(params);
-	}
+		var model = new CommentsModel(serverComments);
+		var view = new CommentsView(params.viewer, params.song, audioDrawer, params.noteSpaceManager, params.notesCursor, params.chordsEditor );
+		var song = params.song;
+		var user = params.userSession;
+		var commentsShowingBubble = [];
+		
+		var AUDIO = !!params.audio;
+		var SCORE = !!(params.notesCursor || params.chordsEditor);
+		var enabled = !!params.enabled;
+		console.log(enabled);
 
-	CommentsController.prototype.initSubscribe = function(params) {
-		var self = this;
+		if (enabled){
+			initSubscribe();
+		}
+		
+		function _handleComments(type){
+			type = type || 'score';
+			model.getComments(type, function(comments){
+				view.draw(comments, user.id);
+			});
+		}
+
+		function handleAudioComments() {
+			_handleComments('audio');
+		}
+		
+		function handleScoreComments() {
+			_handleComments('score');
+		}
+
+		function hideComment(commentId) {
+			view.hideBubble(commentId);
+			//remove element from array
+			var index = commentsShowingBubble.indexOf(commentId);
+			commentsShowingBubble.splice(index, 1);
+		}
+
 		/**
-		 * draw comments when audio has been drawn
+		 * calls view showBubble, and saves the information needed to remember that comment is being shown
+		 * @param  {String} commentId    
+		 * @param  {String} orderedIndex    
+		 * @param  {Integer|String} orderedIndex 
 		 */
-		if (params.audio) {
-			$.subscribe('AudioDrawer-audioDrawn', function() {
-				self.model.getComments('audio',function(comments) {
-					self.view.draw(comments, self.user.id);
-				});
-			});
-		}
-
-		//ScoreComments
-		if (params.notesCursor || params.chordsEditor){
-			$.subscribe('LSViewer-drawEnd', function() {
-				self.model.getComments('score',function(comments) {
-					self.view.draw(comments, self.user.id);
-				});
-			});
-		}
-		//comments are activated by K-key
-		$.subscribe('K-key', function(el){
-			self.view.showNewComment();
-		});
-		$.subscribe('createComment', function(el){
-			self.view.showNewComment();
-		});
-		// showing audio comment could be directly done on audio selection 
-		// (BUT there is an issue, audioCursor is 'disabled', as we have not released the mouse button yet in this moment ). So we comment it, and use a keyboard event to show comment
-		// 
-		// $.subscribe('AudioCursor-selectedAudio', function(el, startCursor, endCursor) {
-		// 	self.view.showNewComment();
-		// });
-
-
-		$.subscribe('CommentSpaceManager-clickedComment', function(el, commentId) {
-			//If shown, hide. If hidden, show
-			if (self.commentsShowingBubble.indexOf(commentId) === -1) {
-				self.showComment(commentId/*, orderedIndex*/);
-			} else {
-				self.hideComment(commentId);
+		function showComment(commentId, orderedIndex) {
+			if (commentsShowingBubble.indexOf(commentId) === -1){
+				commentsShowingBubble.push(commentId);	
 			}
-		});
-		$.subscribe('CommentsView-closeBubble', function(el, commentId) {
-			self.hideComment(commentId);
-		});
-		$.subscribe('CommentsView-saveComment', function(el, comment) {
-			comment.userId = self.user.id;
-			comment.userName = self.user.name;
-			comment.type = self.view.newComment.type;
-			self.saveComment(comment, function(commentId) {
-				$.publish('ToViewer-draw', self.song); 
-				//we show comment bubble after waiting 200 ms, time enough to let 'toViewer-draw' finish drawing all comments, otherwise it would give an error
-				setTimeout(function() {
-					self.showComment(commentId);
-				}, 200);
-			});
-		});
-		$.subscribe('CommentsView-updateComment', function(el, commentId, text) {
-			self.updateComment(commentId, text);
-		});
-		$.subscribe('CommentsView-editingComment', function(el, bubbleEl, commentId) {
-			var comment = self.model.getComment(commentId);
-			self.view.showEditingComment(bubbleEl, comment.text, commentId, self);
-		});
-		$.subscribe('CommentsView-removingComment', function(el, bubbleEl, commentId) {
-			bubbleEl.remove();
-			self.model.removeComment(commentId, function() {
-				$.publish('ToViewer-draw', self.song);
-			});
-		});
-
-	};
-	CommentsController.prototype.hideComment = function(commentId) {
-		this.view.hideBubble(commentId);
-		//remove element from array
-		var index = this.commentsShowingBubble.indexOf(commentId);
-		this.commentsShowingBubble.splice(index, 1);
-	};
-	/**
-	 * calls view showBubble, and saves the information needed to remember that comment is being shown
-	 * @param  {String} commentId    
-	 * @param  {String} orderedIndex    
-	 * @param  {Integer|String} orderedIndex 
-	 */
-	CommentsController.prototype.showComment = function(commentId, orderedIndex) {
-		if (this.commentsShowingBubble.indexOf(commentId) === -1){
-			this.commentsShowingBubble.push(commentId);	
+			view.showBubble(commentId);
 		}
-		this.view.showBubble(commentId);
-	};
-	CommentsController.prototype.saveComment = function(comment, callback) {
-		var self = this;
-		this.model.saveComment(comment, callback);
-	};
-	CommentsController.prototype.updateComment = function(commentId, text) {
-		var self = this;
-		this.model.updateComment(commentId, text, function() {
-			self.view.updateComment(commentId, text);
-			self.showComment(commentId);
-		});
-	};
 
-	/**
-	 * this function is only used in test examples, to load comments directly (when there is no database to load comments from)
-	 * @param {String} comment
-	 */
-	CommentsController.prototype.addComment = function(comment) {
-		this.model.addComment(comment);
-	};
+		//enables comment module
+		function enable() {
+			if (!enabled)
+			{
+				if (AUDIO){
+					handleAudioComments();
+					$.subscribe('AudioDrawer-audioDrawn', handleAudioComments);
+				}
+				if (SCORE){
+					handleScoreComments();
+					$.subscribe('LSViewer-drawEnd', handleScoreComments);
+				}
+				enabled = !enabled;
+			}
+		}
+		//disables comment module
+		function disable(){
+			if (enabled){
+				if (AUDIO){
+					$.unsubscribe('AudioDrawer-audioDrawn', handleAudioComments);
+				}
+				if (SCORE){
+					$.unsubscribe('LSViewer-drawEnd', handleScoreComments);	
+				}
+				enabled = !enabled;
+			}
+		}
+
+		
+		/**
+		 * this function is only used in test examples, to load comments directly (when there is no database to load comments from)
+		 * @param {String} comment
+		 */
+		function addComment(comment) {
+			model.addComment(comment);
+		}
+
+		function initSubscribe(){
+			if (AUDIO) {
+				$.subscribe('AudioDrawer-audioDrawn', handleAudioComments);
+			}
+			//ScoreComments
+			if (SCORE){
+				$.subscribe('LSViewer-drawEnd', handleScoreComments);
+			}
+			//comments are activated by K-key
+			$.subscribe('K-key', function(el){
+				if (enabled){
+					view.showNewComment();	
+				}
+			});
+			$.subscribe('createComment', function(el){
+				view.showNewComment();
+			})
+
+			$.subscribe('MainMenuModel-setCurrentMenu', function(el, obj){
+				if (obj.title === 'Annotation'){
+					enable();
+				}else{
+					disable();
+				}
+				$.publish('ToViewer-draw', song);
+			});
+
+			// showing audio comment could be directly done on audio selection 
+			// (BUT there is an issue, audioCursor is 'disabled', as we have not released the mouse button yet in this moment ). So we comment it, and use a keyboard event to show comment
+			// 
+			// $.subscribe('AudioCursor-selectedAudio', function(el, startCursor, endCursor) {
+			// 	self.view.showNewComment();
+			// });
+			$.subscribe('CommentSpaceManager-clickedComment', function(el, commentId) {
+				//If shown, hide. If hidden, show
+				if (commentsShowingBubble.indexOf(commentId) === -1) {
+					showComment(commentId/*, orderedIndex*/);
+				} else {
+					hideComment(commentId);
+				}
+			});
+			$.subscribe('CommentsView-closeBubble', function(el, commentId) {
+				hideComment(commentId);
+			});
+
+			$.subscribe('CommentsView-saveComment', function(el, comment) {
+				comment.userId = user.id;
+				comment.userName = user.name;
+				comment.type = view.newComment.type;
+				
+				model.saveComment(comment, function(commentId) {
+					$.publish('ToViewer-draw', song); 
+					//we show comment bubble after waiting 200 ms, time enough to let 'toViewer-draw' finish drawing all comments, otherwise it would give an error
+					setTimeout(function() {
+						showComment(commentId);
+					}, 200);
+				});
+			});
+			$.subscribe('CommentsView-updateComment', function(el, commentId, text) {
+				model.updateComment(commentId, text, function() {
+					view.updateComment(commentId, text);
+					showComment(commentId);
+				});
+			});
+			
+			$.subscribe('CommentsView-editingComment', function(el, bubbleEl, commentId) {
+				var comment = model.getComment(commentId);
+				view.showEditingComment(bubbleEl, comment.text, commentId, hideComment);
+			});
+			$.subscribe('CommentsView-removingComment', function(el, bubbleEl, commentId) {
+				bubbleEl.remove();
+				model.removeComment(commentId, function() {
+					$.publish('ToViewer-draw', song);
+				});
+			});
+		}
+		return {
+			addComment: addComment
+		}
+	}
 	return CommentsController;
 });

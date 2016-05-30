@@ -18,7 +18,6 @@ define(function() {
 					noteMng.getIndexesStartingBetweenBeatInterval(comment.interval[0], comment.interval[1], true)
 					//getting indexes from selection		
 					: [notesCursor.getStart(), notesCursor.getEnd()];
-
 				return noteSpaceMng.elemMng.getElementsAreaFromCursor(noteSpaceMng.noteSpace, indexes);
 			},
 			isEnabled: function() {
