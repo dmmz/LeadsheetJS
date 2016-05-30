@@ -101,9 +101,6 @@ define([
 	};
 
 	MainMenuModel.prototype.setCurrentMenu = function(currentMenu) {
-		if (typeof currentMenu === "undefined") {
-			return;
-		}
 		this.currentMenu = currentMenu;
 		$.publish('MainMenuModel-setCurrentMenu', this.currentMenu);
 	};
