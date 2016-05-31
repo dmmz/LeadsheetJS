@@ -42,7 +42,9 @@ define([
 				self.songModel.getStyle()
 			);
 		});
-		$.subscribe('FileEditionView-exportMusicCSLJSON', self.exportLeadsheetJSON);
+		$.subscribe('FileEditionView-exportMusicCSLJSON', function(){
+			self.exportLeadsheetJSON();
+		});
 	};
 
 
