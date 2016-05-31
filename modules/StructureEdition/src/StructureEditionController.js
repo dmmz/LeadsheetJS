@@ -51,7 +51,7 @@ define([
 	};
 
 	StructureEditionController.prototype.setCurrentElementFromCursor = function() {
-		if (typeof this.structEditionModel === "undefined") {
+		if (typeof this.structEditionModel === "undefined" || this.isEditable() !== true) {
 			return;
 		}
 		var currentBarNumber = this.songModel.getComponent('notes').getNoteBarNumber(this.cursor.getStart(), this.songModel);
