@@ -1,11 +1,12 @@
 define([
 	'mustache',
+	'modules/Edition/src/EditionControllerInterface',
 	'modules/core/src/NoteManager',
 	'modules/core/src/NoteModel',
 	'utils/NoteUtils',
 	'utils/UserLog',
 	'jquery',
-], function(Mustache, NoteManager, NoteModel, NoteUtils, UserLog, $) {
+], function(Mustache, EditionControllerInterface, NoteManager, NoteModel, NoteUtils, UserLog, $) {
 	/**
 	 * NoteEditionController manages all notes edition function
 	 * @exports NoteEdition/NoteEditionController
@@ -14,6 +15,7 @@ define([
 		if (!songModel || !cursor) {
 			throw "NoteEditionController params are wrong";
 		}
+		$.extend(this, new EditionControllerInterface());
 		this.songModel = songModel;
 		this.cursor = cursor;
 		this.noteSpaceMng = noteSpaceMng; // in tests we don't pass noteSpaceMng, it will be undefined
@@ -75,7 +77,7 @@ define([
 		});
 		// All functions related with note edition go here
 		$.subscribe('NoteEditionView', function(el, fn, param, shiftKey) {
-			if (self.noteSpaceMng.isEnabled()) {
+			if (self.noteSpaceMng.isEnabled() && self.isEditable()) {
 				var modifications = self[fn].call(self, param, shiftKey);
 				if (fn == 'addNote') { // we increment cursor if we added a note
 					self.cursor.increment();

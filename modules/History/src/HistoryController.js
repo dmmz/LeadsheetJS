@@ -36,6 +36,12 @@ define([
 		$.subscribe('ToHistory-updateLastEntry', function() {
 			self.updateLastEntry();
 		});
+		$.subscribe('ToHistory-reset', function(el, title, updateLastEntry, pos, extraData) {
+			self.model.init();
+			if (title) {
+				$.publish('ToHistory-add', [title, updateLastEntry, pos, extraData]);
+			}
+		});
 	};
 
 
@@ -67,6 +73,8 @@ define([
 			$.publish('ToLayers-removeLayer');
 			$.publish('ToViewer-draw', this.songModel);
 			var eventName = 'HistoryController-itemLoaded';
+			// publish generic event first
+			$.publish(eventName);
 			var historyItem = this.model.getCurrentItem();
 			if (historyItem && historyItem.extraData && historyItem.extraData.type) {
 				eventName += '-' + historyItem.extraData.type;

@@ -11,7 +11,6 @@ define([
 	var HistoryModel = function(maxHistoryLength) {
 		this.init();
 		this.maxHistoryLength = maxHistoryLength || 10000;
-		this.lastLeadsheet = null;
 	};
 
 	/**
@@ -20,6 +19,7 @@ define([
 	 */
 	HistoryModel.prototype.init = function() {
 		this.historyList = []; // state list
+		this.lastLeadsheet = null;
 		this.currentPosition = -1; // current Position start at 0
 	};
 

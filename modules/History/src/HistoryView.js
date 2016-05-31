@@ -10,29 +10,29 @@ define([
 	 */
 	function HistoryView(parentHTML, displayHistory, displayTime) {
 		this.el = undefined;
-		this.$historyFoldEl = $('<span class="pull-right history-fold"><i class="icon-chevron-right"></i></span>');
 		this.parentHTML = (parentHTML) ? parentHTML : $('#rightPanel');
+		var tabsWrapper = this.parentHTML.find('.nav.nav-tabs');
+		tabsWrapper.append('<li class="active"><a data-toggle="tab" href="#history-tab-pane">History</a></li>');
+		var contentWrapper = this.parentHTML.find('.tab-content');
+		this.$historyContainer = $('<div id="history-tab-pane" class="history-container tab-pane active"></div>');
+		contentWrapper.append(this.$historyContainer);
 		this.displayHistory = (typeof displayHistory !== "undefined") ? displayHistory : true;
 		this.displayTime = !!displayTime;
 		this.initController();
 		this.initKeyboard();
 		this.initSubscribe();
-		this.activeView();
 	}
 
 	/**
 	 * Render will build and display a new dom in parentHTML using model historyList
 	 */
 	HistoryView.prototype.render = function(model) {
-		if (this.displayHistory === false || !this.parentHTML) {
+		if (this.displayHistory === false || !this.$historyContainer) {
 			return;
 		}
-		this.parentHTML.empty();
-		this.parentHTML.append(this.$historyFoldEl);
-		var $historyContainer = $('<div class="history-container"></div>');
-		$historyContainer.append('<h3>History</h3>');
+		this.$historyContainer.empty();
 		var $historyList = $('<ul class="history_ul">');
-		$historyContainer.append($historyList);
+		this.$historyContainer.append($historyList);
 		var text = '',
 			classCurrent = "";
 		// loop through each history state
@@ -40,7 +40,7 @@ define([
 			for (var i = 0, c = model.historyList.length; i < c; i++) {
 				classCurrent = "";
 				if (i == model.currentPosition) {
-					classCurrent = "current_history";
+					classCurrent = "current";
 				}
 				text = '';
 				if (model.historyList[i].title !== '') {
@@ -52,8 +52,6 @@ define([
 				$historyList.append('<li class="' + classCurrent + '" data-history="' + i + '">' + text + '</li>');
 			}
 		}
-		this.parentHTML.append($historyContainer);
-		//$.publish('HistoryView-render');
 	};
 
 	HistoryView.prototype.initKeyboard = function(evt) {
@@ -75,11 +73,6 @@ define([
 			$.publish('HistoryView-selectHistory', indexItem);
 		});
 		self.parentHTML.addClass('history-open');
-		self.parentHTML.on('click', '.history-fold', function() {
-			self.$historyFoldEl.find('i').toggleClass('icon-chevron-right icon-chevron-left');
-			self.parentHTML.toggleClass('history-open history-close');
-			self.parentHTML.find('.history-container, h3').toggle(0);
-		});
 	};
 
 	/**
@@ -93,20 +86,6 @@ define([
 		$.subscribe('HistoryModel-addToHistory', function(el, model) {
 			self.render(model);
 		});
-		$.subscribe('toHistoryView-unactiveView', function() {
-			self.unactiveView();
-		});
-		$.subscribe('toHistoryView-activeView', function() {
-			self.activeView();
-		});
-	};
-
-	HistoryView.prototype.unactiveView = function() {
-		//$('#rightPanel').hide('slow');
-	};
-
-	HistoryView.prototype.activeView = function() {
-		$(this.parentHTML).show('slow');
 	};
 
 	return HistoryView;

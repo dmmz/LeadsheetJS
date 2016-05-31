@@ -1,6 +1,7 @@
 define([
 	'jquery',
 	'mustache',
+	'modules/Edition/src/EditionControllerInterface',
 	'modules/Cursor/src/CursorModel',
 	'modules/core/src/SongModel',
 	'modules/core/src/SectionModel',
@@ -16,13 +17,14 @@ define([
 	'modules/core/src/Note',
 	'modules/core/src/PitchClass',
 	'pubsub',
-], function($, Mustache, CursorModel, SongModel, SectionModel, NoteManager, NoteModel, SongBarsIterator, TimeSignatureModel, SongConverterMidi_MidiCSL, NoteUtils, 
+], function($, Mustache, EditionControllerInterface, CursorModel, SongModel, SectionModel, NoteManager, NoteModel, SongBarsIterator, TimeSignatureModel, SongConverterMidi_MidiCSL, NoteUtils, 
 			UserLog, Midi, Intervals, Note, PitchClass, pubsub) {
 	/**
 	 * StructureEditionController manages all structure edition function
 	 * @exports StructureEdition/StructureEditionController
 	 */
 	function StructureEditionController(songModel, cursor, structEditionModel) {
+		$.extend(this, new EditionControllerInterface());
 		this.songModel = songModel || new SongModel();
 		this.cursor = cursor || new CursorModel();
 		this.initSubscribe();
@@ -37,9 +39,11 @@ define([
 		var fn;
 		// All functions related with note edition go here
 		$.subscribe('StructureEditionView', function(el, fn, param) {
-			self[fn].call(self, param);
-			var forceNewCanvasLayer = (fn === 'addBar' || fn === 'addSection');
-			$.publish('ToViewer-draw', [self.songModel, forceNewCanvasLayer]);
+			if (self.isEditable()) {
+				self[fn].call(self, param);
+				var forceNewCanvasLayer = (fn === 'addBar' || fn === 'addSection');
+				$.publish('ToViewer-draw', [self.songModel, forceNewCanvasLayer]);
+			}
 		});
 		$.subscribe('CursorModel-setPos', function(el) {
 			self.setCurrentElementFromCursor();
@@ -255,8 +259,6 @@ define([
 		}
 		this.cursor.setPos(index - 1);
 	};
-
-
 
 	StructureEditionController.prototype.setTimeSignature = function(timeSignature) {
 		/**
