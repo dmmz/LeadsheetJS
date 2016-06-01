@@ -33,7 +33,7 @@ define([
 		$.subscribe('FileEditionView-importMusicXML', function(el, musicXMLSong) {
 			self.importMusicXML(musicXMLSong);
 		});
-		$.subscribe('FileEditionView-exportPNG', self.exportPNG);
+		$.subscribe('FileEditionView-exportPNG', function(el){ self.exportPNG();});
 		$.subscribe('FileEditionView-exportPDF', function(el) {
 			self.exportAndPromptLeadsheetToPDF(
 				self.songModel.getTitle(),

@@ -1,0 +1,26 @@
+<ul class="menu-part nav-justified">
+	{{#parts}}
+	<li>
+		<div>
+			<ul class="item nav-justified">
+				{{#items}}
+					{{#file}}
+						<li><input type="file" id="importFile" accept="text/json, text/xml, .json, .xml" /></li>
+					{{/file}}
+					{{^file}}
+						<li id="{{id}}" title="{{title}}">
+							{{#text}}
+								{{{text}}}
+							{{/text}}
+							{{#img}}
+								<img src="{{imgPath}}{{img}}" alt="{{alt}}" />
+							{{/img}}
+						</li>
+					{{/file}}
+				{{/items}}
+			</ul>
+			<h5>{{name}}</h5>
+		</div>
+	</li>
+	{{/parts}}
+</ul>

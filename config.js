@@ -9,7 +9,7 @@ require.config({
 		pubsub: 'external-libs/tiny-pubsub.min',
 		mustache: 'node_modules/mustache/mustache.min',
 		text: 'node_modules/requirejs-text/text',
-		bootstrap: 'node_modules/bootstrap/docs/assets/js/bootstrap.min',
+		bootstrap: 'node_modules/bootstrap/dist/js/bootstrap.min',
 		jsPDF: 'node_modules/jspdf/dist/jspdf.min',
 		underscore: 'node_modules/underscore/underscore-min',
 		deepdiff: 'node_modules/deep-diff/index',

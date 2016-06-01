@@ -3,8 +3,8 @@ define([
 	'mustache',
 	'modules/core/src/SongModel',
 	'utils/UserLog',
-	'text!modules/FileEdition/src/FileEditionTemplate.html',
-], function($, Mustache, SongModel, UserLog, FileEditionTemplate) {
+	'text!modules/MainMenu/src/MenuTabTemplate.html',
+], function($, Mustache, SongModel, UserLog, MenuTabTemplate) {
 	/**
 	 * [FileEditionView description] 
 	 * @exports FileEdition/FileEditionView
@@ -18,7 +18,45 @@ define([
 		this.el = undefined;
 		this.initSubscribe();
 		this.initKeyboard();
-		this.render(params);
+		// $(Mustache.render(MenuTabTemplate, 
+		// 	{
+		// 		"parts":[
+		// 			{
+		// 				items:[
+		// 				]
+		// 			},
+		// 			{
+		// 				items:[
+
+		// 				]
+		// 			}
+
+		// 		]
+		// 	}
+		// ));
+		params = {
+				"parts":[
+					{
+						name: 'Import',
+						items:[
+							{'file':true},
+						],
+
+					},
+					{
+						name: 'Export',
+						items:[
+							{ id:'export_png', text: 'PNG' },
+							{ id:'export_pdf', text: 'PDF' },
+							{ id:'export_musicCslJson', text: 'MusicCSLJson' }
+						]
+					}
+			]
+		};
+
+		//this.el = $(Mustache.render(MenuTabTemplate, params));
+		this.el = $(Mustache.render(MenuTabTemplate, params));
+		//this.render(params);
 	}
 
 	FileEditionView.prototype.render = function(params) {	

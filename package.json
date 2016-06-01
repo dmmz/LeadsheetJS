@@ -25,7 +25,7 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "bootstrap": "https://github.com/twbs/bootstrap.git#b4c4072679943773a7582daa63f545ba818fa627",
+    "bootstrap": "https://github.com/twbs/bootstrap.git#f01f3e5f34c1acdd802cc61ea9aae9f9b14169c3", 
     "deep-diff": "^0.3.4",
     "jquery": "^2.2.3",
     "jspdf": "^1.2.61",

@@ -48,6 +48,20 @@ define([
 	};
 
 	MainMenuView.prototype.buildMenu = function() {
+		/*function getMenuItem($first_level_main_menu_item_tpl){
+			var $first_level_menu_item = $first_level_main_menu_item_tpl.clone();
+			$first_level_menu_item.text(menu.title);
+			$first_level_menu_item.data('menuTitle', menu.title);
+			$first_level_menu_item.attr({'id': titleConcat + '_first_level', 'href': '#' + menu.title});
+			return $first_level_menu_item;
+		}*/
+
+		function getMenuItem() {
+			return $('<li></li>').attr({role: 'presentation'/*, class: 'active'*/}).append(
+				$('<a></a>').attr({href:'#' + menu.title}).text(menu.title)
+			);
+			
+		}
 		var second_level = '';
 		var $main_menu_first_level = $('#main_menu_first_level');
 		var $first_level_main_menu_item_tpl = $('<a class="first_level main_menu_item"></a>');
@@ -64,10 +78,8 @@ define([
 			menu = this.model.getMenu(i);
 			var titleConcat = this._concatTitle(menu.title);
 			// first level item
-			var $first_level_menu_item = $first_level_main_menu_item_tpl.clone();
-			$first_level_menu_item.text(menu.title);
-			$first_level_menu_item.data('menuTitle', menu.title);
-			$first_level_menu_item.attr({'id': titleConcat + '_first_level', 'href': '#' + menu.title});
+			var $first_level_menu_item = getMenuItem($first_level_main_menu_item_tpl);
+		
 			// second level item
 			var $second_level_menu_item = $second_level_menu_item_tpl.clone();
 			$second_level_menu_item.html(menu.view.el);
