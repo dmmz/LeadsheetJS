@@ -24,6 +24,7 @@ define([
 			this.timeSigMng.reset();
 			this.keySigMng.reset();
 			this.endingState = null;
+			this.prevEnding = null;
 			this.ending = null;
 			this.beats = 1;
 		},
@@ -53,10 +54,8 @@ define([
 		 * 	if (songBarIt.next()){
 		 *		//get info about next bar
 		 *	}
-		 * 
 		 * }
 		 *	
-		 * 
 		 * @return {Boolean}
 		 */
 		next: function() {
@@ -122,7 +121,7 @@ define([
 		getBarKeySignature: function() {
 			return this.keySigMng.getBarElemValue();
 		},
-		getBarTimeSignature: function() {
+		getBarTimeSignature: function() { 
 			return this.timeSigMng.getBarElemValue();
 		},
 		doesTimeSignatureChange: function() {
@@ -151,6 +150,16 @@ define([
 		},
 		setEndingState: function(endingState) {
 			this.endingState = endingState;
+		},
+		hasLabelInPrecedingBars: function(labelType) {
+			var currentIndex = this.index;
+			var result = false;
+			this.reset();
+			while (this.next() && this.index < currentIndex) {
+				var labels = this.getBar().getLabel();
+				result = result || !labels ? result : labels.indexOf(labelType) !== -1;
+			}
+			return result;
 		},
 		isLast: function() {
 			return this.index == this.bm.getTotal() - 1;

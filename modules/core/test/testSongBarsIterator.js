@@ -96,6 +96,7 @@ define([
 								melody: [
 									{keys: ["b/4"],duration: "wr"}
 								],
+								coda: 1,
 								ending:1
 
 							},{
@@ -113,6 +114,7 @@ define([
 								],
 								ending:2
 							},{
+								//barNum: 4 
 								chords: [{p: "A",ch: "M7",beat: 1}],
 								melody: [
 									{keys: ["b/4"],duration: "wr"}
@@ -123,6 +125,7 @@ define([
 							name:"B",
 							bars:
 							[{
+								//barNum: 5 
 								chords: [{p: "A",ch: "M7",beat: 1}],
 								melody: [
 									{keys: ["b/4"],duration: "wr"}
@@ -143,15 +146,18 @@ define([
 						case 1:
 							assert.equal(barsIt.getBarTimeSignature().toString(),"4/4", "4/4 at start");
 							assert.equal(barsIt.getBarKeySignature().toString(),"G", "key signature G");
+							assert.notOk(barsIt.hasLabelInPrecedingBars('coda'), "hasLabelInPrecedingBars('coda') returns false on measure 1 since measure 1 is the only one with a coda");
 							break;
 						case 2:
 							assert.equal(barsIt.getBarTimeSignature().toString(),"6/4", "6/4 in ending 1");
+							assert.ok(barsIt.hasLabelInPrecedingBars('coda'), "hasLabelInPrecedingBars('coda') returns true on measure 2 should since measure 1 has a coda");
 							break;
 						case 3:
 						case 4:
 						case 5:
-							assert.equal(barsIt.getBarKeySignature().toString(),"F", "back to F from ending 2 to the end");
-							assert.equal(barsIt.getBarTimeSignature().toString(),"4/4", "back to 4/4 from ending 2 to the end");
+						case 6:
+							assert.equal(String(barsIt.getBarKeySignature()),"F", "back to F from ending 2 to the end");
+							assert.equal(String(barsIt.getBarTimeSignature()),"4/4", "back to 4/4 from ending 2 to the end");
 							break;
 					}
 					barsIt.next();

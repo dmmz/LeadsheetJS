@@ -28,3 +28,4 @@ exclude_paths:
 - tests/
 - "build/*"
 - "external-libs/*"
+- "modules/*/test/*"
