@@ -26,20 +26,20 @@
   "private": false,
   "dependencies": {
     "bootstrap": "https://github.com/twbs/bootstrap.git#b4c4072679943773a7582daa63f545ba818fa627",
-    "deep-diff": "^0.3.4",
     "jquery": "^2.2.3",
     "jspdf": "^1.2.61",
     "mustache": "^2.2.1",
     "requirejs-text": "^2.0.12",
+    "store": "^1.3.20",
     "underscore": "^1.8.3",
     "vexflow": "^1.2.45"
   },
   "devDependencies": {
     "grunt": "^1.0.1",
     "grunt-amd-build": "^0.9.1",
-    "grunt-contrib-jshint": "^1.0.0",
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-jshint": "^1.0.0",
     "grunt-contrib-qunit": "^1.0.0",
     "grunt-contrib-requirejs": "^1.0.0",
     "grunt-contrib-uglify": "^1.0.1",

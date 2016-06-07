@@ -12,7 +12,7 @@ require.config({
 		bootstrap: 'node_modules/bootstrap/docs/assets/js/bootstrap.min',
 		jsPDF: 'node_modules/jspdf/dist/jspdf.min',
 		underscore: 'node_modules/underscore/underscore-min',
-		deepdiff: 'node_modules/deep-diff/index',
+		store: 'node_modules/store/store.min',
 	},
 	shim: {
 		jsPDF : {

@@ -37,17 +37,18 @@ define([
 			classCurrent = "";
 		// loop through each history state
 		if (model) {
-			for (var i = 0, c = model.historyList.length; i < c; i++) {
+			var history = model.getSavedHistory();
+			for (var i = 0, c = history.length; i < c; i++) {
 				classCurrent = "";
 				if (i == model.currentPosition) {
 					classCurrent = "current";
 				}
 				text = '';
-				if (model.historyList[i].title !== '') {
-					text += model.historyList[i].title + ' ';
+				if (history[i].title !== '') {
+					text += history[i].title + ' ';
 				}
 				if (this.displayTime) {
-					text += model.historyList[i].time;
+					text += history[i].time;
 				}
 				$historyList.append('<li class="' + classCurrent + '" data-history="' + i + '">' + text + '</li>');
 			}

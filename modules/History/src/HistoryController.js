@@ -50,7 +50,7 @@ define([
 	 * @param  {int} currentHistory represent the index of history that will be loaded
 	 */
 	HistoryController.prototype.loadHistory = function(currentHistory) {
-		if (typeof this.model.historyList[currentHistory] === "undefined") {
+		if (typeof this.model.getSavedHistory()[currentHistory] === "undefined") {
 			UserLog.logAutoFade('error', "No history available");
 			return;
 		}

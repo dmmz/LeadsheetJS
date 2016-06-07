@@ -264,8 +264,8 @@ define(
 				if (!params.edition.history.HTMLElement){
 					throw "Missing HTMLElement for history";		
 				}
-				var historyHTML = params.edition.history.HTMLElement;
-				new HistoryC(modules.songModel, historyHTML, snglNotesCursor.getInstance(modules.songModel), {displayHistory:true, displayTime:false});
+				var options = $.extend({displayHistory:true, displayTime:false}, params.edition.history);
+				new HistoryC(modules.songModel, params.edition.history.HTMLElement, snglNotesCursor.getInstance(modules.songModel), options);
 				$.publish('ToHistory-add', 'Open song - ' + modules.songModel.getTitle());
 			}
 			if (editionModule.menuModel){

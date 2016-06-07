@@ -12,11 +12,11 @@ define([
    	 * @param {SongModel} songModel   
    	 * @param {HTMLelemeny} parentHTML  e.g. $('#rightPanel')
    	 * @param {CursorModel} notesCursor 
-   	 * @param {Object} options     properties: maxHistoryLength, displayHistory, displayTime
+   	 * @param {Object} options     properties: maxHistoryLength, displayHistory, displayTime, autoSave
    	 */
 	function HistoryC(songModel, parentHTML, notesCursor, options) {
 		options = options || {};
-		var historyM = new HistoryModel(options.maxHistoryLength);
+		var historyM = new HistoryModel(options);
 		var historyV = new HistoryView(parentHTML, options.displayHistory, options.displayTime);
 		new HistoryController(historyM, songModel, notesCursor);
 	}

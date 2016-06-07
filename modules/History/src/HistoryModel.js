@@ -1,16 +1,27 @@
 define([
 	'jquery',
+	'underscore',
 	'utils/UserLog',
-	'deepdiff'
-], function($, UserLog, deepdiff) {
+	'store'
+], function($, _, UserLog, store) {
 	/**
 	 * HistoryModel is an array of state, it allow a high level management of Historys
 	 * @exports History/HistoryModel
 	 * @param {object} options
 	 */
-	var HistoryModel = function(maxHistoryLength) {
+	var HistoryModel = function(options) {
+		options = options || {};
 		this.init();
-		this.maxHistoryLength = maxHistoryLength || 10000;
+		this.maxHistoryLength = options.maxHistoryLength || 10000;
+		this.autoSave = options.autoSave || false;
+		this.recoverMsg = 'We\'ve recovered unsaved modifications, would you like to load them?';
+
+		if (this.autoSave) {
+			var self = this;
+			$.subscribe('ToHistoryModel-modificationsSaved', function(){
+				self.deleteSavedHistory.apply(self);
+			});
+		}
 	};
 
 	/**
@@ -18,9 +29,46 @@ define([
 	 * By default currentPosition is on 0
 	 */
 	HistoryModel.prototype.init = function() {
-		this.historyList = []; // state list
 		this.lastLeadsheet = null;
 		this.currentPosition = -1; // current Position start at 0
+	};
+
+	HistoryModel.prototype.getLastLeadsheetId = function() {
+		return this.lastLeadsheet !== null ? this.lastLeadsheet._id : false;
+	};	
+
+	HistoryModel.prototype.deleteSavedHistory = function(leadsheetId) {
+		leadsheetId = leadsheetId ? leadsheetId : this.getLastLeadsheetId();
+		if (leadsheetId) {
+			var localHistory = this.getLocalHistoryCollection();
+			delete localHistory[leadsheetId];
+			this.setLocalHistoryCollection(localHistory);
+			localHistory = null;
+		}
+	};
+
+	HistoryModel.prototype.setLocalHistoryCollection = function(historyCollectionToSave) {
+		store.set('savedHistory', historyCollectionToSave);
+	};
+
+	HistoryModel.prototype.getLocalHistoryCollection = function() {
+		var localHistory = store.get('savedHistory');
+		return localHistory ? localHistory : {};
+	};
+
+	HistoryModel.prototype.setSavedHistory = function(historyToSave, leadsheetId) {
+		leadsheetId = leadsheetId || this.getLastLeadsheetId();
+		var localHistory = this.getLocalHistoryCollection();
+		localHistory[leadsheetId] = historyToSave;
+		this.setLocalHistoryCollection(localHistory);
+		// free memory before gc
+		localHistory = null;
+	};
+
+	HistoryModel.prototype.getSavedHistory = function(leadsheetId) {
+		leadsheetId = leadsheetId ? leadsheetId : this.getLastLeadsheetId();
+		var localHistoryCollection = this.getLocalHistoryCollection();
+		return leadsheetId && localHistoryCollection[leadsheetId] ? localHistoryCollection[leadsheetId] : [];
 	};
 
 	HistoryModel.prototype.getCurrentPosition = function() {
@@ -28,19 +76,12 @@ define([
 	};
 
 	HistoryModel.prototype.getState = function(position) {
-		var leadsheet = $.extend(true, {}, this.lastLeadsheet); //cloning,so that this.lastLeadsheet is not affected
-		
-		for (var i = this.historyList.length - 1; i > position; i--) {
-			var differences = this.historyList[i].differences;
-			for (var j = differences.length; j >= 0; j--){
-				deepdiff.applyChange(leadsheet, this.lastLeadsheet, differences[j]);	
-			}
-		}
-		return leadsheet;
+		var states = this.getSavedHistory();
+		return states && states[position] ? states[position].leadsheet : false;
 	};
 
 	HistoryModel.prototype.getCurrentItem = function() {
-		return this.historyList[this.currentPosition];
+		return this.getSavedHistory()[this.currentPosition];
 	};
 
 	HistoryModel.prototype.getCurrentState = function() {
@@ -48,10 +89,30 @@ define([
 	};
 
 	HistoryModel.prototype.setCurrentPosition = function(position) {
-		if (!isNaN(position) && position >= -1 && position < this.historyList.length) {
+		if (!isNaN(position) && position >= -1 && position < this.getSavedHistory().length) {
 			this.currentPosition = position;
 			$.publish('HistoryModel-setCurrentPosition', this);
 		}
+	};
+
+	HistoryModel.prototype.reloadHistory = function(leadsheetId) {
+		var actualHistory = this.getSavedHistory(leadsheetId);
+		if (!this.lastLeadsheet) {
+			// first item, look for unsaved modifications
+			if (this.autoSave) {
+				if (!_.isEmpty(actualHistory) && actualHistory.length > 1) {
+					if (window.confirm(this.recoverMsg)) {
+						historyReloaded = true;
+					} else {
+						actualHistory = [];
+						this.deleteSavedHistory(leadsheetId);
+					}
+				}
+			} else {
+				actualHistory = [];
+			}
+		}
+		return actualHistory;
 	};
 
 	/**
@@ -63,45 +124,32 @@ define([
 	 * @param {mixed} extraData extraData that needs to be stored. Optionnal.
 	 */
 	HistoryModel.prototype.addToHistory = function(leadsheet, title, updateLastEntry, extraData) {
-
-		var time = new Date().toLocaleString();
-		title = title ? title : '';
-		var differences;
-		var leadsheetToCompareTo;
-
-
-
-		//first time lastLeadsheet will be null so there will be no delta to obtain
-		if (this.lastLeadsheet) {
-			var pos = updateLastEntry ? this.currentPosition - 1 : this.currentPosition;
-			leadsheetToCompareTo = this.getState(pos); //get previous leadsheet, as we want delta to get to previous leadsheet, not the last
-			differences = deepdiff.diff(leadsheet, leadsheetToCompareTo);
-			if (!differences) { //in case there was no change (not probable)
-				return;
+		var position = 0;
+		var actualHistory = this.reloadHistory(leadsheet._id);
+		
+		if (this.lastLeadsheet || (!this.lastLeadsheet && actualHistory.length === 0)) {
+			var newHistorical = {
+				leadsheet: leadsheet,
+				title: title ? title : '',
+				time: new Date().toLocaleString(),
+				extraData: extraData
+			};
+			if (updateLastEntry) {
+				actualHistory[actualHistory.length - 1] = newHistorical;
+				position = this.currentPosition;
+			} else {
+				actualHistory = actualHistory.slice(0, this.currentPosition + 1);
+				actualHistory.push(newHistorical);
+				if (actualHistory.length > this.maxHistoryLength) {
+					actualHistory.splice(0, 1);
+				}
+				position = this.currentPosition + 1;
 			}
-		} else {
-			differences = null;
-		}
-
-		var newHistorical = {
-			differences: differences,
-			title: title,
-			time: time,
-			extraData: extraData
-		};
-		if (updateLastEntry) {
-			this.historyList[this.historyList.length - 1] = newHistorical;
-		} else {
-			this.historyList = this.historyList.slice(0, this.currentPosition + 1);
-			this.historyList.push(newHistorical);
-			if (this.historyList.length > this.maxHistoryLength) {
-				this.historyList.splice(0, 1);
-			}
-			this.setCurrentPosition(this.currentPosition + 1);
+			this.setSavedHistory(actualHistory, leadsheet._id);
 		}
 		this.lastLeadsheet = leadsheet;
+		this.setCurrentPosition(position);
 		$.publish('HistoryModel-addToHistory', this);
-
 	};
 
 	return HistoryModel;
