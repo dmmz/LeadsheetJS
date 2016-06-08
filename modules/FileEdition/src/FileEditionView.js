@@ -24,27 +24,8 @@ define([
 
 	FileEditionView.prototype.render = function(params) {	
 		params = params || {};
-		var viewParams = {parts: []};
-		if (_.isUndefined(params.import) || params.import) {
-			viewParams.parts.push({
-				name: 'Import',
-				items:[
-					{'file':true},
-				],
-
-			});
-		}
-		if (_.isUndefined(params.export) || params.export) {
-			viewParams.parts.push({
-				name: 'Export',
-				items:[
-					{ id:'export_png', text: 'PNG' },
-					{ id:'export_pdf', text: 'PDF' },
-					{ id:'export_musicCslJson', text: 'MusicCSLJson' }
-				]
-			});
-		}
-		this.el = $(Mustache.render(FileEditionTemplate, viewParams));
+		_.defaults(params, {import: true, export: true});
+		this.el = $(Mustache.render(FileEditionTemplate, params));
 		if (params.extraElementsForMenu) {
 			this.el.find('#file_edition_extra_elements_container').append(params.extraElementsForMenu);
 		}
