@@ -27,7 +27,7 @@ define(
 	'modules/Edition/src/KeyboardManager',
 	'jquery',
 	'pubsub',
-	'modules/Edition/src/ClipboardManager',
+	'modules/Edition/src/ClipboardManager'
 ], function(
 	Comments,
 	ChordEdition,
@@ -199,6 +199,8 @@ define(
 		};
 		if (menu) 		returnObj.menuController = menu.controller;
 		if (menuModel) 	returnObj.menuModel = menuModel;
+
+		
 		return returnObj;		
 	}
 	
@@ -302,6 +304,7 @@ define(
 			modules.notesCursor = snglNotesCursor.getInstance(songModel);
 			modules.noteSpaceManager = snglNotesManager.getInstance(songModel,viewer);
 		}
+				
 		return modules;
 	};
 

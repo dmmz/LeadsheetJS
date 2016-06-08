@@ -40,15 +40,15 @@ define([
 				}, {
 					id: 'flat',
 					title: 'Flat (V)',
-					text: '&#9837;'
+					text: '<span class="alteration">&#9837;</span>'
 				}, {
 					id: 'natural',
 					title: 'Natural (N)',
-					text: '&#9838;'
+					text: '<span class="alteration">&#9838;</span>'
 				}, {
 					id: 'sharp',
 					title: 'Sharp (S)',
-					text: '&#9839;'
+					text: '<span class="alteration">&#9839;</span>'
 				}, {
 					id: 'double_sharp',
 					title: 'Double Sharp (Shitf+S)',

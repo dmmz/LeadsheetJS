@@ -1,11 +1,9 @@
 
 /** general menu styles  */
-/*#menu-container {
-	position: absolute;
-	margin: 0 -20px;
+#menu-container {
 	width:100%;
 	z-index:100;
-}*/
+}
  #menu-container.affix{
 	position: fixed;
 	top:0;
@@ -32,12 +30,11 @@ ul.menu-part > li{
 	padding:10px;
 	border-right: 1px #DDD solid;
 }
-ul.item{
+ul.item {
 	padding:0;	
 	list-style-type: none;
 }
 ul.item > li {
-	text-align: center  !important;
 	padding:5px;
 }
 ul.item > li:hover{ 
@@ -50,6 +47,10 @@ ul.item > li:hover{
 	padding:6px 2px;
 }
 
+.alteration{
+	font-size:25px;
+	margin-top:130px;
+}
 
 
 /********* PLAYER ***********/

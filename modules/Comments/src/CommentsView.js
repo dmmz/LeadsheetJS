@@ -44,7 +44,7 @@ define([
 	CommentsView.prototype.initController = function() {
 		var self = this;
 		//close comment
-		$(document).on('click', '.close', function(e) {
+		$(document).on('click', '.closeComment', function(e) {
 			e.preventDefault();
 			var id = $(this).closest('.speech-bubble').attr('id');
 			if (id == self.newCommentId) {
@@ -237,7 +237,7 @@ define([
 		var area = this.commentSpaceMng.commentSpaces[commentId].getArea();
 		var offset = this.offset; //to avoid 'this' closure problem
 		$("#" + this.bubblePreId + commentId).css({
-			top: area.y - area.h + offset.top - height,
+			top: area.y +offset.top ,
 			left: area.x + offset.left,
 			height: 100,
 			zIndex: 1900
@@ -301,10 +301,10 @@ define([
 		this.newComment.interval = (type === 'audio') ? this.viewTypes[type].getTimeInterval() : this.viewTypes[type].getBeatInterval();
 		this.newComment.type = type;
 		var offset = this.offset; //to avoid 'this' closure problem
-		height = $("#" + this.newCommentId).outerHeight(true) + 8;
+		height = $("#" + this.newCommentId).outerHeight(true);
 		$("#" + this.newCommentId).css({
 			position: "absolute",
-			top: areas[0].y + offset.top - height,
+			top: areas[0].y + offset.top - 8 ,
 			left: areas[0].x + offset.left,
 			zIndex: 1900
 		}).show();

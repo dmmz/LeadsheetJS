@@ -20,7 +20,8 @@
 		<![endif]-->
 	</head>
 	<body>
-		<div id="menu-container" data-spy="affix"></div>
+		<!-- div id="menu-container" data-spy="affix" data-offset-top="51"></div -->
+		<div id="menu-container" data-spy="affix" data-offset-top="51"></div>
 		<div id="chordSequence1"></div>
 		<div id="chordSequence2"></div>
 		<div id="main-container" class="container-fluid">
@@ -177,5 +178,7 @@
 					$.publish('ToViewer-draw', myLeadsheet.songModel);
 			});
 		</script>
+		<script src="/node_modules/jquery/dist/jquery.min"></script>
+		<script src="/node_modules/bootstrap/dist/js/bootstrap.min"></script>
 	</body>
 </html>

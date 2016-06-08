@@ -199,7 +199,6 @@ define([
 			}
 		});
 		$.subscribe('PlayerModel-positionPerCent', function(el, obj) {
-			console.log("a");
 			self.updateProgressbar(obj.positionInPercent * 100, obj.songDuration);
 		});
 		$.subscribe('setPlayerNotReady', function(){

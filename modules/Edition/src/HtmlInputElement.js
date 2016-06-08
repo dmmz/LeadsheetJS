@@ -20,17 +20,10 @@ define(['jquery'], function($) {
 	HtmlInputElement.prototype.init = function(position, marginTop, marginRight) {
 		marginTop = marginTop || 0;
 		marginRight = marginRight || 0;
-
-		var offset = $("#" + this.containerId + " canvas").offset();
-		if (typeof offset === "undefined" || isNaN(offset.top) || isNaN(offset.left)) {
-			offset = {
-				top: 0,
-				left: 0
-			};
-		}
+		
 		var pos = this.viewer.scaler.getScaledObj(position),
 			top = pos.y - marginTop - 1,
-			left = pos.x + offset.left + window.pageXOffset - 1,
+			left = pos.x,
 			width = pos.w - marginRight,
 			height = pos.h + marginTop;
 

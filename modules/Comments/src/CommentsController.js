@@ -42,7 +42,6 @@ define([
 		var AUDIO = !!params.audio;
 		var SCORE = !!(params.notesCursor || params.chordsEditor);
 		var enabled = !!params.enabled;
-		console.log(enabled);
 
 		if (enabled){
 			initSubscribe();

@@ -38,11 +38,6 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 			//top depends on the position (absolute, static..) of the canvas container element
 			top = (canvasEl.parent().css("position") == "absolute") ? 0 : offset.top;
 
-		var layersProps = {
-			position: "absolute",
-			left: offset.left,
-			top: top
-		};
 		var canvasLayer;
 		//we remove it, to create a new one (_createLayer it's called only at the beginning or when resizing)
 		if ($("canvas#" + idLayer).length !== 0) {
@@ -50,7 +45,6 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 		}
 		$("<canvas id='" + idLayer + "' width='" + canvasEl.width() + "' height='" + canvasEl.height() + "'></canvas>").insertAfter(canvasEl);
 		canvasLayer = $("#" + idLayer);
-		canvasLayer.css(layersProps);
 		canvasLayer.css('z-index', 10);
 		return canvasLayer;
 	};

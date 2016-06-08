@@ -2,7 +2,8 @@ define([
 	'modules/MainMenu/src/MainMenuModel',
 	'jquery',
 	'mustache',
-	'text!modules/MainMenu/src/MainMenuTemplate.html'
+	'text!modules/MainMenu/src/MainMenuTemplate.html',
+	'bootstrap'
 ], function(MainMenuModel, $, Mustache, MainMenuTemplate) {
 	/**
 	 * MainMenuView is the model containing a set of menu, each menu contain at least a title
