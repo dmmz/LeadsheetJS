@@ -231,11 +231,10 @@ define(
 			throw "missing MusicCLJSON song";
 		}
 		
-		var songModel = SongModel_CSLJson.importFromMusicCSLJSON(MusicCSLJSON);
 		var useViewer = params.viewer !== undefined;
 		var usePlayer = params.player !== undefined;
 		var useEdition = params.edition !== undefined;
-		var modules = {songModel: songModel};
+		var modules = {songModel: SongModel_CSLJson.importFromMusicCSLJSON(MusicCSLJSON)};
 
 		// Viewer
 		
@@ -243,7 +242,7 @@ define(
 			if (params.viewer.HTMLElement === undefined) {
 				throw "Missing HTMLElement for viewer";
 			}
-			viewer = loadViewer(params.viewer.HTMLElement, params.viewer.viewOptions, songModel);
+			viewer = loadViewer(params.viewer.HTMLElement, params.viewer.viewOptions, modules.songModel);
 		}
 
 		// Player
@@ -252,7 +251,7 @@ define(
 				throw "Missing HTMLElement for player";
 			}
 
-			var players = loadPlayer(params.player, songModel);
+			var players = loadPlayer(params.player, modules.songModel);
 			
 			modules.audioPlayer = players.audioPlayer;
 			modules.midiPlayer = players.midiPlayer;
@@ -260,19 +259,19 @@ define(
 
 		if (useEdition) {
 			var menuHTML = params.edition.menu !== undefined ? params.edition.menu.HTMLElement : false;
-			var editionModule = loadEdition(viewer, songModel, menuHTML, params.edition);
+			var editionModule = loadEdition(viewer, modules.songModel, menuHTML, params.edition);
 			
 			//history
 			if (params.edition.history){
 				if (!params.edition.history.HTMLElement){
 					throw "Missing HTMLElement for history";		
 				}
-				var historyHTML = params.edition.history.HTMLElement;
-				new HistoryC(songModel, historyHTML, snglNotesCursor.getInstance(songModel), {displayHistory:true, displayTime:false});
-				$.publish('ToHistory-add', 'Open song - ' + songModel.getTitle());
+				var options = $.extend({displayHistory:true, displayTime:false}, params.edition.history);
+				new HistoryC(modules.songModel, params.edition.history.HTMLElement, snglNotesCursor.getInstance(modules.songModel), options);
+				$.publish('ToHistory-add', 'Open song - ' + modules.songModel.getTitle());
 			}
 			if (editionModule.menuModel){
-				var fileEdition = new FileEdition(songModel, viewer, {extraElementsForMenu: params.edition.extraElementsForMenu});
+				var fileEdition = new FileEdition(modules.songModel, viewer, {extraElementsForMenu: params.edition.extraElementsForMenu});
 				editionModule.menuModel.addMenu({
 					title: 'File',
 					view: fileEdition.view,
@@ -293,16 +292,16 @@ define(
 		//tags
 		if (params.tags){
 			// TagManager take as argument your array of tags here call analysis, an array of color (here undefined because we use built in colors)
-			new TagManager(songModel,  {notes: snglNotesManager.getInstance(songModel,viewer)}, params.tags, undefined, true, false);
+			new TagManager(modules.songModel,  {notes: snglNotesManager.getInstance(modules.songModel,viewer)}, params.tags, undefined, true, false);
 		}
 
 		if (useViewer){
-			viewer.draw(songModel);
+			viewer.draw(modules.songModel);
 			modules.viewer = viewer;
 		}
 		if (usePlayer || useEdition || params.tags){
-			modules.notesCursor = snglNotesCursor.getInstance(songModel);
-			modules.noteSpaceManager = snglNotesManager.getInstance(songModel,viewer);
+			modules.notesCursor = snglNotesCursor.getInstance(modules.songModel);
+			modules.noteSpaceManager = snglNotesManager.getInstance(modules.songModel,viewer);
 		}
 				
 		return modules;
@@ -322,7 +321,7 @@ define(
 			fillEmptyBar: false,
 			fillEmptyBarCharacter: "%",
 		};
-		new chordSequence($('#chordSequence1')[0], songModel, optionChediak);
+		new chordSequence($('#chordSequence1')[0], modules.songModel, optionChediak);
 	};*/
 
 	

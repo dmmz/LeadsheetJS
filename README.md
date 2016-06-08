@@ -1,6 +1,7 @@
 # LeadsheetJS [![Build Status](https://travis-ci.org/SonyCSL-Paris/LeadsheetJS.svg?branch=master)](https://travis-ci.org/SonyCSL-Paris/LeadsheetJS)
 A JavaScript library for online music leadsheets (visualizing, playing, editing and other features). 
-2015 Daniel Martín and Timotée Neullas
+2015 Daniel Martín, Timotée Neullas and Vincent Degroote.
+Examples and documentation http://sonycsl-paris.github.io
 
 ##Installation
 Inside the LeadsheetJS folder, you need to run [npm](http://blog.npmjs.org/post/85484771375/how-to-install-npm) to get all the dependencies:

@@ -1,5 +1,6 @@
 define([
 	'mustache',
+	'modules/Edition/src/EditionControllerInterface',
 	'modules/core/src/SongBarsIterator',
 	'modules/core/src/ChordModel',
 	'utils/NoteUtils',
@@ -7,7 +8,7 @@ define([
 	'utils/UserLog',
 	'jquery',
 	'underscore',
-], function(Mustache, SongBarsIterator, ChordModel, NoteUtils, PitchClass, UserLog, $, _) {
+], function(Mustache, EditionControllerInterface, SongBarsIterator, ChordModel, NoteUtils, PitchClass, UserLog, $, _) {
 	/**
 	 * ChordEditionController manages all chords edition function
 	 * @exports ChordEdition/ChordEditionController
@@ -16,6 +17,7 @@ define([
 		if (!songModel || !cursor || !chordSpaceMng) {
 			throw "ChordEditionController params are wrong";
 		}
+		$.extend(this, new EditionControllerInterface());
 		this.songModel = songModel;
 		this.cursor = cursor;
 		this.chordSpaceMng = chordSpaceMng;
@@ -29,14 +31,16 @@ define([
 		var self = this;
 
 		$.subscribe('ChordEditionView', function(el, fn, param) {
-			if (self.chordSpaceMng.isEnabled()) {
+			if (self.chordSpaceMng.isEnabled() && (fn === 'copyChords' || self.isEditable())) {
 				self[fn].call(self, param);
-				$.publish('ToViewer-draw', self.songModel);
+				if (fn !== 'copyChords') {
+					$.publish('ToViewer-draw', self.songModel);
+				}
 			}
 		});
 
 		$.subscribe('pasteJSONData', function(el, jsonData) {
-			if (jsonData.chords && jsonData.chords.length > 0) {
+			if (self.isEditable() && jsonData.chords && jsonData.chords.length > 0) {
 				var pastedChords = [];
 				for (var i = 0; i < jsonData.chords.length;i++) {
 					pastedChords.push(new ChordModel(jsonData.chords[i]));
@@ -58,7 +62,6 @@ define([
 	};
 	
 	ChordEditionController.prototype.deleteChords = function() {
-
 		var beats = this.getSelectedChordsBeats();
 		var chordMng = this.songModel.getComponent('chords');
 		var self = this;
@@ -102,14 +105,11 @@ define([
 		var chordMng = this.songModel.getComponent('chords');
 		var selectedChordsBeats = this.getSelectedChordsBeats();
 		var startPasteBeat = selectedChordsBeats[0];
-		var endPasteBeat = this.getSelectedChordsBeats().length > 1 ? _.last(selectedChordsBeats) : startPasteBeat + 1;
+		var endPasteBeat = selectedChordsBeats.length > 1 ? _.last(selectedChordsBeats) - 1 : startPasteBeat + 1;
 		// remove chords in affected chordspaces
 		var firstChordSpace = chordMng.getBarNumAndBeatFromBeat(this.songModel, startPasteBeat);
 		var lastChordSpace = chordMng.getBarNumAndBeatFromBeat(this.songModel, endPasteBeat);
 		var previousFollowingChord = chordMng.getChordForBeat(this.songModel, endPasteBeat);
-		if (firstChordSpace.exceedsSongLength || lastChordSpace.exceedsSongLength){
-			throw "ChordEdition error exceedsSongLength";
-		}
 		chordMng.removeChordsBetweenPositions(firstChordSpace.barNumber, firstChordSpace.beatNumber, lastChordSpace.barNumber, lastChordSpace.beatNumber);
 
 		//we copy chords

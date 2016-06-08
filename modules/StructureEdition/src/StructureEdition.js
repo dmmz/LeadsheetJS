@@ -2,15 +2,17 @@ define([
 	"modules/StructureEdition/src/StructureEditionController",
 	"modules/StructureEdition/src/StructureEditionModel",
 	"modules/StructureEdition/src/StructureEditionView",
-], function(StructureEditionController, StructureEditionModel, StructureEditionView) {
+	"modules/Edition/src/EditionModuleInterface"
+], function(StructureEditionController, StructureEditionModel, StructureEditionView, EditionModuleInterface) {
 	/**
 	 * StructureEdition constructor
 	 * @exports StructureEdition
 	 */
 	function StructureEdition(songModel, cursorModel, imgPath) {
+		$.extend(this, new EditionModuleInterface());
 		this.view = new StructureEditionView(imgPath);
-		var seM = new StructureEditionModel();
-		var seC = new StructureEditionController(songModel, cursorModel, seM);
+		this.model = new StructureEditionModel();
+		this.controller = new StructureEditionController(songModel, cursorModel, this.model);
 	}
 	return StructureEdition;
 });

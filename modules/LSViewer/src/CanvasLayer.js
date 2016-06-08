@@ -165,7 +165,6 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 					self.elems[name].setCursorEditable(false);
 				}
 				self.elems[name].disable();
-
 			}
 		}
 
@@ -185,10 +184,10 @@ define(['jquery', 'pubsub'], function($, pubsub) {
 				activElems = getElemsByYs(self.coords);
 			}
 			for (var i in activElems) {
-				activElems[i].onSelected(self.coords, self.mouseCoordsIni, self.mouseCoordsEnd, clicked, mouseUp, self.ctrlPressed);			
-				if (activElems[i].getType() == 'CURSOR') {
-					activElems[i].setCursorEditable(true);
-				}
+				activElems[i].onSelected(self.coords, self.mouseCoordsIni, self.mouseCoordsEnd, clicked, mouseUp, self.ctrlPressed);
+				if (activElems[i].getType() == 'CURSOR') {		
+					activElems[i].setCursorEditable(true);		
+				}		
 				activElems[i].enable();
 			}
 			self.refresh();

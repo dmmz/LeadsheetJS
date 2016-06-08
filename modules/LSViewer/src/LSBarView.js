@@ -11,6 +11,10 @@ define(['vexflow'], function(Vex) {
 	}
 
 	LSBarView.prototype.draw = function(ctx, songIt, sectionIt, positions) {
+		var bar = songIt.getBar(),
+			followingBar = songIt.getFollowingBar(),
+			ending = bar.getEnding();
+
 		if (songIt.getBarIndex() === 0 && this.drawClef) {
 			this.vexflowStave.addClef("treble").setContext(ctx).draw();
 		}
@@ -54,9 +58,6 @@ define(['vexflow'], function(Vex) {
 			this.vexflowStave.addTimeSignature(timeSignature.toString());
 		}
 
-		var bar = songIt.getBar(),
-			followingBar = songIt.getFollowingBar(),
-			ending = bar.getEnding();
 		// endings
 		if (ending && ending !== songIt.getPreviousBar().getEnding()) {
 			var endingState = (sectionIt.isLastBar() || followingBar.getEnding() !== bar.getEnding()) ? 'BEGIN_END' : 'BEGIN';
@@ -72,16 +73,21 @@ define(['vexflow'], function(Vex) {
 			this.vexflowStave.setEndBarType(Vex.Flow.Barline.type.REPEAT_END);
 		}
 		var label = bar.getLabel();
+		var labelsY = positions.LABELS_BAR_START_Y ? positions.LABELS_BAR_START_Y : positions.LABELS_Y;
 		if (label === 'coda' || label === 'coda2') {
-			this.vexflowStave.setRepetitionTypeRight(Vex.Flow.Repetition.type.CODA_RIGHT, positions.LABELS_Y);
+			var codaPositioning = Vex.Flow.Repetition.type.CODA_RIGHT;
+			if (songIt.hasLabelInPrecedingBars(label)) {
+				codaPositioning = Vex.Flow.Repetition.type.CODA_LEFT;
+				labelsY += 25;
+			}
+			this.vexflowStave.setRepetitionTypeRight(codaPositioning, labelsY);
 		}
 		if (label === 'segno' || label === 'segno2') {
-			var segnoY = positions.LABELS_BAR_START_Y ? positions.LABELS_BAR_START_Y : positions.LABELS_Y;
-			this.vexflowStave.setRepetitionTypeLeft(Vex.Flow.Repetition.type.SEGNO_LEFT, segnoY);
+			this.vexflowStave.setRepetitionTypeLeft(Vex.Flow.Repetition.type.SEGNO_LEFT, labelsY);
 		}
 		var sublabel = bar.getSublabel(true);
 		if (sublabel != null) {
-			this.vexflowStave.setRepetitionTypeRight(Vex.Flow.Repetition.type[sublabel], positions.LABELS_Y);
+			this.vexflowStave.setRepetitionTypeRight(Vex.Flow.Repetition.type[sublabel], labelsY + 25);
 		}
 		if (sectionIt.isLastBar()) {
 			this.vexflowStave.setEndBarType(Vex.Flow.Barline.type.END);

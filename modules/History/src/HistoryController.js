@@ -36,6 +36,12 @@ define([
 		$.subscribe('ToHistory-updateLastEntry', function() {
 			self.updateLastEntry();
 		});
+		$.subscribe('ToHistory-reset', function(el, title, updateLastEntry, pos, extraData) {
+			self.model.init();
+			if (title) {
+				$.publish('ToHistory-add', [title, updateLastEntry, pos, extraData]);
+			}
+		});
 	};
 
 
@@ -44,7 +50,7 @@ define([
 	 * @param  {int} currentHistory represent the index of history that will be loaded
 	 */
 	HistoryController.prototype.loadHistory = function(currentHistory) {
-		if (typeof this.model.historyList[currentHistory] === "undefined") {
+		if (typeof this.model.getSavedHistory()[currentHistory] === "undefined") {
 			UserLog.logAutoFade('error', "No history available");
 			return;
 		}
@@ -67,6 +73,8 @@ define([
 			$.publish('ToLayers-removeLayer');
 			$.publish('ToViewer-draw', this.songModel);
 			var eventName = 'HistoryController-itemLoaded';
+			// publish generic event first
+			$.publish(eventName);
 			var historyItem = this.model.getCurrentItem();
 			if (historyItem && historyItem.extraData && historyItem.extraData.type) {
 				eventName += '-' + historyItem.extraData.type;

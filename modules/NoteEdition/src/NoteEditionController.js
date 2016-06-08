@@ -1,11 +1,13 @@
 define([
 	'mustache',
+	'modules/Edition/src/EditionControllerInterface',
 	'modules/core/src/NoteManager',
 	'modules/core/src/NoteModel',
 	'utils/NoteUtils',
 	'utils/UserLog',
 	'jquery',
-], function(Mustache, NoteManager, NoteModel, NoteUtils, UserLog, $) {
+	'underscore'
+], function(Mustache, EditionControllerInterface, NoteManager, NoteModel, NoteUtils, UserLog, $, _) {
 	/**
 	 * NoteEditionController manages all notes edition function
 	 * @exports NoteEdition/NoteEditionController
@@ -14,6 +16,7 @@ define([
 		if (!songModel || !cursor) {
 			throw "NoteEditionController params are wrong";
 		}
+		$.extend(this, new EditionControllerInterface());
 		this.songModel = songModel;
 		this.cursor = cursor;
 		this.noteSpaceMng = noteSpaceMng; // in tests we don't pass noteSpaceMng, it will be undefined
@@ -75,7 +78,7 @@ define([
 		});
 		// All functions related with note edition go here
 		$.subscribe('NoteEditionView', function(el, fn, param, shiftKey) {
-			if (self.noteSpaceMng.isEnabled()) {
+			if (self.noteSpaceMng.isEnabled() && (self.isEditable() || fn === 'copyNotes')) {
 				var modifications = self[fn].call(self, param, shiftKey);
 				if (fn == 'addNote') { // we increment cursor if we added a note
 					self.cursor.increment();
@@ -245,7 +248,7 @@ define([
 
 			var beatEndNote;
 			// when dealing with changes in last note we make sure index does not exceed total notes
-			if (endIndex >= noteMng.getTotal()) {
+			if (!endIndex || endIndex >= noteMng.getTotal()) {
 				var indexLastNote = noteMng.getTotal() - 1;
 				var beatStartLastNote = noteMng.getNoteBeat(indexLastNote);
 				var durLastNote = noteMng.getNotes()[indexLastNote].getDuration();
@@ -646,11 +649,19 @@ define([
 		if (!notesToPaste) {
 			return false;
 		}
-		for (var i = 0; i < notesToPaste.length; i++) {
-			notesToPaste[i] = new NoteModel(notesToPaste[i]);
-		}
+		// var positions = [this.cursor.getStart(), this.cursor.getEnd()];
+		var notesModelsToPaste = [];
 		this._runDurationFn(function(tmpNm) {
-			tmpNm.setNotes(notesToPaste);
+			var durationToPaste = tmpNm.getTotalDuration();
+			var duration = 0;
+			for (var i = 0; i < notesToPaste.length; i++) {
+				if (duration >= durationToPaste) {
+					break;
+				}
+				notesModelsToPaste.push(new NoteModel(notesToPaste[i]));
+				duration += _.last(notesModelsToPaste).getDuration();
+			}
+			tmpNm.setNotes(notesModelsToPaste);
 		});
 		if (this._lastCursorIndexHistory !== this.cursor.getPos()) {
 			$.publish('ToHistory-add', 'Paste notes');

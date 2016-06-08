@@ -157,7 +157,7 @@ define([
 			this.cursor.setPos(posCursor);
 		}
 		// if event was clicked and we just selected one chord, we draw the pull down
-		if (posCursor[0] == posCursor[1] && clicked) {
+		if (posCursor[0] == posCursor[1] && clicked && this.isEditable()) {
 			var position = this.cursor.getPos();
 			position = position[0];
 			if (this.chordSpaceEdition) {
@@ -190,7 +190,9 @@ define([
 		var pos = this.cursor.getPos();
 		if (pos[0] !== false) {
 			for (var i = pos[0]; i <= pos[1]; i++) {
-				this.chordSpaces[i].draw(ctx, self.MARGIN_TOP, self.MARGIN_RIGHT);
+				if (this.chordSpaces[i] && this.chordSpaces[i].draw) {
+					this.chordSpaces[i].draw(ctx, self.MARGIN_TOP, self.MARGIN_RIGHT);
+				}
 			}
 		}
 		if (this.mode === 'ALL_CHORD_SPACES'){
@@ -269,7 +271,7 @@ define([
 			this.cursor.setPos(0);
 		} else {
 			this.cursor.setPos(startBeat);
-			this.drawEditableChord();
+			this.chordSpaceEdition.drawEditableChord(this.chordSpaces[startBeat], this.cursor);
 		}
 	};
 
