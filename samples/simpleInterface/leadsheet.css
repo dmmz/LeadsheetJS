@@ -377,3 +377,8 @@ input.accomp_search{
     border-width: 8px 8px 0px 8px;
     bottom: -8px;
 }
+
+/* UserLog */
+.alert{
+	font-size:medium;
+}
