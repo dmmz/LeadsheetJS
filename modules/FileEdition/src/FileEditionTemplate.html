@@ -1,44 +1,22 @@
-<style type="text/css">
-
-ul.menu-part{
-	background: #C1E0EA;
-}
-
-ul.menu-part li{
-	list-style-type: none;
-}
-
-ul.menu-part > li{
-	text-align: center;
-	padding:10px;
-	border-right: 1px #DDD solid;
-}
-ul.item > li {
-	padding:10px;
-}
-ul.item > li:hover{ 
-	background: white;
-}
-
-</style>
 <div>
-<ul class="menu-part nav-justified">
-	{{#parts}}
-	<li>
-		<div>
-			<ul class="item nav-justified">
-				{{#items}}
-					{{#file}}
-						<li><input type="file" id="importFile" accept="text/json, text/xml, .json, .xml" /></li>
-					{{/file}}
-					{{^file}}
-						<li id="{{id}}">{{name}}</li>			
-					{{/file}}
-				{{/items}}
-			</ul>
-			<h4>Import</h4>
-		</div>
-	</li>
-	{{/parts}}
-</ul>
+	<div id="file_edition_extra_elements_container"></div>
+	<ul class="menu-part nav-justified">
+		{{#parts}}
+		<li>
+			<div>
+				<ul class="item nav-justified">
+					{{#items}}
+						{{#file}}
+							<li><input type="file" id="importFile" accept="text/json, text/xml, .json, .xml" /></li>
+						{{/file}}
+						{{^file}}
+							<li id="{{id}}">{{text}}</li>			
+						{{/file}}
+					{{/items}}
+				</ul>
+				<h5>{{name}}</h5>
+			</div>
+		</li>
+		{{/parts}}
+	</ul>
 </div>
