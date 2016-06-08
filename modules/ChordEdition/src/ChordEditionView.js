@@ -44,8 +44,7 @@ define([
 			fn = 'setChordPitch';
 			if (evt.shiftKey){
 				$.publish('ChordEditionView', [fn, inc]);	
-			}
-			
+			}		
 		});
 		$.subscribe('enter-key', function(el) {
 			fn = 'toggleEditChord';
@@ -62,10 +61,7 @@ define([
 	};
 
 	ChordEditionView.prototype.isEditMode = function(mode) {
-		if (this.editMode === mode) {
-			return true;
-		}
-		return false;
+		return this.editMode === mode;
 	};
 
 	return ChordEditionView;

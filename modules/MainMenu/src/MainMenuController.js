@@ -17,17 +17,11 @@ define([
 		});
 	}
 
-	MainMenuController.prototype.activeMenu = function(menuTitle) {
-		var index = this.model.searchMenuIndex(menuTitle);
-		// if menu is not found, then display the first one
-		index = index === -1 ? 0 : index;
-		var currentMenu = this.model.getMenu(index);
-		this.model.setCurrentMenu(currentMenu);	
-	};
-
 	MainMenuController.prototype.loadStateTab = function() {
 		// Init menu with current hash
-		this.activeMenu(window.location.hash.substring(1));
+		if (window.location.hash.substring(1)) {
+			this.model.setCurrentMenuById(window.location.hash.substring(1));	
+		}
 	};
 
 	return MainMenuController;

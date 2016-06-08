@@ -1,7 +1,7 @@
 define([
 	'jquery',
-	'pubsub'
-], function($){
+	'utils/UserLog',
+], function($, UserLog){
 	function ClipboardManager(htmlMainContainer) {
 		var self = this;
 		var contentCopied = false;
@@ -51,7 +51,7 @@ define([
 			try {
 				parsedData = JSON.parse(pasteData);
 			} catch(e) {
-				console.log('Clipboard does not contain a valid JSON. Not trying to paste it to leadsheet.');
+				UserLog.logAutoFade('error', 'You clipboard doest not contain a valid JSON. Please copy again.');
 			}
 			if (parsedData) {
 				$.publish('pasteJSONData', [parsedData]);

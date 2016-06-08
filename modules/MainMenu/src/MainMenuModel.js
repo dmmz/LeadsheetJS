@@ -28,6 +28,10 @@ define([
 		return this.menuList[index];
 	};
 
+	MainMenuModel.prototype.getMenuIdFromTitle = function(title) {
+		return String(title.replace(' ', '_') + '_menu').toLowerCase();
+	};
+
 	MainMenuModel.prototype.addMenu = function(menu) {
 		if (typeof menu === "undefined" || menu.title == "undefined") {
 			throw 'MainMenuModel - addMenu - menu is undefined' + menu;
@@ -62,23 +66,18 @@ define([
 
 
 	MainMenuModel.prototype.hasMenu = function(menuTitle) {
-		if (typeof menuTitle === "") {
-			throw "MainMenuModel - hasModule - menuTitle can't be equal to an empty string";
+		if (menuTitle === "") {
+			throw "MainMenuModel - hasMenu - menuTitle can't be equal to an empty string";
 		}
-		for (var i = 0, c = this.menuList.length; i < c; i++) {
-			if (this.menuList[i].title === menuTitle) {
-				return true;
-			}
-		}
-		return false;
+		return this.searchMenuIndex(menuTitle) !== -1;
 	};
 
 	MainMenuModel.prototype.searchMenuIndex = function(menuTitle) {
-		if (typeof menuTitle === "") {
+		if (menuTitle === "") {
 			throw "MainMenuModel - searchMenuIndex - menuTitle can't be equal to an empty string";
 		}
 		for (var i = 0, c = this.menuList.length; i < c; i++) {
-			if (this.menuList[i].title === menuTitle) {
+			if (String(this.menuList[i].title).toLowerCase() === String(menuTitle).toLowerCase()) {
 				return i;
 			}
 		}
@@ -98,6 +97,14 @@ define([
 
 	MainMenuModel.prototype.getCurrentMenu = function() {
 		return this.currentMenu;
+	};
+
+	MainMenuModel.prototype.setCurrentMenuById = function(currentMenuId) {
+		var menuIndex = this.searchMenuIndex(currentMenuId.substr(0, currentMenuId.indexOf('_menu')));
+		if (menuIndex !== -1) {
+			this.setCurrentMenu(this.menuList[menuIndex])
+			$.publish('MainMenuModel-setCurrentMenu', this.currentMenu);
+		}
 	};
 
 	MainMenuModel.prototype.setCurrentMenu = function(currentMenu) {

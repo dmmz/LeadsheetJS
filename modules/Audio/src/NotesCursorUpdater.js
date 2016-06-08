@@ -3,7 +3,7 @@ define(function(){
 	/**
 	 * Makes cursor notes move while playing
 	 * @param {SongModel} song   song is a dependency and not 'NoteManager', because there are cases in which we change entirely the 
-	 *                           note manager, so we need to reference to song in order to continue it making work
+	 *                           note manager, so we need to reference to song
 	 * @param {CursorModel} notesCursor 
 	 */
 	function NotesCursorUpdater(song, notesCursor){

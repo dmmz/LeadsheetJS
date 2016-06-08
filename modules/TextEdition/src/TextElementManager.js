@@ -2,8 +2,9 @@ define([
 	'jquery',
 	'pubsub',
 	'modules/TextEdition/src/TextElementView',
-	'modules/Edition/src/HtmlInputElement'
-], function($, pubsub, TextElementView, HtmlInputElement) {
+	'modules/Edition/src/HtmlInputElement',
+	"modules/Edition/src/EditionControllerInterface"
+], function($, pubsub, TextElementView, HtmlInputElement, EditionControllerInterface) {
 	/**
 	 * Allow text in canvas to be clickabel and editable
 	 * @exports TextEdition/TextElementManager
@@ -18,7 +19,7 @@ define([
 		if (typeof fieldElement !== 'string' || typeof name !== 'string' || !viewer) {
 			throw "TextElementManager error params";
 		}
-
+		$.extend(this, new EditionControllerInterface());
 		this.CL_NAME = name;
 		this.CL_TYPE = 'CLICKABLE';
 		this.viewer = viewer;
@@ -56,6 +57,10 @@ define([
 	};
 
 	TextElementManager.prototype.onSelected = function() {
+		if (this.isEditable() !== true) {
+			this.htmlInput = false;
+			return;
+		}
 		var self = this;
 		var inputVal = this.songModel[this.songGetNameFn].call(this.songModel);
 
@@ -93,6 +98,7 @@ define([
 		if (this.htmlInput) {
 			this.htmlInput.input.devbridgeAutocomplete('dispose');
 			this.htmlInput.remove();
+			this.htmlInput = false;
 			$.publish('ToViewer-draw', this.songModel);
 		}
 	};

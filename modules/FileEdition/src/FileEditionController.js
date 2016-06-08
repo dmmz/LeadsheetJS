@@ -33,7 +33,9 @@ define([
 		$.subscribe('FileEditionView-importMusicXML', function(el, musicXMLSong) {
 			self.importMusicXML(musicXMLSong);
 		});
-		$.subscribe('FileEditionView-exportPNG', function(el){ self.exportPNG();});
+		$.subscribe('FileEditionView-exportPNG', function() {
+			self.exportPNG();
+		});
 		$.subscribe('FileEditionView-exportPDF', function(el) {
 			self.exportAndPromptLeadsheetToPDF(
 				self.songModel.getTitle(),
@@ -42,7 +44,9 @@ define([
 				self.songModel.getStyle()
 			);
 		});
-		$.subscribe('FileEditionView-exportMusicCSLJSON', self.exportLeadsheetJSON);
+		$.subscribe('FileEditionView-exportMusicCSLJSON', function(){
+			self.exportLeadsheetJSON();
+		});
 	};
 
 

@@ -14,7 +14,8 @@ define(function() {
 		this.beforeEnding = null;
 		this.constructor = constructor;
 		this.prevElemValue = null;
-	};
+	}
+
 	SongBarsChange.prototype = {
 
 		reset: function() {
@@ -50,19 +51,19 @@ define(function() {
 			}
 		},
 		getBarElemValue: function() {
-
+			var result;
 			var elemValue = this.getBarChange();
 			if (elemValue) {
-				return elemValue;
+				result =  elemValue;
 			} else if (this.barsIt.prevEnding == 1 && this.barsIt.getEnding(this.barsIt.isFirstSectionBar) == 2) { // is important to use == instead of === as we are comparing sometimes string to numbers
 				// when we are in the bar just after ending 1, we return bar time signature we had before ending 1, 
 				//so that signature changes to ending 1 are not anymore taken into account
-				return this.beforeEnding;
+				result = this.beforeEnding;
 			} else {
 				//case we are in first bar
-				return (this.barsIt.index === 0) ? this.barsIt.song[this.getElementValueFn]() : this.prevElemValue;
+				result = (this.barsIt.index === 0) ? this.barsIt.song[this.getElementValueFn]() : this.prevElemValue;
 			}
-
+			return result;
 		}
 	};
 	return SongBarsChange;

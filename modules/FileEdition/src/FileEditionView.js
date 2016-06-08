@@ -1,10 +1,11 @@
 define([
 	'jquery',
 	'mustache',
+	'underscore',
 	'modules/core/src/SongModel',
 	'utils/UserLog',
-	'text!modules/MainMenu/src/MenuTabTemplate.html',
-], function($, Mustache, SongModel, UserLog, MenuTabTemplate) {
+	'text!modules/FileEdition/src/FileEditionTemplate.html',
+], function($, Mustache, _, SongModel, UserLog, FileEditionTemplate) {
 	/**
 	 * [FileEditionView description] 
 	 * @exports FileEdition/FileEditionView
@@ -18,52 +19,32 @@ define([
 		this.el = undefined;
 		this.initSubscribe();
 		this.initKeyboard();
-		// $(Mustache.render(MenuTabTemplate, 
-		// 	{
-		// 		"parts":[
-		// 			{
-		// 				items:[
-		// 				]
-		// 			},
-		// 			{
-		// 				items:[
-
-		// 				]
-		// 			}
-
-		// 		]
-		// 	}
-		// ));
-		params = {
-				"parts":[
-					{
-						name: 'Import',
-						items:[
-							{'file':true},
-						],
-
-					},
-					{
-						name: 'Export',
-						items:[
-							{ id:'export_png', text: 'PNG' },
-							{ id:'export_pdf', text: 'PDF' },
-							{ id:'export_musicCslJson', text: 'MusicCSLJson' }
-						]
-					}
-			]
-		};
-
-		//this.el = $(Mustache.render(MenuTabTemplate, params));
-		this.el = $(Mustache.render(MenuTabTemplate, params));
-		//this.render(params);
+		this.render(params);
 	}
 
 	FileEditionView.prototype.render = function(params) {	
 		params = params || {};
-		params.import = (params.import !== undefined) ? params.import : true;
-		params.export = (params.export !== undefined) ? params.export : true;
-		this.el = $(Mustache.render(FileEditionTemplate, params));
+		var viewParams = {parts: []};
+		if (_.isUndefined(params.import) || params.import) {
+			viewParams.parts.push({
+				name: 'Import',
+				items:[
+					{'file':true},
+				],
+
+			});
+		}
+		if (_.isUndefined(params.export) || params.export) {
+			viewParams.parts.push({
+				name: 'Export',
+				items:[
+					{ id:'export_png', text: 'PNG' },
+					{ id:'export_pdf', text: 'PDF' },
+					{ id:'export_musicCslJson', text: 'MusicCSLJson' }
+				]
+			});
+		}
+		this.el = $(Mustache.render(FileEditionTemplate, viewParams));
 		if (params.extraElementsForMenu) {
 			this.el.find('#file_edition_extra_elements_container').append(params.extraElementsForMenu);
 		}
