@@ -1,22 +1,14 @@
-<div>
-	<div id="file_edition_extra_elements_container"></div>
-	<ul class="menu-part nav-justified">
-		{{#parts}}
-		<li>
-			<div>
-				<ul class="item nav-justified">
-					{{#items}}
-						{{#file}}
-							<li><input type="file" id="importFile" accept="text/json, text/xml, .json, .xml" /></li>
-						{{/file}}
-						{{^file}}
-							<li id="{{id}}">{{text}}</li>			
-						{{/file}}
-					{{/items}}
-				</ul>
-				<h5>{{name}}</h5>
-			</div>
-		</li>
-		{{/parts}}
-	</ul>
+<div class="row" style="padding:10px 0">
+	<div id="file_edition_extra_elements_container" class="col-md-2 col-md-offset-3"></div>
+	<div class="col-md-2">
+		<input type="file" id="importFile" accept="text/json, text/xml, .json, .xml" /></li>
+		<h5 class="text-center">Import</h5>
+	</div>
+	<div class="col-md-2">
+		<div class="btn-group" role="group" aria-label="...">
+			<button id="export_png" type="button" class="btn btn-default">PNG</button>
+			<button id="export_pdf" type="button" class="btn btn-default">PDF</button>
+			<button id="export_musicCslJson" type="button" class="btn btn-default">MusicCSLJson</button>
+		</div>	
+	</div>
 </div>
