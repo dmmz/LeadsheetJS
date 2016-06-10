@@ -43,9 +43,9 @@ define([
 		$.subscribe('MainMenuModel-removeMenu', function(el, menu) {
 			self.removeMenu(menu);
 		});
-		// $.subscribe('MainMenuModel-setCurrentMenu', function(el, menu) {
-		// 	self.setCurrentMenu(menu);
-		// });
+		$.subscribe('MainMenuModel-setCurrentMenu', function(el, menu) {
+			self.setCurrentMenu(menu);
+		});
 	};
 
 	MainMenuView.prototype.buildMenu = function() {

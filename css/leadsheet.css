@@ -65,6 +65,7 @@ ul.menu-part{
 ul.menu-part li{
 	list-style-type: none;
 }
+ul.menu-part li:hover { border: 0 }
 
 ul.menu-part > li{
 	text-align: center;
