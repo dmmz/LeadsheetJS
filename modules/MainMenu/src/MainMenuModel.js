@@ -73,11 +73,16 @@ define([
 	};
 
 	MainMenuModel.prototype.searchMenuIndex = function(menuTitle) {
+		function titleClean(title) {
+			return title.toLowerCase().replace(" ", "_");
+		}
 		if (menuTitle === "") {
 			throw "MainMenuModel - searchMenuIndex - menuTitle can't be equal to an empty string";
 		}
 		for (var i = 0, c = this.menuList.length; i < c; i++) {
-			if (String(this.menuList[i].title).toLowerCase() === String(menuTitle).toLowerCase()) {
+			
+			
+			if (titleClean(this.menuList[i].title) === titleClean(menuTitle)) {
 				return i;
 			}
 		}

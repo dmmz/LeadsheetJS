@@ -9,9 +9,7 @@ define([
 	function MainMenuController(model) {
 		this.model = model || new MainMenuModel();
 		var self = this;
-		// $.subscribe('MainMenuView-active_menu', function(el, menuTitle) {
-		// 	self.activeMenu(menuTitle);
-		// });
+		
 		$(window).on('hashchange', function() {
 			self.loadStateTab.apply(self, arguments);
 		});
