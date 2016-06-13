@@ -1,11 +1,12 @@
 define([
+	"jquery",
 	"modules/ChordEdition/src/ChordEditionController",
 	"modules/ChordEdition/src/ChordEditionView",
 	"modules/ChordEdition/src/ChordSpaceManager",
 	"modules/ChordEdition/src/ChordSpaceEdition",
 	"modules/Edition/src/EditionModuleInterface",
 	"modules/Edition/src/EditionControllerInterface"
-], function(ChordEditionController, ChordEditionView, ChordSpaceManager, ChordSpaceEdition, EditionModuleInterface, EditionControllerInterface) {
+], function($, ChordEditionController, ChordEditionView, ChordSpaceManager, ChordSpaceEdition, EditionModuleInterface, EditionControllerInterface) {
 	/**
 	 * ChordEdition constructor
 	 * @exports ChordEdition

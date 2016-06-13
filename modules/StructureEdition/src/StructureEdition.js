@@ -1,9 +1,10 @@
 define([
+	"jquery",
 	"modules/StructureEdition/src/StructureEditionController",
 	"modules/StructureEdition/src/StructureEditionModel",
 	"modules/StructureEdition/src/StructureEditionView",
 	"modules/Edition/src/EditionModuleInterface"
-], function(StructureEditionController, StructureEditionModel, StructureEditionView, EditionModuleInterface) {
+], function($, StructureEditionController, StructureEditionModel, StructureEditionView, EditionModuleInterface) {
 	/**
 	 * StructureEdition constructor
 	 * @exports StructureEdition
