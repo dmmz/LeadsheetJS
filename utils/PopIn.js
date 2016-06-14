@@ -1,7 +1,9 @@
 define([
+	'jquery',
 	'mustache',
+	'text!utils/PopIn.html',
 	'bootstrap'
-], function(Mustache) {
+], function($, Mustache, PopinTemplate) {
 	/**
 	 * @param {String}  title
 	 * @param {String}  content    Can be the content or the link to a template to load (in case it's a template set istemplate to true)
@@ -54,22 +56,15 @@ define([
 		if (!this.isTemplate) {
 			content = this.content;
 		}
-		var txt = '';
-		txt += '<div class="modal hide fade ' + this.classTitle + '" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">';
-		txt += '<div class="modal-dialog">';
-		txt += '<div class="modal-content">';
-		txt += '<div class="modal-header">';
-		txt += '<button type="button" class="close" style="float:right" data-dismiss="modal" aria-hidden="true">&times;</button>';
-		txt += '<h4 class="modal-title">' + this.title + '</h4>';
-		txt += '</div>';
-		txt += '<div class="modal-body contentPopIn">' + content + '</div>';
-
-		txt += '<div class="modal-footer"><span class="modal-footer-text"></span><button type="button" data-dismiss="modal" class="btn btn-default">Close</button>';
-		txt += '<button type="button" data-dismiss="modal" class="btn btn-primary modal_submit">' + this.footerButtonTitle + '</button></div>';
-
-		txt += '</div>';
-		txt += '</div>';
-		txt += '</div>';
+		var txt = Mustache.render(
+			PopinTemplate,
+			{
+				classTitle: this.classTitle,
+				title: this.title,
+				content: this.content,
+				footerButtonTitle: this.footerButtonTitle
+			}
+		);
 		this.$modal = $(txt);
 		$('body').append(this.$modal);
 	};
