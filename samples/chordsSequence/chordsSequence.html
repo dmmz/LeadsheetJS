@@ -8,7 +8,6 @@
 		<meta name="keywords" content="">
 		<meta name="author" content="Sony CSL Paris">
 		<!-- Le styles -->
-		<link href="../css/bootstrap.css" rel="stylesheet" />
 		<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">-->
 		
 
@@ -26,6 +25,40 @@
     <div id="player_test"></div>
   
 
-	<script data-main="chordSequence.js" src="../../external-libs/require.js"></script>
+		<script src="../../external-libs/require.js"></script>
+		<script src="../../config.js"></script>
+		<script>
+		requirejs.config({
+			baseUrl: "../../",
+		});
+		require([
+			'jquery',
+			'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
+			'modules/LSViewer/src/LSChordSequenceViewer',
+			'modules/LSViewer/src/OnWindowResizer',
+			'modules/Audio/src/AudioModule',
+			'modules/ChordEdition/src/ChordSpaceManager',
+			'modules/Cursor/src/CursorModel'
+			], 
+			function($, SongModel_CSLJson, LSChordSequenceViewer, OnWindowResizer, AudioModule, ChordSpaceManager, CursorModel) {
+			//var $ = require('jquery');
+			//var LJS = require('LJS');
+			var chordsSong = {"title":"Solar","composer":"Miles Davis","time":"4\/4","style":"Jazz","source":"511385b758e3381874000000","changes":[{"id":"0","name":"Melody\/Solos","numBars":"12","repeat":"0","endingNumBars":"0","timeSignature":"","style":"","bars":[{"chords":[{"p":"C","ch":"m","beat":1}]},{"chords":[{"p":"C","ch":"m","beat":1}]},{"chords":[{"p":"G","ch":"m7","beat":1}]},{"chords":[{"p":"C","ch":"7","beat":1}]},{"chords":[{"p":"F","ch":"M7","beat":1}]},{"chords":[{"p":"F","ch":"M7","beat":1}]},{"chords":[{"p":"F","ch":"m7","beat":1}]},{"chords":[{"p":"Bb","ch":"7","beat":1}]},{"chords":[{"p":"Eb","ch":"M7","beat":1}]},{"chords":[{"p":"Eb","ch":"m7","beat":1},{"p":"Ab","ch":"7","beat":3}]},{"chords":[{"p":"Db","ch":"M7","beat":1}]},{"chords":[{"p":"D","ch":"halfdim7","beat":1},{"p":"G","ch":"7b9","beat":3}]}]}],"keySignature":"C","tempo":120};
+
+			var songModel = SongModel_CSLJson.importFromMusicCSLJSON(chordsSong);
+			var viewer = new LSChordSequenceViewer($("#canvas_container")[0], {displayTitle:false, displayComposer:false, saveChords:true, interactiveCanvasLayer: false});
+			var chordsCursor = new CursorModel(songModel.getComponent('chords'));
+
+			OnWindowResizer(songModel);
+
+			var audio = new AudioModule(songModel);
+			audio.load('/tests/audio/Solar_120_bpm.335.mp3', 120, 0, function(){
+				//audio.play();	
+			});
+
+			new ChordSpaceManager(songModel, chordsCursor, viewer, true, null, 'ONLY_CHORDS');
+			viewer.draw(songModel);
+		});
+		</script>
 	</body>
 </html>
