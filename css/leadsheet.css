@@ -103,7 +103,7 @@ ul.item > li:hover{
 #rightPanel ul{
        padding:0;
 }
-.tab-pane li.current{
+.tab-pane .current{
        background-color: #c1e0ea;
 }
 .tab-pane li{
@@ -113,7 +113,7 @@ ul.item > li:hover{
       border-radius: 5px;
        margin-bottom: 2px;
 }
-.tab-pane li.editing{
+.tab-pane .editing{
        border: 1px solid #ddd;
 }
 .tab-pane li:hover{
@@ -157,7 +157,7 @@ ul.item > li:hover{
 	cursor: pointer;
 }
 #volume_controller {
-	vertical-align: bottom !important;
+	vertical-align: bottom;
 }
 #volume_controller_barre {
 	position: absolute;
@@ -196,15 +196,15 @@ ul.item > li:hover{
 
 #tempo_container input{
 	width: 41px;
-	margin: 0px;
+	margin: 0;
 }
 
 .progress_bar_player {
-	margin-bottom: 0 !important;
-	-webkit-box-shadow: none !important;
-	-moz-box-shadow: none !important;
-	box-shadow: none !important;
-	height: 15px !important;
+	margin-bottom: 0;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+	height: 15px;
 	border-radius: 0;
 	cursor: pointer;
 }
@@ -239,7 +239,7 @@ ul.item > li:hover{
 /* bubble bottom*/
 .bottom {
     border-color: #c8c8f8 transparent transparent transparent;
-    border-width: 8px 8px 0px 8px;
+    border-width: 8px 8px 0 8px;
     bottom: -8px;
 }
 
