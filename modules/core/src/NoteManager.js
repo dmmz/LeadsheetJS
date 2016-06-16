@@ -1,11 +1,12 @@
 define([
+	'jquery',
 	'modules/core/src/NoteModel', 
 	'utils/NoteUtils', 
 	'modules/core/src/SongBarsIterator',
 	'modules/core/src/NotesIterator',
 	'modules/core/src/KeySignatureModel',
 	'modules/core/src/BarAccidentals'
-	], function(NoteModel, NoteUtils, SongBarsIterator, NotesIterator, KeySignatureModel, BarAccidentals) {
+	], function($, NoteModel, NoteUtils, SongBarsIterator, NotesIterator, KeySignatureModel, BarAccidentals) {
 	/**
     * Note manager represents list of notes, it's a component of SongModel
     * @exports core/NoteManager
