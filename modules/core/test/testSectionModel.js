@@ -37,6 +37,9 @@ define(['modules/core/src/SectionModel'], function(SectionModel) {
 				assert.equal(unfoldedSection.getStyle(),section.getStyle());
 
 
+				/* set */
+
+				
 
 			});
 		}

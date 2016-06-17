@@ -2,8 +2,9 @@ define([
 	'tests/test-songs',
 	'modules/core/src/SongModel',
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson',
-	'modules/core/src/TimeSignatureModel'
-], function(testSongs, SongModel, SongModel_CSLJson, TimeSignatureModel) {
+	'modules/core/src/TimeSignatureModel',
+	'tests/songs/AloneTogether'
+], function(testSongs, SongModel, SongModel_CSLJson, TimeSignatureModel, AloneTogether) {
 	return {
 		run: function() {
 
@@ -112,6 +113,25 @@ define([
 				assert.deepEqual(songTimeSigChanges.getBarDivisionsBetweenBeats(0, 29), [4, 3, 3, 2, 4, 4, 4, 4], 'total divisions (exceeding beat boundaries)');
 				assert.deepEqual(songTimeSigChanges.getBarDivisionsBetweenBeats(5, 14), [3, 3, 2, 1]);
 				assert.deepEqual(songTimeSigChanges.getBarDivisionsBetweenBeats(1.5, 9), [0.5, 3, 3, 1], 'when does not at exact beat, first adds silences to fill beat (it is more consistent like that)');
+				
+				var songAloneTogether = SongModel_CSLJson.importFromMusicCSLJSON(AloneTogether);
+
+				assert.deepEqual(songAloneTogether.getSection(0).baseBarNumbers,[0]);
+				assert.deepEqual(songAloneTogether.getSection(0).endingsBarNumbers.length, 0);
+
+				assert.deepEqual(songAloneTogether.getSection(1).baseBarNumbers,[0,1,2,3,4,5,6,7,8,9,10,11]);
+				assert.deepEqual(songAloneTogether.getSection(1).endingsBarNumbers, [12,13], [14,15]);
+
+				assert.deepEqual(songAloneTogether.getSection(2).baseBarNumbers,[0,1,2,3,4,5,6,7]);
+				assert.deepEqual(songAloneTogether.getSection(2).endingsBarNumbers.length, 0);
+
+				assert.deepEqual(songAloneTogether.getSection(3).baseBarNumbers,[0, 1,2,3,4,5,6,7]);
+				assert.deepEqual(songAloneTogether.getSection(3).endingsBarNumbers.length, 0);
+
+				//TESTS to ADD:
+				//on cue
+				//only ending 2 section
+				//
 
 			});
 		}

@@ -11,7 +11,10 @@ define(['modules/core/src/TimeSignatureModel'], function(TimeSignatureModel) {
 		this.style = options.style || '';
 		this.setTimeSignatureChange(options.timeSignatureChange);// empty timeSignature means it doesn't change from previous
 		this.keySignatureChange = options.keySignatureChange;
-		this.label = options.label; // Segno, fine, coda, on cue ...
+		this.labels = [];	// Segno, fine, coda ... we set an array, although currentlu CSLJson only accepts one label per bar
+		if (options.label){
+			this.labels.push(options.label);
+		} 
 		this.sublabel = options.sublabel; // Ds, Ds al fine, ds al capo ...
 	}
 
@@ -92,14 +95,13 @@ define(['modules/core/src/TimeSignatureModel'], function(TimeSignatureModel) {
 	};
 
 	BarModel.prototype.setLabel = function(label) {
-		if (typeof label === "undefined") {
-			label = '';
+		if (this.labels.indexOf(label) === -1){
+			this.labels.push(label);	
 		}
-		this.label = label;
 	};
 
 	BarModel.prototype.getLabel = function() {
-		return this.label;
+		return this.labels.length === 1 ? this.labels[0] : this.labels;
 	};
 
 	BarModel.prototype.setSublabel = function(sublabel) {

@@ -64,17 +64,27 @@ define(function(require) {
 					section = new SectionModel();
 					SectionModel_CSLJson.importFromMusicCSLJSON(JSONSection, section);
 					songModel.addSection(section);
-
+					var sectionBars = [];
 					if (JSONSection.bars != null) {
 						var endingToKeepForNextBars = false;
-						JSONSection.bars.forEach(function(JSONBar) {
+						JSONSection.bars.forEach(function(JSONBar) 
+						{
 							bar = BarModel_CSLJson.importFromMusicCSLJSON(JSONBar, new BarModel());
+							//endingToKeepForNextBars needed to compute following bars as part of ending. e.g. bars with endings like this [null,null,1,null,2,null] become [null, null, 1, 1, 2, 2]
 							if (bar.getEnding()) {
 								endingToKeepForNextBars = bar.getEnding();
 							} else if (endingToKeepForNextBars) {
 								bar.ending = endingToKeepForNextBars;
 							}
+							//save info in section
+							if (endingToKeepForNextBars){
+								section.addEndingsBarNumber(barNumber);
+							}else{
+								section.addBaseBarNumber(barNumber);
+							}
+
 							barManager.addBar(bar);
+							sectionBars.push(bar);
 							//chords:
 							if (JSONBar.chords != null) {
 								JSONBar.chords.forEach(function(JSONChord) {
@@ -105,12 +115,12 @@ define(function(require) {
 							}
 							barNumber++;
 						});
+						section.setLabels(sectionBars);
 					} else {
 						console.log(JSONSection.bars);
 					}
 				});
 				songModel.addComponent('bars', barManager);
-				//noteManager.setNotesBarNum(songModel);
 				songModel.addComponent('chords', chordManager);
 				songModel.addComponent('notes', noteManager);
 			}

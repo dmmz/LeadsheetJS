@@ -1,9 +1,6 @@
 define(['modules/core/src/SectionModel'], function(SectionModel) {
 	var SectionModel_CSLJson = {};
 
-	/////////////////////////
-	//  Advanced function  //
-	/////////////////////////
 
 	SectionModel_CSLJson.importFromMusicCSLJSON = function(JSONSection, sectionModel) {
 		if (typeof JSONSection === "undefined" || typeof sectionModel === "undefined" || !(sectionModel instanceof SectionModel)) {
@@ -12,7 +9,7 @@ define(['modules/core/src/SectionModel'], function(SectionModel) {
 		sectionModel.setName(JSONSection.name);
 		sectionModel.setNumberOfBars(JSONSection.bars ? parseInt(JSONSection.bars.length) : 0);
 		sectionModel.setTimeSignature(JSONSection.timeSignature);
-		sectionModel.setRepeatTimes(JSONSection.repeat ? JSONSection.repeat : 0);
+		sectionModel.setRepeatTimes(JSONSection.repeat !== undefined ? JSONSection.repeat === 'open' ? sectionModel.REPEAT_OPEN : JSONSection.repeat : 0);
 		sectionModel.setStyle(JSONSection.style);
 	};
 
