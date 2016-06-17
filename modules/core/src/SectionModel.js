@@ -94,7 +94,7 @@ define(function() {
 		if (this.baseBarNumbers.indexOf(barNumber) !== -1) { 
 			return 0;
 		} else {
-			for (var ending = 0; ending < getNumTimesToPlay(); ending++) {
+			for (var ending = 0; ending < this.getNumTimesToPlay(); ending++) {
 				if (this.endingsBarNumbers[ending].indexOf(barNumber) !== -1){
 					return ending;
 				}
