@@ -50,7 +50,14 @@ define(function(){
 					{
 						melody:
 						[
-								{ keys: ["g/4"], duration: "w"}
+								{ keys: ["g/4"], duration: "q"},
+								{ keys: ["a/4"], duration: "8"},
+								{ keys: ["b/4"], duration: "8"},
+								{ keys: ["c/5"], duration: "8", tuplet: 'start',time_modification:'3/2'},
+								{ keys: ["db/5"], duration: "8", time_modification:'3/2'},
+								{ keys: ["dn/5"], duration: "8", tuplet: 'stop',time_modification:'3/2'},
+								{ keys: ["e/5"], duration: "8"},
+								{ keys: ["f/5"], duration: "8"},
 								
 						]
 					},
