@@ -481,6 +481,15 @@ define([
 		return true;
 	};
 
+	SongModel.prototype.getStructure = function() {
+		return this.structure || new LeadsheetStructure(this);
+	};
+
+	SongModel.prototype.getUnfoldedSong = function() {
+		var unfoldConfig = this.getStructure().getUnfoldConfig();
+		return new UnfoldedLeadsheet(this, unfoldConfig);
+	};
+
 	/**
 	 * Unfold the current songModel and return it
 	 * Be carefull, segno and coda are not yet supported, you can call canBeUnfold function to test if songModel is supported

@@ -6,7 +6,6 @@ define(['modules/Unfold/src/StartPoint'], function(StartPoint){
 		label['start_section_'+section] = section;
 
 		this.initValues(leadsheetStructure, label, section, 1);
-		return this;
 	};
 
 	return SectionStartPoint;

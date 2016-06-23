@@ -37,7 +37,9 @@ define(['modules/core/src/SectionModel'], function(SectionModel) {
 				assert.equal(unfoldedSection.getStyle(),section.getStyle());
 
 
-				/* set */
+				//TODO_TESTS
+				//
+				//check ending bars are set correctly
 
 				
 

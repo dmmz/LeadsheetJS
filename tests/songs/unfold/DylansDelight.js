@@ -281,6 +281,237 @@ define(function(){
                 {
                     "chords" : [ 
                         {
+                            "p" : "Eb",
+                            "beat" : 1
+                        }
+                    ],
+                    "melody" : [ 
+                        {
+                            "keys" : [ 
+                                "D/5"
+                            ],
+                            "duration" : "q",
+                            "tie" : "stop"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "G/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8r"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "D/5"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "E/5"
+                            ],
+                            "duration" : "8",
+                            "tie" : "start"
+                        }
+                    ]
+                }, 
+                {
+                    "chords" : [ 
+                        {
+                            "p" : "Db",
+                            "ch" : "m7",
+                            "beat" : 1
+                        }, 
+                        {
+                            "p" : "Gb",
+                            "ch" : "7",
+                            "beat" : 3.0000000000000000
+                        }
+                    ],
+                    "melody" : [ 
+                        {
+                            "keys" : [ 
+                                "E/5"
+                            ],
+                            "duration" : "q",
+                            "tie" : "stop"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Cb/5"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "A/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8r"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Cb/5"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Db/5"
+                            ],
+                            "duration" : "8",
+                            "tie" : "start"
+                        }
+                    ]
+                }, 
+                {
+                    "chords" : [ 
+                        {
+                            "p" : "B",
+                            "beat" : 1
+                        }
+                    ],
+                    "melody" : [ 
+                        {
+                            "keys" : [ 
+                                "D/5"
+                            ],
+                            "duration" : "q",
+                            "tie" : "stop"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Gb/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8r"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "G/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8"
+                        }
+                    ]
+                }, 
+                {
+                    "chords" : [ 
+                        {
+                            "p" : "E",
+                            "ch" : "13#11",
+                            "beat" : 1
+                        }
+                    ],
+                    "melody" : [ 
+                        {
+                            "keys" : [ 
+                                "Db/5"
+                            ],
+                            "duration" : "q"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Gb/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8r"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Db/5"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Cb/5"
+                            ],
+                            "duration" : "8",
+                            "tuplet" : "start",
+                            "time_modification" : "3/2"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8",
+                            "time_modification" : "3/2"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "A/4"
+                            ],
+                            "duration" : "8",
+                            "tuplet" : "stop",
+                            "time_modification" : "3/2"
+                        }
+                    ]
+                }, 
+                {
+                    "chords" : [ 
+                        {
                             "p" : "F",
                             "ch" : "m7",
                             "beat" : 1
@@ -326,6 +557,494 @@ define(function(){
                         {
                             "keys" : [ 
                                 "A/4"
+                            ],
+                            "duration" : "8"
+                        }
+                    ]
+                }, 
+                {
+                    "chords" : [ 
+                        {
+                            "p" : "Bb",
+                            "ch" : "7",
+                            "beat" : 1
+                        }
+                    ],
+                    "melody" : [ 
+                        {
+                            "keys" : [ 
+                                "D/5"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Bn/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "A/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Db/5"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Bb/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Gb/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Bn/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Gb/4"
+                            ],
+                            "duration" : "8"
+                        }
+                    ]
+                }, 
+                {
+                    "chords" : [ 
+                        {
+                            "p" : "Eb",
+                            "beat" : 1
+                        }, 
+                        {
+                            "p" : "C",
+                            "ch" : "7",
+                            "beat" : 3.0000000000000000
+                        }
+                    ],
+                    "melody" : [ 
+                        {
+                            "keys" : [ 
+                                "F/4"
+                            ],
+                            "duration" : "h"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "hr"
+                        }
+                    ]
+                }, 
+                {
+                    "chords" : [ 
+                        {
+                            "p" : "F",
+                            "ch" : "m7",
+                            "beat" : 1
+                        }, 
+                        {
+                            "p" : "Bb",
+                            "ch" : "7",
+                            "beat" : 3.0000000000000000
+                        }
+                    ],
+                    "melody" : [ 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "qr"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8r"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Cb/5"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "A/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Db/5"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Dn/5"
+                            ],
+                            "duration" : "8",
+                            "tie" : "start"
+                        }
+                    ]
+                }, 
+                {
+                    "chords" : [ 
+                        {
+                            "p" : "Eb",
+                            "beat" : 1
+                        }
+                    ],
+                    "melody" : [ 
+                        {
+                            "keys" : [ 
+                                "D/5"
+                            ],
+                            "duration" : "q",
+                            "tie" : "stop"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "G/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8r"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "D/5"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "E/5"
+                            ],
+                            "duration" : "8",
+                            "tie" : "start"
+                        }
+                    ]
+                }, 
+                {
+                    "chords" : [ 
+                        {
+                            "p" : "Db",
+                            "ch" : "m7",
+                            "beat" : 1
+                        }, 
+                        {
+                            "p" : "Gb",
+                            "ch" : "7",
+                            "beat" : 3.0000000000000000
+                        }
+                    ],
+                    "melody" : [ 
+                        {
+                            "keys" : [ 
+                                "E/5"
+                            ],
+                            "duration" : "q",
+                            "tie" : "stop"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Cb/5"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "A/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8r"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Cb/5"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Db/5"
+                            ],
+                            "duration" : "8",
+                            "tie" : "start"
+                        }
+                    ]
+                }, 
+                {
+                    "chords" : [ 
+                        {
+                            "p" : "B",
+                            "beat" : 1
+                        }
+                    ],
+                    "melody" : [ 
+                        {
+                            "keys" : [ 
+                                "D/5"
+                            ],
+                            "duration" : "q",
+                            "tie" : "stop"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Gb/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8r"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "G/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8"
+                        }
+                    ]
+                }, 
+                {
+                    "chords" : [ 
+                        {
+                            "p" : "E",
+                            "ch" : "13#11",
+                            "beat" : 1
+                        }
+                    ],
+                    "melody" : [ 
+                        {
+                            "keys" : [ 
+                                "Db/5"
+                            ],
+                            "duration" : "q"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Gb/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8r"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "D/5"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Cb/5"
+                            ],
+                            "duration" : "8",
+                            "tuplet" : "start",
+                            "time_modification" : "3/2"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8",
+                            "time_modification" : "3/2"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "A/4"
+                            ],
+                            "duration" : "8",
+                            "tuplet" : "stop",
+                            "time_modification" : "3/2"
+                        }
+                    ]
+                }, 
+                {
+                    "chords" : [ 
+                        {
+                            "p" : "F",
+                            "ch" : "m7",
+                            "beat" : 1
+                        }
+                    ],
+                    "melody" : [ 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "qr"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8r"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "E/5"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "C/5"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "A/4"
+                            ],
+                            "duration" : "8"
+                        }
+                    ]
+                }, 
+                {
+                    "chords" : [ 
+                        {
+                            "p" : "Bb",
+                            "ch" : "7",
+                            "beat" : 1
+                        }
+                    ],
+                    "melody" : [ 
+                        {
+                            "keys" : [ 
+                                "D/5"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Bn/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "A/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Db/5"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Bb/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Gb/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Bn/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Gb/4"
                             ],
                             "duration" : "8"
                         }
@@ -486,6 +1205,58 @@ define(function(){
                                 "B/4"
                             ],
                             "duration" : "qr"
+                        }
+                    ]
+                }, 
+                {
+                    "chords" : [ 
+                        {
+                            "p" : "F",
+                            "beat" : 1
+                        }
+                    ],
+                    "melody" : [ 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "qr"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8r"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "An/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "C/5"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "An/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "G/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "F/4"
+                            ],
+                            "duration" : "8"
                         }
                     ]
                 }, 
@@ -773,6 +1544,237 @@ define(function(){
                             ],
                             "duration" : "8",
                             "tie" : "start"
+                        }
+                    ]
+                }, 
+                {
+                    "chords" : [ 
+                        {
+                            "p" : "Eb",
+                            "beat" : 1
+                        }
+                    ],
+                    "melody" : [ 
+                        {
+                            "keys" : [ 
+                                "D/5"
+                            ],
+                            "duration" : "q",
+                            "tie" : "stop"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "G/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8r"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "D/5"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "E/5"
+                            ],
+                            "duration" : "8",
+                            "tie" : "start"
+                        }
+                    ]
+                }, 
+                {
+                    "chords" : [ 
+                        {
+                            "p" : "Db",
+                            "ch" : "m7",
+                            "beat" : 1
+                        }, 
+                        {
+                            "p" : "Gb",
+                            "ch" : "7",
+                            "beat" : 3.0000000000000000
+                        }
+                    ],
+                    "melody" : [ 
+                        {
+                            "keys" : [ 
+                                "E/5"
+                            ],
+                            "duration" : "q",
+                            "tie" : "stop"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Cb/5"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "A/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8r"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Cb/5"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Db/5"
+                            ],
+                            "duration" : "8",
+                            "tie" : "start"
+                        }
+                    ]
+                }, 
+                {
+                    "chords" : [ 
+                        {
+                            "p" : "B",
+                            "beat" : 1
+                        }
+                    ],
+                    "melody" : [ 
+                        {
+                            "keys" : [ 
+                                "D/5"
+                            ],
+                            "duration" : "q",
+                            "tie" : "stop"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Gb/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8r"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "G/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8"
+                        }
+                    ]
+                }, 
+                {
+                    "chords" : [ 
+                        {
+                            "p" : "E",
+                            "ch" : "13#11",
+                            "beat" : 1
+                        }
+                    ],
+                    "melody" : [ 
+                        {
+                            "keys" : [ 
+                                "Db/5"
+                            ],
+                            "duration" : "q"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Gb/4"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8r"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "D/5"
+                            ],
+                            "duration" : "8"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "Cb/5"
+                            ],
+                            "duration" : "8",
+                            "tuplet" : "start",
+                            "time_modification" : "3/2"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "B/4"
+                            ],
+                            "duration" : "8",
+                            "time_modification" : "3/2"
+                        }, 
+                        {
+                            "keys" : [ 
+                                "A/4"
+                            ],
+                            "duration" : "8",
+                            "tuplet" : "stop",
+                            "time_modification" : "3/2"
                         }
                     ]
                 }, 

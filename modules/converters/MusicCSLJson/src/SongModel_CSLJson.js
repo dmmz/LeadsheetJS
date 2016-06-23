@@ -61,6 +61,7 @@ define(function(require) {
 				wholeRestFound = false;
 			if (MusicCSLJSON.changes != null) {
 				MusicCSLJSON.changes.forEach(function(JSONSection) {
+					var sectionBarNumber = 0;
 					section = new SectionModel();
 					SectionModel_CSLJson.importFromMusicCSLJSON(JSONSection, section);
 					songModel.addSection(section);
@@ -78,9 +79,9 @@ define(function(require) {
 							}
 							//save info in section
 							if (endingToKeepForNextBars){
-								section.addEndingsBarNumber(barNumber);
+								section.addEndingsBarNumber(sectionBarNumber);
 							}else{
-								section.addBaseBarNumber(barNumber);
+								section.addBaseBarNumber(sectionBarNumber);
 							}
 
 							barManager.addBar(bar);
@@ -113,6 +114,7 @@ define(function(require) {
 								note.durationDependsOnBar = true; 
 								wholeRestFound = true;
 							}
+							sectionBarNumber++;
 							barNumber++;
 						});
 						section.setLabels(sectionBars);

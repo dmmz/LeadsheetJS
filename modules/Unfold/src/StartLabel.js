@@ -27,5 +27,16 @@ define([
 	StartLabel.SOLOS.push(StartLabel.SEGNO);
 	StartLabel.SOLOS.push(StartLabel.SEGNO2);
 
+	StartLabel.fromString = function(name){
+		switch (name.toLowerCase()) {
+			case "dc": return StartLabel.CAPO;
+			case "ds": return StartLabel.SEGNO;
+			case "ds2": return StartLabel.SEGNO2;
+			case "coda to": return StartLabel.CODATO;
+			case "coda2 to": return StartLabel.CODA2TO;
+			default: return null;
+		}
+	};
+
 	return StartLabel;
 });

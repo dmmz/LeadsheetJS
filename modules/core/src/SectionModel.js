@@ -1,4 +1,4 @@
-define(function() {
+define(['modules/Unfold/src/UnfoldedSection'], function(UnfoldedSection) {
 	/**
      * Section fundamental model
      * @exports core/SectionModel
@@ -25,7 +25,7 @@ define(function() {
 	/////////////////////////
 
 	SectionModel.prototype.hasOpenRepeats = function() {
-		return this.repeat === this.REPEAT_OPEN;
+		return this.repeatTimes === this.REPEAT_OPEN;
 	};
 
 	SectionModel.prototype.getNumEndings = function() {
@@ -42,7 +42,7 @@ define(function() {
 		}else if (this.hasOpenRepeats()){
 			return REPEAT_OPEN;
 		}else{
-			return this.repeat + 1;
+			return this.repeatTimes + 1;
 		}
 	};
 
@@ -82,7 +82,29 @@ define(function() {
 		return barNumbers;
 	};
 
-	SectionModel.prototype.getPlayEndBar = function() {
+	SectionModel.prototype.getPartPlayBarNumbers = function(playIndex, fromBar, toBar) {
+		var fullBarNumbers = this.getPlayBarNumbers(playIndex);
+		if (toBar <= 0) {
+			toBar = fullBarNumbers[fullBarNumbers.length - 1];
+		}
+		var partBarNumbers = [];
+		var startReached = false;
+		for (var i = 0; i < fullBarNumbers.length; i++) {
+			if (fullBarNumbers[i] === fromBar)  {
+				startReached = true;
+			}
+			if (!startReached) {
+				continue;
+			}
+			partBarNumbers.push(fullBarNumbers[i]);
+			if (fullBarNumbers[i] === toBar) {
+				break;
+			}
+		}
+		return partBarNumbers; 
+	};
+
+	SectionModel.prototype.getPlayEndBar = function(playIndex) {
 		var barIndexes = this.getPlayBarNumbers(playIndex);
 		if (barIndexes.length === 0){
 			return -1;
@@ -95,7 +117,7 @@ define(function() {
 			return 0;
 		} else {
 			for (var ending = 0; ending < this.getNumTimesToPlay(); ending++) {
-				if (this.endingsBarNumbers[ending].indexOf(barNumber) !== -1){
+				if (this.endingsBarNumbers.length !== 0 && this.endingsBarNumbers[ending].indexOf(barNumber) !== -1){
 					return ending;
 				}
 			}
@@ -142,7 +164,6 @@ define(function() {
 		return this.timeSignature;
 	};
 
-
 	SectionModel.prototype.setLabels = function(bars) {
 		var label, sublabel, bar;
 		for (var i = 0; i < bars.length; i++) {
@@ -161,7 +182,22 @@ define(function() {
 		return this.labels[label];
 	};
 	SectionModel.prototype.hasLabel = function(label) {
-		return this.label[label] !== undefined;
+		return this.labels[label] !== undefined;
+	};
+
+	SectionModel.prototype.getSublabels = function() {
+		return this.sublabels;
+	};
+	/**
+	 * [getSectionPart description]
+	 * @param  {[type]} playIndex           [description]
+	 * @param  {NUmber} fromBar             0 being 1st bar
+	 * @param  {Number} toBar               Inclusive end bar (-1 means end of section)
+	 * @param  {[type]} prevUnfoldedSection [description]
+	 * @return {[type]}                     [description]
+	 */
+	SectionModel.prototype.getSectionPart = function(playIndex, fromBar, toBar, prevUnfoldedSection) {
+		return new UnfoldedSection(this, this.getPlayBarNumbers(playIndex, fromBar, toBar), prevUnfoldedSection);
 	};
 	/**
 	 * returns the unfolded section

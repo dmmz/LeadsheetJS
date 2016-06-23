@@ -2,9 +2,10 @@ define([
 	'modules/converters/MusicCSLJson/src/SongModel_CSLJson', 
 	'modules/core/src/SongModel', 
 	'tests/test-songs',
-	'tests/songs/IMeanYou'
+	'tests/songs/IMeanYou',
+	'tests/songs/unfold/DylansDelight'
 
-	], function(SongModel_CSLJson, SongModel, testSongs, IMeanYou) {
+	], function(SongModel_CSLJson, SongModel, testSongs, IMeanYou, DylansDelight) {
 	return {
 		run: function() {
 			test("SongModel_CSLJson", function(assert) {
@@ -80,6 +81,29 @@ define([
 				assert.equal(noteMng.getNotesAtBarNumber(4,song2).length, 1);
 				assert.equal(noteMng.getNotesAtBarNumber(5,song2).length, 1);
 
+				//Dylan's delight
+				var dylansDelightSong = SongModel_CSLJson.importFromMusicCSLJSON(DylansDelight);
+				
+				// sections
+				var pickup = dylansDelightSong.getSection(0);
+				console.log(pickup);
+				assert.deepEqual(pickup.baseBarNumbers,[0]);
+
+				var intro = dylansDelightSong.getSection(1);
+				assert.deepEqual(intro.baseBarNumbers,[0, 1, 2, 3]);
+
+				var melodySolos = dylansDelightSong.getSection(2);
+				var array32 = function(){
+					var arr = [];
+					for (var i = 0; i < 32; i++) {
+						arr.push(i);
+					}
+					return arr;
+				}();
+				
+				assert.deepEqual(melodySolos.baseBarNumbers, array32);
+
+				
 				
 			});
 		}
