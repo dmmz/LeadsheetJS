@@ -235,16 +235,18 @@ define([
 				newNote = note.clone();
 				playingNoteAcc = note.getAccidental();
 				storedAcc = barAcc.getAccidental(note) || keySignature.getPitchAccidental(note.getPitchClass());
-				if (playingNoteAcc){
-					if (playingNoteAcc == storedAcc){
-						newNote.setAccidental("");
+				if (!newNote.isRest) {
+					if (playingNoteAcc){
+						if (playingNoteAcc == storedAcc){
+							newNote.setAccidental("");
+						}else{
+							barAcc.updateAccidentals(newNote);
+						}
 					}else{
-						barAcc.updateAccidentals(newNote);
-					}
-				}else{
-					if (storedAcc && storedAcc != "n"){
-						newNote.setAccidental("n");
-						barAcc.updateAccidentals(newNote);
+						if (storedAcc && storedAcc != "n"){
+							newNote.setAccidental("n");
+							barAcc.updateAccidentals(newNote);
+						}
 					}
 				}
 				newNoteMng.addNote(newNote);
