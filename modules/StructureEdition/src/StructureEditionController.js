@@ -522,9 +522,15 @@ define([
 		noteMng.notesSplice([start, end -1], tmpNoteMng.getNotes());
 		
 		//if everything is selected we transpose key signature
-		var keySignature = this.songModel.getTonality();
+		var firstBar = this.songModel.getComponent('bars').getBar(0);
+		var firstBarKeySig = firstBar.getKeySignatureChange();
+		var keySignature =  firstBarKeySig || this.songModel.getTonality();
+
 		var pitch = new PitchClass(keySignature);
 		var newKeySig = pitch.transposeBy(interval,direction).toString();
+		if (firstBarKeySig) {
+			firstBar.setKeySignatureChange(); //remove key signature change in first bar
+		}
 		this.songModel.setTonality(newKeySig);
 
 		tmpNoteMng = noteMng.play2score(this.songModel, start, end);
