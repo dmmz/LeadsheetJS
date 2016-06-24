@@ -7,7 +7,8 @@ define(['modules/Unfold/src/RepetitionConfig'], function(RepetitionConfig){
 			this.until = until;
 		},
 		setValuesFromPoint: function (fromEndPoint){
-			this.structure = fromEndPoint.getStructure();
+			console.log(fromEndPoint);
+			this.structure = fromEndPoint.leadsheetStructure;
 			this.from = fromEndPoint;
 		},
 		getToPoint: function() {

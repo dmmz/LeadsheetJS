@@ -9,7 +9,7 @@ define([
 	 * @param  {[type]} SectionOpenRepetition   [description]
 	 * @return {[type]}                         [description]
 	 */
-	function(SectionRepetition, SectionFiniteRepetition, SectionOpenRepetition) {
+	function(SectionFiniteRepetition, SectionOpenRepetition) {
 		var SectionRepetitionFactory = {
 			get: function(structure, section, playIndex) {
 				if (structure.getSection(section).hasOpenRepeats()) {

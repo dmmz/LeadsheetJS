@@ -6,13 +6,14 @@ define([
 	'modules/Unfold/src/PointLabel',
 	'tests/songs/AloneTogether',
 	'tests/songs/unfold/DylansDelight',
+	'tests/songs/unfold/SimpleUnfoldTest',
 	'tests/songs/Solar'
 
-], function(SongModel_CSLJson, LeadsheetStructure, StartLabel, EndLabel,PointLabel,  AloneTogether, DylansDelight, Solar) {
+], function(SongModel_CSLJson, LeadsheetStructure, StartLabel, EndLabel,PointLabel,  AloneTogether, DylansDelight, SimpleUnfoldTest, Solar) {
 	return {
 		run: function() {
 			test("LeadsheetStructure", function(assert) {
-				var songAT = SongModel_CSLJson.importFromMusicCSLJSON(DylansDelight);
+				var songAT = SongModel_CSLJson.importFromMusicCSLJSON(SimpleUnfoldTest);
 				var structAT = new LeadsheetStructure(songAT);
 				structAT.init();
 			/*console.log(structAT.getStartLabels());

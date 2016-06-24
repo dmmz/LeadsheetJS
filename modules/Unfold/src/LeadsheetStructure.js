@@ -69,6 +69,9 @@ define([
 		var getRepetitions = function() {
 			return this.repetitions;
 		};
+		this.getSection = function(i) {
+			return this.sections[i];
+		};
 
 		this.addStartLabel = function(point) {
 			startLabels.set(point.getLabel(), point);
@@ -100,9 +103,9 @@ define([
 		this.getSectionStartPoint = function(iSection) {
 			return sectionStartPoints[iSection];
 		};
-		this.getSectionEndPoint = function(iSection, playIndex) {
+		this.getSectionLastEndPoint = function(iSection, playIndex) {
 			return sectionEndPoints.get({
-				iSection: iSection,
+				section: iSection,
 				playIndex: playIndex
 			});
 		};
@@ -231,7 +234,7 @@ define([
 			}
 			for (var iSection = fromPoint.section; iSection < toPoint.section; iSection++) {
 				var segmentFrom = iSection === fromPoint.section ? fromPoint : this.getSectionStartPoint(iSection);
-				var segmentTo = iSection === toPoint.section ? toPoint : this.getSectionEndPoint(iSection);
+				var segmentTo = iSection === toPoint.section ? toPoint : this.getSectionLastEndPoint(iSection);
 				var playIndex = iSection === fromPoint.section && iSection === toPoint.section ? cursor.playIndex : segmentTo.playIndex;
 				list.push(new SectionSegment(this, segmentFrom, segmentTo, playIndex));
 			}

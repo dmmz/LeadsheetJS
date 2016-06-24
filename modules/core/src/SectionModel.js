@@ -1,4 +1,4 @@
-define(['modules/Unfold/src/UnfoldedSection'], function(UnfoldedSection) {
+define(/*['modules/Unfold/src/UnfoldedSection'],*/ function(UnfoldedSection) {
 	/**
      * Section fundamental model
      * @exports core/SectionModel
