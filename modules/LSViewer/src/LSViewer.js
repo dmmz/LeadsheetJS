@@ -48,7 +48,7 @@ define([
 			//0.999  fixes vexflow bug that doesn't draw last pixel on end bar
 			this.SCALE_FIX = 0.995;
 
-			this.CANVAS_DIV_WIDTH_PROPORTION = 0.9; //width proportion between canvas created and divContainer (space between canvas border and divContainer border)
+			this.CANVAS_DIV_WIDTH_PROPORTION = 1; //width proportion between canvas created and divContainer (space between canvas border and divContainer border)
 			this.NOTE_WIDTH = 20; // estimated note width in order to be more flexible
 			this.LINE_WIDTH = 1550;
 			this.BARS_PER_LINE = 4;

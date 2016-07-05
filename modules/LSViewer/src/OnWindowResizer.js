@@ -8,7 +8,6 @@ define(['jquery'], function($) {
 			window.setTimeout(function() {
 				$.publish('ToViewer-resize', songModel);
 			}, 0);
-
 		});
 	};
 	return OnWindowResizer;

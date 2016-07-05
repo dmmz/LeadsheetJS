@@ -53,19 +53,19 @@ define([
 	 */
 	PlayerView.prototype.initController = function() {
 		var self = this;
-		$('#play_button_container').click(function() {
+		$('#play_button').click(function() {
 			var tempo = self.getTempo();
 			$.publish('ToPlayer-play', tempo);
 		});
-		$('#stop_button_container').click(function() {
+		$('#stop_button').click(function() {
 			$.publish('ToPlayer-stop');
 		});
-		$('#pause_button_container').click(function() {
+		$('#pause_button').click(function() {
 			$.publish('ToPlayer-pause');
 		});
 
-		$('#loop_button_container').click(function() {
-			if ($('#loop_button_container .loop_on').is(":visible")) {
+		$('#loop_button').click(function() {
+			if ($('#loop_button .loop_on').is(":visible")) {
 				$.publish('ToPlayer-toggleLoop', true);
 			} else {
 				$.publish('ToPlayer-toggleLoop', false);
@@ -75,8 +75,8 @@ define([
 		// .on('input') Event is fired every time the input changes (work with paste, delete, type things)
 		$('#tempo_container #tempo').on('change', function() {
 			var tempo = $(this).val();
-			$('#pause_button_container').hide();
-			$('#play_button_container').show();
+			$('#pause_button').hide();
+			$('#play_button').show();
 			$.publish('ToPlayer-onTempo', tempo);
 		});
 
@@ -210,25 +210,25 @@ define([
 
 	// play / pause
 	PlayerView.prototype.play = function() {
-		$('#pause_button_container').show();
-		$('#pause_button_container').css('display', 'inline-block');
-		$('#play_button_container').hide();
+		$('#pause_button').show();
+		$('#pause_button').css('display', 'inline-block');
+		$('#play_button').hide();
 	};
 
 	PlayerView.prototype.pause = function() {
-		$('#pause_button_container').hide();
-		$('#play_button_container').show();
+		$('#pause_button').hide();
+		$('#play_button').show();
 	};
 
 	// ready
 	PlayerView.prototype.playerIsReady = function() {
 		$('#play_button img').attr('src', this.imgPath + '/play.png');
-		$('#play_button_container .player_text').html('Play');
+		$('#play_button .player_text').html('Play');
 	};
 
 	PlayerView.prototype.playerIsNotReady = function() {
 		$('#play_button img').attr('src', this.imgPath + '/play_grey.png');
-		$('#play_button_container .player_text').html('Loading');
+		$('#play_button .player_text').html('Loading');
 	};
 
 

@@ -1,11 +1,12 @@
 define([
+	'jquery',
 	'modules/core/src/NoteModel', 
 	'utils/NoteUtils', 
 	'modules/core/src/SongBarsIterator',
 	'modules/core/src/NotesIterator',
 	'modules/core/src/KeySignatureModel',
 	'modules/core/src/BarAccidentals'
-	], function(NoteModel, NoteUtils, SongBarsIterator, NotesIterator, KeySignatureModel, BarAccidentals) {
+	], function($, NoteModel, NoteUtils, SongBarsIterator, NotesIterator, KeySignatureModel, BarAccidentals) {
 	/**
     * Note manager represents list of notes, it's a component of SongModel
     * @exports core/NoteManager
@@ -234,16 +235,18 @@ define([
 				newNote = note.clone();
 				playingNoteAcc = note.getAccidental();
 				storedAcc = barAcc.getAccidental(note) || keySignature.getPitchAccidental(note.getPitchClass());
-				if (playingNoteAcc){
-					if (playingNoteAcc == storedAcc){
-						newNote.setAccidental("");
+				if (!newNote.isRest) {
+					if (playingNoteAcc){
+						if (playingNoteAcc == storedAcc){
+							newNote.setAccidental("");
+						}else{
+							barAcc.updateAccidentals(newNote);
+						}
 					}else{
-						barAcc.updateAccidentals(newNote);
-					}
-				}else{
-					if (storedAcc && storedAcc != "n"){
-						newNote.setAccidental("n");
-						barAcc.updateAccidentals(newNote);
+						if (storedAcc && storedAcc != "n"){
+							newNote.setAccidental("n");
+							barAcc.updateAccidentals(newNote);
+						}
 					}
 				}
 				newNoteMng.addNote(newNote);

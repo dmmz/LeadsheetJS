@@ -7,19 +7,12 @@
 		<meta name="description" content="">
 		<meta name="keywords" content="">
 		<meta name="author" content="Sony CSL Paris">
-		<!-- Le styles -->
-		<link href="../css/bootstrap.css" rel="stylesheet" />
-		<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">-->
-		<link href="interface.css" rel="stylesheet" />
-		<link href="../css/bootstrap-slider.css" rel="stylesheet" />
 
-		<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-		<!--[if lt IE 9]>
-		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-		<![endif]-->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+		<link href="../../css/leadsheet.css" rel="stylesheet" /> <!-- NEW styles-->
 	</head>
 	<body>
-		<div id="menu-container"></div>
+		<div id="menu-container" data-spy="affix" data-offset-top="51"></div>
 		<div id="chordSequence1"></div>
 		<div id="chordSequence2"></div>
 		<div id="main-container" class="container-fluid">
@@ -176,5 +169,7 @@
 					$.publish('ToViewer-draw', myLeadsheet.songModel);
 			});
 		</script>
+		<script src="/node_modules/jquery/dist/jquery.min"></script>
+		<script src="/node_modules/bootstrap/dist/js/bootstrap.min"></script>
 	</body>
 </html>

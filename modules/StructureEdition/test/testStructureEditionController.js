@@ -242,8 +242,8 @@ define(['modules/StructureEdition/src/StructureEditionController',
 						structEdition = new StructureEditionController(song, cursor);
 								
 					structEdition.transposeSong(4); //majorThird
-					assert.deepEqual(chordMng.getChordsAsString(),["BM7", "D#m", "B", "C#7"], 'tranposing up major third: chords');
-					assert.deepEqual(noteMng.getNotesAsString(), ["C#/5-8", "D#/5-8", "C##/5-q", "Dn/5-q", "C#/5-q"], 'notes')
+					assert.deepEqual(chordMng.getChordsAsString(),["BM7", "D#m", "B", "C#7"], 'transposing up major third: chords');
+					assert.deepEqual(noteMng.getNotesAsString(), ["C/5-8", "D/5-8", "C##/5-q", "Dn/5-q", "C#/5-q"], 'notes')
 
 					var song2Json = {
 						composer: "Random Composer", title: "song3",
@@ -274,7 +274,7 @@ define(['modules/StructureEdition/src/StructureEditionController',
 							
 					structEdition.transposeSong(-6);//augmented fourth
 					assert.deepEqual(chordMng.getChordsAsString(),["CbM7", "Ebm", "Db", "Bb7"], 'tranposing down augmented fourth: chords');
-					assert.deepEqual(noteMng.getNotesAsString(), ["Bbb/3-8", "Eb/4-8", "B/3-q","F/4-q", "En/4-q"], 'notes'); //3rd note is B, not Bbb because first Bbb sets accidental of all following B/3 to bb
+					assert.deepEqual(noteMng.getNotesAsString(), ["Bbb/3-8", "E/4-8", "B/3-q","F/4-q", "En/4-q"], 'notes'); //3rd note is B, not Bbb because first Bbb sets accidental of all following B/3 to bb
 				
 				}
 

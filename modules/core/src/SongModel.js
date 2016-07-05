@@ -1,10 +1,11 @@
 define([
+	'jquery',
 	'modules/core/src/NoteManager',
 	'modules/core/src/BarManager',
 	'modules/core/src/ChordManager',
 	'modules/core/src/TimeSignatureModel',
 	'modules/core/src/SongBarsIterator'
-], function(NoteManager, BarManager, ChordManager, TimeSignatureModel, SongBarsIterator) {
+], function($, NoteManager, BarManager, ChordManager, TimeSignatureModel, SongBarsIterator) {
 	/**
 	 * SongModel is the main model to represent song, it contains notes, chords and bars components, also contain section, composer name etc.
 	 * @exports core/SongModel
@@ -458,7 +459,7 @@ define([
 	};
 
 	SongModel.prototype.clone = function() {
-		var songModelCloned = jQuery.extend(true, new SongModel(), this);
+		var songModelCloned = $.extend(true, new SongModel(), this);
 		return songModelCloned;
 	};
 

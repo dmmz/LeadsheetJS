@@ -49,12 +49,12 @@ define(['vexflow',
 			lastDur = -1,
 			startBeams = [];
 		for (var i = 0; i < barNotes.length; i++) {
-					
-			if (!inSameBeatUnit(accumDur, lastDur, beatBeamUnit)){
+	
+			if (!inSameBeatUnit(NoteUtils.roundBeat(accumDur), NoteUtils.roundBeat(lastDur), beatBeamUnit)){
 				startBeams.push(i);
 			}
 			lastDur = accumDur;
-			accumDur += NoteUtils.roundBeat(barNotes[i].getDuration());
+			accumDur += barNotes[i].getDuration();
 		}
 		return getBeamsFromStartBeams(startBeams, barNotes.length); //we return that string converted to 
 	};
@@ -195,7 +195,7 @@ define(['vexflow',
 		return beams;
 	};
 	/**
-	 * calculates beaming takign into account all cases, just making them ready to be drown
+	 * calculates beaming taking into account all cases, just making them ready to be drown
 	 * @param  {Array} barNotes  array of NoteModels
 	 * @param  {TupletManager tupletMng 
 	 * @param  {SongIterator} songIt    
@@ -203,7 +203,7 @@ define(['vexflow',
 	 */
 	BeamManager.prototype.getBeamIndexes = function(barNotes, tupletMng,  songIt) {
 		function timeSigBeamingUnit(timeSig){
-			//return 1 all time signature except for 3/8, 6/8. 9/8, 12/8 
+			//returns 1 for all time signatures except for 3/8, 6/8. 9/8, 12/8 
 			return timeSig.beatUnit === 8 && timeSig.getBeats() % 3 === 0 ? 1.5 : 1;
 		}
 

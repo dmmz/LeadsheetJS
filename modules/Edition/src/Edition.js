@@ -1,11 +1,12 @@
 define([
+	'jquery',
 	'underscore',
 	"modules/Cursor/src/Cursor",
 	"modules/NoteEdition/src/NoteEdition",
 	"modules/ChordEdition/src/ChordEdition",
 	"modules/StructureEdition/src/StructureEdition",
 	"modules/TextEdition/src/TextElementManager",
-], function(_, Cursor, NoteEdition, ChordEdition, StructureEdition, TextElementManager) {
+], function($, _, Cursor, NoteEdition, ChordEdition, StructureEdition, TextElementManager) {
 	/**
 	 * Edition constructor
 	 * @exports Edition

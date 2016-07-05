@@ -1,27 +1,14 @@
-<div id="editor_menu_second_level">
-	<div id="file_edition_extra_elements_container"></div>
-	{{#import}}
-	<div id="import_container">
-		<div id="editor_menu_each_import_container">
-			<div class="current_button" title="Import leadsheet as MusicCSL JSON or MusicXML">
-				<input type="file" id="importFile" accept="text/json, text/xml, .json, .xml" />
-			</div>
-		</div>
-		<div class="button_text">
-			Import
-		</div>
+<div class="row" style="padding:15px 0 0 0;">
+	<div id="file_edition_extra_elements_container" class="col-md-2 col-md-offset-3"></div>
+	<div class="col-md-2">
+		<input type="file" id="importFile" accept="text/json, text/xml, .json, .xml" /></li>
+		<h5 class="text-center">Import</h5>
 	</div>
-	{{/import}}
-	{{#export}}
-	<div id="export_container">
-		<div id="editor_menu_each_export_container">
-			<div class="current_button" id="export_png" title="Export leadsheet as png">PNG</div>
-			<div class="current_button" id="export_pdf" title="Export leadsheet as pdf">PDF</div>
-			<div class="current_button" id="export_musicCslJson" title="Export leadsheet as MusicCSL JSON">MusicCSL JSON</div>
-		</div>
-		<div class="button_text">
-			Lead Sheet Export
-		</div>
+	<div class="col-md-2">
+		<div class="btn-group" role="group" aria-label="...">
+			<button id="export_png" type="button" class="btn btn-default"><span class="glyphicon glyphicon-picture"></span> PNG</button>
+			<button id="export_pdf" type="button" class="btn btn-default"><span class="glyphicon glyphicon-file"></span> PDF</button>
+			<button id="export_musicCslJson" type="button" class="btn btn-default">MusicCSLJson</button>
+		</div>	
 	</div>
-	{{/export}}
 </div>

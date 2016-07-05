@@ -1,10 +1,11 @@
 define([
 	'jquery',
 	'mustache',
+	'underscore',
 	'modules/core/src/SongModel',
 	'utils/UserLog',
 	'text!modules/FileEdition/src/FileEditionTemplate.html',
-], function($, Mustache, SongModel, UserLog, FileEditionTemplate) {
+], function($, Mustache, _, SongModel, UserLog, FileEditionTemplate) {
 	/**
 	 * [FileEditionView description] 
 	 * @exports FileEdition/FileEditionView
@@ -23,8 +24,7 @@ define([
 
 	FileEditionView.prototype.render = function(params) {	
 		params = params || {};
-		params.import = (params.import !== undefined) ? params.import : true;
-		params.export = (params.export !== undefined) ? params.export : true;
+		_.defaults(params, {import: true, export: true});
 		this.el = $(Mustache.render(FileEditionTemplate, params));
 		if (params.extraElementsForMenu) {
 			this.el.find('#file_edition_extra_elements_container').append(params.extraElementsForMenu);

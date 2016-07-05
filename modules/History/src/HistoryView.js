@@ -73,7 +73,6 @@ define([
 			var indexItem = parseInt($(this).attr('data-history'), 10);
 			$.publish('HistoryView-selectHistory', indexItem);
 		});
-		self.parentHTML.addClass('history-open');
 	};
 
 	/**

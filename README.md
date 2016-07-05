@@ -1,4 +1,4 @@
-# LeadsheetJS [![Build Status](https://travis-ci.org/SonyCSL-Paris/LeadsheetJS.svg?branch=master)](https://travis-ci.org/SonyCSL-Paris/LeadsheetJS)
+# LeadsheetJS [![Build Status](https://travis-ci.org/SonyCSL-Paris/LeadsheetJS.svg?branch=master)](https://travis-ci.org/SonyCSL-Paris/LeadsheetJS) <a href="https://codeclimate.com/github/SonyCSL-Paris/LeadsheetJS"><img src="https://codeclimate.com/github/SonyCSL-Paris/LeadsheetJS/badges/gpa.svg" /></a>
 A JavaScript library for online music leadsheets (visualizing, playing, editing and other features). 
 2015 Daniel Martín, Timotée Neullas and Vincent Degroote.
 Examples and documentation http://sonycsl-paris.github.io

@@ -44,7 +44,7 @@ define([
 	CommentsView.prototype.initController = function() {
 		var self = this;
 		//close comment
-		$(document).on('click', '.close', function(e) {
+		$(document).on('click', '.closeComment', function(e) {
 			e.preventDefault();
 			var id = $(this).closest('.speech-bubble').attr('id');
 			if (id == self.newCommentId) {
@@ -207,8 +207,8 @@ define([
 			textComment: comment.text,
 			ownComment: comment.userId == userId
 		});
-
-		$("body").append(
+		// divContainer should have position relative, absolut or fixed (so that appended elements' position depend on it)
+		$(this.viewer.divContainer).append(
 			$(el).attr('id', bubbleId)
 			.attr('data-commentId', comment.id)
 			.hide()
@@ -220,8 +220,8 @@ define([
 	 */
 	CommentsView.prototype.drawNewComment = function() {
 		var el = Mustache.render(NewCommentTpl);
-		$("body").append($(el).hide()); 
-		
+		// divContainer should have position relative, absolut or fixed (so that appended elements' position depend on it)
+		$(this.viewer.divContainer).append($(el).hide()); 
 	};
 
 	/**
@@ -235,10 +235,9 @@ define([
 		//var height = $("#" + this.bubblePreId + commentId).height();
 		var height = 100;
 		var area = this.commentSpaceMng.commentSpaces[commentId].getArea();
-		var offset = this.offset; //to avoid 'this' closure problem
 		$("#" + this.bubblePreId + commentId).css({
-			top: area.y - area.h + offset.top - height,
-			left: area.x + offset.left,
+			top: area.y - height - 5,
+			left: area.x,
 			height: 100,
 			zIndex: 1900
 		}).show();
@@ -300,12 +299,11 @@ define([
 		var areas = this.viewTypes[type].getArea()
 		this.newComment.interval = (type === 'audio') ? this.viewTypes[type].getTimeInterval() : this.viewTypes[type].getBeatInterval();
 		this.newComment.type = type;
-		var offset = this.offset; //to avoid 'this' closure problem
-		height = $("#" + this.newCommentId).outerHeight(true) + 8;
+		height = $("#" + this.newCommentId).outerHeight(true);
 		$("#" + this.newCommentId).css({
 			position: "absolute",
-			top: areas[0].y + offset.top - height,
-			left: areas[0].x + offset.left,
+			top: areas[0].y - height - 5,
+			left: areas[0].x,
 			zIndex: 1900
 		}).show();
 		$("#" + this.newCommentId+" textarea").focus();

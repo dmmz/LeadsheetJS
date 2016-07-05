@@ -6,10 +6,11 @@ require.config({
 		jquery_autocomplete: 'external-libs/jquery.autocomplete.min',
 		vexflow: 'node_modules/vexflow/releases/vexflow-min',
 		Midijs: 'external-libs/Midijs/midijs.min',
+		base64: 'external-libs/base64',
 		pubsub: 'external-libs/tiny-pubsub.min',
 		mustache: 'node_modules/mustache/mustache.min',
 		text: 'node_modules/requirejs-text/text',
-		bootstrap: 'node_modules/bootstrap/docs/assets/js/bootstrap.min',
+		bootstrap: 'node_modules/bootstrap/dist/js/bootstrap.min',
 		jsPDF: 'node_modules/jspdf/dist/jspdf.min',
 		underscore: 'node_modules/underscore/underscore-min',
 		store: 'node_modules/store/store.min',
@@ -31,7 +32,8 @@ require.config({
 			exports: 'Vex'
 		},
 		Midijs: {
-			exports: 'MIDI'
+			exports: 'MIDI',
+			deps: ['base64']
 		},
 		underscore : {
 			exports: '_'	

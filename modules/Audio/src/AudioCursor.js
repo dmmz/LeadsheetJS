@@ -1,7 +1,8 @@
 define([
+	'jquery',
 	'modules/Edition/src/ElementManager',
 	'modules/Cursor/src/CursorModel'
-], function(ElementManager, CursorModel) {
+], function($, ElementManager, CursorModel) {
 	function AudioCursor(audioDrawer, viewer, audioAnimation) {
 		this.CL_TYPE = 'CURSOR';
 		this.CL_NAME = 'audioCursor';

@@ -1,4 +1,4 @@
-define(function(){
+define(['jquery'], function($){
 	/**
 	 * This object centralizes restartAnimation loops. Different cursors can be 'subscribed' to it. They need to have an 'update' method
 	 */ 
