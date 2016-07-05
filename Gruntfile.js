@@ -62,9 +62,7 @@ module.exports = function(grunt) {
 						jsPDF: 'empty:',
 						mustache: 'empty:',
 						underscore: 'empty:',
-						deepdiff: 'empty:'
-
-
+						store: 'empty:',
 						/*
 						jquery: 'external-libs/jquery-2.1.0.min',
 						jquery_autocomplete: 'external-libs/jquery.autocomplete.min',
@@ -76,7 +74,6 @@ module.exports = function(grunt) {
 						jsPDF: 'external-libs/jspdf/jspdf.min',
 						mustache: 'external-libs/mustache',
 						*/
-
 					},
 					cjsTranslate: true,
 					//findNestedDependencies: true,

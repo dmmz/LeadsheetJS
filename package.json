@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:SonyCSL-Paris/LeadsheetJS.git"
+    "url": "git@github.com:SonyCSL-Paris/LeadsheetJS.git#aggregate-js-files"
   },
   "keywords": [
     "Leadsheet",
@@ -26,7 +26,6 @@
   "private": false,
   "dependencies": {
     "bootstrap": "^3.3.6",
-    "deep-diff": "^0.3.4",
     "jquery": "^2.2.3",
     "jspdf": "^1.2.61",
     "mustache": "^2.2.1",
