@@ -92,7 +92,7 @@ module.exports = function(grunt) {
 					//name: "build/LeadsheetJS-0.1.0.min.js",
 					//name: "samples/simpleInterface/interface",
 					// include: ['modules/**/*.js', '!modules/core/src/SongModel.old.js'],
-					out: "build/<%= pkg.name %>-<%= pkg.version %>.min.js",
+					out: "build/<%= pkg.name %>.min.js",
 					// exclude: ["jquery, jquery_autocomplete, qunit, vexflow_helper, vexflow, Midijs, pubsub, jsPDF, mustache, bootstrap"],
 					fileExclusionRegExp: /\.git/,
 					/*done: function(done, output) {
