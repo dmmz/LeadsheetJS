@@ -3,7 +3,7 @@ define(function() {
 		var DEFAULT_OPEN_PLAYS = 1;
 		this.repetition = repetition;
 		this.doIt = true;
-		if (repetition instanceof SectionOpenRepetition) {
+		if (repetition.isSectionOpenRepetition) {
 			this.numOpenPlays = DEFAULT_OPEN_PLAYS;
 		}
 	};

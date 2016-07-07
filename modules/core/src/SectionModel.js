@@ -77,7 +77,7 @@ define(/*['modules/Unfold/src/UnfoldedSection'],*/ function(UnfoldedSection) {
 	SectionModel.prototype.getPlayBarNumbers = function(playIndex) {
 		var barNumbers = this.baseBarNumbers.slice(0); //we clone
 		if (this.hasEndings()){
-			barNumbers.concat(this.endingsBarNumbers[playIndex]);
+			barNumbers = barNumbers.concat(this.endingsBarNumbers[playIndex]);
 		}
 		return barNumbers;
 	};
@@ -102,6 +102,10 @@ define(/*['modules/Unfold/src/UnfoldedSection'],*/ function(UnfoldedSection) {
 			}
 		}
 		return partBarNumbers; 
+	};
+
+	SectionModel.prototype.getLastPlayIndex = function(first_argument) {
+		return this.hasOpenRepeats() ? 0 : this.getNumTimesToPlay() - 1;
 	};
 
 	SectionModel.prototype.getPlayEndBar = function(playIndex) {
@@ -179,10 +183,10 @@ define(/*['modules/Unfold/src/UnfoldedSection'],*/ function(UnfoldedSection) {
 		}
 	};
 	SectionModel.prototype.getLabel = function(label) {
-		return this.labels[label];
+		return this.labels[label.toLowerCase()];
 	};
 	SectionModel.prototype.hasLabel = function(label) {
-		return this.labels[label] !== undefined;
+		return !!this.getLabel(label);
 	};
 
 	SectionModel.prototype.getSublabels = function() {

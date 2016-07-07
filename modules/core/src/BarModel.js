@@ -101,7 +101,7 @@ define(['modules/core/src/TimeSignatureModel'], function(TimeSignatureModel) {
 	};
 
 	BarModel.prototype.getLabel = function() {
-		return this.labels.length === 1 ? this.labels[0] : this.labels;
+		return this.labels.length === 0 ? null : this.labels.length === 1 ? this.labels[0] : this.labels;
 	};
 
 	BarModel.prototype.setSublabel = function(sublabel) {

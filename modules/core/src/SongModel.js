@@ -3,8 +3,10 @@ define([
 	'modules/core/src/BarManager',
 	'modules/core/src/ChordManager',
 	'modules/core/src/TimeSignatureModel',
-	'modules/core/src/SongBarsIterator'
-], function(NoteManager, BarManager, ChordManager, TimeSignatureModel, SongBarsIterator) {
+	'modules/core/src/SongBarsIterator',
+	'modules/Unfold/src/LeadsheetStructure',
+
+], function(NoteManager, BarManager, ChordManager, TimeSignatureModel, SongBarsIterator, LeadsheetStructure) {
 	/**
 	 * SongModel is the main model to represent song, it contains notes, chords and bars components, also contain section, composer name etc.
 	 * @exports core/SongModel
@@ -482,7 +484,8 @@ define([
 	};
 
 	SongModel.prototype.getStructure = function() {
-		return this.structure || new LeadsheetStructure(this);
+		this.structure = this.structure || new LeadsheetStructure(this);
+		return this.structure;
 	};
 
 	SongModel.prototype.getUnfoldedSong = function() {

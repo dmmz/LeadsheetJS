@@ -2,12 +2,11 @@ define(['modules/Unfold/src/RepetitionConfig'], function(RepetitionConfig){
 	var Repetition = {
 		setValues: function(from, to, until){
 			//this.structure not initialized
-			this.from = this.setValuesFromPoint(from);
+			this.setValuesFromPoint(from);
 			this.to = to;
 			this.until = until;
 		},
 		setValuesFromPoint: function (fromEndPoint){
-			console.log(fromEndPoint);
 			this.structure = fromEndPoint.leadsheetStructure;
 			this.from = fromEndPoint;
 		},
@@ -30,7 +29,7 @@ define(['modules/Unfold/src/RepetitionConfig'], function(RepetitionConfig){
 			return this.config;
 		},
 		isAfter: function(cursor) {
-			return getFromPoint().isAfter(cursor.point);
+			return this.getFromPoint().isAfter(cursor.point);
 		},
 		getTargetPoint: function() {
 			return (this.config.doIt ? this.from : this.until);

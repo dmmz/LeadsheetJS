@@ -2,7 +2,8 @@ define([
 		'modules/Unfold/src/Repetition',
 		'modules/Unfold/src/RepeatPoint',
 		'modules/Unfold/src/StartLabel',
-	], function(Repetition, RepeatPoint, StartLabel){
+		'modules/Unfold/src/EndLabel'
+	], function(Repetition, RepeatPoint, StartLabel, EndLabel){
 	var DaAlRepetition = Object.assign(Repetition,{
 		al: undefined,
 		da: undefined
@@ -18,6 +19,21 @@ define([
 
 	DaAlRepetition.getDaPoint = function() {
 		return this.getToPoint();
+	};
+
+	DaAlRepetition.getUntilPoint = function() {
+		if (!this.until && !!this.al){
+			if (!this.structure.hasEndLabel(this.al)) {
+				if (this.al === EndLabel.FINE) {
+					this.al = EndLabel.END;
+				} else {
+					this.al = null;
+					return;
+				}
+			}
+			this.until = this.structure.getEndLabel(this.al);
+		}
+		return this.until;
 	};
 
 	DaAlRepetition.initValues = function(leadsheetStructure, sublabel, section, bar, playIndex){
@@ -42,7 +58,7 @@ define([
 			if (parts[1].toLowerCase() !== 'al') {
 				throw invalidRepetitionException;		
 			}
-			this.setAl(parts[2]);
+			this.setAl(EndLabel.fromString(parts[2]));
 		}
 
 	};

@@ -1,8 +1,15 @@
-define(['underscore'], function(_){
+define([
+	'underscore', 
+	'modules/Unfold/src/EndLabel', 
+	'modules/Unfold/src/DaAlRepetition',
+	'modules/Unfold/src/Repetition',
+	'modules/Unfold/src/SectionRepetition',
+	'modules/Unfold/src/SectionFiniteRepetition'
+	], function(_, EndLabel, DaAlRepetition, Repetition, SectionRepetition, SectionFiniteRepetition){
 	var RepetitionsHolder = {};
 
 	RepetitionsHolder.init = function(structure) {
-		this.repetitions = structure.repetitions;
+		this.repetitions = structure.getRepetitions();
 		//TODO: sort repetitions using backbone or underscore
 		//this.repetitions = [];
 
@@ -32,11 +39,11 @@ define(['underscore'], function(_){
 			if (!repTargetPoint.isBefore(targetPoint))
 				return null;
 		}
-		if (repetition instanceof DaAlRepetition)
-			repetitions.splice(index, 1);
-		
+		if (Object.getPrototypeOf(repetition) === DaAlRepetition)
+		 	this.repetitions.splice(index, 1);
+
 		return repetition;
 	};
 
-
+	return RepetitionsHolder;
 });

@@ -5,13 +5,16 @@ define([
 	'modules/Unfold/src/CodaToLabel',
 	'modules/Unfold/src/StartPoint',
 	'modules/Unfold/src/EndPoint',
+	'modules/Unfold/src/ToCodaPoint',
 	'modules/Unfold/src/SectionEndPoint',
 	'modules/Unfold/src/SectionStartPoint',
 	'modules/Unfold/src/SectionRepetition',
 	'modules/Unfold/src/DaAlRepetition',
 	'modules/Unfold/src/SectionRepetitionFactory',
 	'modules/Unfold/src/LeadsheetUnfoldConfig',
-], function(PointLabel, StartLabel, EndLabel, CodaToLabel, StartPoint, EndPoint, SectionEndPoint, SectionStartPoint, SectionRepetition, DaAlRepetition, SectionRepetitionFactory, LeadsheetUnfoldConfig) {
+	'modules/Unfold/src/RepetitionsHolder',
+	'modules/Unfold/src/SectionSegment',
+], function(PointLabel, StartLabel, EndLabel, CodaToLabel, StartPoint, EndPoint, ToCodaPoint, SectionEndPoint, SectionStartPoint, SectionRepetition, DaAlRepetition, SectionRepetitionFactory, LeadsheetUnfoldConfig, RepetitionsHolder, SectionSegment) {
 
 	var LeadsheetStructure = function(song) {
 		var self = this;
@@ -25,11 +28,12 @@ define([
 
 		this.leadsheet = song;
 		this.sections = song.getSections();
-
+		// IIFE init function at the end
+		
 		function hasStartLabel(label) {
 			return startLabels.has(label);
 		}
-		var hasEndLabel = function(label){
+		this.hasEndLabel = function(label){
 			return endLabels.has(label);
 		};
 
@@ -44,7 +48,7 @@ define([
 		};
 
 		var createEndLabel = function(label, sectionNumber, barNumber){
-			if  (hasEndLabel(label)){
+			if  (self.hasEndLabel(label)){
 				return;
 			}
 			var playIndex = self.sections[sectionNumber].getPlayIndexOfBar(barNumber);
@@ -66,8 +70,8 @@ define([
 			daAlRepetition.initValues(self, sublabel, sectionNumber, barNumber, playIndex);
 			addRepetition(daAlRepetition);
 		};
-		var getRepetitions = function() {
-			return this.repetitions;
+		this.getRepetitions = function() {
+			return repetitions;
 		};
 		this.getSection = function(i) {
 			return this.sections[i];
@@ -95,28 +99,39 @@ define([
 			}
 			return startLabels.get(label);
 		};
-
-		this.getSectionPoints = function() {
-			return sectionPoints;
+		
+		this.getEndLabel = function(label) {
+			if (!endLabels.has(label)) {
+				console.warn("missing label " + label );
+			}
+			return endLabels.get(label);
 		};
 
+		this.getSectionStartPoints = function() {
+			return sectionStartPoints;
+		};
+		this.getSectionEndPoints = function() {
+			return sectionEndPoints;
+		};
+		//we make it public for testing purposes (PTP)
+		this.getLastSectionEndPoint = function() {
+			return lastSectionEndPoint;
+		};
 		this.getSectionStartPoint = function(iSection) {
 			return sectionStartPoints[iSection];
 		};
-		this.getSectionLastEndPoint = function(iSection, playIndex) {
-			return sectionEndPoints.get({
-				section: iSection,
-				playIndex: playIndex
-			});
+		this.getSectionEndPoint = function(iSection, playIndex) {
+			return sectionEndPoints.get(iSection + "-" + playIndex);
+		};
+		this.getSectionLastEndPoint = function(iSection) {
+			var playIndex = this.sections[iSection].getLastPlayIndex();
+			return this.getSectionEndPoint(iSection, playIndex);
 		};
 
 		var addSectionPlayPoints = function(section, iSection, playIndex) {
 			var sectionEndPoint = Object.create(SectionEndPoint);
 			sectionEndPoint.callInitValues(self, iSection, playIndex);
-			sectionEndPoints.set({
-				section: iSection,
-				playIndex: playIndex
-			}, sectionEndPoint);
+			sectionEndPoints.set(iSection + "-" + playIndex, sectionEndPoint);
 			lastSectionEndPoint = sectionEndPoint;
 		};
 		var hasRepetitionUntil = function(point) {
@@ -127,7 +142,7 @@ define([
 			return false;
 		};
 		var addCoda = function(label, sectionNumber, barNumber){
-			if (hasEndLabel(label)){
+			if (self.hasEndLabel(label)){
 				// Second coda sign
 				// Returns false if both coda signs are already found
 				// EndPoint toCodaPoint = getEndLabel(label);
@@ -141,11 +156,11 @@ define([
 		var addCodaTo = function(toLabel, sectionNumber, barNumber){
 			var toCodaPoint;
 			var toCodaLabel = CodaToLabel.getToCodaLabel(toLabel);
-			if (hasEndLabel(toCodaLabel)) {
+			if (self.hasEndLabel(toCodaLabel)) {
 				toCodaPoint = endLabels.get(toCodaLabel);
 			} else if (toCodaLabel == EndLabel.TOCODA2){
 
-				if(!hasEndLabel(EndLabel.TOCODA)){
+				if(!self.hasEndLabel(EndLabel.TOCODA)){
 					return false;
 				}
 				//NO ENTIENDO 
@@ -186,53 +201,17 @@ define([
 			}
 		};
 
-		this.init = function() {
-			if (self.sections.length === 0) {
-				return;
-			}
-			createStartLabel(StartLabel.CAPO, 0, 0);
-			var section;
-			for (var iSection = 0; iSection < this.sections.length; iSection++) {
-				section  = self.sections[iSection];
-				initSection(iSection);
-
-				//looking for codas
-				if (section.isNamedCoda()){
-					addCodaTo(StartLabel.CODATO, iSection, 1);
-				}else if (section.isNamedCoda2()){
-					addCodaTo(StartLabel.CODA2TO, iSection, 1);
-				}else{
-					var coda;
-					var codaLabels = PointLabel.getToCodaLabels();
-					for (var i = 0; i < codaLabels.length; i++) { 
-						coda = codaLabels[i];
-						if(section.hasLabel(coda.name)){
-							addCoda(coda, iSection, section.getLabel(coda.name));
-						}
-					}
-				}
-
-				//looking for solo labels (segno, segno2 and fine)
-				//TODO
-				var sublabels = section.getSublabels();
-				for (var keySublabel in sublabels){
-					addDaAlRepetition(keySublabel, iSection, sublabels[keySublabel]);
-				}
-			}
-			createEndLabel(EndLabel.END, lastSectionEndPoint.section,
-				lastSectionEndPoint.bar);
-		};
 		this.getUnfoldConfig = function() {
-			return LeadsheetUnfoldConfig;
+			return new LeadsheetUnfoldConfig(this);
 		};
 		this.addSegmentsToList = function(list, cursor, toPoint) {
 			var fromPoint = cursor.point;
-			if (!fromPoint || !toPoint ||  toPoint.isBefore()
+			if (!fromPoint || !toPoint ||  toPoint.isBefore(fromPoint)
 				/* || !toPoint.isPositionComplete() || !fromPoint.isPositionComplete() */
 				){
 				throw "invalid segment ";
 			}
-			for (var iSection = fromPoint.section; iSection < toPoint.section; iSection++) {
+			for (var iSection = fromPoint.section; iSection <= toPoint.section; iSection++) {
 				var segmentFrom = iSection === fromPoint.section ? fromPoint : this.getSectionStartPoint(iSection);
 				var segmentTo = iSection === toPoint.section ? toPoint : this.getSectionLastEndPoint(iSection);
 				var playIndex = iSection === fromPoint.section && iSection === toPoint.section ? cursor.playIndex : segmentTo.playIndex;
@@ -246,26 +225,25 @@ define([
 			if (this.sections.length === 0){
 				return segments;
 			}
-			var repHolder = Object.create(RepetitionHolder);
+			var repHolder = Object.create(RepetitionsHolder);
 			repHolder.init(this);
 			var cursor = {
-				point: getStartLabel(StartLabel.CAPO),
+				point: self.getStartLabel(StartLabel.CAPO),
 				playIndex: 0
 			};
 			var targetsStack = [];
 
-			var leadsheetTarget = {
-				point: getEndLabel(EndLabel.END)
+			targetsStack.push({
+				point: self.getEndLabel(EndLabel.END)
 				//, repetition: null
-			};
-			targetsStack.push(leadsheetTarget);
+			});
 			var nextTarget, nextRepetition;
 			while (targetsStack.length !== 0) {
 				nextTarget = targetsStack[targetsStack.length - 1];
-				nextRepetition = repHolder.getNextRepetition(cursor, leadsheetTarget);
-				if (!nextRepetition) {
-					targets.push({
-						point: nextRepetition.getPoint(), 
+				nextRepetition = repHolder.getNextRepetitionIfBefore(cursor, nextTarget);
+				if (!!nextRepetition) {
+					targetsStack.push({
+						point: nextRepetition.getTargetPoint(), 
 						repetition: nextRepetition
 					});
 					continue;
@@ -280,14 +258,14 @@ define([
 					var repUntilPoint = nextRepetition.getUntilPoint();
 					nextTarget = targetsStack[targetsStack.length - 1];
 
-					if (!nextTarget && !repUntilPoint && repUntilPoint.isBefore(nextTarget.point)) {
+					if (nextTarget && repUntilPoint && repUntilPoint.isBefore(nextTarget.point)) {
 						targetsStack.push({
 							point: nextRepetition.getUntilPoint()
 						});
 					}
 				}
 				else {
-					this.addSegmentsToList(segments, cursor, nextTarget.getFromPoint());
+					this.addSegmentsToList(segments, cursor, nextTarget.point);
 					cursor = nextTarget.point.updateCursor();
 					if (!cursor.point)
 						break;
@@ -305,9 +283,43 @@ define([
 				newUnfoldedSection = segment.toUnfoldedSection();
 
 			}
-
-
 		};
+		//Init function IIFE
+		(function() {
+			if (self.sections.length === 0) {
+				return;
+			}
+			createStartLabel(StartLabel.CAPO, 0, 0);
+			var section;
+			for (var iSection = 0; iSection < self.sections.length; iSection++) {
+				section  = self.sections[iSection];
+				initSection(iSection);
+
+				//looking for codas
+				if (section.isNamedCoda()){
+					addCodaTo(StartLabel.CODATO, iSection, 0);
+				}else if (section.isNamedCoda2()){
+					addCodaTo(StartLabel.CODA2TO, iSection, 0);
+				}else{
+					var coda;
+					var codaLabels = PointLabel.getToCodaLabels();
+					for (var i = 0; i < codaLabels.length; i++) { 
+						coda = codaLabels[i];
+						if(section.hasLabel(coda)){
+							addCoda(coda, iSection, section.getLabel(coda));
+						}
+					}
+				}
+				//looking for solo labels (segno, segno2 and fine)
+				//TODO
+				var sublabels = section.getSublabels();
+				for (var keySublabel in sublabels){
+					addDaAlRepetition(keySublabel, iSection, sublabels[keySublabel]);
+				}
+			}
+			createEndLabel(EndLabel.END, lastSectionEndPoint.section,
+				lastSectionEndPoint.bar);
+		})();
 	};
 	return LeadsheetStructure;
 });

@@ -1,10 +1,18 @@
 define(['modules/Unfold/src/EndLabel'], function(EndLabel) {
 	var StructurePoint = {
+		/**
+		 * [setValues description]
+		 * @param {[type]} leadsheetStructure [description]
+		 * @param {[type]} label              [description]
+		 * @param {[type]} section            [description]
+		 * @param {[type]} bar                [description]
+		 * @param {[type]} playIndex          [description]
+		 */
 		setValues: function(leadsheetStructure, label, section, bar, playIndex) {
 			this.leadsheetStructure = leadsheetStructure;
 			this.label = label;
 			this.section = section;
-			this.bar = bar !== undefined ? bar : 1;
+			this.bar = bar !== undefined ? bar : 0;
 			this.playIndex = playIndex !== undefined ? playIndex : 0;
 		},
 		// create: function(){
@@ -12,6 +20,9 @@ define(['modules/Unfold/src/EndLabel'], function(EndLabel) {
 		// },
 		getLabel: function() {
 			return this.label;
+		},
+		hasLabel: function(label) {
+			return this.getLabel() === label;
 		},
 		getStructure: function() {
 			return this.leadsheetStructure;
@@ -24,6 +35,14 @@ define(['modules/Unfold/src/EndLabel'], function(EndLabel) {
 		},
 		isBefore: function(otherPoint) {
 			return this.compareTo(otherPoint) < 0;	
+		},
+		/**
+		 * @param  {LeadsheetStructure}  structure 
+		 * @param  {Integer}  section   number of section
+		 * @return {Boolean}           [description]
+		 */
+		isInSection: function(structure, section) {
+			return this.leadsheetStructure === structure && this.section === section;
 		},
 		compareTo: function(otherPoint) {
 			if (this.getLabel() === EndLabel.END ) {

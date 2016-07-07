@@ -5,5 +5,17 @@ define(['modules/Unfold/src/SectionRepetition'], function(SectionRepetition) {
 		this.initValues(structure, section, playIndex, playIndex + 1);
 		this.playIndex = playIndex;
 	};
+	
+	SectionFiniteRepetition.maxPlayReached = function(cursor) {
+		return cursor.playIndex > this.playIndex;
+	};
+
+	SectionFiniteRepetition.updateCursor = function() {
+		var toPoint = this.getToPoint();
+			return {
+				point: toPoint,
+				playIndex: toPoint.playIndex + 1
+			};
+	};
 	return SectionFiniteRepetition;
 });

@@ -7,10 +7,13 @@ define(function(){
 		this.style = song.style;
 		this.tonality = song.tonality; //TODO: change by correct name: key signature
 		this.timeSignature = song.timeSignature;
+		this.changes = [];
 		this.addSections(song.getStructure().getUnfoldedSections(unfoldConfig));
 	};
 
-	UnfoldedLeadsheet.addSections = function(first_argument) {
+	UnfoldedLeadsheet.addSections = function() {
 		
 	};
+
+	return UnfoldedLeadsheet;
 });

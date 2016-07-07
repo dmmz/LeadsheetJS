@@ -11,7 +11,7 @@ define(['modules/Unfold/src/StructurePoint'], function(StructurePoint){
 	};
 	EndPoint.updateCursor = function() {
 		return {
-			point: getJumpTo(),
+			point: this.getJumpTo(),
 			playIndex: 0
 		};
 	};
