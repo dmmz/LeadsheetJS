@@ -463,7 +463,7 @@ define([
 			var newSongModel = this.songModel.unfold();
 			console.log(newSongModel);
 			this.songModel = newSongModel;
-			$.publish('ToViewer-draw', this.songModel);
+			$.publish('ToViewer-draw', [this.songModel, true]);
 		} else {
 			$.publish('ToViewer-draw', this.oldSong);
 		}
@@ -521,12 +521,25 @@ define([
 		}
 
 		noteMng.notesSplice([start, end -1], tmpNoteMng.getNotes());
-		var tmpNoteMng = noteMng.play2score(this.songModel, start, end);
+		
+		//if everything is selected we transpose key signature
+		var firstBar = this.songModel.getComponent('bars').getBar(0);
+		var firstBarKeySig = firstBar.getKeySignatureChange();
+		var keySignature =  firstBarKeySig || this.songModel.getTonality();
+
+		var pitch = new PitchClass(keySignature);
+		var newKeySig = pitch.transposeBy(interval,direction).toString();
+		if (firstBarKeySig) {
+			firstBar.setKeySignatureChange(); //remove key signature change in first bar
+		}
+		this.songModel.setTonality(newKeySig);
+
+		tmpNoteMng = noteMng.play2score(this.songModel, start, end);
 		noteMng.notesSplice([start, end - 1], tmpNoteMng.getNotes());
 		// chords
 		var chordMng = this.songModel.getComponent('chords');
 		var chord;
-		for (var i = 0, c = chordMng.getTotal(); i < c; i++) {
+		for (i = 0, c = chordMng.getTotal(); i < c; i++) {
 			chord = chordMng.getChord(i);
 			if (chord.getNote()=="NC")	continue;
 			

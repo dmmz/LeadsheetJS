@@ -1,7 +1,3 @@
-@font-face {
-	font-family: "lato";
-	src: url(../fonts/lato/Lato-Regular.ttf) format("truetype");
-}
 body, html {
 	font-family: "lato";
 	color: #666;
@@ -34,24 +30,25 @@ body, html {
 
 /* MENU */
 #menu-container {
-	background-color: #C1E0EA;
-	width:100%;
+	background-color: white;
+	z-index:100;
 }
-
+#menu-container .nav>li>a{
+       padding:3px;
+}
 .nav-tabs > li > a:hover, .nav-tabs  > li > a:focus {
-    background-color: #C1E0EA;
+    background-color: #c1e0ea;
 }
-
-#menu-container.affix{
-	top:0;
+#main_menu_second_level,
+#menu-container .nav>li.active>a{
+       background-color: #c1e0ea;
 }
-#menu-container.affix + #main-container {
-	margin-top:160px;
+#menu-container .nav>li.active>a{
+       border-bottom-color: #c1e0ea;
 }
-
 
 #main_menu_first_level > li {
-	background-color: #DDD;
+	background-color: white;
 }
 
 .menu-part {
@@ -95,31 +92,32 @@ ul.item > li:hover{
 }
 /***history ***/
 #rightPanel{
-	width: 14em;
-	padding: 0 1em;
-	background-color: #c1e0ea;
-	border: thin solid #ccc;
-	min-height: 12em;
-	max-height: 22em;
-	overflow-y: auto;
-	top: 220px;
-	right: 0;
-	position: absolute;
-	display: none;
-	z-index: 12;
-	margin-right: 0.5em;
+       background-color: white;
+       padding: 5px;
+       max-height: 70%;
+       overflow-y: auto;
 }
-.current_history{
-	background-color: #eec;
+#rightPanel .tab-content{
+       padding-top:10px;
 }
-.history_ul{
-	margin: 0;
+#rightPanel ul{
+       padding:0;
 }
-.history_ul li{
-	cursor: pointer;
+.tab-pane .current{
+       background-color: #c1e0ea;
 }
-.history_ul li:hover{
-	background-color: #ddd;
+.tab-pane li{
+       cursor: pointer;
+       list-style-type:none;
+       padding:5px;
+      border-radius: 5px;
+       margin-bottom: 2px;
+}
+.tab-pane .editing{
+       border: 1px solid #ddd;
+}
+.tab-pane li:hover{
+    background-color: #ddd;
 }
 
 
@@ -159,7 +157,7 @@ ul.item > li:hover{
 	cursor: pointer;
 }
 #volume_controller {
-	vertical-align: bottom !important;
+	vertical-align: bottom;
 }
 #volume_controller_barre {
 	position: absolute;
@@ -198,15 +196,15 @@ ul.item > li:hover{
 
 #tempo_container input{
 	width: 41px;
-	margin: 0px;
+	margin: 0;
 }
 
 .progress_bar_player {
-	margin-bottom: 0 !important;
-	-webkit-box-shadow: none !important;
-	-moz-box-shadow: none !important;
-	box-shadow: none !important;
-	height: 15px !important;
+	margin-bottom: 0;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+	height: 15px;
 	border-radius: 0;
 	cursor: pointer;
 }
@@ -214,140 +212,6 @@ ul.item > li:hover{
 .progress_bar_player span {
 	line-height: 16px;
 	vertical-align: top;
-}
-
-/* COMPOSER  */
-.range {
-	width: 100px;
-}
-
-.range_checkbox{
-	margin: 0 !important;
-}
-
-.render_legend {
-    width:100%;
-    font-size:0.8em;
-    color: #aaa;
-}
-ul.render_legend{
-	list-style-type: none;
-	margin:0;
-	padding: 0;
-}
-.render_legend li{
-	display:inline-block;
-	margin:0;
-	width:31%;
-}
-.render_legend .value{
-	color:#666;
-}
-
-/** RENDER */
-
-#rechord-leadsheet{
-	position:fixed;
-	background-color: #FFF;
-	bottom:0;
-	z-index: 50;
-	height:500px;
-	height:0px;
-	width: 100%;
-}
-
-.rechord-leadsheet-shown{
-	background-color: #F00;
-}
-
-#close-rechord-leadsheet{
-	position:absolute;
-	z-index: 51; /* record-leadsheet is 50px*/
-	top:0;
-	right:0;
-}
-
-.accomp-row{
-	height: 100%;
-
-}
-.accomp-col{
-	height:100%;
-	padding-top:6px;
-}
-
-.accomp_search_title{
-	padding:2px 0;
-}
-input.accomp_search{
-	width:60%;
-	float:right;
-
-}
-
-.music_files_container{
-	position: absolute;
-    /* height: 80%; */
-    top: 42px;
-    overflow: auto;
-    bottom: 0;}
-
-.accompFile:hover{
-	background-color: #EEE;
-}
-#rechord-leadsheet .title{
-	width: 40%;
-}
-#rechord-leadsheet .tempo{
-	min-width: 50px;
-	width: 10%;
-
-}
-#rechord-leadsheet .instrument{
-	width: 10%;
-}
-#rechord-leadsheet .rate_td{
-	width:30%;
-	padding:0;
-}
-#rechord-leadsheet .rate_td .star{
-	width: 0.4em;
-}
-
-
-/**  Music files preview player **/
-#render_player{
-	text-align: center;
-	width:500px;
-	z-index: 160;
-	background-color: black;
-	position:absolute;
-	right: 15px; /* space to not hide close x */
-
-}
-
-.player_title{
-	color: white;
-	line-height: 20px;
-	width:180px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	margin-left:5px;
-	white-space: nowrap;
-}
-
-/* render buttons  */
-
-.render-in-player{
-	display:inline-block;
-	vertical-align:top;
-	margin-top:8px;
-}
-.render-in-player button{
-	margin-right:10px;
-}
-.render-in-player .render{
-	margin-right:0;
 }
 
 /* ANNOTATION */
@@ -375,7 +239,7 @@ input.accomp_search{
 /* bubble bottom*/
 .bottom {
     border-color: #c8c8f8 transparent transparent transparent;
-    border-width: 8px 8px 0px 8px;
+    border-width: 8px 8px 0 8px;
     bottom: -8px;
 }
 

@@ -54,14 +54,22 @@ define(function() {
 		return this.name.trim().toLowerCase()  === 'coda2';
 	};
 	
-	SectionModel.prototype._addBarNumberTo = function(arrayName, barNumber) {
-		this[arrayName].push(barNumber);
-	};
 	SectionModel.prototype.addBaseBarNumber = function(barNumber) {
-		this._addBarNumberTo('baseBarNumbers', barNumber);
+		this.baseBarNumbers.push(barNumber);
 	};
-	SectionModel.prototype.addEndingsBarNumber = function(barNumber) {
-		this._addBarNumberTo('endingsBarNumbers', barNumber);
+	/**
+	 * [addEndingsBarNumber description]
+	 * @param {String} ending    starting from one "1", "2" 
+	 * @param {[type]} barNumber [description]
+	 */
+	SectionModel.prototype.addEndingsBarNumber = function(ending, barNumber) {
+		var endingPos = Number(ending) - 1;
+		
+		if (this.endingsBarNumbers.length <= endingPos) {
+			var arrayEnding = [];
+			this.endingsBarNumbers.push(arrayEnding);
+		}
+		this.endingsBarNumbers[endingPos].push(barNumber);
 	};
 
 	SectionModel.prototype.setName = function(name) {

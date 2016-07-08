@@ -5,21 +5,25 @@ define([
 	'modules/Unfold/src/StartLabel',
 	'modules/Unfold/src/EndLabel',
 	'modules/Unfold/src/PointLabel',
+	'modules/core/src/SongModel',
 	'tests/songs/AloneTogether',
 	'tests/songs/unfold/DylansDelight',
 	'tests/songs/unfold/SimpleUnfoldTest',
 	'tests/songs/Solar'
 
-], function(SongModel_CSLJson, LeadsheetStructure, UnfoldedLeadsheet, StartLabel, EndLabel,PointLabel,  AloneTogether, DylansDelight, SimpleUnfoldTest, Solar) {
+], function(SongModel_CSLJson, LeadsheetStructure, UnfoldedLeadsheet, StartLabel, EndLabel,PointLabel, SongModel, AloneTogether, DylansDelight, SimpleUnfoldTest, Solar) {
 	return {
 		run: function() {
 			test("LeadsheetStructure", function(assert) {
 				var song = SongModel_CSLJson.importFromMusicCSLJSON(SimpleUnfoldTest);
 
-				
+						
 				var struct = new LeadsheetStructure(song);
+
+				var unfoldedSong = song.initUnfoldedSong();
 								
 				var startLabels = struct.getStartLabels();
+				
 				assert.equal(startLabels.size, 5);
 
 				var endLabels = struct.getEndLabels();
@@ -30,7 +34,7 @@ define([
 				var segments = struct.getSegments();
 				assert.equal(segments.length, 5);
 
-				var unfoldedSections = struct.getUnfoldedLeadsheet(segments);
+				var unfoldedSections = struct.getUnfoldedLeadsheet(unfoldedSong, segments);
 				// //var unfoldedLS = new UnfoldedLeadsheet(song, unfoldConfig);
 
 				console.log(unfoldedSections);

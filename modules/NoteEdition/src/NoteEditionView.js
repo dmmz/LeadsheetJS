@@ -5,7 +5,7 @@ define([
 	'utils/UserLog',
 	'utils/NoteUtils',
 	'pubsub',
-	'text!modules/MainMenu/src/MenuTabTemplate.html', ,
+	'text!modules/MainMenu/src/MenuTabTemplate.html'
 ], function($, Mustache, SongModel, UserLog, NoteUtils, pubsub, MenuTabTemplate) {
 	/**
 	 * NoteEditionView creates notes edition template and link event from html to controller
@@ -94,8 +94,11 @@ define([
 				}, {
 					id: "dot",
 					title: "dot (.)",
+					text: '.'
+				}, {
 					id: "double-dot",
-					title: "Double dot (:)"
+					title: "Double dot (..)",
+					text: '..'
 				}]
 			}, {
 				name: 'Symbol',

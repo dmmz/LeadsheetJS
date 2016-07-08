@@ -61,10 +61,8 @@ module.exports = function(grunt) {
 						pubsub: 'empty:',
 						jsPDF: 'empty:',
 						mustache: 'empty:',
-						underscore: 'empty:'
-						//deepdiff: 'empty:'
-
-
+						underscore: 'empty:',
+						store: 'empty:',
 						/*
 						jquery: 'external-libs/jquery-2.1.0.min',
 						jquery_autocomplete: 'external-libs/jquery.autocomplete.min',
@@ -76,7 +74,6 @@ module.exports = function(grunt) {
 						jsPDF: 'external-libs/jspdf/jspdf.min',
 						mustache: 'external-libs/mustache',
 						*/
-
 					},
 					cjsTranslate: true,
 					//findNestedDependencies: true,
@@ -95,7 +92,7 @@ module.exports = function(grunt) {
 					//name: "build/LeadsheetJS-0.1.0.min.js",
 					//name: "samples/simpleInterface/interface",
 					// include: ['modules/**/*.js', '!modules/core/src/SongModel.old.js'],
-					out: "build/<%= pkg.name %>-<%= pkg.version %>.min.js",
+					out: "build/<%= pkg.name %>.min.js",
 					// exclude: ["jquery, jquery_autocomplete, qunit, vexflow_helper, vexflow, Midijs, pubsub, jsPDF, mustache, bootstrap"],
 					fileExclusionRegExp: /\.git/,
 					/*done: function(done, output) {

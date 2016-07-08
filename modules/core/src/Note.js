@@ -8,7 +8,7 @@ define(['modules/core/src/PitchClass'],function(PitchClass){
 	function Note(name, accidental, octave){
 		this.pitchClass = new PitchClass(name + accidental);
 		this.octave = Number(octave);
-	};
+	}
 	/**
 	 * sets pitchClass and octave of transposed note
 	 * @param  {Interval} interval  object representing interval to move, e.g. perfectFifth
@@ -16,7 +16,7 @@ define(['modules/core/src/PitchClass'],function(PitchClass){
 	 */
 	Note.prototype.transposeBy = function(interval, direction) {
 		var r = this.pitchClass.transposeBy(interval, direction, true);
-		
+	
 		this.pitchClass = r.newPitch;
 		this.octave += r.octaveDiff;
 

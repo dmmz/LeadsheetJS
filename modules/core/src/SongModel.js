@@ -1,11 +1,12 @@
 define([
+	'jquery',
 	'modules/core/src/NoteManager',
 	'modules/core/src/BarManager',
 	'modules/core/src/ChordManager',
 	'modules/core/src/TimeSignatureModel',
-	'modules/core/src/SongBarsIterator',
-	'modules/Unfold/src/LeadsheetStructure'
-], function(NoteManager, BarManager, ChordManager, TimeSignatureModel, SongBarsIterator, LeadsheetStructure) {
+	'modules/core/src/SongBarsIterator'/*,
+	'modules/Unfold/src/LeadsheetStructure'*/
+], function($, NoteManager, BarManager, ChordManager, TimeSignatureModel, SongBarsIterator /*,LeadsheetStructure*/) {
 	/**
 	 * SongModel is the main model to represent song, it contains notes, chords and bars components, also contain section, composer name etc.
 	 * @exports core/SongModel
@@ -460,7 +461,7 @@ define([
 	};
 
 	SongModel.prototype.clone = function() {
-		var songModelCloned = jQuery.extend(true, new SongModel(), this);
+		var songModelCloned = $.extend(true, new SongModel(), this);
 		return songModelCloned;
 	};
 
@@ -504,9 +505,8 @@ define([
 	 * If you need a new version of the song unfolded use songModel.clone before
 	 * @return {SongModel} current unfolded songmodel
 	 */
-	
-	SongModel.prototype.unfold = function() {
-		var unfoldedSong = new SongModel(
+	SongModel.prototype.initUnfoldedSong = function(first_argument) {
+		return new SongModel(
 			{
 				title: this.getTitle(),
 				composers: this.composers,
@@ -517,6 +517,9 @@ define([
 				timeSignature: this.getTimeSignature() //TODO: apparently init takes a string, which seems incorrect
 			}
 		);
+	};
+	SongModel.prototype.unfold = function() {
+		
 		var struct = new LeadsheetStructure(this);
 		var unfoldConfig = struct.getUnfoldConfig();
 		var segments = struct.getSegments();

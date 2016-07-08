@@ -67,19 +67,19 @@ define(function(require) {
 					songModel.addSection(section);
 					var sectionBars = [];
 					if (JSONSection.bars != null) {
-						var endingToKeepForNextBars = false;
+						var tmpEnding = false;
 						JSONSection.bars.forEach(function(JSONBar) 
 						{
 							bar = BarModel_CSLJson.importFromMusicCSLJSON(JSONBar, new BarModel());
-							//endingToKeepForNextBars needed to compute following bars as part of ending. e.g. bars with endings like this [null,null,1,null,2,null] become [null, null, 1, 1, 2, 2]
+							//tmpEnding needed to compute following bars as part of ending. e.g. bars with endings like this [null,null,1,null,2,null] become [null, null, 1, 1, 2, 2]
 							if (bar.getEnding()) {
-								endingToKeepForNextBars = bar.getEnding();
-							} else if (endingToKeepForNextBars) {
-								bar.ending = endingToKeepForNextBars;
+								tmpEnding = bar.getEnding();
+							} else if (tmpEnding) {
+								bar.ending = tmpEnding;
 							}
 							//save info in section
-							if (endingToKeepForNextBars){
-								section.addEndingsBarNumber(sectionBarNumber);
+							if (tmpEnding){
+								section.addEndingsBarNumber(tmpEnding, sectionBarNumber);
 							}else{
 								section.addBaseBarNumber(sectionBarNumber);
 							}

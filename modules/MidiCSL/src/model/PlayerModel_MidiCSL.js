@@ -358,8 +358,8 @@ define([
 
 					self._startTime = Date.now() - playFrom;
 
-					var velocityMin = 80;
-					var randomVelocityRange = 40;
+					var velocityMin = 30;
+					var randomVelocityRange = 20;
 
 					var realIndex = 0;
 					var metronomeChannel = 9;
