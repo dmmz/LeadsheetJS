@@ -1,4 +1,4 @@
-define(/*['modules/Unfold/src/UnfoldedSection'],*/ function(UnfoldedSection) {
+define(function() {
 	/**
      * Section fundamental model
      * @exports core/SectionModel
@@ -192,17 +192,8 @@ define(/*['modules/Unfold/src/UnfoldedSection'],*/ function(UnfoldedSection) {
 	SectionModel.prototype.getSublabels = function() {
 		return this.sublabels;
 	};
-	/**
-	 * [getSectionPart description]
-	 * @param  {[type]} playIndex           [description]
-	 * @param  {NUmber} fromBar             0 being 1st bar
-	 * @param  {Number} toBar               Inclusive end bar (-1 means end of section)
-	 * @param  {[type]} prevUnfoldedSection [description]
-	 * @return {[type]}                     [description]
-	 */
-	SectionModel.prototype.getSectionPart = function(playIndex, fromBar, toBar, prevUnfoldedSection) {
-		return new UnfoldedSection(this, this.getPlayBarNumbers(playIndex, fromBar, toBar), prevUnfoldedSection);
-	};
+
+
 	/**
 	 * returns the unfolded section
 	 * @param  {Number} numBars the number of bars of the unfolded section. This can be calculated by SongModel.getUnfoldedSongSection.

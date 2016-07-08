@@ -61,8 +61,8 @@ module.exports = function(grunt) {
 						pubsub: 'empty:',
 						jsPDF: 'empty:',
 						mustache: 'empty:',
-						underscore: 'empty:',
-						deepdiff: 'empty:'
+						underscore: 'empty:'
+						//deepdiff: 'empty:'
 
 
 						/*

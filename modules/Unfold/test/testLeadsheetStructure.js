@@ -15,7 +15,9 @@ define([
 		run: function() {
 			test("LeadsheetStructure", function(assert) {
 				var song = SongModel_CSLJson.importFromMusicCSLJSON(SimpleUnfoldTest);
-				var struct = song.getStructure();
+
+				
+				var struct = new LeadsheetStructure(song);
 								
 				var startLabels = struct.getStartLabels();
 				assert.equal(startLabels.size, 5);
@@ -28,7 +30,10 @@ define([
 				var segments = struct.getSegments();
 				assert.equal(segments.length, 5);
 
-				//var unfoldedLS = new UnfoldedLeadsheet(song, unfoldConfig);
+				var unfoldedSections = struct.getUnfoldedLeadsheet(segments);
+				// //var unfoldedLS = new UnfoldedLeadsheet(song, unfoldConfig);
+
+				console.log(unfoldedSections);
 
 
 			/*console.log(structAT.getStartLabels());

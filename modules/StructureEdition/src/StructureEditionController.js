@@ -461,6 +461,7 @@ define([
 		if (unfold) {
 			this.oldSong = this.songModel;
 			var newSongModel = this.songModel.unfold();
+			console.log(newSongModel);
 			this.songModel = newSongModel;
 			$.publish('ToViewer-draw', this.songModel);
 		} else {

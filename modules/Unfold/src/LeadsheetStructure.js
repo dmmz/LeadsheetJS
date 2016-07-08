@@ -14,7 +14,9 @@ define([
 	'modules/Unfold/src/LeadsheetUnfoldConfig',
 	'modules/Unfold/src/RepetitionsHolder',
 	'modules/Unfold/src/SectionSegment',
-], function(PointLabel, StartLabel, EndLabel, CodaToLabel, StartPoint, EndPoint, ToCodaPoint, SectionEndPoint, SectionStartPoint, SectionRepetition, DaAlRepetition, SectionRepetitionFactory, LeadsheetUnfoldConfig, RepetitionsHolder, SectionSegment) {
+	'modules/core/src/SongBarsIterator'
+], function(PointLabel, StartLabel, EndLabel, CodaToLabel, StartPoint, EndPoint, ToCodaPoint, SectionEndPoint, SectionStartPoint, SectionRepetition, 
+	DaAlRepetition, SectionRepetitionFactory, LeadsheetUnfoldConfig, RepetitionsHolder, SectionSegment, SongBarsIterator) {
 
 	var LeadsheetStructure = function(song) {
 		var self = this;
@@ -28,6 +30,8 @@ define([
 
 		this.leadsheet = song;
 		this.sections = song.getSections();
+	
+		song.setStructure(this);
 		// IIFE init function at the end
 		
 		function hasStartLabel(label) {
@@ -215,7 +219,7 @@ define([
 				var segmentFrom = iSection === fromPoint.section ? fromPoint : this.getSectionStartPoint(iSection);
 				var segmentTo = iSection === toPoint.section ? toPoint : this.getSectionLastEndPoint(iSection);
 				var playIndex = iSection === fromPoint.section && iSection === toPoint.section ? cursor.playIndex : segmentTo.playIndex;
-				list.push(new SectionSegment(this, segmentFrom, segmentTo, playIndex));
+				list.push(new SectionSegment(this.leadsheet, segmentFrom, segmentTo, playIndex));
 			}
 			return list;
 		};
@@ -274,15 +278,35 @@ define([
 			return segments;
 		};
 
-		this.getUnfoldedSections = function(unfoldConfig) {
-			var sections = [];
+		this.getUnfoldedLeadsheet = function(unfoldedSong, segments) {
+			
+			var oldSong = this.leadsheet;
+			
+			
+			// var sections = [];
+			
+			var barsIterator = new SongBarsIterator(this.leadsheet);
 			var newUnfoldedSection, prevUnfoldedSection, segment;
-			var segments = this.getSegments();
+			var unfoldedBarIdx = 0;
+			var foldedBarIdx;
 			for (var i = 0; i < segments.length; i++) {
-				segment = segments[i];
-				newUnfoldedSection = segment.toUnfoldedSection();
 
+				segment = segments[i];
+				foldedBarIdx = segment.getSectionStartBarNumber();
+
+				segment.addUnfoldedSection(unfoldedSong);
+
+				segment.addUnfoldedSectionBars(unfoldedSong);
+				
+				segment.addUnfoldedSectionChords(unfoldedSong, foldedBarIdx, unfoldedBarIdx);
+
+				segment.addUnfoldedSectionNotes(unfoldedSong, foldedBarIdx);
+				// // newUnfoldedSection = segment.toUnfoldedSection(barsIterator, i === 0);
+				// sections.push(newUnfoldedSection);
+				//prevUnfoldedSection = newUnfoldedSection;
+				unfoldedBarIdx += unfoldedSong.getSection(i).getNumberOfBars();
 			}
+			return unfoldedSong;
 		};
 		//Init function IIFE
 		(function() {

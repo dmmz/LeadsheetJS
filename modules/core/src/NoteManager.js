@@ -204,7 +204,13 @@ define([
 		songIt.setBarIndex(barNumber);
 		return this.getNotesAtCurrentBar(songIt);
 	};
-
+	NoteManager.prototype.cloneNotesAtBarNumber = function(barNumber, song) {
+		var songIt = new SongBarsIterator(song);
+		songIt.setBarIndex(barNumber);
+		var beatIntervals = songIt.getStartEndBeats();
+		var idxs = this.getIndexesStartingBetweenBeatInterval(beatIntervals[0], beatIntervals[1]);
+		return this.cloneElems(idxs[0], idxs[1]);
+	};
 	NoteManager.prototype.getNoteBeatInBarNumber = function(noteNumber, barNumber, song) {
 		var songIt = new SongBarsIterator(song);
 		songIt.setBarIndex(barNumber);

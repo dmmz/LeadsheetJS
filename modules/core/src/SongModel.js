@@ -4,8 +4,7 @@ define([
 	'modules/core/src/ChordManager',
 	'modules/core/src/TimeSignatureModel',
 	'modules/core/src/SongBarsIterator',
-	'modules/Unfold/src/LeadsheetStructure',
-
+	'modules/Unfold/src/LeadsheetStructure'
 ], function(NoteManager, BarManager, ChordManager, TimeSignatureModel, SongBarsIterator, LeadsheetStructure) {
 	/**
 	 * SongModel is the main model to represent song, it contains notes, chords and bars components, also contain section, composer name etc.
@@ -29,6 +28,7 @@ define([
 
 		this.addComponent('notes', new NoteManager());
 		this.addComponent('bars', new BarManager());
+		this.addComponent('chords', new ChordManager());
 	};
 
 	///////////////////////////////
@@ -298,7 +298,7 @@ define([
 	};
 
 	/**
-	 * Function return the start bar number of any section, first bar is 0
+	 * returns the start bar number of any section, first bar is 0
 	 * @param  {int} sectionNumber
 	 * @return {int} start Bar Number of section
 	 */
@@ -483,15 +483,20 @@ define([
 		return true;
 	};
 
+	SongModel.prototype.setStructure = function(leadsheetStructure) {
+		this.structure = leadsheetStructure;
+	};
 	SongModel.prototype.getStructure = function() {
-		this.structure = this.structure || new LeadsheetStructure(this);
 		return this.structure;
 	};
 
-	SongModel.prototype.getUnfoldedSong = function() {
-		var unfoldConfig = this.getStructure().getUnfoldConfig();
-		return new UnfoldedLeadsheet(this, unfoldConfig);
-	};
+	// SongModel.prototype.getUnfoldedSong = function() {
+	// 	var struct = this.getStructure();
+	// 	var unfoldConfig = struct.getUnfoldConfig();
+	// 	var segments = struct.getSegments();
+	// 	var unfoldedSections = struct.getUnfoldedSections(unfoldConfig, segments);
+	// 	return new UnfoldedLeadsheet(this, unfoldedSections);
+	// };
 
 	/**
 	 * Unfold the current songModel and return it
@@ -499,94 +504,23 @@ define([
 	 * If you need a new version of the song unfolded use songModel.clone before
 	 * @return {SongModel} current unfolded songmodel
 	 */
+	
 	SongModel.prototype.unfold = function() {
-
-		function getUnfoldedNotes(oldSong) {
-			var barNotes = oldSong.getUnfoldedSongComponents("notes");
-			var newNoteMng = new NoteManager();
-			for (var i in barNotes) {
-				newNoteMng.addNotes(barNotes[i]);
+		var unfoldedSong = new SongModel(
+			{
+				title: this.getTitle(),
+				composers: this.composers,
+				style: this.getStyle(),
+				source: this.getSource(),
+				tempo: this.getTempo(),
+				tonality: this.getTonality(),
+				timeSignature: this.getTimeSignature() //TODO: apparently init takes a string, which seems incorrect
 			}
-			return newNoteMng.getNotes();
-		}
-
-		function getUnfoldedChords(oldSong) {
-			var newChords = [];
-			var chord;
-			var barChords = oldSong.getUnfoldedSongComponents("chords");
-			for (var i in barChords) {
-				for (var j in barChords[i]) {
-					chord = barChords[i][j].clone();
-					chord.setBarNumber(i);
-					newChords.push(chord);
-				}
-			}
-			return newChords;
-		}
-
-		function getUnfoldedSectionsAndBars(oldSong) {
-			var i, c, j,
-				section,
-				pointerBarNumberStructure,
-				newSections = [],
-				newBars = [],
-				barMng = oldSong.getComponent("bars");
-
-			for (i = 0, c = oldSong.getSections().length; i < c; i++) {
-				section = oldSong.getSection(i);
-				pointerBarNumberStructure = oldSong.getUnfoldedSongSection(i);
-				newSections.push(
-					section.cloneUnfolded(pointerBarNumberStructure.length)
-				);
-
-				for (j = 0; j < pointerBarNumberStructure.length; j++) {
-					newBars.push(
-						barMng.getBar(pointerBarNumberStructure[j]).clone(true)
-					);
-				}
-			}
-			return {
-				newBars: newBars,
-				newSections: newSections
-			};
-		}
-
-		var oldSong = this.clone();
-		// Copy basic song data.
-		this.clear();
-		this.setTitle(oldSong.getTitle());
-		this.composers = oldSong.composers;
-		this.setStyle(oldSong.getStyle());
-		this.setSource(oldSong.getSource());
-		this.setTempo(oldSong.getTempo());
-		this.setTonality(oldSong.getTonality());
-		this.setTimeSignature(oldSong.getTimeSignature().toString());
-
-
-		// BARS and SECTIONS
-		var r = getUnfoldedSectionsAndBars(oldSong);
-
-		var barMng = new BarManager();
-		barMng.setBars(r.newBars);
-
-		this.sections = [];
-		for (var i in r.newSections) {
-			this.addSection(r.newSections[i]);
-		}
-
-		//NOTES
-		var noteMng = new NoteManager();
-		noteMng.setNotes(getUnfoldedNotes(oldSong));
-
-		//CHORDS
-		var chordMng = new ChordManager();
-		chordMng.setAllChords(getUnfoldedChords(oldSong));
-
-		this.addComponent('notes', noteMng);
-		this.addComponent('chords', chordMng);
-		this.addComponent('bars', barMng);
-
-		return this;
+		);
+		var struct = new LeadsheetStructure(this);
+		var unfoldConfig = struct.getUnfoldConfig();
+		var segments = struct.getSegments();
+		return struct.getUnfoldedLeadsheet(unfoldedSong, segments);
 	};
 
 	return SongModel;
