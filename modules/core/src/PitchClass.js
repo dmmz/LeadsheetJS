@@ -13,7 +13,7 @@ define([
 
 	PitchClass.prototype.toString = function() {
 		return this.name + this.accidental;
-	}
+	};
 	/**
 	 * gets the semitone distances between current pitchClass and pc2
 	 * @param  {PitchClass} pc2       pitch class to compare to
