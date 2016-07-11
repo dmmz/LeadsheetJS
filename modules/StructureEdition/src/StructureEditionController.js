@@ -377,11 +377,27 @@ define([
 	};
 	StructureEditionController.prototype.tonality = function(tonality) {
 		var selBars = this._getSelectedBars();
-		if (selBars.length === 0) {
-			return;
+
+		var barMng = this.songModel.getComponent("bars");
+
+		var isFirstBar = selBars.length === 1 && selBars[0] === 0;
+		var selectedUntilEnd = selBars[selBars.length - 1] === barMng.getTotal() - 1;
+
+		var prevKeySignature;
+		if (!isFirstBar && !selectedUntilEnd) {
+			var barsIt = new SongBarsIterator(this.songModel);
+			barsIt.setBarIndex(selBars[1]);
+			prevKeySignature = barsIt.getBarKeySignature();
 		}
-		for (var i = 0, c = selBars.length; i < c; i++) {
-			this.songModel.getComponent("bars").getBar(selBars[i]).setKeySignatureChange(tonality);
+		//if cursor is in first bar, we change whole song's tonality
+		if (isFirstBar) {
+			this.songModel.setTonality(tonality);
+		}else {
+			barMng.getBar(selBars[0]).setKeySignatureChange(tonality);	
+		}
+		
+		if (prevKeySignature){
+			barMng.getBar(selBars[1] + 1).setKeySignatureChange(prevKeySignature);
 		}
 		$.publish('ToHistory-add', 'Tonality set to ' + tonality);
 	};
@@ -441,7 +457,9 @@ define([
 		}
 		$.publish('ToHistory-add', 'Sublabel set to ' + sublabel);
 	};
-
+	/**
+	 * @return {Array} of first and last indexes (both inclusive) of selected bars, if only one bar is selected return only one position
+	 */
 	StructureEditionController.prototype._getSelectedBars = function() {
 		var noteMng = this.songModel.getComponent('notes');
 		var selectedBars = [];

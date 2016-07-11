@@ -150,6 +150,7 @@ define([
 							break;
 						case 2:
 							assert.equal(barsIt.getBarTimeSignature().toString(),"6/4", "6/4 in ending 1");
+							assert.equal(barsIt.getBarKeySignature().toString(),"G", "key signature G");
 							assert.ok(barsIt.hasLabelInPrecedingBars('coda'), "hasLabelInPrecedingBars('coda') returns true on measure 2 should since measure 1 has a coda");
 							break;
 						case 3:
