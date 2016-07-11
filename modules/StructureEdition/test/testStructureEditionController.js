@@ -97,10 +97,10 @@ define(['modules/StructureEdition/src/StructureEditionController',
 					var selBar = sec._getSelectedBars();
 					assert.deepEqual(selBar, [0], "Selected bar");
 
-
 					// tonality
 					sec.tonality('G');
-					assert.equal(bm.getBar(selBar[0]).getKeySignatureChange(), "G", "Tonality");
+					assert.equal(song.getTonality(),"G", "In first bar, whole tonality is changed...");
+					assert.equal(bm.getBar(selBar[0]).getKeySignatureChange(), undefined, "... and specific tonality of first bar is not set");
 					assert.equal(bm.getBar(selBar[0] + 1).getKeySignatureChange(), undefined, "Tonality doesn't affect next bar");
 
 					// ending
