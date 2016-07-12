@@ -381,12 +381,14 @@ define([
 		var barMng = this.songModel.getComponent("bars");
 
 		var isFirstBar = selBars.length === 1 && selBars[0] === 0;
-		var selectedUntilEnd = selBars[selBars.length - 1] === barMng.getTotal() - 1;
+		var lastIndex = selBars.length - 1; //will be 0 or 1
+
+		var selectedUntilEnd = selBars[lastIndex] === barMng.getTotal() - 1;
 
 		var prevKeySignature;
 		if (!isFirstBar && !selectedUntilEnd) {
 			var barsIt = new SongBarsIterator(this.songModel);
-			barsIt.setBarIndex(selBars[1]);
+			barsIt.setBarIndex(selBars[lastIndex]);
 			prevKeySignature = barsIt.getBarKeySignature();
 		}
 		//if cursor is in first bar, we change whole song's tonality
@@ -397,7 +399,7 @@ define([
 		}
 		
 		if (prevKeySignature){
-			barMng.getBar(selBars[1] + 1).setKeySignatureChange(prevKeySignature);
+			barMng.getBar(selBars[lastIndex] + 1).setKeySignatureChange(prevKeySignature);
 		}
 		$.publish('ToHistory-add', 'Tonality set to ' + tonality);
 	};

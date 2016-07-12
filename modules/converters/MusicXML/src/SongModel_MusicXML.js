@@ -60,6 +60,10 @@ define(function(require) {
 				[1, 3, 4],
 				[1, 2, 3, 4],
 			];
+			var clef, 
+					timeSignature = songModel.getTimeSignature().toString(), 
+					keySignature = songModel.getTonality();
+
 			for (var i = 0, c = mxlParse.partList.length; i < c; i++) {
 				section = new SectionModel();
 				/*console.log('---Section----');
@@ -71,13 +75,21 @@ define(function(require) {
 				}
 				songModel.addSection(section);
 				section.setNumberOfBars(mxlParse.measures.length);
+
+				
+
 				for (var barNumber = 0, v = mxlParse.measures.length; barNumber < v; barNumber++) {
 					measure = mxlParse.measures[barNumber][0];
 					measure = mxlParse.getMeasure(barNumber);
 					measure = measure.part[0];
 
-					bar = BarModel_MusicXML.importFromMusicXML(measure.measureInfos);
-					barManager.addBar(bar);
+					var barResults = BarModel_MusicXML.importFromMusicXML(measure.measureInfos, clef,timeSignature, keySignature);
+
+					barManager.addBar(barResults.bar);
+					clef = barResults.clef;
+					keySignature = barResults.keySignature;
+					timeSignature = barResults.timeSignature;
+
 					if (typeof measure.chords !== "undefined") {
 						for (var k = 0, b = measure.chords.length; k < b; k++) {
 							chord = ChordModel_MusicXML.importFromMusicXML(measure.chords[k]);
