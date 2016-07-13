@@ -28,9 +28,8 @@ define([
 
 	EndLabel.TOCODAS.push(EndLabel.TOCODA);
 	EndLabel.TOCODAS.push(EndLabel.TOCODA2);
-
-	EndLabel.SOLOS.push(EndLabel.FINE);
-
+	EndLabel.addSoloLabel(EndLabel.FINE, 'end');
+	
 	EndLabel.fromString = function(name){
 		switch (name.toLowerCase()) {
 			case "coda": return EndLabel.TOCODA;

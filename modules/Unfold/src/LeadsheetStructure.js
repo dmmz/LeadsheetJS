@@ -40,6 +40,21 @@ define([
 		this.hasEndLabel = function(label){
 			return endLabels.has(label);
 		};
+		/**
+
+		 * @param  {Object} label         {label: 'SEGNO', type:'start'};
+		 * @param  {Integer} sectionNumber 
+		 * @param  {Integer} barNumber     
+		 */
+		var createLabel = function(label, sectionNumber, barNumber) {
+			if (label.type === 'start') {
+				return createStartLabel(label.label, sectionNumber, barNumber);
+			}else if(label.type === 'end') {
+				return createEndLabel(label.label, sectionNumber, barNumber);
+			}else {
+				return null;
+			}
+		};
 
 		var createStartLabel = function(label, sectionNumber, barNumber) {
 			if (hasStartLabel(label)) {
@@ -64,9 +79,8 @@ define([
 				endPoint = Object.create(EndPoint);
 				endPoint.initValues(self, label, sectionNumber, barNumber, playIndex);
 			}
-			
-			
 		};
+
 
 		var addDaAlRepetition = function(sublabel, sectionNumber, barNumber) { 
 			var playIndex = self.sections[sectionNumber].getPlayIndexOfBar(barNumber);
@@ -224,6 +238,7 @@ define([
 			return list;
 		};
 		this.getSegments = function(unfoldConfig) {
+			this.getUnfoldConfig();
 			var segments = [];
 
 			if (this.sections.length === 0){
@@ -281,8 +296,6 @@ define([
 		this.getUnfoldedLeadsheet = function(unfoldedSong, segments) {
 			
 			var oldSong = this.leadsheet;
-			
-			
 			// var sections = [];
 			
 			var barsIterator = new SongBarsIterator(this.leadsheet);
@@ -296,7 +309,7 @@ define([
 
 				segment.addUnfoldedSection(unfoldedSong);
 
-				segment.addUnfoldedSectionBars(unfoldedSong);
+				segment.addUnfoldedSectionBars(unfoldedSong, foldedBarIdx);
 				
 				segment.addUnfoldedSectionChords(unfoldedSong, foldedBarIdx, unfoldedBarIdx);
 
@@ -314,7 +327,7 @@ define([
 				return;
 			}
 			createStartLabel(StartLabel.CAPO, 0, 0);
-			var section;
+			var section, i;
 			for (var iSection = 0; iSection < self.sections.length; iSection++) {
 				section  = self.sections[iSection];
 				initSection(iSection);
@@ -327,15 +340,27 @@ define([
 				}else{
 					var coda;
 					var codaLabels = PointLabel.getToCodaLabels();
-					for (var i = 0; i < codaLabels.length; i++) { 
+					for (i = 0; i < codaLabels.length; i++) { 
 						coda = codaLabels[i];
 						if(section.hasLabel(coda)){
 							addCoda(coda, iSection, section.getLabel(coda));
 						}
 					}
 				}
+				
 				//looking for solo labels (segno, segno2 and fine)
-				//TODO
+				
+				var soloLabels = PointLabel.getSoloLabels();
+				var labelName;
+				for (i = 0; i < soloLabels.length; i++) {
+					labelName = soloLabels[i].label;
+					if (section.hasLabel(labelName)){
+						createLabel(soloLabels[i], iSection,  section.getLabel(labelName)); //last para is number of bar
+					}
+				}
+
+
+
 				var sublabels = section.getSublabels();
 				for (var keySublabel in sublabels){
 					addDaAlRepetition(keySublabel, iSection, sublabels[keySublabel]);

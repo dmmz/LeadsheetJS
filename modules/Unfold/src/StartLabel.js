@@ -30,8 +30,8 @@ define([
 		string: "CODA2TO"
 	};
 */
-	StartLabel.SOLOS.push(StartLabel.SEGNO);
-	StartLabel.SOLOS.push(StartLabel.SEGNO2);
+	StartLabel.addSoloLabel(StartLabel.SEGNO, 'start');
+	StartLabel.addSoloLabel(StartLabel.SEGNO2, 'start');
 
 	StartLabel.fromString = function(name){
 		switch (name.toLowerCase()) {

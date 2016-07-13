@@ -31,13 +31,13 @@ define(['modules/core/src/SectionModel'], function(SectionModel){
 			}));
 		};
 
-		this.addUnfoldedSectionBars = function(unfoldedSong) {
+		this.addUnfoldedSectionBars = function(unfoldedSong, foldedBarIdx) {
 			
 			var barMng = this.song.getComponent('bars');
 			var unfoldedBarMng = unfoldedSong.getComponent('bars');
 			
 			for (var i = 0; i < this.bars.length; i++) {
-				unfoldedBarMng.addBar(barMng.getBar(this.bars[i]).clone(true));
+				unfoldedBarMng.addBar(barMng.getBar(foldedBarIdx + this.bars[i]).clone(true));
 			}
 		};
 

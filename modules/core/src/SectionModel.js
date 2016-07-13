@@ -9,6 +9,7 @@ define(function() {
 		this.REPEAT_OPEN = -1;
 
 		this.setName(params.name);
+		this.displayName = true;
 		this.setRepeatTimes(params.repeatTimes);
 		this.setNumberOfBars(params.numberOfBars);
 		this.setStyle(params.style);
@@ -45,6 +46,8 @@ define(function() {
 			return this.repeatTimes + 1;
 		}
 	};
+
+	
 
 	SectionModel.prototype.isNamedCoda = function() {
 		return this.name.trim().toLowerCase()  === 'coda';

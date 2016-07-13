@@ -33,9 +33,9 @@ define(
 				songBarsIt.setBarIndex(currentBarIndex);
 				// when we have in a measure a second coda sign and the section is called Coda, remove section name since it will be written inside the left Coda sign
 				if (section.getName().toLowerCase() === 'coda' && bar.getLabel() === 'coda' && songBarsIt.hasLabelInPrecedingBars('coda')) {
-					section.setName('');
+					section.displayName = false;
 				}
-				if (section.getName()) {
+				if (section.getName() && section.displayName) {
 					this.barIndexesWithSections.push(currentBarIndex);
 				}
 				currentBarIndex += section.numberOfBars;
