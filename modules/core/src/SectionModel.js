@@ -54,7 +54,7 @@ define(function() {
 	};
 	
 	SectionModel.prototype.isNamedCoda2 = function() {
-		return this.name.trim().toLowerCase()  === 'coda2';
+		return this.name.trim().replace(" ","").toLowerCase()  === 'coda2';
 	};
 	
 	SectionModel.prototype.addBaseBarNumber = function(barNumber) {
@@ -139,13 +139,10 @@ define(function() {
 		}
 		return -1;
 	};
-	// Carefull, if a section is played 2 times, repeatTimes = 1
+	// If a section is played 2 times, repeatTimes = 1, if open_repeats, than -1
 	SectionModel.prototype.setRepeatTimes = function(repeatTimes) {
-		if (repeatTimes === undefined || repeatTimes === 'open') {
+		if (repeatTimes === undefined) {
 			repeatTimes = 0;
-		}
-		if (repeatTimes < 0) {
-			throw "repeatTimes cannot be negative";
 		}
 		this.repeatTimes = parseInt(repeatTimes, 10);
 	};
@@ -197,7 +194,7 @@ define(function() {
 		return this.labels[label.toLowerCase()];
 	};
 	SectionModel.prototype.hasLabel = function(label) {
-		return !!this.getLabel(label);
+		return this.getLabel(label) !== undefined;
 	};
 
 	SectionModel.prototype.getSublabels = function() {

@@ -3,6 +3,7 @@ define([
 	'modules/Unfold/src/StartLabel',
 	'modules/Unfold/src/EndLabel',
 	'modules/Unfold/src/CodaToLabel',
+	'modules/Unfold/src/ToCodaLabel',
 	'modules/Unfold/src/StartPoint',
 	'modules/Unfold/src/EndPoint',
 	'modules/Unfold/src/ToCodaPoint',
@@ -15,7 +16,7 @@ define([
 	'modules/Unfold/src/RepetitionsHolder',
 	'modules/Unfold/src/SectionSegment',
 	'modules/core/src/SongBarsIterator'
-], function(PointLabel, StartLabel, EndLabel, CodaToLabel, StartPoint, EndPoint, ToCodaPoint, SectionEndPoint, SectionStartPoint, SectionRepetition, 
+], function(PointLabel, StartLabel, EndLabel, CodaToLabel, ToCodaLabel, StartPoint, EndPoint, ToCodaPoint, SectionEndPoint, SectionStartPoint, SectionRepetition, 
 	DaAlRepetition, SectionRepetitionFactory, LeadsheetUnfoldConfig, RepetitionsHolder, SectionSegment, SongBarsIterator) {
 
 	var LeadsheetStructure = function(song) {
@@ -60,7 +61,6 @@ define([
 			if (hasStartLabel(label)) {
 				return;
 			}
-			///TODO: playIndex
 			var playIndex = self.sections[sectionNumber].getPlayIndexOfBar(barNumber);
 			var startPoint = Object.create(StartPoint);
 			startPoint.initValues(self, label, sectionNumber, barNumber, playIndex);
@@ -167,7 +167,6 @@ define([
 				return addCodaTo(ToCodaLabel.getCodaToLabel(label), sectionNumber, barNumber);
 			}else{
 				createEndLabel(label, sectionNumber, barNumber);
-				return true;
 			}
 		};
 
@@ -237,7 +236,7 @@ define([
 			}
 			return list;
 		};
-		this.getSegments = function(unfoldConfig) {
+		this.getSegments = function() {
 			this.getUnfoldConfig();
 			var segments = [];
 
@@ -347,9 +346,8 @@ define([
 						}
 					}
 				}
-				
+
 				//looking for solo labels (segno, segno2 and fine)
-				
 				var soloLabels = PointLabel.getSoloLabels();
 				var labelName;
 				for (i = 0; i < soloLabels.length; i++) {
@@ -358,8 +356,6 @@ define([
 						createLabel(soloLabels[i], iSection,  section.getLabel(labelName)); //last para is number of bar
 					}
 				}
-
-
 
 				var sublabels = section.getSublabels();
 				for (var keySublabel in sublabels){
