@@ -318,6 +318,9 @@ define([
 				//prevUnfoldedSection = newUnfoldedSection;
 				unfoldedBarIdx += unfoldedSong.getSection(i).getNumberOfBars();
 			}
+			if (unfoldedSong.getComponent('notes').containsWholeRests()) {
+				unfoldedSong.updateNotesBarDuration();
+			}
 			return unfoldedSong;
 		};
 		//Init function IIFE

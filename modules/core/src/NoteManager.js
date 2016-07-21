@@ -315,8 +315,19 @@ define([
 		return newNoteMng;
 
 	};
-
-
+	/**
+	 * checks if there are whole rests, used to update durations (to cover the case where there is a lonely whole rest note in a bar: note's duration is the bar duration)
+	 * @return {Boolean}                
+	 */
+	NoteManager.prototype.containsWholeRests = function() {
+		for (var i = 0; i < this.notes.length; i++) {
+			var note = this.notes[i];
+			if (note.isRest && note.duration === "w"){
+				return true;
+			}
+		}
+		return false;
+	};
 	NoteManager.prototype._getNotesIteratorAt = function(index, song) {
 		if (isNaN(index) || index < 0 || song === undefined) {
 			throw "NoteManager - getNoteBarNumber - attributes are not what expected, song: " + song + ", index: " + index;

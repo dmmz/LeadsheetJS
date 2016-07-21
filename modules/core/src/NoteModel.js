@@ -6,18 +6,19 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 	 * @param {Object|String|null} param : depending on the type it will create an empty note, a rest note or a pitch note
 	 */
 	function NoteModel(param) {
+		param = param || {};
 		this.pitchClass = []; // Note c, b
-		this.octave = (param && param.octave) ? param.octave : []; // octave from 0 to 8
+		this.octave = param.octave || []; // octave from 0 to 8
 		this.accidental = []; // b or #
-		this.duration = (param && param.duration) ? param.duration : undefined; // string duration "h", "q", "8", "16" ...etc
-		this.isRest = (param && param.isRest) ? param.isRest : false;
-		this.dot = (param && param.dot) ? param.dot : 0; // 0,1,2
-		this.tie = (param && param.tie) ? param.tie : undefined; // contain "start", "stop", "stop_start"
-		this.tuplet = (param && param.tuplet) ? param.tuplet : undefined;
-		this.timeModification = (param && param.timeModification) ? param.timeModification : undefined; // it's an attribute that exist only with tuplet
+		this.duration = param.duration; // string duration "h", "q", "8", "16" ...etc
+		this.isRest = param.isRest || false;
+		this.dot = param.dot || 0; // 0,1,2
+		this.tie = param.tie; // contain "start", "stop", "stop_start"
+		this.tuplet = param.tuplet;
+		this.timeModification = param.timeModification; // it's an attribute that exist only with tuplet
 
 		//for whole silences that cover an entire measure, duration will depend on bar's time signature:
-		this.durationDependsOnBar = false;
+		this.durationDependsOnBar = param.durationDependsOnBar;
 		this.barDuration = null;
 
 		if (typeof this.tuplet !== "undefined") {
@@ -388,8 +389,10 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		if (this.tie != null && complete) noteObj.tie = this.tie;
 		if (this.tuplet != null && complete) noteObj.tuplet = this.tuplet;
 		if (this.timeModification != null && complete) noteObj.timeModification = this.timeModification;
-		if (this.isRest) noteObj.isRest = this.isRest;
-
+		
+		noteObj.isRest = this.isRest;
+		noteObj.durationDependsOnBar = this.durationDependsOnBar;
+		
 		return noteObj;
 	};
 

@@ -14,7 +14,7 @@ define(['modules/Unfold/src/SectionRepetition'], function(SectionRepetition) {
 		var toPoint = this.getToPoint();
 			return {
 				point: toPoint,
-				playIndex: toPoint.playIndex + 1
+				playIndex: this.playIndex + 1
 			};
 	};
 	return SectionFiniteRepetition;

@@ -21,7 +21,6 @@ define(['modules/core/src/SectionModel'], function(SectionModel){
 			
 			var sectionName = this.section.getName();
 			if (sectionName && playIndex > 0) sectionName += " 2nd time";
-
 			
 			var numberOfBars = this.bars.length;
 			

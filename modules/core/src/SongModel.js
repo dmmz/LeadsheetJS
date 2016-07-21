@@ -491,13 +491,44 @@ define([
 		return this.structure;
 	};
 
-	// SongModel.prototype.getUnfoldedSong = function() {
-	// 	var struct = this.getStructure();
-	// 	var unfoldConfig = struct.getUnfoldConfig();
-	// 	var segments = struct.getSegments();
-	// 	var unfoldedSections = struct.getUnfoldedSections(unfoldConfig, segments);
-	// 	return new UnfoldedLeadsheet(this, unfoldedSections);
-	// };
+	/**
+	 * If there are bars with only one whole rest (very few cases), we set their real duration, which depends on the time signature bar
+	 */
+	SongModel.prototype.updateNotesBarDuration = function() {
+		/**
+			function already defined in noteManager, it should be used in an 'utils' mod
+		*/
+		function roundBeat (beat) {
+			return Math.round(beat * 1000000) / 1000000;
+		}
+		var songIt = new SongBarsIterator(this),
+			notes = this.getComponent('notes').getNotes(),
+			currentBarNumBeats = songIt.getBarTimeSignature().getQuarterBeats(),
+			notesBarDur = 0;
+		
+		var i = 0;
+		while (songIt.hasNext() && i < notes.length){
+		
+			// if it's first note, and duration depends on bar (only whole notes can have durationDependsOnBar = true)
+			if (notesBarDur === 0 && notes[i].durationDependsOnBar){
+				notes[i].barDuration = currentBarNumBeats;
+			}
+
+			notesBarDur += notes[i].getDuration();
+			if (roundBeat(notesBarDur) > currentBarNumBeats){
+				console.warn("note exceeds bar duration (index "+ i +") bar "+songIt.getBarIndex());
+			}
+			else if (roundBeat(notesBarDur) == currentBarNumBeats ){
+				notesBarDur = 0;
+				songIt.next();	
+				if (songIt.hasNext()){
+					currentBarNumBeats = songIt.getBarTimeSignature().getQuarterBeats();	
+				}
+			}
+			i++;
+			
+		}
+	};
 
 	/**
 	 * Unfold the current songModel and return it
