@@ -391,8 +391,9 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		if (this.timeModification != null && complete) noteObj.timeModification = this.timeModification;
 		
 		noteObj.isRest = this.isRest;
-		noteObj.durationDependsOnBar = this.durationDependsOnBar;
-		
+		if (this.durationDependsOnBar){
+			noteObj.durationDependsOnBar = this.durationDependsOnBar;	
+		}
 		return noteObj;
 	};
 

@@ -14,7 +14,9 @@ define(['modules/core/src/TimeSignatureModel'], function(TimeSignatureModel) {
 		this.labels = [];	// Segno, fine, coda ... we set an array, although currentlu CSLJson only accepts one label per bar
 		if (options.label){
 			this.labels.push(options.label);
-		} 
+		}else if (options.labels) {
+			this.labels = options.labels;
+		}
 		this.sublabel = options.sublabel; // Ds, Ds al fine, ds al capo ...
 	}
 
@@ -95,13 +97,15 @@ define(['modules/core/src/TimeSignatureModel'], function(TimeSignatureModel) {
 	};
 
 	BarModel.prototype.setLabel = function(label) {
-		if (this.labels.indexOf(label) === -1){
+
+		if (!!label && this.labels.indexOf(label) === -1){
 			this.labels.push(label);	
 		}
 	};
 
 	BarModel.prototype.getLabel = function() {
-		return this.labels.length === 0 ? null : this.labels.length === 1 ? this.labels[0] : this.labels;
+		label = this.labels.length === 0 ? null : this.labels.length === 1 ? this.labels[0] : this.labels; 
+		return label || "";
 	};
 
 	BarModel.prototype.setSublabel = function(sublabel) {
