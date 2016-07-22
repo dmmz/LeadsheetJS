@@ -295,27 +295,19 @@ define([
 		this.getUnfoldedLeadsheet = function(unfoldedSong, segments) {
 			
 			var oldSong = this.leadsheet;
-			// var sections = [];
-			
 			var barsIterator = new SongBarsIterator(this.leadsheet);
 			var newUnfoldedSection, prevUnfoldedSection, segment;
 			var unfoldedBarIdx = 0;
 			var foldedBarIdx;
 			for (var i = 0; i < segments.length; i++) {
-
 				segment = segments[i];
 				foldedBarIdx = segment.getSectionStartBarNumber();
 
 				segment.addUnfoldedSection(unfoldedSong);
-
 				segment.addUnfoldedSectionBars(unfoldedSong, foldedBarIdx);
-				
 				segment.addUnfoldedSectionChords(unfoldedSong, foldedBarIdx, unfoldedBarIdx);
-
 				segment.addUnfoldedSectionNotes(unfoldedSong, foldedBarIdx);
-				// // newUnfoldedSection = segment.toUnfoldedSection(barsIterator, i === 0);
-				// sections.push(newUnfoldedSection);
-				//prevUnfoldedSection = newUnfoldedSection;
+
 				unfoldedBarIdx += unfoldedSong.getSection(i).getNumberOfBars();
 			}
 			if (unfoldedSong.getComponent('notes').containsWholeRests()) {
@@ -349,7 +341,6 @@ define([
 						}
 					}
 				}
-
 				//looking for solo labels (segno, segno2 and fine)
 				var soloLabels = PointLabel.getSoloLabels();
 				var labelName;
@@ -359,7 +350,6 @@ define([
 						createLabel(soloLabels[i], iSection,  section.getLabel(labelName)); //last para is number of bar
 					}
 				}
-
 				var sublabels = section.getSublabels();
 				for (var keySublabel in sublabels){
 					addDaAlRepetition(keySublabel, iSection, sublabels[keySublabel]);

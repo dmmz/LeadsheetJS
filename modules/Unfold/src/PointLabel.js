@@ -5,7 +5,6 @@ define(function(){
 		getToCodaLabels: function(){
 			return this.TOCODAS;
 		},
-
 		/**
 		 * @return {Array} array of Object with {label:'SEGNO|SEGNO2|...etc', type:'start|end'} 
 		 */
@@ -21,7 +20,6 @@ define(function(){
 		create: function(){
 			return Object.create(this);
 		},
-		//TODO: REVISE
 		fromString: function(name){
 			name = name.replace(" ","_");
 			return this[name];

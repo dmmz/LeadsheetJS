@@ -1,6 +1,7 @@
 define([
 	'tests/songs/unfold/SimpleUnfoldTest',
-	'modules/Unfold/test/UnfoldTester'], function(SimpleUnfoldTest, UnfoldTester) {
+	'modules/Unfold/src/StartLabel',
+	'modules/Unfold/test/UnfoldTester'], function(SimpleUnfoldTest, StartLabel, UnfoldTester) {
 		return function(assert){
 			var unfoldTester = UnfoldTester(assert);
 			var struct = unfoldTester.init(SimpleUnfoldTest);
@@ -47,11 +48,11 @@ define([
 				
 			//START LABELS
 			assert.equal(startLabels.size, 5, "Total number of startLabels");
-			unfoldTester.compareObject(startLabels.get('CAPO'), {
+			unfoldTester.compareObject(startLabels.get(StartLabel.CAPO), {
 				section: 0,
 				bar: 0,
 				playIndex: 0
-			}, 'CAPO');
+			}, 'Capo');
 			unfoldTester.compareObject(startLabels.get('start_section_0'), {
 				section: 0,
 				bar: 0,
@@ -67,11 +68,11 @@ define([
 				bar: 0,
 				playIndex: 0
 			},'start_section_2');
-			unfoldTester.compareObject(startLabels.get('CODATO'), {
+			unfoldTester.compareObject(startLabels.get(StartLabel.CODATO), {
 				section: 2,
 				bar: 0,
 				playIndex: 0
-			},'CODATO');
+			},'CodaTo');
 			//Add tests for Start and end points ??
 						
 			var segments = struct.getSegments();

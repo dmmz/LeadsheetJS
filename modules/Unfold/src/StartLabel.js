@@ -3,33 +3,12 @@ define([
 	], function(PointLabel) {
 	var StartLabel = PointLabel.create();
 
-	StartLabel.CAPO = "CAPO";
-	StartLabel.SEGNO = "SEGNO";
-	StartLabel.SEGNO2 = "SEGNO2";
-	StartLabel.CODATO = "CODATO";
-	StartLabel.CODA2TO = "CODA2TO";
-	
-/*	StartLabel.CAPO = {
-		name: 'capo',
-		string: "CAPO"
-	};
-	StartLabel.SEGNO = {
-		name: 'segno',
-		string: "SEGNO"
-	};
-	StartLabel.SEGNO2 = {
-		name: 'segno2',
-		string: "SEGNO2"
-	};
-	StartLabel.CODATO = {
-		name: 'coda_to',
-		string: "CODATO"
-	};
-	StartLabel.CODA2TO = {
-		name:'coda2_to',
-		string: "CODA2TO"
-	};
-*/
+	StartLabel.CAPO = "Capo";
+	StartLabel.SEGNO = "Segno";
+	StartLabel.SEGNO2 = "Segno2";
+	StartLabel.CODATO = "CodaTo";
+	StartLabel.CODA2TO = "Coda2To";
+
 	StartLabel.addSoloLabel(StartLabel.SEGNO, 'start');
 	StartLabel.addSoloLabel(StartLabel.SEGNO2, 'start');
 

@@ -9,8 +9,8 @@ define([
 	return {
 		run: function() {
 			test("LeadsheetStructure", function(assert) {
-				// testSimpleUnfoldTest(assert);
-				// testMichelle(assert);
+				testSimpleUnfoldTest(assert);
+				testMichelle(assert);
 				testGertrudesBounce(assert);
 				
 				//Missing: 

@@ -1,6 +1,8 @@
 define([
 	'tests/songs/unfold/Michelle',
-	'modules/Unfold/test/UnfoldTester'], function(Michelle, UnfoldTester) {
+	'modules/Unfold/src/StartLabel',
+	'modules/Unfold/src/EndLabel',
+	'modules/Unfold/test/UnfoldTester'], function(Michelle, StartLabel, EndLabel, UnfoldTester) {
 		return function(assert){
 
 			/**
@@ -12,7 +14,7 @@ define([
 			var startLabels = struct.getStartLabels();
 				//START LABELS
 			assert.equal(startLabels.size, 6, "Total number of startLabels");
-			unfoldTester.compareObject(startLabels.get('CAPO'), {
+			unfoldTester.compareObject(startLabels.get(StartLabel.CAPO), {
 				section: 0,
 				bar: 0,
 				playIndex: 0
@@ -36,13 +38,13 @@ define([
 				playIndex: 0
 			},'start_section_2');
 
-			unfoldTester.compareObject(startLabels.get('SEGNO'), {
+			unfoldTester.compareObject(startLabels.get(StartLabel.SEGNO), {
 				section: 1,
 				bar: 6,
 				playIndex: 0
 			},'SEGNO');
 
-			unfoldTester.compareObject(startLabels.get('CODATO'), {
+			unfoldTester.compareObject(startLabels.get(StartLabel.CODATO), {
 				section: 2,
 				bar: 0,
 				playIndex: 0
@@ -68,7 +70,7 @@ define([
 				bar: 16,
 				playIndex: 1
 			},'end_section_1_1');
-			unfoldTester.compareObject(endLabels.get('Coda'), {
+			unfoldTester.compareObject(endLabels.get(EndLabel.TOCODA), {
 				section: 1,
 				bar: 14,
 				playIndex: 0
@@ -86,7 +88,7 @@ define([
 				playIndex: 0
 			},'end_section_2_0');
 
-			unfoldTester.compareObject(endLabels.get('End'), {
+			unfoldTester.compareObject(endLabels.get(EndLabel.END), {
 				section: 2,
 				bar: 11,
 				playIndex: 0

@@ -8,23 +8,6 @@ define([
 	EndLabel.TOCODA2 = "Coda2";
 	EndLabel.FINE = "Fine";
 	EndLabel.END = "End";
-	
-	/*EndLabel.TOCODA = {
-		name: 'coda',
-		string: "Coda"
-	};
-	EndLabel.TOCODA2 = {
-		name: 'coda2',
-		string: "Coda2"
-	};
-	EndLabel.FINE = {
-		name: 'fine',
-		string: "Fine"
-	};
-	EndLabel.END = {
-		name: 'end',
-		string: "End"
-	};*/
 
 	EndLabel.TOCODAS.push(EndLabel.TOCODA);
 	EndLabel.TOCODAS.push(EndLabel.TOCODA2);
