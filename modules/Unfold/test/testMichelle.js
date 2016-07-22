@@ -102,9 +102,9 @@ define([
 			unfoldTester.compareSegment(segments[2], [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,16], 1);
 			unfoldTester.compareSegment(segments[3], [6 ,7, 8, 9, 10, 11, 12, 13, 14], 1);
 			unfoldTester.compareSegment(segments[4], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 2);
-			var unfoldedSong = unfoldTester.getSong().initUnfoldedSong();
-			unfoldedSong = struct.getUnfoldedLeadsheet(unfoldedSong, segments);
+			struct.getUnfoldedLeadsheet(segments);
 			
+			var unfoldedSong = struct.leadsheet;
 			assert.equal(unfoldTester.getTotalNumBarsByBars(unfoldedSong), 59);
 			assert.equal(unfoldTester.getTotalNumBarsByBars(unfoldedSong), unfoldTester.getTotalNumBarsBySections(unfoldedSong));
 		};
