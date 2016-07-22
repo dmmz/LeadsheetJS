@@ -23,7 +23,7 @@ define([
 			return this.song.getStartBarNumberFromSectionNumber(this.sectionIndex);
 		};
 
-		this.addUnfoldedSection = function(unfoldedSong) {
+		this.addUnfoldedSection = function(sections) {
 			
 			function getSectionName(sectionName, fromPoint, toPoint) {
 				//endings
@@ -43,35 +43,32 @@ define([
 			
 			var numberOfBars = this.bars.length;
 
-			unfoldedSong.addSection(new SectionModel({
+			sections.push(new SectionModel({
 				name: sectionName,
 				numberOfBars: numberOfBars
 			}));
 		};
 
-		this.addUnfoldedSectionBars = function(unfoldedSong, foldedBarIdx) {
+		this.addUnfoldedSectionBars = function(unfoldedBars, foldedBarIdx) {
 
 			var barMng = this.song.getComponent('bars');
-			var unfoldedBarMng = unfoldedSong.getComponent('bars');
-
 			for (var i = 0; i < this.bars.length; i++) {
-				unfoldedBarMng.addBar(barMng.getBar(foldedBarIdx + this.bars[i]).clone(true));
+				unfoldedBars.push(barMng.getBar(foldedBarIdx + this.bars[i]).clone(true));
 			}
 		};
 
-		this.addUnfoldedSectionNotes = function(unfoldedSong, foldedBarIdx) {
+		this.addUnfoldedSectionNotes = function(tmpNoteMng, foldedBarIdx) {
 			var noteMng = this.song.getComponent('notes');
-			var unfoldedNoteMng = unfoldedSong.getComponent('notes');
 			var notes;
 			for (var i = 0; i < this.bars.length; i++) {
 				notes = noteMng.cloneNotesAtBarNumber(foldedBarIdx + this.bars[i], this.song);
-				unfoldedNoteMng.addNotes(notes);
+				tmpNoteMng.addNotes(notes);
 			}
 
 		};
-		this.addUnfoldedSectionChords = function(unfoldedSong, foldedBarIdx, unfoldedBarIdx) {
+		this.addUnfoldedSectionChords = function(unfoldedChords, foldedBarIdx, unfoldedBarIdx) {
 			var chordMng = this.song.getComponent('chords');
-			var unfoldedChordMng = unfoldedSong.getComponent('chords');
+			
 			var chords, chord;
 
 			for (var i = 0; i < this.bars.length; i++) {
@@ -79,7 +76,7 @@ define([
 				for (var j = 0; j < chords.length; j++) {
 					chord = chords[j].clone();
 					chord.setBarNumber(i + unfoldedBarIdx);
-					unfoldedChordMng.addChord(chord);
+					unfoldedChords.push(chord);
 				}
 			}
 		};

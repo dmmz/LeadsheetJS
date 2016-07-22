@@ -526,35 +526,13 @@ define([
 				}
 			}
 			i++;
-			
 		}
 	};
 
-	/**
-	 * Unfold the current songModel and return it
-	 * Be carefull, segno and coda are not yet supported, you can call canBeUnfold function to test if songModel is supported
-	 * If you need a new version of the song unfolded use songModel.clone before
-	 * @return {SongModel} current unfolded songmodel
-	 */
-	SongModel.prototype.initUnfoldedSong = function(first_argument) {
-		return new SongModel(
-			{
-				title: this.getTitle(),
-				composers: this.composers,
-				style: this.getStyle(),
-				source: this.getSource(),
-				tempo: this.getTempo(),
-				tonality: this.getTonality(),
-				timeSignature: this.getTimeSignature() //TODO: apparently init takes a string, which seems incorrect
-			}
-		);
-	};
 	SongModel.prototype.unfold = function() {
-		
 		var struct = new LeadsheetStructure(this);
 		var segments = struct.getSegments();
-		var unfoldedSong = this.initUnfoldedSong();
-		return struct.getUnfoldedLeadsheet(unfoldedSong, segments);
+		struct.getUnfoldedLeadsheet(segments);
 	};
 
 	return SongModel;

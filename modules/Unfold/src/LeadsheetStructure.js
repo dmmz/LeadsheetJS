@@ -1,4 +1,5 @@
 define([
+	'modules/core/src/NoteManager',
 	'modules/Unfold/src/PointLabel',
 	'modules/Unfold/src/StartLabel',
 	'modules/Unfold/src/EndLabel',
@@ -16,7 +17,7 @@ define([
 	'modules/Unfold/src/RepetitionsHolder',
 	'modules/Unfold/src/SectionSegment',
 	'modules/core/src/SongBarsIterator'
-], function(PointLabel, StartLabel, EndLabel, CodaToLabel, ToCodaLabel, StartPoint, EndPoint, ToCodaPoint, SectionEndPoint, SectionStartPoint, SectionRepetition, 
+], function(NoteManager, PointLabel, StartLabel, EndLabel, CodaToLabel, ToCodaLabel, StartPoint, EndPoint, ToCodaPoint, SectionEndPoint, SectionStartPoint, SectionRepetition, 
 	DaAlRepetition, SectionRepetitionFactory, LeadsheetUnfoldConfig, RepetitionsHolder, SectionSegment, SongBarsIterator) {
 
 	var LeadsheetStructure = function(song) {
@@ -292,28 +293,37 @@ define([
 			return segments;
 		};
 
-		this.getUnfoldedLeadsheet = function(unfoldedSong, segments) {
+		this.getUnfoldedLeadsheet = function(segments) {
 			
-			var oldSong = this.leadsheet;
 			var barsIterator = new SongBarsIterator(this.leadsheet);
 			var newUnfoldedSection, prevUnfoldedSection, segment;
 			var unfoldedBarIdx = 0;
 			var foldedBarIdx;
+
+			var sections = [];
+			var bars = [];
+			var chords = [];
+			var tmpNoteMng = new NoteManager();
 			for (var i = 0; i < segments.length; i++) {
 				segment = segments[i];
-				foldedBarIdx = segment.getSectionStartBarNumber();
+				foldedBarIdx = segment.getSectionStartBarNumber(sections);
 
-				segment.addUnfoldedSection(unfoldedSong);
-				segment.addUnfoldedSectionBars(unfoldedSong, foldedBarIdx);
-				segment.addUnfoldedSectionChords(unfoldedSong, foldedBarIdx, unfoldedBarIdx);
-				segment.addUnfoldedSectionNotes(unfoldedSong, foldedBarIdx);
+				segment.addUnfoldedSection(sections);
+				segment.addUnfoldedSectionBars(bars, foldedBarIdx);
+				segment.addUnfoldedSectionChords(chords, foldedBarIdx, unfoldedBarIdx);
+				segment.addUnfoldedSectionNotes(tmpNoteMng, foldedBarIdx);
 
-				unfoldedBarIdx += unfoldedSong.getSection(i).getNumberOfBars();
+				unfoldedBarIdx += sections[i].getNumberOfBars();
 			}
-			if (unfoldedSong.getComponent('notes').containsWholeRests()) {
-				unfoldedSong.updateNotesBarDuration();
+			this.leadsheet.sections = sections;
+			this.leadsheet.getComponent('bars').setBars(bars);
+			this.leadsheet.getComponent('chords').setAllChords(chords);
+			var noteMng = this.leadsheet.getComponent('notes');
+			noteMng.setNotes(tmpNoteMng.getNotes());
+
+			if (noteMng.containsWholeRests()) {
+				this.leadsheet.updateNotesBarDuration();
 			}
-			return unfoldedSong;
 		};
 		//Init function IIFE
 		(function() {

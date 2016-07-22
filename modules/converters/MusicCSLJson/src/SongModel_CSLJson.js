@@ -126,7 +126,6 @@ define(function(require) {
 				songModel.addComponent('chords', chordManager);
 				songModel.addComponent('notes', noteManager);
 			}
-			//songModel.getUnfoldedSongStructure();
 			if (wholeRestFound) { //if found bars with only one whole rest
 				songModel.updateNotesBarDuration();
 			}

@@ -12,11 +12,8 @@ define([
 				testSimpleUnfoldTest(assert);
 				testMichelle(assert);
 				testGertrudesBounce(assert);
+				//tested also with songs with coda where coda section has no name
 				
-				//Missing: 
-				//	Coda that is not in section label ??
-				//	Problem getting one bar coda from codato
-				//	section x2 with no endings ??
 			});
 		}
 	};
