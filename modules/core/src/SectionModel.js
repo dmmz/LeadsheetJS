@@ -86,7 +86,7 @@ define(function() {
 	};
 
 	SectionModel.prototype.getPlayBarNumbers = function(playIndex) {
-		var barNumbers = this.baseBarNumbers.slice(0); //we clone
+		var barNumbers = this.baseBarNumbers.slice(0); // clone
 		if (this.hasEndings()){
 			barNumbers = barNumbers.concat(this.endingsBarNumbers[playIndex]);
 		}

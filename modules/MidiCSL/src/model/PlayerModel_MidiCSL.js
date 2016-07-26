@@ -246,19 +246,28 @@ define([
 			return this.indexPosition;
 		};
 
-		PlayerModel_MidiCSL.prototype.setPositionIndex = function(indexPosition) {
+		PlayerModel_MidiCSL.prototype.setPositionIndex = function(indexPosition, notesMapper) {
 			if (typeof indexPosition === "undefined") {
 				throw 'PlayerModel_MidiCSL - setPositionIndex - indexPosition must be defined ' + indexPosition;
 			}
-			this.indexPosition = indexPosition;
-			if (indexPosition !== 0){
+			if (notesMapper) {
+				var newIdxPos;
+				if (Array.isArray(indexPosition)) {
+					newIdxPos = [];
+					for (var i = 0; i < indexPosition.length; i++) {
+						newIdxPos.push(notesMapper.noteIndexes[indexPosition[i]]);
+					}
+				}
+				else{
+					newIdxPos = notesMapper.noteIndexes[indexPosition];
+				}
+				indexPosition = newIdxPos;
+			}
+			
 			this.cursorModel.setPos(indexPosition);
 			
 			$.publish('CanvasLayer-refresh');
-			}
 		};
-
-
 
 		/**
 		 * Function set position between 0 and 1
@@ -305,6 +314,11 @@ define([
 		 * @param  {float} playTo is an optionnal attributes, if it's filled then player will play until playTo in sec, otherwise it play til the end
 		 */
 		PlayerModel_MidiCSL.prototype.play = function(tempo, playFrom, playTo) {
+			
+			function getPrevPosIfNotExists(midiSongModel, pos) {
+				return midiSongModel.getMelodySoundModelFromIndex(pos) === undefined ? pos-- : pos;
+			}
+
 			if (this.isEnabled === false || this.getReady() === false) {
 				return;
 			}
@@ -316,9 +330,9 @@ define([
 			this.playState = true;
 			$.publish('PlayerModel-onplay');
 			// Convert songmodel to a readable model that we can insert in SongModel_MidiCSL
-			SongConverterMidi_MidiCSL.exportToMidiCSL(this.songModel, true, function(midiSong) {
+			SongConverterMidi_MidiCSL.exportToMidiCSL(this.songModel, true, function(midiSong, notesMapper) {
 				// redraw if unfolded
-				$.publish('ToViewer-draw', self.songModel.clone().unfold());
+				//$.publish('ToViewer-draw', self.songModel.clone().unfold());
 				var midiSongModel = new SongModel_MidiCSL({
 					song: midiSong
 				});
@@ -334,25 +348,18 @@ define([
 					self.songDuration = beatOfLastNoteOff * beatDuration;
 					if (playFrom === undefined || isNaN(playFrom)) {
 						var cursorPosition = self.cursorNoteModel ? self.cursorNoteModel.getPos() : [null];
-						
 						if (cursorPosition[0] == null) cursorPosition = [0, 0];
 						playFrom = 0;
 						// should check here if cursor is enabled
 						if (cursorPosition[0] !== 0) {
-							if (typeof midiSongModel.getMelodySoundModelFromIndex(cursorPosition[0]) !== "undefined") {
-								playFrom = midiSongModel.getMelodySoundModelFromIndex(cursorPosition[0]).getCurrentTime() * beatDuration;
-							} else {
-								// case of tied notes
-								playFrom = midiSongModel.getMelodySoundModelFromIndex(cursorPosition[0] - 1).getCurrentTime() * beatDuration;
-							}
+							var cursorPositionStart = cursorPosition[0];
+							curPositionStart = getPrevPosIfNotExists(midiSongModel, cursorPositionStart);
+							playFrom = midiSongModel.getMelodySoundModelFromIndex(cursorPositionStart).getCurrentTime() * beatDuration;
 						}
 						if (cursorPosition.length !== 1 && cursorPosition[1] !== cursorPosition[0]) {
-							if (typeof midiSongModel.getMelodySoundModelFromIndex(cursorPosition[1]) !== "undefined") {
-								playTo = midiSongModel.getMelodySoundModelFromIndex(cursorPosition[1]).getCurrentTime() * beatDuration;
-							} else {
-								// case of tied notes
-								playTo = midiSongModel.getMelodySoundModelFromIndex(cursorPosition[1] - 1).getCurrentTime() * beatDuration;
-							}
+							var cursorPositionEnd = cursorPosition[1];
+							cursorPositionEnd = getPrevPosIfNotExists(midiSongModel, cursorPositionEnd);
+							playTo = midiSongModel.getMelodySoundModelFromIndex(cursorPositionEnd).getCurrentTime() * beatDuration;
 						}
 					}
 
@@ -365,7 +372,8 @@ define([
 					var metronomeChannel = 9;
 
 					var playNoteFn = function(currentNote, realIndex, i, j) {
-
+						// console.log("realIndex");
+						// console.log(realIndex);
 						self.noteTimeOut[realIndex] = setTimeout(function() {
 							var currentMidiNote, duration, velocityNote, channel, volume;
 							var playNote = false;
@@ -400,11 +408,10 @@ define([
 								}
 							}
 							if (currentNote.getType() == "melody") {
-								if (currentNote.tieNotesNumber) {
-									
-									self.setPositionIndex([currentNote.getNoteIndex(), currentNote.getNoteIndex() + currentNote.tieNotesNumber - 1]);
+								if (currentNote.tieNotesNumber) {	
+									self.setPositionIndex([currentNote.getNoteIndex(), currentNote.getNoteIndex() + currentNote.tieNotesNumber - 1], notesMapper);
 								} else {
-									self.setPositionIndex(currentNote.getNoteIndex());
+									self.setPositionIndex(currentNote.getNoteIndex(), notesMapper);
 								}
 								self.setPositionInPercent((Date.now() - self._startTime) / self.songDuration);
 							}
@@ -416,11 +423,10 @@ define([
 								setTimeout((function() {
 									if (!self.doLoop()) {
 										self.stop();
-										self.setPositionIndex(0);
+										self.setPositionIndex(0, notesMapper);
 										self.setPositionInPercent(0);
 										$.publish('PlayerModel-onfinish');
 									} else {
-
 										if (!playTo){
 											//if only one note was selected playTo will be undefined, loop has to restart from the beginning (not from playFrom),
 											// otherwise, it would always loop from current note to the end, without going to the start when it arrives to the end of the song
@@ -449,7 +455,6 @@ define([
 				}
 			});
 		};
-
 
 		PlayerModel_MidiCSL.prototype.emptyPlayNotes = function() {
 			if (typeof MIDI.stopAllNotes !== "undefined") {

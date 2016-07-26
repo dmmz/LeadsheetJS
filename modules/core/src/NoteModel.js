@@ -150,12 +150,12 @@ define(['utils/NoteUtils'], function(NoteUtils) {
 		index = index || 0;
 
 		var accidental = '';
-		if (typeof this.accidental[index] !== "undefined") {
+		if (this.accidental[index] !== undefined) {
 			accidental = this.accidental[index];
 		}
 
 		var octave = '';
-		if (typeof this.octave[index] !== "undefined") {
+		if (this.octave[index] !== undefined) {
 			if (!withoutSlash) octave += '/';
 			octave += this.octave[index];
 		}

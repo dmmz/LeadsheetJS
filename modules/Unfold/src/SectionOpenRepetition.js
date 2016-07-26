@@ -3,7 +3,7 @@ define(['modules/Unfold/src/SectionRepetition'], function(SectionRepetition) {
 	
 
 	SectionOpenRepetition.callInitValues = function(structure, section) {
-		this.isSectionOpenRepetition = true; //we add an property to avoid the use of 'instanceof SectionOpenRepetition' which causes circular dependencies
+		this.isSectionOpenRepetition = true; //we add a property to avoid the use of 'instanceof SectionOpenRepetition' which causes circular dependencies
 		this.initValues(structure, section, 0, 0);
 	};
 	SectionOpenRepetition.maxPlayReached = function(cursor) {

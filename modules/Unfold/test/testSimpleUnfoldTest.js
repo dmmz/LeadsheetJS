@@ -1,7 +1,9 @@
 define([
 	'tests/songs/unfold/SimpleUnfoldTest',
 	'modules/Unfold/src/StartLabel',
-	'modules/Unfold/test/UnfoldTester'], function(SimpleUnfoldTest, StartLabel, UnfoldTester) {
+	'modules/Unfold/test/UnfoldTester',
+	'modules/MidiCSL/src/converters/SongConverterMidi_MidiCSL'
+	], function(SimpleUnfoldTest, StartLabel, UnfoldTester, SongConverterMidi_MidiCSL) {
 		return function(assert){
 			var unfoldTester = UnfoldTester(assert);
 			var struct = unfoldTester.init(SimpleUnfoldTest);
@@ -83,8 +85,25 @@ define([
 			unfoldTester.compareSegment(segments[2], [0,1], 1);
 			unfoldTester.compareSegment(segments[3], [0,1], 0);
 			unfoldTester.compareSegment(segments[4], [0,1], 2);
-			// var unfoldedSong = unfoldTester.getSong().initUnfoldedSong();
-			// var unfoldedSections = struct.getUnfoldedLeadsheet(unfoldedSong, segments).getSections();
+
+			struct.setUnfoldedLeadsheet(segments);
+			
+			var unfoldedSong = struct.leadsheet;
+
+			//testing notes mapping
+			var unfoldedNotes = unfoldedSong.notesMapper.noteIndexes;
+			assert.equal(unfoldedNotes[0], 0, 'Testing note mappings: A(1) start');
+			assert.equal(unfoldedNotes[7], 7, 'A(1) end');
+			assert.equal(unfoldedNotes[8], 0, 'A(2) start');
+			assert.equal(unfoldedNotes[14], 8, 'A(2) 2nd ending start');
+			assert.equal(unfoldedNotes[28], 22, 'B end');
+			assert.equal(unfoldedNotes[29], 0, 'A (from Da Capo)');
+			assert.equal(unfoldedNotes[34], 5, 'A end (to Coda)');
+			assert.equal(unfoldedNotes[35], 23, 'Coda Start');
+			assert.equal(unfoldedNotes[43], 31, 'Coda End');
+
+			//var midiSong = SongConverterMidi_MidiCSL.exportNotesToMidiCSL(unfoldedSong);
+			
 		};
 	}
 );

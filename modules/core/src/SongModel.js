@@ -462,27 +462,38 @@ define([
 
 	SongModel.prototype.clone = function() {
 		var songModelCloned = $.extend(true, new SongModel(), this);
+		var barMng = new BarManager();
+		var chordMng = new ChordManager();
+		var noteMng = new NoteManager();
+		
+		barMng.setBars(this.getComponent('bars').getBars());
+		chordMng.setAllChords(this.getComponent('chords').getChords());
+		noteMng.setNotes(this.getComponent('notes').getNotes());
+
+		songModelCloned.components.bars = barMng;
+		songModelCloned.components.notes = noteMng;
+		songModelCloned.components.chords = chordMng;
+
 		return songModelCloned;
 	};
-
 	/**
 	 * Function test if unfolding system can be call
 	 * @return {Boolean} indicate if it can be unfolded or not
 	 */
-	SongModel.prototype.canBeUnfold = function() {
-		var bm = this.getComponent("bars");
-		var barNumber = bm.getTotal();
-		var currentBar;
-		for (var i = 0; i < barNumber; i++) {
-			currentBar = bm.getBar(i);
-			var currentLabel = currentBar.getLabel();
-			var currentSublabel = currentBar.getSublabel();
-			if ((typeof currentLabel !== "undefined" && currentLabel !== "") || (typeof currentSublabel !== "undefined" && currentSublabel !== "")) {
-				return false;
-			}
-		}
-		return true;
-	};
+	// SongModel.prototype.canBeUnfold = function() {
+	// 	var bm = this.getComponent("bars");
+	// 	var barNumber = bm.getTotal();
+	// 	var currentBar;
+	// 	for (var i = 0; i < barNumber; i++) {
+	// 		currentBar = bm.getBar(i);
+	// 		var currentLabel = currentBar.getLabel();
+	// 		var currentSublabel = currentBar.getSublabel();
+	// 		if ((typeof currentLabel !== "undefined" && currentLabel !== "") || (typeof currentSublabel !== "undefined" && currentSublabel !== "")) {
+	// 			return false;
+	// 		}
+	// 	}
+	// 	return true;
+	// };
 
 	SongModel.prototype.setStructure = function(leadsheetStructure) {
 		this.structure = leadsheetStructure;
@@ -532,7 +543,7 @@ define([
 	SongModel.prototype.unfold = function() {
 		var struct = new LeadsheetStructure(this);
 		var segments = struct.getSegments();
-		struct.getUnfoldedLeadsheet(segments);
+		struct.setUnfoldedLeadsheet(segments);
 	};
 
 	return SongModel;

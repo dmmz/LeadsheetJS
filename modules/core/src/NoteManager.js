@@ -205,12 +205,24 @@ define([
 		songIt.setBarIndex(barNumber);
 		return this.getNotesAtCurrentBar(songIt);
 	};
+	/**
+	 * Clones notes at a given bar number
+	 * @param  {Number} barNumber 
+	 * @param  {SongModel} song      
+	 * @return {Object} 	{
+	 *         					notes: {Array of NoteModels}, 
+	 *                          idxs: [idxStart, idxEnd] 
+	 *                      }
+	 */
 	NoteManager.prototype.cloneNotesAtBarNumber = function(barNumber, song) {
 		var songIt = new SongBarsIterator(song);
 		songIt.setBarIndex(barNumber);
 		var beatIntervals = songIt.getStartEndBeats();
 		var idxs = this.getIndexesStartingBetweenBeatInterval(beatIntervals[0], beatIntervals[1]);
-		return this.cloneElems(idxs[0], idxs[1]);
+		return {
+			notes: this.cloneElems(idxs[0], idxs[1]),
+			idxs: idxs
+		};
 	};
 	NoteManager.prototype.getNoteBeatInBarNumber = function(noteNumber, barNumber, song) {
 		var songIt = new SongBarsIterator(song);

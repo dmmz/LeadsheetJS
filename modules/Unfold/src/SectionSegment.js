@@ -12,7 +12,6 @@ define([
 		this.fromPoint = fromPoint;
 		this.toPoint = toPoint;
 		this.sectionIndex = fromPoint.section;
-		// this.playIndex = playIndex;
 		this.section = this.song.getSection(this.sectionIndex);
 		this.bars = this.section.getPartPlayBarNumbers(playIndex, fromPoint.bar, toPoint.bar);
 
@@ -57,18 +56,18 @@ define([
 			}
 		};
 
-		this.addUnfoldedSectionNotes = function(tmpNoteMng, foldedBarIdx) {
+		this.addUnfoldedSectionNotes = function(tmpNoteMng, foldedBarIdx, notesMapper) {
 			var noteMng = this.song.getComponent('notes');
 			var notes;
 			for (var i = 0; i < this.bars.length; i++) {
-				notes = noteMng.cloneNotesAtBarNumber(foldedBarIdx + this.bars[i], this.song);
-				tmpNoteMng.addNotes(notes);
+				var r = noteMng.cloneNotesAtBarNumber(foldedBarIdx + this.bars[i], this.song);
+				tmpNoteMng.addNotes(r.notes);
+				notesMapper.addIndexes(r.idxs);
 			}
-
 		};
+
 		this.addUnfoldedSectionChords = function(unfoldedChords, foldedBarIdx, unfoldedBarIdx) {
 			var chordMng = this.song.getComponent('chords');
-			
 			var chords, chord;
 
 			for (var i = 0; i < this.bars.length; i++) {

@@ -10,8 +10,8 @@ define([
 		run: function() {
 			test("LeadsheetStructure", function(assert) {
 				testSimpleUnfoldTest(assert);
-				testMichelle(assert);
-				testGertrudesBounce(assert);
+				// testMichelle(assert);
+				// testGertrudesBounce(assert);
 				//tested also with songs with coda where coda section has no name
 				
 			});
