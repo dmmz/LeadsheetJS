@@ -199,9 +199,9 @@ define([
 			repetitions.push(repetition);
 		};
 
-		var initSection = function(iSection) {
+		var initSection = function(iSection, numBar) {
 			var section = self.sections[iSection];
-
+			section.setBarsInfo(numBar, self.leadsheet.getComponent('bars'));
 			var sectionStartPoint = Object.create(SectionStartPoint);
 			sectionStartPoint.callInitValues(self, iSection);
 			sectionStartPoints[iSection] = sectionStartPoint;
@@ -336,10 +336,12 @@ define([
 				return;
 			}
 			createStartLabel(StartLabel.CAPO, 0, 0);
-			var section, i;
+			var section, i, numBar = 0;
+
 			for (var iSection = 0; iSection < self.sections.length; iSection++) {
 				section  = self.sections[iSection];
-				initSection(iSection);
+				initSection(iSection, numBar);
+				numBar += section.getNumberOfBars();
 
 				//looking for codas
 				if (section.isNamedCoda()){

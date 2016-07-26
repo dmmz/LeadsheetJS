@@ -77,13 +77,6 @@ define(function(require) {
 							} else if (tmpEnding) {
 								bar.ending = tmpEnding;
 							}
-							//save info in section
-							if (tmpEnding){
-								section.addEndingsBarNumber(tmpEnding, sectionBarNumber);
-							}else{
-								section.addBaseBarNumber(sectionBarNumber);
-							}
-
 							barManager.addBar(bar);
 							sectionBars.push(bar);
 							//chords:

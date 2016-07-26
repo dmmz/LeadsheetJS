@@ -61,13 +61,11 @@ define(function() {
 		this.baseBarNumbers.push(barNumber);
 	};
 	/**
-	 * [addEndingsBarNumber description]
 	 * @param {String} ending    starting from one "1", "2" 
 	 * @param {[type]} barNumber [description]
 	 */
 	SectionModel.prototype.addEndingsBarNumber = function(ending, barNumber) {
 		var endingPos = Number(ending) - 1;
-		
 		if (this.endingsBarNumbers.length <= endingPos) {
 			var arrayEnding = [];
 			this.endingsBarNumbers.push(arrayEnding);
@@ -200,21 +198,25 @@ define(function() {
 	SectionModel.prototype.getSublabels = function() {
 		return this.sublabels;
 	};
-
-
 	/**
-	 * returns the unfolded section
-	 * @param  {Number} numBars the number of bars of the unfolded section. This can be calculated by SongModel.getUnfoldedSongSection.
-	 * @return {SectionModel}
+	 * sets bar information (which bars are part of base and which of ending)
+	 * @param {Integer} numBarStart global bar index (for bar Manager)
+	 * @param {BarManager} barMng      
 	 */
-	SectionModel.prototype.cloneUnfolded = function(numBars) {
-		if (!numBars) throw "SectionModel - cloneUnfolded: numBars not valid :" + numBars;
-		return new SectionModel({
-			name: this.name,
-			numberOfBars: numBars,
-			style: this.style,
-			timeSignature: this.timeSignature
-		});
+	SectionModel.prototype.setBarsInfo = function(numBarStart, barMng) {
+		var bar, tmpEnding;
+		//reset
+		this.baseBarNumbers = [];
+		this.endingsBarNumbers = [];
+
+		for (var i = 0; i < this.getNumberOfBars(); i++) {
+			bar = barMng.getBar(i + numBarStart);
+			if (bar.getEnding()) {
+				this.addEndingsBarNumber(bar.getEnding(), i);	
+			}else{
+				this.addBaseBarNumber(i);
+			}
+		}
 	};
 
 	return SectionModel;
