@@ -126,7 +126,8 @@ define(function() {
 	};
 
 	SectionModel.prototype.getPlayIndexOfBar = function(barNumber) {
-		if (this.baseBarNumbers.indexOf(barNumber) !== -1) { 
+		//first condition is for Label CAPO, created when baseBarNumbers are not set yet
+		if (this.baseBarNumbers.length === 0 || this.baseBarNumbers.indexOf(barNumber) !== -1) { 
 			return 0;
 		} else {
 			for (var ending = 0; ending < this.getNumTimesToPlay(); ending++) {

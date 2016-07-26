@@ -75,35 +75,10 @@ define([
 				var song2 = SongModel_CSLJson.importFromMusicCSLJSON(someBarsWithNoMelody);
 				var noteMng = song2.getComponent('notes');
 			
-
 				assert.equal(noteMng.getNotesAtBarNumber(0,song2).length, 1, 'one note in first bar');
 				assert.equal(noteMng.getNotesAtBarNumber(3,song2).length, 1, 'whole notes in last three bars have been added (as they had originally no melody in the json');
 				assert.equal(noteMng.getNotesAtBarNumber(4,song2).length, 1);
-				assert.equal(noteMng.getNotesAtBarNumber(5,song2).length, 1);
-
-				//Dylan's delight
-				var dylansDelightSong = SongModel_CSLJson.importFromMusicCSLJSON(DylansDelight);
-				
-				// sections
-				var pickup = dylansDelightSong.getSection(0);
-				console.log(pickup);
-				assert.deepEqual(pickup.baseBarNumbers,[0]);
-
-				var intro = dylansDelightSong.getSection(1);
-				assert.deepEqual(intro.baseBarNumbers,[0, 1, 2, 3]);
-
-				var melodySolos = dylansDelightSong.getSection(2);
-				var array32 = function(){
-					var arr = [];
-					for (var i = 0; i < 32; i++) {
-						arr.push(i);
-					}
-					return arr;
-				}();
-				
-				assert.deepEqual(melodySolos.baseBarNumbers, array32);
-
-				
+				assert.equal(noteMng.getNotesAtBarNumber(5,song2).length, 1);				
 				
 			});
 		}
