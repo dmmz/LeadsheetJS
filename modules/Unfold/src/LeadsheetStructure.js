@@ -16,10 +16,9 @@ define([
 	'modules/Unfold/src/LeadsheetUnfoldConfig',
 	'modules/Unfold/src/RepetitionsHolder',
 	'modules/Unfold/src/SectionSegment',
-	'modules/core/src/SongBarsIterator',
 	'modules/Unfold/src/NotesMapper'
 ], function(NoteManager, PointLabel, StartLabel, EndLabel, CodaToLabel, ToCodaLabel, StartPoint, EndPoint, ToCodaPoint, SectionEndPoint, SectionStartPoint, SectionRepetition, 
-	DaAlRepetition, SectionRepetitionFactory, LeadsheetUnfoldConfig, RepetitionsHolder, SectionSegment, SongBarsIterator, NotesMapper) {
+	DaAlRepetition, SectionRepetitionFactory, LeadsheetUnfoldConfig, RepetitionsHolder, SectionSegment, NotesMapper) {
 
 	var LeadsheetStructure = function(song) {
 		var self = this;
@@ -296,7 +295,7 @@ define([
 
 		this.setUnfoldedLeadsheet = function(segments) {
 			
-			var barsIterator = new SongBarsIterator(this.leadsheet);
+			
 			var newUnfoldedSection, prevUnfoldedSection, segment;
 			var unfoldedBarIdx = 0;
 			var foldedBarIdx;
@@ -305,14 +304,18 @@ define([
 			var bars = [];
 			var chords = [];
 			var tmpNoteMng = new NoteManager();
+			var lastKeySig = this.leadsheet.getTonality();
 			for (var i = 0; i < segments.length; i++) {
 				segment = segments[i];
 				foldedBarIdx = segment.getSectionStartBarNumber(sections);
 
 				segment.addUnfoldedSection(sections);
-				segment.addUnfoldedSectionBars(bars, foldedBarIdx);
+
+				lastKeySig = segment.addUnfoldedSectionBars(bars, foldedBarIdx, lastKeySig);
+
 				segment.addUnfoldedSectionChords(chords, foldedBarIdx, unfoldedBarIdx);
 				segment.addUnfoldedSectionNotes(tmpNoteMng, foldedBarIdx, notesMapper);
+
 				unfoldedBarIdx += sections[i].getNumberOfBars();
 			}
 
@@ -325,7 +328,6 @@ define([
 			if (noteMng.containsWholeRests()) {
 				this.leadsheet.updateNotesBarDuration();
 			}
-
 			this.leadsheet.notesMapper = notesMapper;
 			
 		};

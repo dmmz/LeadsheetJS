@@ -89,6 +89,10 @@ define([
 			struct.setUnfoldedLeadsheet(segments);
 			
 			var unfoldedSong = struct.leadsheet;
+			
+			var iBar = unfoldedSong.getStartBarNumberFromSectionNumber(1);
+			var startBarOfA2 = unfoldedSong.getComponent('bars').getBar(iBar);
+			assert.equal(startBarOfA2.keySignatureChange, "C", 'In A1, the key signature is changed, so we need to change it back to C in start of A2');
 
 			//testing notes mapping
 			var unfoldedNotes = unfoldedSong.notesMapper.noteIndexes;

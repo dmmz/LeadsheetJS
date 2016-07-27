@@ -3,8 +3,9 @@ define([
 	'modules/Unfold/src/SectionStartPoint',
 	'modules/Unfold/src/StartLabel',
 	'modules/Unfold/src/SectionEndPoint',
-	'modules/Unfold/src/EndLabel'
-], function(SectionModel, SectionStartPoint, StartLabel, SectionEndPoint, EndLabel) {
+	'modules/Unfold/src/EndLabel',
+	'modules/core/src/SongBarsIterator'
+], function(SectionModel, SectionStartPoint, StartLabel, SectionEndPoint, EndLabel, SongBarsIterator) {
 	var SectionSegment = function(song, fromPoint, toPoint, playIndex) {
 
 
@@ -48,12 +49,24 @@ define([
 			}));
 		};
 
-		this.addUnfoldedSectionBars = function(unfoldedBars, foldedBarIdx) {
-
+		this.addUnfoldedSectionBars = function(unfoldedBars, foldedBarIdx, lastKeySig) {
+			
+			var barsIt = new SongBarsIterator(this.song);
+			barsIt.setBarIndex(foldedBarIdx);
+			var unfoldedKeySig = barsIt.getBarKeySignature();
 			var barMng = this.song.getComponent('bars');
+			var bar;
 			for (var i = 0; i < this.bars.length; i++) {
-				unfoldedBars.push(barMng.getBar(foldedBarIdx + this.bars[i]).clone(true));
+				bar = barMng.getBar(foldedBarIdx + this.bars[i]);
+				lastKeySig = bar.keySignatureChange || lastKeySig;
+				var barClone = bar.clone(true);
+				//set original key signature (e.g. in repeated section with key sig. change in the middle, 2nd time needs to start with original key sig.)
+				if (i === 0 && unfoldedKeySig !== lastKeySig) {
+					barClone.keySignatureChange = unfoldedKeySig;
+				}
+				unfoldedBars.push(barClone);
 			}
+			return lastKeySig;
 		};
 
 		this.addUnfoldedSectionNotes = function(tmpNoteMng, foldedBarIdx, notesMapper) {

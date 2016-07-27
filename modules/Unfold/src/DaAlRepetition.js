@@ -4,7 +4,7 @@ define([
 		'modules/Unfold/src/StartLabel',
 		'modules/Unfold/src/EndLabel'
 	], function(Repetition, RepeatPoint, StartLabel, EndLabel){
-	var DaAlRepetition = Object.assign(Repetition,{
+	var DaAlRepetition = Object.assign(Object.create(Repetition),{
 		al: undefined,
 		da: undefined
 	});
