@@ -65,7 +65,7 @@ define(
 				var lineProps = {hasLabel: false, hasSectionSigns: false, hasEndings: false, hasChords: false, };
 				_.forEach(line, function(){
 					var bar = barManager.getBar(barIndex);
-					if (lineProps.hasLabel === false && !_.isUndefined(bar.getLabel())) {
+					if (lineProps.hasLabel === false && !_.isUndefined(bar.getLabel()) && bar.getLabel().length !== 0) { 
 						lineProps.hasLabel = true;
 					}
 					if (lineProps.hasEndings === false && !_.isUndefined(bar.getEnding())) {
