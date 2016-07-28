@@ -24,23 +24,23 @@ define([
 		};
 
 		this.addUnfoldedSection = function(sections) {
-			
+
 			function getSectionName(sectionName, fromPoint, toPoint) {
 				//endings
 				if (sectionName && playIndex > 0) sectionName += " (" + (playIndex + 1) + ")";
 				//from 
-				if (Object.getPrototypeOf(fromPoint) !== SectionStartPoint && 
+				if (Object.getPrototypeOf(fromPoint) !== SectionStartPoint &&
 					!fromPoint.hasLabel(StartLabel.CAPO) && !fromPoint.hasLabel(StartLabel.CODATO)) {
 					sectionName += " from " + fromPoint.label;
 				}
 				//to
-				if (Object.getPrototypeOf(toPoint) !== SectionEndPoint && !toPoint.hasLabel(EndLabel.END)){
+				if (Object.getPrototypeOf(toPoint) !== SectionEndPoint && !toPoint.hasLabel(EndLabel.END)) {
 					sectionName += " to " + toPoint.label;
 				}
 				return sectionName;
 			}
 			var sectionName = getSectionName(this.section.getName(), this.fromPoint, this.toPoint);
-			
+
 			var numberOfBars = this.bars.length;
 
 			sections.push(new SectionModel({
@@ -50,7 +50,7 @@ define([
 		};
 
 		this.addUnfoldedSectionBars = function(unfoldedBars, foldedBarIdx, lastKeySig) {
-			
+
 			var barsIt = new SongBarsIterator(this.song);
 			barsIt.setBarIndex(foldedBarIdx);
 			var unfoldedKeySig = barsIt.getBarKeySignature();

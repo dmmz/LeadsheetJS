@@ -1,12 +1,12 @@
-define(['modules/Unfold/src/RepetitionConfig'], function(RepetitionConfig){
+define(['modules/Unfold/src/RepetitionConfig'], function(RepetitionConfig) {
 	var Repetition = {
-		setValues: function(from, to, until){
+		setValues: function(from, to, until) {
 			//this.structure not initialized
 			this.setValuesFromPoint(from);
 			this.to = to;
 			this.until = until;
 		},
-		setValuesFromPoint: function (fromEndPoint){
+		setValuesFromPoint: function(fromEndPoint) {
 			this.structure = fromEndPoint.leadsheetStructure;
 			this.from = fromEndPoint;
 		},
@@ -41,7 +41,6 @@ define(['modules/Unfold/src/RepetitionConfig'], function(RepetitionConfig){
 				playIndex: toPoint.playIndex
 			};
 		}
-
 	};
 	return Repetition;
 });

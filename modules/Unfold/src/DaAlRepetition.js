@@ -1,10 +1,10 @@
 define([
-		'modules/Unfold/src/Repetition',
-		'modules/Unfold/src/RepeatPoint',
-		'modules/Unfold/src/StartLabel',
-		'modules/Unfold/src/EndLabel'
-	], function(Repetition, RepeatPoint, StartLabel, EndLabel){
-	var DaAlRepetition = Object.assign(Object.create(Repetition),{
+	'modules/Unfold/src/Repetition',
+	'modules/Unfold/src/RepeatPoint',
+	'modules/Unfold/src/StartLabel',
+	'modules/Unfold/src/EndLabel'
+], function(Repetition, RepeatPoint, StartLabel, EndLabel) {
+	var DaAlRepetition = Object.assign(Object.create(Repetition), {
 		al: undefined,
 		da: undefined
 	});
@@ -22,7 +22,7 @@ define([
 	};
 
 	DaAlRepetition.getUntilPoint = function() {
-		if (!this.until && !!this.al){
+		if (!this.until && !!this.al) {
 			if (!this.structure.hasEndLabel(this.al)) {
 				if (this.al === EndLabel.FINE) {
 					this.al = EndLabel.END;
@@ -35,34 +35,31 @@ define([
 		}
 		return this.until;
 	};
+	// constructor
+	DaAlRepetition.initValues = function(leadsheetStructure, sublabel, section, bar, playIndex) {
 
-	DaAlRepetition.initValues = function(leadsheetStructure, sublabel, section, bar, playIndex){
-		
 		var invalidRepetitionException = "Invalid repetition";
 		var repeatPoint = Object.create(RepeatPoint);
 		repeatPoint.callInitValues(leadsheetStructure, sublabel, section, bar, playIndex);
 
 		this.setValuesFromPoint(repeatPoint);
-		
+
 		var parts = sublabel.split(" ");
 		var numTokens = parts.length;
-		if (numTokens != 1 && numTokens != 3){ //e.g. DS (1) or DC al Capo (3)
+		if (numTokens != 1 && numTokens != 3) { //e.g. DS (1) or DC al Capo (3)
 			throw invalidRepetitionException;
 		}
 
 		this.setDa(StartLabel.fromString(parts[0]));
-		if (!this.getDaPoint()){
+		if (!this.getDaPoint()) {
 			throw invalidRepetitionException;
 		}
-		if (numTokens === 3){
+		if (numTokens === 3) {
 			if (parts[1].toLowerCase() !== 'al') {
-				throw invalidRepetitionException;		
+				throw invalidRepetitionException;
 			}
 			this.setAl(EndLabel.fromString(parts[2]));
 		}
-
 	};
-
 	return DaAlRepetition;
-
 });

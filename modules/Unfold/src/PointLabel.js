@@ -1,8 +1,8 @@
-define(function(){
+define(function() {
 	var PointLabel = {
 		TOCODAS: [],
 		SOLOS: [],
-		getToCodaLabels: function(){
+		getToCodaLabels: function() {
 			return this.TOCODAS;
 		},
 		/**
@@ -17,11 +17,11 @@ define(function(){
 				type: type
 			});
 		},
-		create: function(){
+		create: function() {
 			return Object.create(this);
 		},
-		fromString: function(name){
-			name = name.replace(" ","_");
+		fromString: function(name) {
+			name = name.replace(" ", "_");
 			return this[name];
 		}
 	};

@@ -1,6 +1,6 @@
 define([
 	'modules/Unfold/src/PointLabel'
-	], function(PointLabel) {
+], function(PointLabel) {
 	var StartLabel = PointLabel.create();
 
 	StartLabel.CAPO = "Capo";
@@ -12,16 +12,21 @@ define([
 	StartLabel.addSoloLabel(StartLabel.SEGNO, 'start');
 	StartLabel.addSoloLabel(StartLabel.SEGNO2, 'start');
 
-	StartLabel.fromString = function(name){
+	StartLabel.fromString = function(name) {
 		switch (name.toLowerCase()) {
-			case "dc": return StartLabel.CAPO;
-			case "ds": return StartLabel.SEGNO;
-			case "ds2": return StartLabel.SEGNO2;
-			case "coda to": return StartLabel.CODATO;
-			case "coda2 to": return StartLabel.CODA2TO;
-			default: return null;
+			case "dc":
+				return StartLabel.CAPO;
+			case "ds":
+				return StartLabel.SEGNO;
+			case "ds2":
+				return StartLabel.SEGNO2;
+			case "coda to":
+				return StartLabel.CODATO;
+			case "coda2 to":
+				return StartLabel.CODA2TO;
+			default:
+				return null;
 		}
 	};
-
 	return StartLabel;
 });

@@ -1,4 +1,7 @@
-define(function(){
+define(function() {
+	/**
+	 * UnfoldingManager to get and restore components of a song
+	 */
 	return {
 		getComponents: function(song) {
 			return {
@@ -16,5 +19,4 @@ define(function(){
 			foldedComponents = [];
 		}
 	};
-
 });

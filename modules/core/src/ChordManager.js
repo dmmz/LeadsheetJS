@@ -297,7 +297,6 @@
 			}
 			return undefined;
 		};
-
 		/**
 		 * @interface cloneElems
 		 *

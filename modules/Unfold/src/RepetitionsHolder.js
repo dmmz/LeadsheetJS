@@ -1,27 +1,24 @@
 define([
-	'underscore', 
-	'modules/Unfold/src/EndLabel', 
+	'underscore',
+	'modules/Unfold/src/EndLabel',
 	'modules/Unfold/src/DaAlRepetition',
 	'modules/Unfold/src/Repetition',
 	'modules/Unfold/src/SectionRepetition',
 	'modules/Unfold/src/SectionFiniteRepetition'
-	], function(_, EndLabel, DaAlRepetition, Repetition, SectionRepetition, SectionFiniteRepetition){
+], function(_, EndLabel, DaAlRepetition, Repetition, SectionRepetition, SectionFiniteRepetition) {
 	var RepetitionsHolder = {};
 
 	RepetitionsHolder.init = function(structure) {
 		this.repetitions = structure.getRepetitions();
-		//TODO: sort repetitions using backbone or underscore
-		//this.repetitions = [];
-
 	};
-
 	RepetitionsHolder.getNextRepetitionIfBefore = function(cursor, target) {
 		var self = this;
+
 		function findNextRepetition(cursor) {
 			var repetition;
 			for (var i = 0; i < self.repetitions.length; i++) {
 				repetition = self.repetitions[i];
-				if (repetition.config.doIt && repetition.isAfter(cursor)){
+				if (repetition.config.doIt && repetition.isAfter(cursor)) {
 					return i;
 				}
 			}
@@ -35,15 +32,14 @@ define([
 		var repetition = this.repetitions[index];
 		var targetPoint = target.point;
 		if (!!targetPoint && !targetPoint.hasLabel(EndLabel.END)) {
-			repTargetPoint = repetition.getTargetPoint(); 
+			repTargetPoint = repetition.getTargetPoint();
 			if (!repTargetPoint.isBefore(targetPoint))
 				return null;
 		}
 		if (Object.getPrototypeOf(repetition) === DaAlRepetition)
-		 	this.repetitions.splice(index, 1);
+			this.repetitions.splice(index, 1);
 
 		return repetition;
 	};
-
 	return RepetitionsHolder;
 });

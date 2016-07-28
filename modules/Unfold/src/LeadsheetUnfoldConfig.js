@@ -1,5 +1,5 @@
-define(function(){
-	var LeadsheetUnfoldConfig = function(leadsheetStructure){
+define(function() {
+	var LeadsheetUnfoldConfig = function(leadsheetStructure) {
 		this.leadsheet = leadsheetStructure.leadsheet;
 		this.repetitions = [];
 		var repetitions = leadsheetStructure.getRepetitions();
@@ -7,6 +7,5 @@ define(function(){
 			this.repetitions.push(repetitions[i].getConfig());
 		}
 	};
-
 	return LeadsheetUnfoldConfig;
 });

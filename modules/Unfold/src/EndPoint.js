@@ -1,8 +1,7 @@
-define(['modules/Unfold/src/StructurePoint'], function(StructurePoint){
+define(['modules/Unfold/src/StructurePoint'], function(StructurePoint) {
 	var EndPoint = Object.create(StructurePoint);
 
-	EndPoint.initValues = function(leadsheetStructure, label, section, bar, playIndex)
-	{
+	EndPoint.initValues = function(leadsheetStructure, label, section, bar, playIndex) {
 		this.setValues(leadsheetStructure, label, section, bar, playIndex);
 		leadsheetStructure.addEndLabel(this);
 	};
@@ -15,6 +14,5 @@ define(['modules/Unfold/src/StructurePoint'], function(StructurePoint){
 			playIndex: 0
 		};
 	};
-
 	return EndPoint;
 });

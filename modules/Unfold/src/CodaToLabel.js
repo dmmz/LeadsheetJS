@@ -4,13 +4,12 @@ define([
 ], function(StartLabel, EndLabel) {
 	var CodaToLabel = Object.create(StartLabel);
 
-	CodaToLabel.getToCodaLabel = function(codaToLabel){
-		if (codaToLabel === StartLabel.CODATO){
+	CodaToLabel.getToCodaLabel = function(codaToLabel) {
+		if (codaToLabel === StartLabel.CODATO) {
 			return EndLabel.TOCODA;
-		}else if(codaToLabel === StartLabel.CODA2TO) {
+		} else if (codaToLabel === StartLabel.CODA2TO) {
 			return EndLabel.TOCODA2;
 		}
 	};
-
 	return CodaToLabel;
 });

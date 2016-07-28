@@ -4,9 +4,7 @@ define(['modules/Unfold/src/EndPoint', 'modules/Unfold/src/ToCodaLabel'], functi
 		this.initValues(leadsheetStructure, label, section, bar, playIndex);
 	};
 	ToCodaPoint.getJumpTo = function() {
-		
 		return this.leadsheetStructure.getStartLabel(ToCodaLabel.getCodaToLabel(this.label));
 	};
-
 	return ToCodaPoint;
 });

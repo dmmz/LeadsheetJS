@@ -1,6 +1,5 @@
 define(['modules/Unfold/src/SectionRepetition'], function(SectionRepetition) {
-	var SectionOpenRepetition = Object.create(SectionRepetition);	
-	
+	var SectionOpenRepetition = Object.create(SectionRepetition);
 
 	SectionOpenRepetition.callInitValues = function(structure, section) {
 		this.isSectionOpenRepetition = true; //we add a property to avoid the use of 'instanceof SectionOpenRepetition' which causes circular dependencies
