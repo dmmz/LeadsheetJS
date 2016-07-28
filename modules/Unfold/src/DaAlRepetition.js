@@ -46,7 +46,7 @@ define([
 
 		var parts = sublabel.split(" ");
 		var numTokens = parts.length;
-		if (numTokens != 1 && numTokens != 3) { //e.g. DS (1) or DC al Capo (3)
+		if (numTokens !== 1 && numTokens !== 3) { //e.g. DS (1) or DC al Capo (3)
 			throw invalidRepetitionException;
 		}
 

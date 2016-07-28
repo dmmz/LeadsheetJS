@@ -414,7 +414,7 @@ define([
 			if (roundBeat(notesBarDur) > currentBarNumBeats){
 				console.warn("note exceeds bar duration (index "+ i +") bar "+songIt.getBarIndex());
 			}
-			else if (roundBeat(notesBarDur) == currentBarNumBeats ){
+			else if (roundBeat(notesBarDur) === currentBarNumBeats ){
 				notesBarDur = 0;
 				songIt.next();	
 				if (songIt.hasNext()){

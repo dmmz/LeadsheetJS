@@ -38,19 +38,21 @@ define(['modules/Unfold/src/EndLabel'], function(EndLabel) {
 			return this.leadsheetStructure === structure && this.section === section;
 		},
 		compareTo: function(otherPoint) {
+			function intCompare(x, y) { //we know they won't be equal
+				return (x < y) ? -1 : 1;
+			}
 			if (this.getLabel() === EndLabel.END) {
 				return 1;
 			}
 			if (otherPoint.getLabel() === EndLabel.END) {
 				return -1;
 			}
-
 			if (this.section !== otherPoint.section) {
-				return this.section < otherPoint.section ? -1 : 1;
-			} else if (this.playIndex != otherPoint.playIndex) {
-				return this.playIndex < otherPoint.playIndex ? -1 : 1;
+				return intCompare(this.section, otherPoint.section);
+			} else if (this.playIndex !== otherPoint.playIndex) {
+				return intCompare(this.playIndex, otherPoint.playIndex);
 			} else {
-				return this.bar < otherPoint.bar ? -1 : 1;
+				return intCompare(this.bar, otherPoint.bar);
 			}
 		}
 	};

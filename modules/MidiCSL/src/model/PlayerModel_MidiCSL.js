@@ -28,7 +28,7 @@ define([
 		SongModel_MidiCSL,
 		MIDI,
 		pubsub) {
-		
+
 		/**
 		 * PlayerModel_MidiCSL is the main midi player class, it creates and reads a SongModel_MidiCSL object from a SongModel
 		 * @exports MidiCSL/PlayerModel_MidiCSL
@@ -63,7 +63,7 @@ define([
 			}
 			this.cursorModel = options.cursorModel;
 			this.cursorNoteModel = options.cursorNoteModel;
-			
+
 			this.chords = {
 				volume: initVolume,
 				tmpVolume: initVolume,
@@ -127,7 +127,7 @@ define([
 		};
 
 		PlayerModel_MidiCSL.prototype.setLoop = function(loop) {
-			if (!this.isEnabled){
+			if (!this.isEnabled) {
 				return;
 			}
 			if (loop !== undefined) {
@@ -214,9 +214,6 @@ define([
 			this.melody.volume = volume;
 		};
 
-		PlayerModel_MidiCSL.prototype.getChordsInstrument = function() {
-			return this.chords.instrument;
-		};
 
 		PlayerModel_MidiCSL.prototype.setChordsInstrument = function(instrument) {
 			if (typeof instrument !== "undefined") {
@@ -226,10 +223,6 @@ define([
 			} else {
 				return false;
 			}
-		};
-
-		PlayerModel_MidiCSL.prototype.getMelodyInstrument = function() {
-			return this.melody.instrument;
 		};
 
 		PlayerModel_MidiCSL.prototype.setMelodyInstrument = function(instrument) {
@@ -296,7 +289,7 @@ define([
 
 			pos = unfoldedSong.notesMapper.getFirstUnfoldedIdx(pos);
 			var noteMng = unfoldedSong.getComponent('notes');
-			
+
 			return noteMng.getStartTieNotePos(pos);
 		};
 
@@ -325,23 +318,25 @@ define([
 				midiSongModel.setFromType(metronome, 'metronome');
 				var song = midiSongModel.getSong();
 				if (song.length !== 0) {
-					
+
 					var lastNote = midiSongModel.getLastNote(); // Looking for last note
 					var beatDuration = self.getBeatDuration(tempo);
 					self.noteTimeOut = []; // Keep every setTimeout so we can clear them on pause/stop
 					self.songDuration = lastNote.getCurrentTime() + lastNote.getDuration() * beatDuration;
-					
+
 					var cursorPosition = self.cursorNoteModel ? self.cursorNoteModel.getPos() : [null];
 					if (cursorPosition[0] == null) cursorPosition = [0, 0];
 					var playFrom = 0;
 					var playTo, note;
 					var cursorPositionStart, cursorPositionEnd;
-					if (cursorPosition[0] !== 0){
+					if (cursorPosition[0] !== 0) {
 						cursorPositionStart = self.getPlayPosition(cursorPosition[0], unfoldedSong);
 						playFrom = midiSongModel.getMelodySoundModelFromIndex(cursorPositionStart).getCurrentTime() * beatDuration;
 					}
 					if (cursorPosition.length !== 1 && cursorPosition[1] !== cursorPosition[0]) {
-						cursorPositionEnd = self.getPlayPosition(cursorPosition[1], unfoldedSong, {end: true});
+						cursorPositionEnd = self.getPlayPosition(cursorPosition[1], unfoldedSong, {
+							end: true
+						});
 						note = midiSongModel.getMelodySoundModelFromIndex(cursorPositionEnd);
 						playTo = (note.getCurrentTime() + note.getDuration()) * beatDuration;
 					}
@@ -368,19 +363,20 @@ define([
 						},
 						play: function(MIDI, currentMidiNote) {
 							if (!this.doPlay) return;
-							
+
 							MIDI.setVolume(this.getChannel(), this.getVolume());
 							var duration = this.currentNote.getDuration() * (60 / this.tempo);
 							var velocityNote = Math.random() * this.randomVelocityRange + this.velocityMin;
 							MIDI.noteOn(this.getChannel(), currentMidiNote, velocityNote);
 							MIDI.noteOff(this.getChannel(), currentMidiNote, duration);
+						},
+						getChannel: function() {
+							return this.playerModel[this.type].instrument;
 						}
 					};
 					//child classes for notes, chords and metronome to play
 					var noteMidiObj = Object.assign(Object.create(midiObj), {
-						getChannel: function() {
-							return this.playerModel.getMelodyInstrument();
-						},
+						type: 'melody',
 						getVolume: function() {
 							return 127 * this.playerModel.getMelodyVolume();
 						}
@@ -397,9 +393,7 @@ define([
 						}
 					});
 					var chordsMidiObj = Object.assign(Object.create(midiObj), {
-						getChannel: function() {
-							return this.playerModel.getChordsInstrument();
-						},
+						type: 'chords',
 						getVolume: function() {
 							return 80 * this.playerModel.getChordsVolume();
 						}
@@ -442,11 +436,11 @@ define([
 										self.setPositionInPercent(0);
 										$.publish('PlayerModel-onfinish');
 									} else {
-										if (!playTo){
+										if (!playTo) {
 											//if only one note was selected playTo will be undefined, loop has to restart from the beginning (not from playFrom),
 											// otherwise, it would always loop from current note to the end, without going to the start when it arrives to the end of the song
-											playFrom = 0; 
-										} 
+											playFrom = 0;
+										}
 										self.play(tempo, playFrom, playTo);
 									}
 								}), duration * 1000);
@@ -501,7 +495,7 @@ define([
 			for (var i in this.noteTimeOut) {
 				window.clearTimeout(this.noteTimeOut[i]);
 			}
-			if (!dontResetPosition){
+			if (!dontResetPosition) {
 				this.setPositionIndex(0);
 				this.setPositionInPercent(0);
 			}
