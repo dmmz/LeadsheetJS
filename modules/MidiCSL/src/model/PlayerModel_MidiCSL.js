@@ -19,7 +19,8 @@ define([
 		'modules/MidiCSL/src/converters/SongConverterMidi_MidiCSL',
 		'modules/MidiCSL/src/model/SongModel_MidiCSL',
 		'Midijs',
-		'pubsub'
+		'pubsub',
+		'underscore'
 	],
 	function($,
 		SongModel,
@@ -27,7 +28,8 @@ define([
 		SongConverterMidi_MidiCSL,
 		SongModel_MidiCSL,
 		MIDI,
-		pubsub) {
+		pubsub,
+		_) {
 
 		/**
 		 * PlayerModel_MidiCSL is the main midi player class, it creates and reads a SongModel_MidiCSL object from a SongModel
@@ -190,7 +192,7 @@ define([
 			localStorage.setItem("player-volume", volume);
 		};
 
-		
+
 
 		PlayerModel_MidiCSL.prototype.setChordsVolume = function(volume) {
 			if (typeof volume === "undefined" || isNaN(volume)) {
@@ -200,7 +202,7 @@ define([
 			this.chords.volume = volume;
 		};
 
-		
+
 		PlayerModel_MidiCSL.prototype.setMelodyVolume = function(volume) {
 			if (typeof volume === "undefined" || isNaN(volume)) {
 				throw 'PlayerModel_MidiCSL - setMelodyVolume - volume must be a number ' + volume;
@@ -373,15 +375,15 @@ define([
 						}
 					};
 					//child classes for notes, chords and metronome to play
-					var noteMidiObj = Object.assign(Object.create(midiObj), {
+					var noteMidiObj = _.extendOwn(Object.create(midiObj), {
 						type: 'melody',
 						volume: 127
 					});
-					var chordsMidiObj = Object.assign(Object.create(midiObj), {
+					var chordsMidiObj = _.extendOwn(Object.create(midiObj), {
 						type: 'chords',
 						volume: 80
 					});
-					var metronomeMidiObj = Object.assign(Object.create(midiObj), {
+					var metronomeMidiObj = _.extendOwn(Object.create(midiObj), {
 						volume: 80,
 						setPlay: function(play) {
 							this.doPlay = !!play;

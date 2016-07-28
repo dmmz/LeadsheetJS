@@ -10,67 +10,67 @@ define([
 			var startLabels = struct.getStartLabels();
 			var endLabels = struct.getEndLabels();
 			var sectionStartPoints = struct.getSectionStartPoints();
-			assert.equal(startLabels.size, 5);
-			assert.equal(endLabels.size, 7, "Total number of endLabels");
-			unfoldTester.compareObject(endLabels.get('end_section_0_0'), {
+			
+			assert.equal(Object.keys(endLabels).length, 7, "Total number of endLabels");
+			unfoldTester.compareObject(endLabels.end_section_0_0, {
 				section: 0,
 				bar: 2,
 				playIndex: 0
 			},'end_section_0_0');	
-			unfoldTester.compareObject(endLabels.get('end_section_0_1'), {
+			unfoldTester.compareObject(endLabels.end_section_0_1, {
 				section: 0,
 				bar: 3,
 				playIndex: 1
 			},'end_section_0_1');
-			unfoldTester.compareObject(endLabels.get('Coda'), {
+			unfoldTester.compareObject(endLabels.Coda, {
 				section: 0,
 				bar: 1,
 				playIndex: 0
 			},'Coda');
-			unfoldTester.compareObject(endLabels.get('end_section_1_0'), {
+			unfoldTester.compareObject(endLabels.end_section_1_0, {
 				section: 1,
 				bar: 1,
 				playIndex: 0
 			}, 'end_section_1_0');
-			unfoldTester.compareObject(endLabels.get('DC al Coda'), {
+			unfoldTester.compareObject(endLabels['DC al Coda'], {
 				section: 1,
 				bar: 1,
 				playIndex: 0
 			}, 'DC al Coda');
-			unfoldTester.compareObject(endLabels.get('end_section_2_0'), {
+			unfoldTester.compareObject(endLabels.end_section_2_0, {
 				section: 2,
 				bar: 1,
 				playIndex: 0
 			},'end_section_2_0');
-			unfoldTester.compareObject(endLabels.get('End'), {
+			unfoldTester.compareObject(endLabels.End, {
 				section: 2,
 				bar: 1,
 				playIndex: 0
 			}, 'End');	
 				
 			//START LABELS
-			assert.equal(startLabels.size, 5, "Total number of startLabels");
-			unfoldTester.compareObject(startLabels.get(StartLabel.CAPO), {
+			assert.equal(Object.keys(startLabels).length, 5, "Total number of startLabels");
+			unfoldTester.compareObject(startLabels[StartLabel.CAPO], {
 				section: 0,
 				bar: 0,
 				playIndex: 0
 			}, 'Capo');
-			unfoldTester.compareObject(startLabels.get('start_section_0'), {
+			unfoldTester.compareObject(startLabels.start_section_0, {
 				section: 0,
 				bar: 0,
 				playIndex: 0
 			},'start_section_0');
-			unfoldTester.compareObject(startLabels.get('start_section_1'), {
+			unfoldTester.compareObject(startLabels.start_section_1, {
 				section: 1,
 				bar: 0,
 				playIndex: 0
 			},'start_section_1');
-			unfoldTester.compareObject(startLabels.get('start_section_2'), {
+			unfoldTester.compareObject(startLabels.start_section_2, {
 				section: 2,
 				bar: 0,
 				playIndex: 0
 			},'start_section_2');
-			unfoldTester.compareObject(startLabels.get(StartLabel.CODATO), {
+			unfoldTester.compareObject(startLabels[StartLabel.CODATO], {
 				section: 2,
 				bar: 0,
 				playIndex: 0

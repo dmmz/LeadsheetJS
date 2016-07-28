@@ -43,12 +43,12 @@ define([
 			return song;
 		}
 		return {
-			init,
-			compareSegment,
-			compareObject,
-			getSong,
-			getTotalNumBarsBySections,
-			getTotalNumBarsByBars
+			init: init,
+			compareSegment: compareSegment,
+			compareObject: compareObject,
+			getSong: getSong,
+			getTotalNumBarsBySections: getTotalNumBarsBySections,
+			getTotalNumBarsByBars: getTotalNumBarsByBars
 		};
 	};
 	

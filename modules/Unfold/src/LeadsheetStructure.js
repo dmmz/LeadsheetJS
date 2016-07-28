@@ -22,10 +22,10 @@ define([
 
 	var LeadsheetStructure = function(song) {
 		var self = this;
-		var startLabels = new Map();
-		var endLabels = new Map();
+		var startLabels = {};
+		var endLabels = {};
 		var sectionStartPoints = {};
-		var sectionEndPoints = new Map();
+		var sectionEndPoints = {};
 		var repetitions = [];
 
 		var lastSectionEndPoint = null;
@@ -37,10 +37,10 @@ define([
 		// IIFE init function at the end
 
 		function hasStartLabel(label) {
-			return startLabels.has(label);
+			return startLabels.hasOwnProperty(label);
 		}
 		this.hasEndLabel = function(label) {
-			return endLabels.has(label);
+			return endLabels.hasOwnProperty(label);
 		};
 		/**
 		 
@@ -96,11 +96,11 @@ define([
 		};
 
 		this.addStartLabel = function(point) {
-			startLabels.set(point.getLabel(), point);
+			startLabels[point.getLabel()] = point;
 		};
 
 		this.addEndLabel = function(point) {
-			endLabels.set(point.getLabel(), point);
+			endLabels[point.getLabel()] = point;
 		};
 
 		this.getStartLabels = function() {
@@ -112,17 +112,17 @@ define([
 		};
 
 		this.getStartLabel = function(label) {
-			if (!startLabels.has(label)) {
+			if (!startLabels.hasOwnProperty(label)) {
 				console.warn("missing label " + label);
 			}
-			return startLabels.get(label);
+			return startLabels[label];
 		};
 
 		this.getEndLabel = function(label) {
-			if (!endLabels.has(label)) {
+			if (!endLabels.hasOwnProperty(label)) {
 				console.warn("missing label " + label);
 			}
-			return endLabels.get(label);
+			return endLabels[label];
 		};
 
 		this.getSectionStartPoints = function() {
@@ -139,7 +139,7 @@ define([
 			return sectionStartPoints[iSection];
 		};
 		this.getSectionEndPoint = function(iSection, playIndex) {
-			return sectionEndPoints.get(iSection + "-" + playIndex);
+			return sectionEndPoints[iSection + "-" + playIndex];
 		};
 		this.getSectionLastEndPoint = function(iSection) {
 			var playIndex = this.sections[iSection].getLastPlayIndex();
@@ -149,7 +149,7 @@ define([
 		var addSectionPlayPoints = function(section, iSection, playIndex) {
 			var sectionEndPoint = Object.create(SectionEndPoint);
 			sectionEndPoint.callInitValues(self, iSection, playIndex);
-			sectionEndPoints.set(iSection + "-" + playIndex, sectionEndPoint);
+			sectionEndPoints[iSection + "-" + playIndex] = sectionEndPoint;
 			lastSectionEndPoint = sectionEndPoint;
 		};
 		var hasRepetitionUntil = function(point) {
@@ -174,7 +174,7 @@ define([
 			var toCodaPoint;
 			var toCodaLabel = CodaToLabel.getToCodaLabel(toLabel);
 			if (self.hasEndLabel(toCodaLabel)) {
-				toCodaPoint = endLabels.get(toCodaLabel);
+				toCodaPoint = endLabels[toCodaLabel];
 			} else if (toCodaLabel === EndLabel.TOCODA2) {
 
 				if (!self.hasEndLabel(EndLabel.TOCODA)) {

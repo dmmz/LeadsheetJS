@@ -14,82 +14,82 @@ define([
 		var struct = unfoldTester.init(Michelle);
 		var startLabels = struct.getStartLabels();
 		//START LABELS
-		assert.equal(startLabels.size, 6, "Total number of startLabels");
-		unfoldTester.compareObject(startLabels.get(StartLabel.CAPO), {
+		assert.equal(Object.keys(startLabels).length, 6, "Total number of startLabels");
+		unfoldTester.compareObject(startLabels[StartLabel.CAPO], {
 			section: 0,
 			bar: 0,
 			playIndex: 0
 		}, 'CAPO');
 
-		unfoldTester.compareObject(startLabels.get('start_section_0'), {
+		unfoldTester.compareObject(startLabels.start_section_0, {
 			section: 0,
 			bar: 0,
 			playIndex: 0
 		}, 'start_section_0');
 
-		unfoldTester.compareObject(startLabels.get('start_section_1'), {
+		unfoldTester.compareObject(startLabels.start_section_1, {
 			section: 1,
 			bar: 0,
 			playIndex: 0
 		}, 'start_section_1');
 
-		unfoldTester.compareObject(startLabels.get('start_section_2'), {
+		unfoldTester.compareObject(startLabels.start_section_2, {
 			section: 2,
 			bar: 0,
 			playIndex: 0
 		}, 'start_section_2');
 
-		unfoldTester.compareObject(startLabels.get(StartLabel.SEGNO), {
+		unfoldTester.compareObject(startLabels[StartLabel.SEGNO], {
 			section: 1,
 			bar: 6,
 			playIndex: 0
 		}, 'SEGNO');
 
-		unfoldTester.compareObject(startLabels.get(StartLabel.CODATO), {
+		unfoldTester.compareObject(startLabels[StartLabel.CODATO], {
 			section: 2,
 			bar: 0,
 			playIndex: 0
 		}, 'CODATO');
 
 		var endLabels = struct.getEndLabels();
-		assert.equal(endLabels.size, 7, "Total number of endLabels");
+		assert.equal(Object.keys(endLabels).length, 7, "Total number of endLabels");
 
-		unfoldTester.compareObject(endLabels.get('end_section_0_0'), {
+		unfoldTester.compareObject(endLabels.end_section_0_0, {
 			section: 0,
 			bar: 5,
 			playIndex: 0
 		}, 'end_section_0_0');
 
-		unfoldTester.compareObject(endLabels.get('end_section_1_0'), {
+		unfoldTester.compareObject(endLabels.end_section_1_0, {
 			section: 1,
 			bar: 15,
 			playIndex: 0
 		}, 'end_section_1_0');
 
-		unfoldTester.compareObject(endLabels.get('end_section_1_1'), {
+		unfoldTester.compareObject(endLabels.end_section_1_1, {
 			section: 1,
 			bar: 16,
 			playIndex: 1
 		}, 'end_section_1_1');
-		unfoldTester.compareObject(endLabels.get(EndLabel.TOCODA), {
+		unfoldTester.compareObject(endLabels[EndLabel.TOCODA], {
 			section: 1,
 			bar: 14,
 			playIndex: 0
 		}, 'Coda');
 
-		unfoldTester.compareObject(endLabels.get('DS al Coda'), {
+		unfoldTester.compareObject(endLabels['DS al Coda'], {
 			section: 1,
 			bar: 16,
 			playIndex: 1
 		}, 'DS al Coda');
 
-		unfoldTester.compareObject(endLabels.get('end_section_2_0'), {
+		unfoldTester.compareObject(endLabels.end_section_2_0, {
 			section: 2,
 			bar: 11,
 			playIndex: 0
 		}, 'end_section_2_0');
 
-		unfoldTester.compareObject(endLabels.get(EndLabel.END), {
+		unfoldTester.compareObject(endLabels[EndLabel.END], {
 			section: 2,
 			bar: 11,
 			playIndex: 0

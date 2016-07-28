@@ -8,41 +8,41 @@ define(['tests/songs/unfold/GertrudesBounce',
 		var struct = unfoldTester.init(GertrudesBounce);
 		var startLabels = struct.getStartLabels();
 
-		assert.equal(startLabels.size, 13, 'number of StartLabels');
-		unfoldTester.compareObject(startLabels.get(StartLabel.SEGNO), {
+		assert.equal(Object.keys(startLabels).length, 13, 'number of StartLabels');
+		unfoldTester.compareObject(startLabels[StartLabel.SEGNO], {
 			section: 1,
 			bar: 0,
 			playIndex: 0
 		}, 'Segno');
 
-		unfoldTester.compareObject(startLabels.get(StartLabel.CODATO), {
+		unfoldTester.compareObject(startLabels[StartLabel.CODATO], {
 			section: 7,
 			bar: 0,
 			playIndex: 0
 		}, 'CodaTo');
 
-		unfoldTester.compareObject(startLabels.get(StartLabel.CODA2TO), {
+		unfoldTester.compareObject(startLabels[StartLabel.CODA2TO], {
 			section: 8,
 			bar: 0,
 			playIndex: 0
 		}, 'Coda2To');
 		
 		var endLabels = struct.getEndLabels();
-		assert.equal(endLabels.size, 16, 'number of EndLabels');
+		assert.equal(Object.keys(endLabels).length, 16, 'number of EndLabels');
 
-		unfoldTester.compareObject(endLabels.get(EndLabel.TOCODA2), {
+		unfoldTester.compareObject(endLabels[EndLabel.TOCODA2], {
 			section: 0,
 			bar: 5,
 			playIndex: 0
 		}, 'Coda2');
 
-		unfoldTester.compareObject(endLabels.get('DS al Coda'), {
+		unfoldTester.compareObject(endLabels['DS al Coda'], {
 			section: 6,
 			bar: 7,
 			playIndex: 0
 		}, 'DS al Coda');
 
-		unfoldTester.compareObject(endLabels.get('DC al Coda2'), {
+		unfoldTester.compareObject(endLabels['DC al Coda2'], {
 			section: 7,
 			bar: 0,
 			playIndex: 0

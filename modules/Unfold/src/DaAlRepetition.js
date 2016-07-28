@@ -2,9 +2,11 @@ define([
 	'modules/Unfold/src/Repetition',
 	'modules/Unfold/src/RepeatPoint',
 	'modules/Unfold/src/StartLabel',
-	'modules/Unfold/src/EndLabel'
-], function(Repetition, RepeatPoint, StartLabel, EndLabel) {
-	var DaAlRepetition = Object.assign(Object.create(Repetition), {
+	'modules/Unfold/src/EndLabel',
+	'underscore'
+
+], function(Repetition, RepeatPoint, StartLabel, EndLabel,_) {
+	var DaAlRepetition = _.extendOwn(Object.create(Repetition), {
 		al: undefined,
 		da: undefined
 	});
