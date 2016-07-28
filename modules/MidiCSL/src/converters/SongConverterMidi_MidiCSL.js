@@ -31,7 +31,7 @@ define([
 			var songToExport = unfold ? this.getUnfoldedClone(songModel) : songModel;
 			var song = SongConverterMidi_MidiCSL.exportElementsToMidiCSL(songToExport);
 			if (callback) {
-				callback(song, songToExport.notesMapper);
+				callback(song, songToExport);
 			}
 			return song;
 		};

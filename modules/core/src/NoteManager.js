@@ -475,6 +475,15 @@ define([
 		return [index1, index2];
 	};
 
+	NoteManager.prototype.getStartTieNotePos = function(pos) {
+		while (pos !== 0 &&
+			(this.notes[pos].getTie() === 'stop' || this.notes[pos].getTie() ==='stop_start' ||  //current pos is in tie but not start
+			this.notes[pos - 1].getTie() ==='stop_start' || this.notes[pos - 1].getTie() ==='start')) //previous pos is in tie but or start (this handles cases where there is a tie start and following note has no tie stopm we assume it should)
+		{
+			pos--;
+		}
+		return pos;
+	};
 
 	/**
 	 *
