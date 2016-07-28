@@ -31,6 +31,7 @@ define([
 		}
 		var repetition = this.repetitions[index];
 		var targetPoint = target.point;
+		var repTargetPoint;
 		if (!!targetPoint && !targetPoint.hasLabel(EndLabel.END)) {
 			repTargetPoint = repetition.getTargetPoint();
 			if (!repTargetPoint.isBefore(targetPoint))

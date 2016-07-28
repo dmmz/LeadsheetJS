@@ -190,9 +190,7 @@ define([
 			localStorage.setItem("player-volume", volume);
 		};
 
-		PlayerModel_MidiCSL.prototype.getChordsVolume = function() {
-			return this.chords.volume;
-		};
+		
 
 		PlayerModel_MidiCSL.prototype.setChordsVolume = function(volume) {
 			if (typeof volume === "undefined" || isNaN(volume)) {
@@ -202,10 +200,7 @@ define([
 			this.chords.volume = volume;
 		};
 
-		PlayerModel_MidiCSL.prototype.getMelodyVolume = function() {
-			return this.melody.volume;
-		};
-
+		
 		PlayerModel_MidiCSL.prototype.setMelodyVolume = function(volume) {
 			if (typeof volume === "undefined" || isNaN(volume)) {
 				throw 'PlayerModel_MidiCSL - setMelodyVolume - volume must be a number ' + volume;
@@ -370,6 +365,9 @@ define([
 							MIDI.noteOn(this.getChannel(), currentMidiNote, velocityNote);
 							MIDI.noteOff(this.getChannel(), currentMidiNote, duration);
 						},
+						getVolume: function() {
+							return this.volume * this.playerModel[this.type].volume;
+						},
 						getChannel: function() {
 							return this.playerModel[this.type].instrument;
 						}
@@ -377,11 +375,14 @@ define([
 					//child classes for notes, chords and metronome to play
 					var noteMidiObj = Object.assign(Object.create(midiObj), {
 						type: 'melody',
-						getVolume: function() {
-							return 127 * this.playerModel.getMelodyVolume();
-						}
+						volume: 127
+					});
+					var chordsMidiObj = Object.assign(Object.create(midiObj), {
+						type: 'chords',
+						volume: 80
 					});
 					var metronomeMidiObj = Object.assign(Object.create(midiObj), {
+						volume: 80,
 						setPlay: function(play) {
 							this.doPlay = !!play;
 						},
@@ -389,13 +390,7 @@ define([
 							return this.metronomeChannel;
 						},
 						getVolume: function() {
-							return 80 * this.playerModel.getChordsVolume();
-						}
-					});
-					var chordsMidiObj = Object.assign(Object.create(midiObj), {
-						type: 'chords',
-						getVolume: function() {
-							return 80 * this.playerModel.getChordsVolume();
+							return this.volume * this.playerModel.chords.volume;
 						}
 					});
 					//we put them in object

@@ -390,7 +390,7 @@ define([
 					}
 					//BARS
 					barDimensions = self.barWidthMng.getDimensions(songIt.getBarIndex());
-					symbolsPositions = symbolsPositioner.getPositionsForBarIndex(songIt.getBarIndex());
+					var symbolsPositions = symbolsPositioner.getPositionsForBarIndex(songIt.getBarIndex());
 					var barViewParams = {
 						draw_clef: self.DRAW_CLEF,
 						draw_key_signature: self.DRAW_KEY_SIGNATURE,
