@@ -61,6 +61,8 @@ define([
 				lastKeySig = bar.keySignatureChange || lastKeySig;
 				var barClone = bar.clone(true);
 				//set original key signature (e.g. in repeated section with key sig. change in the middle, 2nd time needs to start with original key sig.)
+				barClone.labels = [];
+				barClone.sublabel = undefined;
 				if (i === 0 && unfoldedKeySig !== lastKeySig) {
 					barClone.keySignatureChange = unfoldedKeySig;
 				}
