@@ -18,6 +18,7 @@ define([
 		'modules/core/src/NoteModel',
 		'modules/MidiCSL/src/converters/SongConverterMidi_MidiCSL',
 		'modules/MidiCSL/src/model/SongModel_MidiCSL',
+		'modules/PlayerView/src/ProgressBarModel',
 		'Midijs',
 		'pubsub',
 		'underscore'
@@ -27,10 +28,10 @@ define([
 		NoteModel,
 		SongConverterMidi_MidiCSL,
 		SongModel_MidiCSL,
+		ProgressBarModel,
 		MIDI,
 		pubsub,
 		_) {
-
 		/**
 		 * PlayerModel_MidiCSL is the main midi player class, it creates and reads a SongModel_MidiCSL object from a SongModel
 		 * @exports MidiCSL/PlayerModel_MidiCSL
@@ -244,37 +245,6 @@ define([
 			$.publish('CanvasLayer-refresh');
 		};
 
-		/**
-		 * Function set position between 0 and 1
-		 * @param {int} between 0 and 1
-		 */
-		PlayerModel_MidiCSL.prototype.setPositionInPercent = function(positionInPercent) {
-			this.positionInPercent = positionInPercent;
-			$.publish('PlayerModel-positionPerCent', {
-				positionInPercent: positionInPercent,
-				songDuration: this.getSongDuration()
-			});
-		};
-
-		/**
-		 * Give position of player in the song
-		 * @return {float} between 0 (not started) and 1 (finished)
-		 */
-		PlayerModel_MidiCSL.prototype.getPosition = function() {
-			if (typeof this._startTime === "undefined" || isNaN(this._startTime) || typeof this.songDuration === "undefined" || isNaN(this.songDuration)) {
-				throw 'PlayerModel_MidiCSL - getPosition - _startTime and songDuration must be numbers ' + this._startTime + ' ' + this.songDuration;
-			}
-			var position = (Date.now() - this._startTime) / this.songDuration;
-			if (position > 1) {
-				position = 1;
-			}
-			return position;
-		};
-
-		PlayerModel_MidiCSL.prototype.getSongDuration = function() {
-			return this.songDuration ? this.songDuration : 0;
-		};
-
 		PlayerModel_MidiCSL.prototype.getBeatDuration = function(tempo) {
 			if (typeof tempo === "undefined" || isNaN(tempo)) {
 				throw 'PlayerModel_MidiCSL - getBeatDuration - tempo must be a number ' + tempo;
@@ -305,11 +275,12 @@ define([
 			var self = this;
 			this.playState = true;
 			$.publish('PlayerModel-onplay');
-			// Convert songmodel to a readable model that we can insert in SongModel_MidiCSL
+			// Convert songModel to a readable model that we can insert in SongModel_MidiCSL
 			SongConverterMidi_MidiCSL.exportToMidiCSL(this.songModel, true, function(midiSong, unfoldedSong) {
 				var midiSongModel = new SongModel_MidiCSL({
 					song: midiSong
 				});
+				
 
 				var metronome = midiSongModel.generateMetronome(self.songModel);
 				midiSongModel.setFromType(metronome, 'metronome');
@@ -318,8 +289,9 @@ define([
 
 					var lastNote = midiSongModel.getLastNote(); // Looking for last note
 					var beatDuration = self.getBeatDuration(tempo);
+					self.progressBar = ProgressBarModel(unfoldedSong, beatDuration);
+
 					self.noteTimeOut = []; // Keep every setTimeout so we can clear them on pause/stop
-					self.songDuration = lastNote.getCurrentTime() + lastNote.getDuration() * beatDuration;
 
 					var cursorPosition = self.cursorNoteModel ? self.cursorNoteModel.getPos() : [null];
 					if (cursorPosition[0] == null) cursorPosition = [0, 0];
@@ -419,10 +391,9 @@ define([
 							if (currentNote.getType() == "melody") {
 								var pos = currentNote.tieNotesNumber ? [currentNote.getNoteIndex(), currentNote.getNoteIndex() + currentNote.tieNotesNumber - 1] : currentNote.getNoteIndex();
 								self.setPositionIndex(pos, unfoldedSong.notesMapper);
-								self.setPositionInPercent((Date.now() - self._startTime) / self.songDuration);
+								self.progressBar.setPositionInPercent(Date.now() - self._startTime);
 							}
 							if (currentNote == lastNote || (currentNote.getCurrentTime() * self.getBeatDuration(tempo) >= playTo)) {
-								//self.setPositionInPercent(1);
 								if (self.doLoop()) {
 									self.stop(true); // TODO stop on setTimeout Else make it buggy (but without reseting position)
 								}
@@ -430,7 +401,7 @@ define([
 									if (!self.doLoop()) {
 										self.stop();
 										self.setPositionIndex(0, unfoldedSong.notesMapper);
-										self.setPositionInPercent(0);
+										self.progressBar.setPositionInPercent(0);
 										$.publish('PlayerModel-onfinish');
 									} else {
 										if (!playTo) {
@@ -494,7 +465,8 @@ define([
 			}
 			if (!dontResetPosition) {
 				this.setPositionIndex(0);
-				this.setPositionInPercent(0);
+				if (self.progressBar)
+					self.progressBar.setPositionInPercent(0);
 			}
 			$.publish('PlayerModel-onstop');
 		};
